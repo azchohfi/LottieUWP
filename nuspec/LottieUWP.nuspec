@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>LottieUWP</id>
+    <version>2.0.0-alpha</version>
+    <authors>azchohfi</authors>
+    <owners>azchohfi</owners>
+    <licenseUrl>https://github.com/azchohfi/LottieUWP/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/azchohfi/LottieUWP</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/azchohfi/LottieUWP/master/icon_lottie.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lottie for UWP</description>
+	<summary>Render After Effects animations natively on Android, iOS and UWP</summary>
+    <tags>c# Lottie animation airbnb uwp android ios</tags>
+    <dependencies>
+      <dependency id="MathNet.Numerics" version="3.19.0" />
+	  <dependency id="WriteableBitmapEx" version="1.5.1" />
+    </dependencies>
+  </metadata>
+  <files>
+	<file src="..\LottieUWP\bin\ARM\Release\LottieUWP.dll" target="runtimes\win10-arm\native"/>
+	<file src="..\LottieUWP\bin\ARM\Release\LottieUWP.pri" target="runtimes\win10-arm\native"/>
+
+	<file src="..\LottieUWP\bin\x64\Release\LottieUWP.dll" target="runtimes\win10-x64\native"/>
+	<file src="..\LottieUWP\bin\x64\Release\LottieUWP.pri" target="runtimes\win10-x64\native"/>
+
+	<file src="..\LottieUWP\bin\x86\Release\LottieUWP.dll" target="runtimes\win10-x86\native"/>
+	<file src="..\LottieUWP\bin\x86\Release\LottieUWP.pri" target="runtimes\win10-x86\native"/>
+  </files>
+</package>
