@@ -18,13 +18,7 @@
     </dependencies>
   </metadata>
   <files>
-	<file src="..\LottieUWP\bin\ARM\Release\LottieUWP.dll" target="runtimes\win10-arm\native"/>
-	<file src="..\LottieUWP\bin\ARM\Release\LottieUWP.pri" target="runtimes\win10-arm\native"/>
-
-	<file src="..\LottieUWP\bin\x64\Release\LottieUWP.dll" target="runtimes\win10-x64\native"/>
-	<file src="..\LottieUWP\bin\x64\Release\LottieUWP.pri" target="runtimes\win10-x64\native"/>
-
-	<file src="..\LottieUWP\bin\x86\Release\LottieUWP.dll" target="runtimes\win10-x86\native"/>
-	<file src="..\LottieUWP\bin\x86\Release\LottieUWP.pri" target="runtimes\win10-x86\native"/>
+	<file src="..\LottieUWP\bin\Release\LottieUWP.dll" target="lib\uap10.0"/>
+	<file src="..\LottieUWP\bin\Release\LottieUWP.pri" target="lib\uap10.0"/>
   </files>
 </package>
