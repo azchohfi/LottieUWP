@@ -1,0 +1,121 @@
+﻿using System.Collections.Generic;
+using Windows.Data.Json;
+
+namespace LottieUWP
+{
+    internal class GradientStroke
+    {
+        private GradientStroke(string name, GradientType gradientType, AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint, AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType, ShapeStroke.LineJoinType joinType, IList<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue dashOffset)
+        {
+            Name = name;
+            GradientType = gradientType;
+            GradientColor = gradientColor;
+            Opacity = opacity;
+            StartPoint = startPoint;
+            EndPoint = endPoint;
+            Width = width;
+            CapType = capType;
+            JoinType = joinType;
+            LineDashPattern = lineDashPattern;
+            DashOffset = dashOffset;
+        }
+
+        internal virtual string Name { get; }
+
+        internal virtual GradientType GradientType { get; }
+
+        internal virtual AnimatableGradientColorValue GradientColor { get; }
+
+        internal virtual AnimatableIntegerValue Opacity { get; }
+
+        internal virtual AnimatablePointValue StartPoint { get; }
+
+        internal virtual AnimatablePointValue EndPoint { get; }
+
+        internal virtual AnimatableFloatValue Width { get; }
+
+        internal virtual ShapeStroke.LineCapType CapType { get; }
+
+        internal virtual ShapeStroke.LineJoinType JoinType { get; }
+
+        internal virtual IList<AnimatableFloatValue> LineDashPattern { get; }
+
+        internal virtual AnimatableFloatValue DashOffset { get; }
+
+        internal class Factory
+        {
+            internal static GradientStroke NewInstance(JsonObject json, LottieComposition composition)
+            {
+                string name = json.GetNamedString("nm");
+                var jsonColor = json.GetNamedObject("g", null);
+                if (jsonColor != null && jsonColor.ContainsKey("k"))
+                {
+                    jsonColor = jsonColor.GetNamedObject("k");
+                }
+                AnimatableGradientColorValue color = null;
+                if (jsonColor != null)
+                {
+                    color = AnimatableGradientColorValue.Factory.NewInstance(jsonColor, composition);
+                }
+
+                var jsonOpacity = json.GetNamedObject("o", null);
+                AnimatableIntegerValue opacity = null;
+                if (jsonOpacity != null)
+                {
+                    opacity = AnimatableIntegerValue.Factory.NewInstance(jsonOpacity, composition);
+                }
+
+                int gradientTypeInt = (int)json.GetNamedNumber("t", 1);
+                GradientType gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
+
+                var jsonStartPoint = json.GetNamedObject("s", null);
+                AnimatablePointValue startPoint = null;
+                if (jsonStartPoint != null)
+                {
+                    startPoint = AnimatablePointValue.Factory.NewInstance(jsonStartPoint, composition);
+                }
+
+                var jsonEndPoint = json.GetNamedObject("e", null);
+                AnimatablePointValue endPoint = null;
+                if (jsonEndPoint != null)
+                {
+                    endPoint = AnimatablePointValue.Factory.NewInstance(jsonEndPoint, composition);
+                }
+                AnimatableFloatValue width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
+
+
+                ShapeStroke.LineCapType capType = ShapeStroke.LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
+                ShapeStroke.LineJoinType joinType = ShapeStroke.LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
+
+                AnimatableFloatValue offset = null;
+                IList<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
+                if (json.ContainsKey("d"))
+                {
+                    var dashesJson = json.GetNamedArray("d");
+                    for (int i = 0; i < dashesJson.Count; i++)
+                    {
+                        var dashJson = dashesJson[i].GetObject();
+                        string n = dashJson.GetNamedString("n");
+                        if (n.Equals("o"))
+                        {
+                            var value = dashJson.GetNamedObject("v");
+                            offset = AnimatableFloatValue.Factory.NewInstance(value, composition);
+                        }
+                        else if (n.Equals("d") || n.Equals("g"))
+                        {
+                            var value = dashJson.GetNamedObject("v");
+                            lineDashPattern.Add(AnimatableFloatValue.Factory.NewInstance(value, composition));
+                        }
+                    }
+                    if (lineDashPattern.Count == 1)
+                    {
+                        // If there is only 1 value then it is assumed to be equal parts on and off.
+                        lineDashPattern.Add(lineDashPattern[0]);
+                    }
+                }
+
+                return new GradientStroke(name, gradientType, color, opacity, startPoint, endPoint, width, capType, joinType, lineDashPattern, offset);
+            }
+        }
+    }
+}
