@@ -15,8 +15,8 @@ namespace LottieUWP
             {
                 throw new InvalidOperationException("Missing values for keyframe.");
             }
-            ScaleXy startTransform = keyframe.StartValue;
-            ScaleXy endTransform = keyframe.EndValue;
+            var startTransform = keyframe.StartValue;
+            var endTransform = keyframe.EndValue;
             return new ScaleXy(MathExt.Lerp(startTransform.ScaleX, endTransform.ScaleX, keyframeProgress), MathExt.Lerp(startTransform.ScaleY, endTransform.ScaleY, keyframeProgress));
         }
     }

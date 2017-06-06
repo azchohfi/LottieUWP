@@ -100,8 +100,8 @@ namespace LottieUWP
             (this IEnumerable<T> source, int size)
         {
             T[] array = null;
-            int count = 0;
-            foreach (T item in source)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (array == null)
                 {

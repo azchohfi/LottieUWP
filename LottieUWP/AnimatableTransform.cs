@@ -15,15 +15,15 @@ namespace LottieUWP
             Opacity = opacity;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static AnimatableTransform NewInstance()
             {
-                AnimatablePathValue anchorPoint = new AnimatablePathValue();
+                var anchorPoint = new AnimatablePathValue();
                 IAnimatableValue<PointF> position = new AnimatablePathValue();
-                AnimatableScaleValue scale = AnimatableScaleValue.Factory.NewInstance();
-                AnimatableFloatValue rotation = AnimatableFloatValue.Factory.NewInstance();
-                AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.NewInstance();
+                var scale = AnimatableScaleValue.Factory.NewInstance();
+                var rotation = AnimatableFloatValue.Factory.NewInstance();
+                var opacity = AnimatableIntegerValue.Factory.NewInstance();
                 return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
             }
 
@@ -34,7 +34,7 @@ namespace LottieUWP
                 AnimatableScaleValue scale;
                 AnimatableFloatValue rotation = null;
                 AnimatableIntegerValue opacity;
-                JsonObject anchorJson = json.GetNamedObject("a", null);
+                var anchorJson = json.GetNamedObject("a", null);
                 if (anchorJson != null)
                 {
                     anchorPoint = new AnimatablePathValue(anchorJson["k"], composition);
@@ -43,7 +43,7 @@ namespace LottieUWP
                 {
                     // Cameras don't have an anchor point property. Although we don't support them, at least
                     // we won't crash.
-                    Debug.WriteLine("Layer has no transform property. You may be using an unsupported " + "layer type such as a camera.", L.Tag);
+                    Debug.WriteLine("Layer has no transform property. You may be using an unsupported " + "layer type such as a camera.", "LOTTIE");
                     anchorPoint = new AnimatablePathValue();
                 }
 
@@ -95,7 +95,7 @@ namespace LottieUWP
                 return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
             }
 
-            internal static void ThrowMissingTransform(string missingProperty)
+            private static void ThrowMissingTransform(string missingProperty)
             {
                 throw new System.ArgumentException("Missing transform for " + missingProperty);
             }

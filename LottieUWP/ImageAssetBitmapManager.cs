@@ -45,10 +45,10 @@ namespace LottieUWP
 
         internal virtual WriteableBitmap BitmapForId(string id)
         {
-            WriteableBitmap bitmap = _bitmaps[id];
+            var bitmap = _bitmaps[id];
             if (bitmap == null)
             {
-                LottieImageAsset imageAsset = _imageAssets[id];
+                var imageAsset = _imageAssets[id];
                 if (imageAsset == null)
                 {
                     return null;
@@ -74,7 +74,7 @@ namespace LottieUWP
                 }
                 catch (IOException e)
                 {
-                    Debug.WriteLine($"Unable to open asset. {e}", L.Tag);
+                    Debug.WriteLine($"Unable to open asset. {e}", "LOTTIE");
                     return null;
                 }
                 //BitmapFactory.Options opts = new BitmapFactory.Options(); // TODO: handle  density
@@ -89,18 +89,18 @@ namespace LottieUWP
 
         internal virtual void RecycleBitmaps()
         {
-            var keyValuePairs = _bitmaps.SetOfKeyValuePairs();
-            for (int i = keyValuePairs.Count - 1; i >= 0; i--)
+            var keyValuePairs = new HashSet<KeyValuePair<string, WriteableBitmap>>();
+            foreach (var keyValuePair in _bitmaps)
             {
-                KeyValuePair<string, WriteableBitmap> entry = keyValuePairs.ElementAt(i);
+                keyValuePairs.Add(keyValuePair);
+            }
+
+            for (var i = keyValuePairs.Count - 1; i >= 0; i--)
+            {
+                var entry = keyValuePairs.ElementAt(i);
                 //entry.Value.recycle(); // TODO: Urgent, dispose!
                 keyValuePairs.Remove(entry);
             }
         }
-
-        //internal virtual bool hasSameContext(Context context)
-        //{
-        //    return context == null && this.context == null || context != null && this.context.Equals(context);
-        //}
     }
 }

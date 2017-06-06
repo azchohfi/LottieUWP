@@ -12,15 +12,15 @@ namespace LottieUWP
         internal static void GetPathFromData(ShapeData shapeData, Path outPath)
         {
             outPath.Reset();
-            PointF initialPoint = shapeData.InitialPoint;
+            var initialPoint = shapeData.InitialPoint;
             outPath.MoveTo(initialPoint.X, initialPoint.Y);
-            PointF currentPoint = new PointF(initialPoint.X, initialPoint.Y);
-            for (int i = 0; i < shapeData.Curves.Count; i++)
+            var currentPoint = new PointF(initialPoint.X, initialPoint.Y);
+            for (var i = 0; i < shapeData.Curves.Count; i++)
             {
-                CubicCurveData curveData = shapeData.Curves[i];
-                PointF cp1 = curveData.ControlPoint1;
-                PointF cp2 = curveData.ControlPoint2;
-                PointF vertex = curveData.Vertex;
+                var curveData = shapeData.Curves[i];
+                var cp1 = curveData.ControlPoint1;
+                var cp2 = curveData.ControlPoint2;
+                var vertex = curveData.Vertex;
 
                 if (cp1.Equals(currentPoint) && cp2.Equals(vertex))
                 {
@@ -72,7 +72,7 @@ namespace LottieUWP
 
         private static int FloorDiv(int x, int y)
         {
-            int r = x / y;
+            var r = x / y;
             // if the signs are different and modulo not zero, round down
             if ((x ^ y) < 0 && r * y != x)
             {

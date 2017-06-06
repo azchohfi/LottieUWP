@@ -2,12 +2,8 @@
 
 namespace LottieUWP
 {
-    internal class JsonUtils
+    internal static class JsonUtils
     {
-        private JsonUtils()
-        {
-        }
-
         internal static PointF PointFromJsonObject(JsonObject values, float scale)
         {
             return new PointF(ValueFromObject(values["x"]) * scale, ValueFromObject(values["y"]) * scale);

@@ -150,8 +150,6 @@
     <Compile Include="GradientStroke.cs" />
     <Compile Include="GradientStrokeContent.cs" />
     <Compile Include="GradientType.cs" />
-    <Compile Include="HashMapHelperClass.cs" />
-    <Compile Include="IAnimatorListener.cs" />
     <Compile Include="ImageAssetBitmapManager.cs" />
     <Compile Include="IImageAssetDelegate.cs" />
     <Compile Include="ImageLayer.cs" />
@@ -162,7 +160,6 @@
     <Compile Include="JsonUtils.cs" />
     <Compile Include="Keyframe.cs" />
     <Compile Include="KeyframeAnimation.cs" />
-    <Compile Include="L.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LinearGradient.cs" />
     <Compile Include="PathInterpolator.cs" />
@@ -174,6 +171,9 @@
     <Compile Include="Mask.cs" />
     <Compile Include="MaskKeyframeAnimation.cs" />
     <Compile Include="MathExt.cs" />
+    <Compile Include="PorterDuff.cs" />
+    <Compile Include="PorterDuffColorFilter.cs" />
+    <Compile Include="PorterDuffXfermode.cs" />
     <Compile Include="RadialGradient.cs" />
     <Compile Include="RectExt.cs" />
     <Compile Include="MatrixExt.cs" />
@@ -214,7 +214,6 @@
     <Compile Include="SolidLayer.cs" />
     <Compile Include="SplitDimensionPathKeyframeAnimation.cs" />
     <Compile Include="StaticKeyframeAnimation.cs" />
-    <Compile Include="StringHelperClass.cs" />
     <Compile Include="StrokeContent.cs" />
     <Compile Include="TransformKeyframeAnimation.cs" />
     <Compile Include="TrimPathContent.cs" />

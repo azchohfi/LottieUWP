@@ -24,7 +24,7 @@ namespace LottieUWP
                 return;
             }
 
-            int alpha = (int)(backgroundAlpha / 255f * Transform.Opacity.Value / 100f * 255);
+            var alpha = (int)(backgroundAlpha / 255f * Transform.Opacity.Value / 100f * 255);
             _paint.Alpha = alpha;
             if (alpha > 0)
             {

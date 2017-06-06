@@ -89,25 +89,6 @@ namespace LottieUWP
         /// </summary>
         private LottieComposition _composition;
 
-        public LottieAnimationView()
-        {
-            _lottieDrawable = new LottieDrawable(this);
-            _loadedListener = new OnCompositionLoadedListenerAnonymousInnerClass(this);
-            Init();
-        }
-
-        //public LottieAnimationView(Context context, AttributeSet attrs) : base(context, attrs)
-        //{
-        //    loadedListener = new OnCompositionLoadedListenerAnonymousInnerClass(this);
-        //    init(attrs);
-        //}
-        //
-        //public LottieAnimationView(Context context, AttributeSet attrs, int defStyleAttr) : base(context, attrs, defStyleAttr)
-        //{
-        //    loadedListener = new OnCompositionLoadedListenerAnonymousInnerClass(this);
-        //    init(attrs);
-        //}
-
         public string FileName
         {
             get => (string)GetValue(FileNameProperty);
@@ -226,8 +207,11 @@ namespace LottieUWP
             }
         }
 
-        private void Init()
+        public LottieAnimationView()
         {
+            _lottieDrawable = new LottieDrawable(this);
+            _loadedListener = new OnCompositionLoadedListenerAnonymousInnerClass(this);
+
             if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled && !string.IsNullOrEmpty(FileName))
             {
                 SetAnimation(FileName);
@@ -449,7 +433,7 @@ namespace LottieUWP
             _animationName = animationName;
             if (WeakRefCache.ContainsKey(animationName))
             {
-                WeakReference<LottieComposition> compRef = WeakRefCache[animationName];
+                var compRef = WeakRefCache[animationName];
                 LottieComposition lottieComposition;
                 if (compRef.TryGetTarget(out lottieComposition))
                 {
@@ -467,7 +451,7 @@ namespace LottieUWP
             _lottieDrawable.CancelAnimation();
             CancelLoaderTask();
 
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            var cancellationTokenSource = new CancellationTokenSource();
             LottieComposition.Factory.FromAssetFileNameAsync(animationName, new OnCompositionLoadedListenerAnonymousInnerClass2(this, animationName, cacheStrategy), cancellationTokenSource.Token);
             _compositionLoader = cancellationTokenSource;
         }
@@ -514,7 +498,7 @@ namespace LottieUWP
             set
             {
                 CancelLoaderTask();
-                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                var cancellationTokenSource = new CancellationTokenSource();
                 LottieComposition.Factory.FromJsonAsync(value, _loadedListener, cancellationTokenSource.Token);
                 _compositionLoader = cancellationTokenSource;
             }
@@ -541,7 +525,7 @@ namespace LottieUWP
                 Debug.WriteLine("Set Composition \n" + value, Tag);
                 //lottieDrawable.Callback = this;
 
-                bool isNewComposition = _lottieDrawable.SetComposition(value);
+                var isNewComposition = _lottieDrawable.SetComposition(value);
                 if (!isNewComposition)
                 {
                     // We can avoid re-setting the drawable, and invalidating the view, since the value
@@ -549,17 +533,17 @@ namespace LottieUWP
                     return;
                 }
 
-                int screenWidth = Utils.GetScreenWidth();
-                int screenHeight = Utils.GetScreenHeight();
-                int compWidth = (int)value.Bounds.Width;
-                int compHeight = (int)value.Bounds.Height;
+                var screenWidth = Utils.GetScreenWidth();
+                var screenHeight = Utils.GetScreenHeight();
+                var compWidth = (int)value.Bounds.Width;
+                var compHeight = (int)value.Bounds.Height;
                 if (compWidth > screenWidth || compHeight > screenHeight)
                 {
-                    float xScale = screenWidth / (float)compWidth;
-                    float yScale = screenHeight / (float)compHeight;
-                    float maxScaleForScreen = Math.Min(xScale, yScale);
+                    var xScale = screenWidth / (float)compWidth;
+                    var yScale = screenHeight / (float)compHeight;
+                    var maxScaleForScreen = Math.Min(xScale, yScale);
                     Scale = Math.Min(maxScaleForScreen, _lottieDrawable.Scale);
-                    Debug.WriteLine($"Composition larger than the screen {compWidth:D}x{compHeight:D} vs {screenWidth:D}x{screenHeight:D}. Scaling down.", L.Tag);
+                    Debug.WriteLine($"Composition larger than the screen {compWidth:D}x{compHeight:D} vs {screenWidth:D}x{screenHeight:D}. Scaling down.", "LOTTIE");
                 }
 
                 // If you set a different value on the view, the bounds will not update unless
@@ -680,7 +664,7 @@ namespace LottieUWP
 
         public virtual void PauseAnimation()
         {
-            float progress = Progress;
+            var progress = Progress;
             _lottieDrawable.CancelAnimation();
             Progress = progress;
             EnableOrDisableHardwareLayer();
@@ -696,7 +680,7 @@ namespace LottieUWP
 
         private void EnableOrDisableHardwareLayer()
         {
-            bool useHardwareLayer = _useHardwareLayer && _lottieDrawable.Animating;
+            var useHardwareLayer = _useHardwareLayer && _lottieDrawable.Animating;
             //setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
             // TODO: FIX
         }

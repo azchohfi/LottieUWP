@@ -42,7 +42,7 @@ namespace LottieUWP
 
             internal static Type ForValue(int value)
             {
-                foreach (Type type in Values())
+                foreach (var type in Values())
                 {
                     if (type.Value == value)
                     {
@@ -69,7 +69,7 @@ namespace LottieUWP
 
             public static Type ValueOf(string name)
             {
-                foreach (Type enumInstance in ValueList)
+                foreach (var enumInstance in ValueList)
                 {
                     if (enumInstance._nameValue == name)
                     {
@@ -95,17 +95,17 @@ namespace LottieUWP
             OuterRoundedness = outerRoundedness;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static PolystarShape NewInstance(JsonObject json, LottieComposition composition)
             {
-                string name = json.GetNamedString("nm");
-                Type type = Type.ForValue((int)json.GetNamedNumber("sy"));
-                AnimatableFloatValue points = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("pt"), composition, false);
-                IAnimatableValue<PointF> position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(json.GetNamedObject("p"), composition);
-                AnimatableFloatValue rotation = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("r"), composition, false);
-                AnimatableFloatValue outerRadius = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("or"), composition);
-                AnimatableFloatValue outerRoundedness = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("os"), composition, false);
+                var name = json.GetNamedString("nm");
+                var type = Type.ForValue((int)json.GetNamedNumber("sy"));
+                var points = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("pt"), composition, false);
+                var position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(json.GetNamedObject("p"), composition);
+                var rotation = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("r"), composition, false);
+                var outerRadius = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("or"), composition);
+                var outerRoundedness = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("os"), composition, false);
                 AnimatableFloatValue innerRadius;
                 AnimatableFloatValue innerRoundedness;
 
@@ -125,7 +125,7 @@ namespace LottieUWP
 
         internal virtual string Name { get; }
 
-        internal virtual Type getType()
+        internal new virtual Type GetType()
         {
             return _type;
         }

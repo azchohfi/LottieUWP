@@ -10,7 +10,7 @@ namespace LottieUWP
         {
             Masks = masks;
             _maskAnimations = new List<IBaseKeyframeAnimation<Path>>(masks.Count);
-            for (int i = 0; i < masks.Count; i++)
+            for (var i = 0; i < masks.Count; i++)
             {
                 _maskAnimations.Add(masks[i].MaskPath.CreateAnimation());
             }

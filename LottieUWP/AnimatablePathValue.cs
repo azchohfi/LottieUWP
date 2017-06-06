@@ -31,11 +31,11 @@ namespace LottieUWP
             if (HasKeyframes(json))
             {
                 var jsonArray = json.GetArray();
-                int length = jsonArray.Count;
-                for (int i = 0; i < length; i++)
+                var length = jsonArray.Count;
+                for (var i = 0; i < length; i++)
                 {
                     var jsonKeyframe = jsonArray[i].GetObject();
-                    PathKeyframe keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(jsonKeyframe, composition, ValueFactory.Instance);
+                    var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(jsonKeyframe, composition, ValueFactory.Instance);
                     _keyframes.Add(keyframe);
                 }
                 Keyframe<PathKeyframe>.SetEndFrames<IKeyframe<PointF>, PointF>(_keyframes.Cast<IKeyframe<PointF>>().ToList());

@@ -16,8 +16,8 @@ namespace LottieUWP
 
         public override PointF GetValue(IKeyframe<PointF> keyframe, float keyframeProgress)
         {
-            PathKeyframe pathKeyframe = (PathKeyframe) keyframe;
-            Path path = pathKeyframe.Path;
+            var pathKeyframe = (PathKeyframe) keyframe;
+            var path = pathKeyframe.Path;
             if (path == null)
             {
                 return keyframe.StartValue;

@@ -27,11 +27,11 @@ namespace LottieUWP
             return new ScaleKeyframeAnimation(Keyframes);
         }
 
-        internal sealed class Factory
+        internal static class Factory
         {
             internal static AnimatableScaleValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                AnimatableValueParser<ScaleXy>.Result result = AnimatableValueParser<ScaleXy>.NewInstance(json, 1, composition, ScaleXy.Factory.Instance).ParseJson();
+                var result = AnimatableValueParser<ScaleXy>.NewInstance(json, 1, composition, ScaleXy.Factory.Instance).ParseJson();
                 return new AnimatableScaleValue(result.Keyframes, result.InitialValue);
             }
 
@@ -41,5 +41,4 @@ namespace LottieUWP
             }
         }
     }
-
 }

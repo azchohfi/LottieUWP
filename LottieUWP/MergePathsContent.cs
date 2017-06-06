@@ -19,8 +19,7 @@ namespace LottieUWP
 
         internal virtual void AddContentIfNeeded(IContent content)
         {
-            var pathContent = content as IPathContent;
-            if (pathContent != null)
+            if (content is IPathContent pathContent)
             {
                 _pathContents.Add(pathContent);
             }
@@ -28,7 +27,7 @@ namespace LottieUWP
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < _pathContents.Count; i++)
+            for (var i = 0; i < _pathContents.Count; i++)
             {
                 _pathContents[i].SetContents(contentsBefore, contentsAfter);
             }
@@ -67,7 +66,7 @@ namespace LottieUWP
 
         private void AddPaths()
         {
-            for (int i = 0; i < _pathContents.Count; i++)
+            for (var i = 0; i < _pathContents.Count; i++)
             {
                 _path.AddPath(_pathContents[i].Path);
             }
@@ -78,17 +77,16 @@ namespace LottieUWP
             _remainderPath.Reset();
             _firstPath.Reset();
 
-            for (int i = _pathContents.Count - 1; i >= 1; i--)
+            for (var i = _pathContents.Count - 1; i >= 1; i--)
             {
-                IPathContent content = _pathContents[i];
+                var content = _pathContents[i];
 
-                var contentGroup = content as ContentGroup;
-                if (contentGroup != null)
+                if (content is ContentGroup contentGroup)
                 {
-                    IList<IPathContent> pathList = contentGroup.PathList;
-                    for (int j = pathList.Count - 1; j >= 0; j--)
+                    var pathList = contentGroup.PathList;
+                    for (var j = pathList.Count - 1; j >= 0; j--)
                     {
-                        Path path = pathList[j].Path;
+                        var path = pathList[j].Path;
                         path.Transform(contentGroup.TransformationMatrix);
                         _remainderPath.AddPath(path);
                     }
@@ -99,14 +97,13 @@ namespace LottieUWP
                 }
             }
 
-            IPathContent lastContent = _pathContents[0];
-            var group = lastContent as ContentGroup;
-            if (group != null)
+            var lastContent = _pathContents[0];
+            if (lastContent is ContentGroup group)
             {
-                IList<IPathContent> pathList = group.PathList;
-                for (int j = 0; j < pathList.Count; j++)
+                var pathList = group.PathList;
+                for (var j = 0; j < pathList.Count; j++)
                 {
-                    Path path = pathList[j].Path;
+                    var path = pathList[j].Path;
                     path.Transform(group.TransformationMatrix);
                     _firstPath.AddPath(path);
                 }

@@ -9,8 +9,8 @@ namespace LottieUWP
 
         internal GradientColorKeyframeAnimation(IList<IKeyframe<GradientColor>> keyframes) : base(keyframes)
         {
-            GradientColor startValue = keyframes[0].StartValue;
-            int size = startValue?.Size ?? 0;
+            var startValue = keyframes[0].StartValue;
+            var size = startValue?.Size ?? 0;
             _gradientColor = new GradientColor(new float[size], new Color[size]);
         }
 

@@ -5,7 +5,6 @@ namespace LottieUWP
 {
     public class MergePaths
     {
-
         internal sealed class MergePathsMode
         {
             public static readonly MergePathsMode Merge = new MergePathsMode("Merge", InnerEnum.Merge);
@@ -82,7 +81,7 @@ namespace LottieUWP
 
             public static MergePathsMode ValueOf(string name)
             {
-                foreach (MergePathsMode enumInstance in ValueList)
+                foreach (var enumInstance in ValueList)
                 {
                     if (enumInstance._nameValue == name)
                     {
@@ -101,7 +100,7 @@ namespace LottieUWP
             _mode = mode;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static MergePaths NewInstance(JsonObject json)
             {

@@ -32,8 +32,8 @@ namespace LottieUWP
         /// </summary>
         internal static void SetEndFrames<TU, TV>(IList<TU> keyframes) where TU : IKeyframe<TV>
         {
-            int size = keyframes.Count;
-            for (int i = 0; i < size - 1; i++)
+            var size = keyframes.Count;
+            for (var i = 0; i < size - 1; i++)
             {
                 // In the json, the value only contain their starting frame.
                 keyframes[i].EndFrame = keyframes[i + 1].StartFrame;
@@ -43,7 +43,6 @@ namespace LottieUWP
             {
                 // The only purpose the last keyframe has is to provide the end frame of the previous
                 // keyframe.
-                //noinspection SuspiciousMethodCalls
                 keyframes.Remove(lastKeyframe);
             }
         }
@@ -88,8 +87,8 @@ namespace LottieUWP
                 PointF cp1 = null;
                 PointF cp2 = null;
                 float startFrame = 0;
-                T startValue = default(T);
-                T endValue = default(T);
+                var startValue = default(T);
+                var endValue = default(T);
                 IInterpolator interpolator = null;
 
                 if (json.ContainsKey("t"))
@@ -115,7 +114,7 @@ namespace LottieUWP
                         cp2 = JsonUtils.PointFromJsonObject(cp2Json, scale);
                     }
 
-                    bool hold = (int)json.GetNamedNumber("h", 0) == 1;
+                    var hold = (int)json.GetNamedNumber("h", 0) == 1;
 
                     if (hold)
                     {
@@ -146,7 +145,7 @@ namespace LottieUWP
 
             internal static IList<IKeyframe<T>> ParseKeyframes(JsonArray json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
-                int length = json.Count;
+                var length = json.Count;
                 if (length == 0)
                 {
                     return new List<IKeyframe<T>>();

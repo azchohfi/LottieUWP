@@ -28,7 +28,7 @@ namespace LottieUWP
                 case Layer.LayerType.Unknown:
                 default:
                     // Do nothing
-                    Debug.WriteLine("Unknown layer type " + layerModel.GetLayerType(), L.Tag);
+                    Debug.WriteLine("Unknown layer type " + layerModel.GetLayerType(), "LOTTIE");
                     return null;
             }
         }
@@ -77,7 +77,7 @@ namespace LottieUWP
             if (layerModel.Masks != null && layerModel.Masks.Count > 0)
             {
                 _mask = new MaskKeyframeAnimation(layerModel.Masks);
-                foreach (IBaseKeyframeAnimation<Path> animation in _mask.MaskAnimations)
+                foreach (var animation in _mask.MaskAnimations)
                 {
                     AddAnimation(animation);
                     animation.AddUpdateListener(this);
@@ -112,7 +112,7 @@ namespace LottieUWP
         {
             if (_layerModel.InOutKeyframes.Count > 0)
             {
-                FloatKeyframeAnimation inOutAnimation = new FloatKeyframeAnimation(_layerModel.InOutKeyframes);
+                var inOutAnimation = new FloatKeyframeAnimation(_layerModel.InOutKeyframes);
                 inOutAnimation.SetIsDiscrete();
                 inOutAnimation.AddUpdateListener(new AnimationListenerAnonymousInnerClass(this, inOutAnimation));
                 Visible = inOutAnimation.Value == 1f;
@@ -147,7 +147,7 @@ namespace LottieUWP
             LottieDrawable.InvalidateSelf();
         }
 
-        internal virtual void AddAnimation(IBaseKeyframeAnimation newAnimation)
+        internal void AddAnimation(IBaseKeyframeAnimation newAnimation)
         {
             if (!(newAnimation is IStaticKeyFrameAnimation))
             {
@@ -170,11 +170,11 @@ namespace LottieUWP
             BuildParentLayerListIfNeeded();
             _matrix.Reset();
             _matrix.Set(parentMatrix);
-            for (int i = _parentLayers.Count - 1; i >= 0; i--)
+            for (var i = _parentLayers.Count - 1; i >= 0; i--)
             {
                 _matrix = MatrixExt.PreConcat(_matrix, _parentLayers[i].Transform.Matrix);
             }
-            int alpha = (int)(parentAlpha / 255f * (float)Transform.Opacity.Value / 100f * 255);
+            var alpha = (int)(parentAlpha / 255f * (float)Transform.Opacity.Value / 100f * 255);
             if (!HasMatteOnThisLayer() && !HasMasksOnThisLayer())
             {
                 _matrix = MatrixExt.PreConcat(_matrix, Transform.Matrix);
@@ -205,7 +205,7 @@ namespace LottieUWP
             {
                 canvas.SaveLayer(Rect, _mattePaint, SaveFlags);
                 ClearCanvas(canvas);
-                //noinspection ConstantConditions
+                
                 _matteLayer.Draw(canvas, parentMatrix, alpha);
                 canvas.Restore();
             }
@@ -226,13 +226,13 @@ namespace LottieUWP
             {
                 return;
             }
-            //noinspection ConstantConditions
-            int size = _mask.Masks.Count;
-            for (int i = 0; i < size; i++)
+            
+            var size = _mask.Masks.Count;
+            for (var i = 0; i < size; i++)
             {
-                Mask mask = _mask.Masks[i];
+                var mask = _mask.Masks[i];
                 var maskAnimation = _mask.MaskAnimations[i];
-                Path maskPath = maskAnimation.Value;
+                var maskPath = maskAnimation.Value;
                 _path.Set(maskPath);
                 _path.Transform(matrix);
 
@@ -286,12 +286,12 @@ namespace LottieUWP
             canvas.SaveLayer(Rect, _maskPaint, SaveFlags);
             ClearCanvas(canvas);
 
-            int size = _mask.Masks.Count;
-            for (int i = 0; i < size; i++)
+            var size = _mask.Masks.Count;
+            for (var i = 0; i < size; i++)
             {
-                Mask mask = _mask.Masks[i];
+                var mask = _mask.Masks[i];
                 var maskAnimation = _mask.MaskAnimations[i];
-                Path maskPath = maskAnimation.Value;
+                var maskPath = maskAnimation.Value;
                 _path.Set(maskPath);
                 _path.Transform(matrix);
 
@@ -335,7 +335,7 @@ namespace LottieUWP
                 {
                     _matteLayer.Progress = value;
                 }
-                for (int i = 0; i < _animations.Count; i++)
+                for (var i = 0; i < _animations.Count; i++)
                 {
                     _animations[i].Progress = value;
                 }
@@ -355,7 +355,7 @@ namespace LottieUWP
             }
 
             _parentLayers = new List<BaseLayer>();
-            BaseLayer layer = _parentLayer;
+            var layer = _parentLayer;
             while (layer != null)
             {
                 _parentLayers.Add(layer);
@@ -373,25 +373,6 @@ namespace LottieUWP
         public virtual void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
         {
             // Do nothing
-        }
-    }
-
-    public class PorterDuff
-    {
-        public enum Mode
-        {
-            Clear,
-            DstIn,
-            DstOut,
-            SrcAtop
-        }
-    }
-
-    public class PorterDuffXfermode
-    {
-        public PorterDuffXfermode(object clear)
-        {
-            
         }
     }
 }

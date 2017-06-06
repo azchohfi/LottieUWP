@@ -46,25 +46,25 @@ namespace LottieUWP
             get
             {
                 _matrix.Reset();
-                PointF position = _position.Value;
+                var position = _position.Value;
                 if (position != null && (position.X != 0 || position.Y != 0))
                 {
                     _matrix = MatrixExt.PreTranslate(_matrix, position.X, position.Y);
                 }
 
-                float rotation = _rotation.Value.Value;
+                var rotation = _rotation.Value.Value;
                 if (rotation != 0f)
                 {
                     _matrix = MatrixExt.PreRotate(_matrix, rotation);
                 }
 
-                ScaleXy scaleTransform = _scale.Value;
+                var scaleTransform = _scale.Value;
                 if (scaleTransform.ScaleX != 1f || scaleTransform.ScaleY != 1f)
                 {
                     _matrix = MatrixExt.PreScale(_matrix, scaleTransform.ScaleX, scaleTransform.ScaleY);
                 }
 
-                PointF anchorPoint = _anchorPoint.Value;
+                var anchorPoint = _anchorPoint.Value;
                 if (anchorPoint.X != 0 || anchorPoint.Y != 0)
                 {
                     _matrix = MatrixExt.PreTranslate(_matrix, -anchorPoint.X, -anchorPoint.Y);

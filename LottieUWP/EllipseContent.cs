@@ -42,10 +42,9 @@ namespace LottieUWP
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < contentsBefore.Count; i++)
+            for (var i = 0; i < contentsBefore.Count; i++)
             {
-                var trimPathContent = contentsBefore[i] as TrimPathContent;
-                if (trimPathContent != null && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
+                if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
                     _trimPath.AddListener(this);
@@ -67,13 +66,13 @@ namespace LottieUWP
                 _path.Reset();
 
 
-                PointF size = _sizeAnimation.Value;
-                float halfWidth = size.X / 2f;
-                float halfHeight = size.Y / 2f;
+                var size = _sizeAnimation.Value;
+                var halfWidth = size.X / 2f;
+                var halfHeight = size.Y / 2f;
                 // TODO: handle bounds
 
-                float cpW = halfWidth * EllipseControlPointPercentage;
-                float cpH = halfHeight * EllipseControlPointPercentage;
+                var cpW = halfWidth * EllipseControlPointPercentage;
+                var cpH = halfHeight * EllipseControlPointPercentage;
 
                 _path.Reset();
                 _path.MoveTo(0, -halfHeight);
@@ -82,7 +81,7 @@ namespace LottieUWP
                 _path.CubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
                 _path.CubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
 
-                PointF position = _positionAnimation.Value;
+                var position = _positionAnimation.Value;
                 _path.Offset(position.X, position.Y);
 
                 _path.Close();

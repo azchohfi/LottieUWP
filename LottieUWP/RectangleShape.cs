@@ -16,7 +16,7 @@ namespace LottieUWP
             _cornerRadius = cornerRadius;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static RectangleShape NewInstance(JsonObject json, LottieComposition composition)
             {

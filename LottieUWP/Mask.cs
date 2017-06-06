@@ -20,7 +20,7 @@ namespace LottieUWP
             MaskPath = maskPath;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static Mask NewMask(JsonObject json, LottieComposition composition)
             {
@@ -41,7 +41,7 @@ namespace LottieUWP
                         break;
                 }
 
-                AnimatableShapeValue maskPath = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("pt"), composition);
+                var maskPath = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("pt"), composition);
                 // TODO: use this
                 // JSONObject opacityJson = json.GetNamedObject("o");
                 // if (opacityJson != null) {

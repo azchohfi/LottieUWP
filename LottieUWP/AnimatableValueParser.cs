@@ -25,8 +25,8 @@ namespace LottieUWP
 
         internal virtual Result ParseJson()
         {
-            IList<IKeyframe<T>> keyframes = ParseKeyframes();
-            T initialValue = ParseInitialValue(keyframes);
+            var keyframes = ParseKeyframes();
+            var initialValue = ParseInitialValue(keyframes);
             return new Result(keyframes, initialValue);
         }
 

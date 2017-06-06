@@ -29,11 +29,11 @@ namespace LottieUWP
             return "AnimatableColorValue{" + "initialValue=" + _initialValue + '}';
         }
 
-        internal sealed class Factory
+        internal static class Factory
         {
             internal static AnimatableColorValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                AnimatableValueParser<Color>.Result result = AnimatableValueParser<Color>.NewInstance(json, 1f, composition, ColorFactory.Instance).ParseJson();
+                var result = AnimatableValueParser<Color>.NewInstance(json, 1f, composition, ColorFactory.Instance).ParseJson();
                 return new AnimatableColorValue(result.Keyframes, result.InitialValue);
             }
         }

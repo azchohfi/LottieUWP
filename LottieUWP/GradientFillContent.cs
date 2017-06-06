@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Windows.Foundation;
 using MathNet.Numerics.LinearAlgebra.Single;
-using Color = Windows.UI.Color;
 
 namespace LottieUWP
 {
@@ -60,10 +59,9 @@ namespace LottieUWP
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < contentsAfter.Count; i++)
+            for (var i = 0; i < contentsAfter.Count; i++)
             {
-                var pathContent = contentsAfter[i] as IPathContent;
-                if (pathContent != null)
+                if (contentsAfter[i] is IPathContent pathContent)
                 {
                     _paths.Add(pathContent);
                 }
@@ -73,7 +71,7 @@ namespace LottieUWP
         public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
         {
             _path.Reset();
-            for (int i = 0; i < _paths.Count; i++)
+            for (var i = 0; i < _paths.Count; i++)
             {
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
@@ -93,7 +91,7 @@ namespace LottieUWP
             shader.LocalMatrix = _shaderMatrix;
             _paint.Shader = shader;
 
-            int alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
+            var alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
 
             canvas.DrawPath(_path, _paint);
@@ -102,7 +100,7 @@ namespace LottieUWP
         public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
         {
             _path.Reset();
-            for (int i = 0; i < _paths.Count; i++)
+            for (var i = 0; i < _paths.Count; i++)
             {
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
@@ -123,17 +121,16 @@ namespace LottieUWP
         {
             get
             {
-                int gradientHash = GradientHash;
-                LinearGradient gradient;
-                if (_linearGradientCache.TryGetValue(gradientHash, out gradient))
+                var gradientHash = GradientHash;
+                if (_linearGradientCache.TryGetValue(gradientHash, out LinearGradient gradient))
                 {
                     return gradient;
                 }
-                PointF startPoint = _startPointAnimation.Value;
-                PointF endPoint = _endPointAnimation.Value;
-                GradientColor gradientColor = _colorAnimation.Value;
-                Color[] colors = gradientColor.Colors;
-                float[] positions = gradientColor.Positions;
+                var startPoint = _startPointAnimation.Value;
+                var endPoint = _endPointAnimation.Value;
+                var gradientColor = _colorAnimation.Value;
+                var colors = gradientColor.Colors;
+                var positions = gradientColor.Positions;
                 gradient = new LinearGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, colors, positions, Shader.TileMode.Clamp);
                 _linearGradientCache.Add(gradientHash, gradient);
                 return gradient;
@@ -144,22 +141,21 @@ namespace LottieUWP
         {
             get
             {
-                int gradientHash = GradientHash;
-                RadialGradient gradient;
-                if (_radialGradientCache.TryGetValue(gradientHash, out gradient))
+                var gradientHash = GradientHash;
+                if (_radialGradientCache.TryGetValue(gradientHash, out RadialGradient gradient))
                 {
                     return gradient;
                 }
-                PointF startPoint = _startPointAnimation.Value;
-                PointF endPoint = _endPointAnimation.Value;
-                GradientColor gradientColor = _colorAnimation.Value;
-                Color[] colors = gradientColor.Colors;
-                float[] positions = gradientColor.Positions;
-                float x0 = startPoint.X;
-                float y0 = startPoint.Y;
-                float x1 = endPoint.X;
-                float y1 = endPoint.Y;
-                float r = (float)MathExt.Hypot(x1 - x0, y1 - y0);
+                var startPoint = _startPointAnimation.Value;
+                var endPoint = _endPointAnimation.Value;
+                var gradientColor = _colorAnimation.Value;
+                var colors = gradientColor.Colors;
+                var positions = gradientColor.Positions;
+                var x0 = startPoint.X;
+                var y0 = startPoint.Y;
+                var x1 = endPoint.X;
+                var y1 = endPoint.Y;
+                var r = (float)MathExt.Hypot(x1 - x0, y1 - y0);
                 gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.Clamp);
                 _radialGradientCache.Add(gradientHash, gradient);
                 return gradient;
@@ -170,10 +166,10 @@ namespace LottieUWP
         {
             get
             {
-                int startPointProgress = (int)Math.Round(_startPointAnimation.Progress * _cacheSteps);
-                int endPointProgress = (int)Math.Round(_endPointAnimation.Progress * _cacheSteps);
-                int colorProgress = (int)Math.Round(_colorAnimation.Progress * _cacheSteps);
-                int hash = 17;
+                var startPointProgress = (int)Math.Round(_startPointAnimation.Progress * _cacheSteps);
+                var endPointProgress = (int)Math.Round(_endPointAnimation.Progress * _cacheSteps);
+                var colorProgress = (int)Math.Round(_colorAnimation.Progress * _cacheSteps);
+                var hash = 17;
                 if (startPointProgress != 0)
                     hash = hash * 31 * startPointProgress;
                 if (endPointProgress != 0)

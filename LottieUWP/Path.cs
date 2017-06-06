@@ -33,7 +33,7 @@ namespace LottieUWP
 
         public void Transform(DenseMatrix matrix)
         {
-            for (int j = 0; j < Points.Count; j++)
+            for (var j = 0; j < Points.Count; j++)
             {
                 TransformContour(matrix, Points[j]);
             }
@@ -49,7 +49,7 @@ namespace LottieUWP
         private static void TransformContour(DenseMatrix matrix, List<PointF> contour)
         {
             var denseMatrix = new DenseMatrix(3, contour.Count);
-            for (int i = 0; i < contour.Count; i++)
+            for (var i = 0; i < contour.Count; i++)
             {
                 denseMatrix[0, i] = contour[i].X;
                 denseMatrix[1, i] = contour[i].Y;
@@ -57,7 +57,7 @@ namespace LottieUWP
             }
             var multiplied = matrix * denseMatrix;
 
-            for (int i = 0; i < contour.Count; i++)
+            for (var i = 0; i < contour.Count; i++)
                 contour[i].Set(multiplied[0, i], multiplied[1, i]);
         }
 
@@ -122,9 +122,9 @@ namespace LottieUWP
 
         public void Offset(float dx, float dy)
         {
-            for (int i = 0; i < Points.Count; i++)
+            for (var i = 0; i < Points.Count; i++)
             {
-                for (int j = 0; j < Points[i].Count; j++)
+                for (var j = 0; j < Points[i].Count; j++)
                 {
                     Points[i][j].X += dx;
                     Points[i][j].Y += dy;

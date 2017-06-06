@@ -27,11 +27,11 @@ namespace LottieUWP
             return _convertTypePath;
         }
 
-        internal sealed class Factory
+        internal static class Factory
         {
             internal static AnimatableShapeValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                AnimatableValueParser<ShapeData>.Result result = AnimatableValueParser<ShapeData>.NewInstance(json, composition.DpScale, composition, ShapeData.Factory.Instance).ParseJson();
+                var result = AnimatableValueParser<ShapeData>.NewInstance(json, composition.DpScale, composition, ShapeData.Factory.Instance).ParseJson();
                 return new AnimatableShapeValue(result.Keyframes, result.InitialValue);
             }
         }

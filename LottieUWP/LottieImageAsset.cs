@@ -15,7 +15,7 @@ namespace LottieUWP
             FileName = fileName;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static LottieImageAsset NewInstance(JsonObject imageJson)
             {

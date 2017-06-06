@@ -38,8 +38,7 @@ namespace LottieUWP
 
         internal virtual Layer LayerModelForId(long id)
         {
-            Layer layer;
-            _layerMap.TryGetValue(id, out layer);
+            _layerMap.TryGetValue(id, out Layer layer);
             return layer;
         }
 
@@ -49,7 +48,7 @@ namespace LottieUWP
         {
             get
             {
-                long frameDuration = _endFrame - _startFrame;
+                var frameDuration = _endFrame - _startFrame;
                 return (long)(frameDuration / (float)_frameRate * 1000);
             }
         }
@@ -76,24 +75,20 @@ namespace LottieUWP
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("LottieComposition:\n");
-            foreach (Layer layer in _layers)
+            var sb = new StringBuilder("LottieComposition:\n");
+            foreach (var layer in _layers)
             {
                 sb.Append(layer.ToString("\t"));
             }
             return sb.ToString();
         }
 
-        public class Factory
+        public static class Factory
         {
-            internal Factory()
-            {
-            }
-
             /// <summary>
             /// Loads a composition from a file stored in /assets.
             /// </summary>
-            public static async Task<LottieComposition> FromAssetFileNameAsync(string fileName, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken)
+            public static async Task<LottieComposition> FromAssetFileNameAsync(string fileName, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken = default(CancellationToken))
             {
                 Stream stream;
                 try
@@ -113,9 +108,9 @@ namespace LottieUWP
             /// ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
             /// </para>
             /// </summary>
-            public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken)
+            public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken = default(CancellationToken))
             {
-                FileCompositionLoader loader = new FileCompositionLoader(loadedListener, cancellationToken);
+                var loader = new FileCompositionLoader(loadedListener, cancellationToken);
                 return await loader.Execute(stream);
             }
 
@@ -137,9 +132,9 @@ namespace LottieUWP
             /// Loads a composition from a raw json object. This is useful for animations loaded from the
             /// network.
             /// </summary>
-            public static async Task<LottieComposition> FromJsonAsync(JsonObject json, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken)
+            public static async Task<LottieComposition> FromJsonAsync(JsonObject json, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken = default(CancellationToken))
             {
-                JsonCompositionLoader loader = new JsonCompositionLoader(loadedListener, cancellationToken);
+                var loader = new JsonCompositionLoader(loadedListener, cancellationToken);
                 return await loader.Execute(json);
             }
 
@@ -147,22 +142,21 @@ namespace LottieUWP
             {
                 try
                 {
-                    // TODO: It's not correct to use available() to allocate the byte array.
-                    long size = stream.Length;
-                    byte[] buffer = new byte[size];
-                    //noinspection ResultOfMethodCallIgnored
+                    var size = stream.Length;
+                    var buffer = new byte[size];
+                    
                     stream.Read(buffer, 0, buffer.Length);
-                    string json = StringHelperClass.NewString(buffer, "UTF-8");
+                    var json = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
                     var jsonObject = JsonObject.Parse(json);
                     return FromJsonSync(resolutionScale, jsonObject);
                 }
                 catch (IOException e)
                 {
-                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to find file.", e), L.Tag);
+                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to find file.", e), "LOTTIE");
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to load JSON.", e), L.Tag);
+                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to load JSON.", e), "LOTTIE");
                 }
                 finally
                 {
@@ -175,21 +169,21 @@ namespace LottieUWP
             internal static LottieComposition FromJsonSync(ResolutionScale resolutionScale, JsonObject json)
             {
                 Rect bounds;
-                float scale = (float)resolutionScale / 100.0f;
-                int width = (int)json.GetNamedNumber("w", -1);
-                int height = (int)json.GetNamedNumber("h", -1);
+                var scale = (float)resolutionScale / 100.0f;
+                var width = (int)json.GetNamedNumber("w", -1);
+                var height = (int)json.GetNamedNumber("h", -1);
 
                 if (width != -1 && height != -1)
                 {
-                    int scaledWidth = (int)(width * scale);
-                    int scaledHeight = (int)(height * scale);
+                    var scaledWidth = (int)(width * scale);
+                    var scaledHeight = (int)(height * scale);
                     bounds = new Rect(0, 0, scaledWidth, scaledHeight);
                 }
 
-                long startFrame = (long)json.GetNamedNumber("ip", 0);
-                long endFrame = (long)json.GetNamedNumber("op", 0);
-                int frameRate = (int)json.GetNamedNumber("fr", 0);
-                LottieComposition composition = new LottieComposition(bounds, startFrame, endFrame, frameRate, scale);
+                var startFrame = (long)json.GetNamedNumber("ip", 0);
+                var endFrame = (long)json.GetNamedNumber("op", 0);
+                var frameRate = (int)json.GetNamedNumber("fr", 0);
+                var composition = new LottieComposition(bounds, startFrame, endFrame, frameRate, scale);
                 var assetsJson = json.GetNamedArray("assets", null);
                 ParseImages(assetsJson, composition);
                 ParsePrecomps(assetsJson, composition);
@@ -208,10 +202,10 @@ namespace LottieUWP
                 {
                     return;
                 }
-                int length = jsonLayers.Count;
-                for (int i = 0; i < length; i++)
+                var length = jsonLayers.Count;
+                for (var i = 0; i < length; i++)
                 {
-                    Layer layer = Layer.Factory.NewInstance(jsonLayers[i].GetObject(), composition);
+                    var layer = Layer.Factory.NewInstance(jsonLayers[i].GetObject(), composition);
                     AddLayer(composition._layers, composition._layerMap, layer);
                 }
             }
@@ -222,8 +216,8 @@ namespace LottieUWP
                 {
                     return;
                 }
-                int length = assetsJson.Count;
-                for (int i = 0; i < length; i++)
+                var length = assetsJson.Count;
+                for (var i = 0; i < length; i++)
                 {
                     var assetJson = assetsJson[i].GetObject();
                     var layersJson = assetJson.GetNamedArray("layers", null);
@@ -232,14 +226,14 @@ namespace LottieUWP
                         continue;
                     }
                     IList<Layer> layers = new List<Layer>(layersJson.Count);
-                    Dictionary<long, Layer> layerMap = new Dictionary<long, Layer>();
-                    for (int j = 0; j < layersJson.Count; j++)
+                    var layerMap = new Dictionary<long, Layer>();
+                    for (var j = 0; j < layersJson.Count; j++)
                     {
-                        Layer layer = Layer.Factory.NewInstance(layersJson[j].GetObject(), composition);
+                        var layer = Layer.Factory.NewInstance(layersJson[j].GetObject(), composition);
                         layerMap.Add(layer.Id, layer);
                         layers.Add(layer);
                     }
-                    string id = assetJson.GetNamedString("id");
+                    var id = assetJson.GetNamedString("id");
                     composition._precomps[id] = layers;
                 }
             }
@@ -250,15 +244,15 @@ namespace LottieUWP
                 {
                     return;
                 }
-                int length = assetsJson.Count;
-                for (int i = 0; i < length; i++)
+                var length = assetsJson.Count;
+                for (var i = 0; i < length; i++)
                 {
                     var assetJson = assetsJson[i].GetObject();
                     if (!assetJson.ContainsKey("p"))
                     {
                         continue;
                     }
-                    LottieImageAsset image = LottieImageAsset.Factory.NewInstance(assetJson);
+                    var image = LottieImageAsset.Factory.NewInstance(assetJson);
                     composition._images[image.Id] = image;
                 }
             }

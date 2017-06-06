@@ -48,7 +48,7 @@ namespace LottieUWP
         {
             if (path.FillType == PathFillType.EvenOdd)
             {
-                int[][] polygons = path.Points
+                var polygons = path.Points
                     .Select(poly => poly.Select(p => new[] {(int) p.X, (int) p.Y}).SelectMany(p => p).ToArray())
                     .ToArray();
                 Bitmap.FillPolygonsEvenOdd(polygons, paint.Color);
@@ -56,7 +56,7 @@ namespace LottieUWP
             else
             {
                 var points = new List<int>();
-                for (int i = 0; i < path.Points.Count; i++)
+                for (var i = 0; i < path.Points.Count; i++)
                 {
                     points.AddRange(path.Points[i].Select(p => new[] {(int) p.X, (int) p.Y}).SelectMany(p => p));
                     Bitmap.FillPolygon(path.Points[i].Select(p => new[] { (int)p.X, (int)p.Y }).SelectMany(p => p).ToArray(), paint.Color);

@@ -19,7 +19,7 @@ namespace LottieUWP
 
         public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
         {
-            WriteableBitmap bitmap = Bitmap;
+            var bitmap = Bitmap;
             if (bitmap == null)
             {
                 return;
@@ -36,7 +36,7 @@ namespace LottieUWP
         public override void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
         {
             base.GetBounds(out outBounds, parentMatrix);
-            WriteableBitmap bitmap = Bitmap;
+            var bitmap = Bitmap;
             if (bitmap != null)
             {
                 RectExt.Set(ref outBounds, outBounds.Left, outBounds.Top, Math.Min(outBounds.Right, bitmap.PixelWidth), Math.Min(outBounds.Bottom, bitmap.PixelHeight));
@@ -48,7 +48,7 @@ namespace LottieUWP
         {
             get
             {
-                string refId = _layerModel.RefId;
+                var refId = _layerModel.RefId;
                 return LottieDrawable.GetImageAsset(refId);
             }
         }

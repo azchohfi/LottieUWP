@@ -61,7 +61,7 @@ namespace LottieUWP
                 }
                 _progress = value;
 
-                for (int i = 0; i < Listeners.Count; i++)
+                for (var i = 0; i < Listeners.Count; i++)
                 {
                     Listeners[i].OnValueChanged();
                 }
@@ -83,8 +83,8 @@ namespace LottieUWP
                     return _cachedKeyframe;
                 }
 
-                int i = 0;
-                IKeyframe<TK> keyframe = _keyframes[0];
+                var i = 0;
+                var keyframe = _keyframes[0];
                 if (_progress < keyframe.StartProgress)
                 {
                     _cachedKeyframe = keyframe;
@@ -114,14 +114,14 @@ namespace LottieUWP
                     return 0f;
                 }
 
-                IKeyframe<TK> keyframe = CurrentKeyframe;
+                var keyframe = CurrentKeyframe;
                 if (keyframe.Static)
                 {
                     return 0f;
                 }
-                float progressIntoFrame = _progress - keyframe.StartProgress;
-                float keyframeProgress = keyframe.EndProgress - keyframe.StartProgress;
-                //noinspection ConstantConditions
+                var progressIntoFrame = _progress - keyframe.StartProgress;
+                var keyframeProgress = keyframe.EndProgress - keyframe.StartProgress;
+
                 return keyframe.Interpolator.GetInterpolation(progressIntoFrame / keyframeProgress);
             }
         }

@@ -26,7 +26,7 @@ namespace LottieUWP
                 throw new System.ArgumentException("Cannot interpolate between gradients. Lengths vary (" + gc1._colors.Length + " vs " + gc2._colors.Length + ")");
             }
 
-            for (int i = 0; i < gc1._colors.Length; i++)
+            for (var i = 0; i < gc1._colors.Length; i++)
             {
                 _positions[i] = MiscUtils.Lerp(gc1._positions[i], gc2._positions[i], progress);
 

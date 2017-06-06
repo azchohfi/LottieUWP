@@ -17,8 +17,8 @@ namespace LottieUWP
                 throw new System.InvalidOperationException("Missing values for keyframe.");
             }
 
-            PointF startPoint = keyframe.StartValue;
-            PointF endPoint = keyframe.EndValue;
+            var startPoint = keyframe.StartValue;
+            var endPoint = keyframe.EndValue;
 
             _point.Set(startPoint.X + keyframeProgress * (endPoint.X - startPoint.X), startPoint.Y + keyframeProgress * (endPoint.Y - startPoint.Y));
             return _point;

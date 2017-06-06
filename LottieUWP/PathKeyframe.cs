@@ -14,7 +14,7 @@ namespace LottieUWP
         {
             internal static PathKeyframe NewInstance(JsonObject json, LottieComposition composition, IAnimatableValueFactory<PointF> valueFactory)
             {
-                Keyframe<PointF> keyframe = KeyFrameFactory.NewInstance(json, composition, composition.DpScale, valueFactory);
+                var keyframe = KeyFrameFactory.NewInstance(json, composition, composition.DpScale, valueFactory);
                 PointF cp1 = null;
                 PointF cp2 = null;
                 var tiJson = json.GetNamedArray("ti", null);
@@ -25,10 +25,10 @@ namespace LottieUWP
                     cp2 = JsonUtils.PointFromJsonArray(tiJson, composition.DpScale);
                 }
 
-                PathKeyframe pathKeyframe = new PathKeyframe(composition, keyframe.StartValue, keyframe.EndValue, keyframe.Interpolator, keyframe.StartFrame, keyframe.EndFrame);
+                var pathKeyframe = new PathKeyframe(composition, keyframe.StartValue, keyframe.EndValue, keyframe.Interpolator, keyframe.StartFrame, keyframe.EndFrame);
 
-                bool equals = keyframe.EndValue != null && keyframe.StartValue != null && keyframe.StartValue.Equals(keyframe.EndValue);
-                //noinspection ConstantConditions
+                var equals = keyframe.EndValue != null && keyframe.StartValue != null && keyframe.StartValue.Equals(keyframe.EndValue);
+                
                 if (pathKeyframe.EndValue != null && !equals)
                 {
                     pathKeyframe._path = Utils.CreatePath(keyframe.StartValue, keyframe.EndValue, cp1, cp2);
@@ -38,7 +38,8 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// This will be null if the startValue and endValue are the same. </summary>
+        /// This will be null if the startValue and endValue are the same.
+        /// </summary>
         internal virtual Path Path => _path;
     }
 }

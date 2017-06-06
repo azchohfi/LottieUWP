@@ -4,8 +4,13 @@ using Windows.UI.Xaml;
 
 namespace LottieUWP
 {
-    public abstract partial class Animator
+    public abstract class Animator
     {
+        public interface IAnimatorListener
+        {
+
+        }
+
         private readonly List<IAnimatorListener> _listeners = new List<IAnimatorListener>();
         private readonly DispatcherTimer _timer;
         private bool _isReverse;

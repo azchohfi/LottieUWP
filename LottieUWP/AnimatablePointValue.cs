@@ -23,11 +23,11 @@ namespace LottieUWP
             return new PointKeyframeAnimation(Keyframes);
         }
 
-        internal sealed class Factory
+        internal static class Factory
         {
             internal static AnimatablePointValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                AnimatableValueParser<PointF>.Result result = AnimatableValueParser<PointF>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance).ParseJson();
+                var result = AnimatableValueParser<PointF>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance).ParseJson();
                 return new AnimatablePointValue(result.Keyframes, result.InitialValue);
             }
         }

@@ -13,8 +13,8 @@ namespace LottieUWP
 
         public override Path GetValue(IKeyframe<ShapeData> keyframe, float keyframeProgress)
         {
-            ShapeData startShapeData = keyframe.StartValue;
-            ShapeData endShapeData = keyframe.EndValue;
+            var startShapeData = keyframe.StartValue;
+            var endShapeData = keyframe.EndValue;
 
             _tempShapeData.InterpolateBetween(startShapeData, endShapeData, keyframeProgress);
             MiscUtils.GetPathFromData(_tempShapeData, _tempPath);

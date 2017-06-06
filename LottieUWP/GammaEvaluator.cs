@@ -65,10 +65,10 @@ namespace LottieUWP
             endB = EOCF_sRGB(endB);
 
             // compute the interpolated color in linear space
-            float a = startA + fraction * (endA - startA);
-            float r = startR + fraction * (endR - startR);
-            float g = startG + fraction * (endG - startG);
-            float b = startB + fraction * (endB - startB);
+            var a = startA + fraction * (endA - startA);
+            var r = startR + fraction * (endR - startR);
+            var g = startG + fraction * (endG - startG);
+            var b = startB + fraction * (endB - startB);
 
             // convert back to sRGB in the [0..255] range
             a = a * 255.0f;

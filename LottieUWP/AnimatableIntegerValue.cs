@@ -32,7 +32,7 @@ namespace LottieUWP
 
         public override int? InitialValue => _initialValue;
 
-        internal sealed class Factory
+        internal static class Factory
         {
             internal static AnimatableIntegerValue NewInstance()
             {
@@ -43,10 +43,10 @@ namespace LottieUWP
             {
                 if (json.ContainsKey("x"))
                 {
-                    Debug.WriteLine("Animation has expressions which are not supported.", L.Tag);
+                    Debug.WriteLine("Animation has expressions which are not supported.", "LOTTIE");
                 }
-                AnimatableValueParser<int?>.Result result = AnimatableValueParser<int?>.NewInstance(json, 1, composition, ValueFactory.Instance).ParseJson();
-                int? initialValue = result.InitialValue;
+                var result = AnimatableValueParser<int?>.NewInstance(json, 1, composition, ValueFactory.Instance).ParseJson();
+                var initialValue = result.InitialValue;
                 return new AnimatableIntegerValue(result.Keyframes, initialValue);
             }
         }

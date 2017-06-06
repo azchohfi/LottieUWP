@@ -16,13 +16,13 @@ namespace LottieUWP
 
         internal CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, IList<Layer> layerModels, LottieComposition composition) : base(lottieDrawable, layerModel)
         {
-            Dictionary<long, BaseLayer> layerMap = new Dictionary<long, BaseLayer>(composition.Layers.Count);
+            var layerMap = new Dictionary<long, BaseLayer>(composition.Layers.Count);
 
             BaseLayer mattedLayer = null;
-            for (int i = layerModels.Count - 1; i >= 0; i--)
+            for (var i = layerModels.Count - 1; i >= 0; i--)
             {
-                Layer lm = layerModels[i];
-                BaseLayer layer = ForModel(lm, lottieDrawable, composition);
+                var lm = layerModels[i];
+                var layer = ForModel(lm, lottieDrawable, composition);
                 if (layer == null)
                 {
                     continue;
@@ -48,7 +48,7 @@ namespace LottieUWP
 
             foreach (var layer in layerMap)
             {
-                BaseLayer layerView = layer.Value;
+                var layerView = layer.Value;
                 if (layerMap.TryGetValue(layerView.LayerModel.ParentId, out BaseLayer parentLayer))
                 {
                     layerView.ParentLayer = parentLayer;
@@ -62,9 +62,9 @@ namespace LottieUWP
             RectExt.Set(ref _newClipRect, 0, 0, _layerModel.PreCompWidth, _layerModel.PreCompHeight);
             parentMatrix.MapRect(ref _newClipRect);
 
-            for (int i = _layers.Count - 1; i >= 0; i--)
+            for (var i = _layers.Count - 1; i >= 0; i--)
             {
-                bool nonEmptyClip = true;
+                var nonEmptyClip = true;
                 if (!_newClipRect.IsEmpty)
                 {
                     nonEmptyClip = canvas.ClipRect(_newClipRect);
@@ -84,9 +84,9 @@ namespace LottieUWP
         {
             base.GetBounds(out outBounds, parentMatrix);
             RectExt.Set(ref Rect, 0, 0, 0, 0);
-            for (int i = _layers.Count - 1; i >= 0; i--)
+            for (var i = _layers.Count - 1; i >= 0; i--)
             {
-                BaseLayer content = _layers[i];
+                var content = _layers[i];
                 content.GetBounds(out Rect, BoundsMatrix);
                 if (outBounds.IsEmpty)
                 {
@@ -105,7 +105,7 @@ namespace LottieUWP
             {
                 base.Progress = value;
                 value -= _layerModel.StartProgress;
-                for (int i = _layers.Count - 1; i >= 0; i--)
+                for (var i = _layers.Count - 1; i >= 0; i--)
                 {
                     _layers[i].Progress = value;
                 }
@@ -116,9 +116,9 @@ namespace LottieUWP
         {
             if (_hasMasks == null)
             {
-                for (int i = _layers.Count - 1; i >= 0; i--)
+                for (var i = _layers.Count - 1; i >= 0; i--)
                 {
-                    BaseLayer layer = _layers[i];
+                    var layer = _layers[i];
                     if (layer is ShapeLayer)
                     {
                         if (layer.HasMasksOnThisLayer())
@@ -143,7 +143,7 @@ namespace LottieUWP
                     return true;
                 }
 
-                for (int i = _layers.Count - 1; i >= 0; i--)
+                for (var i = _layers.Count - 1; i >= 0; i--)
                 {
                     if (_layers[i].HasMatteOnThisLayer())
                     {
@@ -158,10 +158,10 @@ namespace LottieUWP
 
         public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
         {
-            for (int i = 0; i < _layers.Count; ++i)
+            for (var i = 0; i < _layers.Count; ++i)
             {
-                BaseLayer layer = _layers[i];
-                string name = layer.LayerModel.Name;
+                var layer = _layers[i];
+                var name = layer.LayerModel.Name;
                 if (string.IsNullOrEmpty(layerName))
                 {
                     layer.AddColorFilter(null, null, colorFilter);

@@ -50,30 +50,30 @@ namespace LottieUWP
             }
             if (_curves.Count == 0)
             {
-                for (int i = shapeData1.Curves.Count - 1; i >= 0; i--)
+                for (var i = shapeData1.Curves.Count - 1; i >= 0; i--)
                 {
                     _curves.Add(new CubicCurveData());
                 }
             }
 
-            PointF initialPoint1 = shapeData1.InitialPoint;
-            PointF initialPoint2 = shapeData2.InitialPoint;
+            var initialPoint1 = shapeData1.InitialPoint;
+            var initialPoint2 = shapeData2.InitialPoint;
 
 
             SetInitialPoint(MiscUtils.Lerp(initialPoint1.X, initialPoint2.X, percentage), MiscUtils.Lerp(initialPoint1.Y, initialPoint2.Y, percentage));
 
-            for (int i = _curves.Count - 1; i >= 0; i--)
+            for (var i = _curves.Count - 1; i >= 0; i--)
             {
-                CubicCurveData curve1 = shapeData1.Curves[i];
-                CubicCurveData curve2 = shapeData2.Curves[i];
+                var curve1 = shapeData1.Curves[i];
+                var curve2 = shapeData2.Curves[i];
 
-                PointF cp11 = curve1.ControlPoint1;
-                PointF cp21 = curve1.ControlPoint2;
-                PointF vertex1 = curve1.Vertex;
+                var cp11 = curve1.ControlPoint1;
+                var cp21 = curve1.ControlPoint2;
+                var vertex1 = curve1.Vertex;
 
-                PointF cp12 = curve2.ControlPoint1;
-                PointF cp22 = curve2.ControlPoint2;
-                PointF vertex2 = curve2.Vertex;
+                var cp12 = curve2.ControlPoint1;
+                var cp22 = curve2.ControlPoint2;
+                var vertex2 = curve2.Vertex;
 
                 _curves[i].SetControlPoint1(MiscUtils.Lerp(cp11.X, cp12.X, percentage), MiscUtils.Lerp(cp11.Y, cp12.Y, percentage));
                 _curves[i].SetControlPoint2(MiscUtils.Lerp(cp21.X, cp22.X, percentage), MiscUtils.Lerp(cp21.Y, cp22.Y, percentage));
@@ -114,7 +114,7 @@ namespace LottieUWP
                 var pointsArray = pointsData.GetNamedArray("v", null);
                 var inTangents = pointsData.GetNamedArray("i", null);
                 var outTangents = pointsData.GetNamedArray("o", null);
-                bool closed = pointsData.GetNamedBoolean("c", false);
+                var closed = pointsData.GetNamedBoolean("c", false);
 
                 if (pointsArray == null || inTangents == null || outTangents == null || pointsArray.Count != inTangents.Count || pointsArray.Count != outTangents.Count)
                 {
@@ -125,21 +125,21 @@ namespace LottieUWP
                     return new ShapeData(new PointF(), false, new List<CubicCurveData>());
                 }
 
-                int length = pointsArray.Count;
-                PointF vertex = VertexAtIndex(0, pointsArray);
+                var length = pointsArray.Count;
+                var vertex = VertexAtIndex(0, pointsArray);
                 vertex.X *= scale;
                 vertex.Y *= scale;
-                PointF initialPoint = vertex;
+                var initialPoint = vertex;
                 IList<CubicCurveData> curves = new List<CubicCurveData>(length);
 
-                for (int i = 1; i < length; i++)
+                for (var i = 1; i < length; i++)
                 {
                     vertex = VertexAtIndex(i, pointsArray);
-                    PointF previousVertex = VertexAtIndex(i - 1, pointsArray);
-                    PointF cp1 = VertexAtIndex(i - 1, outTangents);
-                    PointF cp2 = VertexAtIndex(i, inTangents);
-                    PointF shapeCp1 = MiscUtils.AddPoints(previousVertex, cp1);
-                    PointF shapeCp2 = MiscUtils.AddPoints(vertex, cp2);
+                    var previousVertex = VertexAtIndex(i - 1, pointsArray);
+                    var cp1 = VertexAtIndex(i - 1, outTangents);
+                    var cp2 = VertexAtIndex(i, inTangents);
+                    var shapeCp1 = MiscUtils.AddPoints(previousVertex, cp1);
+                    var shapeCp2 = MiscUtils.AddPoints(vertex, cp2);
 
                     shapeCp1.X *= scale;
                     shapeCp1.Y *= scale;
@@ -154,12 +154,12 @@ namespace LottieUWP
                 if (closed)
                 {
                     vertex = VertexAtIndex(0, pointsArray);
-                    PointF previousVertex = VertexAtIndex(length - 1, pointsArray);
-                    PointF cp1 = VertexAtIndex(length - 1, outTangents);
-                    PointF cp2 = VertexAtIndex(0, inTangents);
+                    var previousVertex = VertexAtIndex(length - 1, pointsArray);
+                    var cp1 = VertexAtIndex(length - 1, outTangents);
+                    var cp2 = VertexAtIndex(0, inTangents);
 
-                    PointF shapeCp1 = MiscUtils.AddPoints(previousVertex, cp1);
-                    PointF shapeCp2 = MiscUtils.AddPoints(vertex, cp2);
+                    var shapeCp1 = MiscUtils.AddPoints(previousVertex, cp1);
+                    var shapeCp2 = MiscUtils.AddPoints(vertex, cp2);
 
                     if (scale != 1f)
                     {

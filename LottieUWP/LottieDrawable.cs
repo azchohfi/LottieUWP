@@ -19,7 +19,6 @@ namespace LottieUWP
     /// </summary>
     public class LottieDrawable
     {
-        private static readonly string Tag = typeof(LottieDrawable).Name;
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private LottieComposition _composition;
         private readonly ValueAnimator _animator = ValueAnimator.OfFloat(0f, 1f);
@@ -197,7 +196,7 @@ namespace LottieUWP
                 return;
             }
 
-            foreach (ColorFilterData data in _colorFilterData)
+            foreach (var data in _colorFilterData)
             {
                 _compositionLayer.AddColorFilter(data.LayerName, data.ContentName, data._colorFilter);
             }
@@ -288,7 +287,7 @@ namespace LottieUWP
         /// </summary>
         private void AddColorFilterInternal(string layerName, string contentName, ColorFilter colorFilter)
         {
-            ColorFilterData data = new ColorFilterData(layerName, contentName, colorFilter);
+            var data = new ColorFilterData(layerName, contentName, colorFilter);
             if (colorFilter == null && _colorFilterData.Contains(data))
             {
                 _colorFilterData.Remove(data);
@@ -315,7 +314,7 @@ namespace LottieUWP
             {
                 return;
             }
-            float scale = _scale;
+            var scale = _scale;
             if (_compositionLayer.HasMatte())
             {
                 scale = Math.Min(_scale, GetMaxScale(canvas));
@@ -357,7 +356,7 @@ namespace LottieUWP
                 _reverseAnimationWhenCompositionAdded = false;
                 return;
             }
-            long playTime = setStartTime ? (long)(_progress * _animator.Duration) : 0;
+            var playTime = setStartTime ? (long)(_progress * _animator.Duration) : 0;
             _animator.Start();
             if (setStartTime)
             {
@@ -473,8 +472,8 @@ namespace LottieUWP
             Height = (int)(_composition.Bounds.Height * _scale);
         }
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
         public virtual void CancelAnimation()
         {
@@ -520,13 +519,13 @@ namespace LottieUWP
 
         public virtual WriteableBitmap UpdateBitmap(string id, WriteableBitmap bitmap)
         {
-            ImageAssetBitmapManager bm = ImageAssetBitmapManager;
+            var bm = ImageAssetBitmapManager;
             if (bm == null)
             {
-                Debug.WriteLine("Cannot update bitmap. Most likely the drawable is not added to a View " + "which prevents Lottie from getting a Context.", L.Tag);
+                Debug.WriteLine("Cannot update bitmap. Most likely the drawable is not added to a View " + "which prevents Lottie from getting a Context.", "LOTTIE");
                 return null;
             }
-            WriteableBitmap ret = bm.UpdateBitmap(id, bitmap);
+            var ret = bm.UpdateBitmap(id, bitmap);
             InvalidateSelf();
             return ret;
         }
@@ -557,8 +556,8 @@ namespace LottieUWP
 
         private float GetMaxScale(BitmapCanvas canvas)
         {
-            float maxScaleX = (float)canvas.Width / (float)_composition.Bounds.Width;
-            float maxScaleY = (float)canvas.Height / (float)_composition.Bounds.Height;
+            var maxScaleX = (float)canvas.Width / (float)_composition.Bounds.Width;
+            var maxScaleY = (float)canvas.Height / (float)_composition.Bounds.Height;
             return Math.Min(maxScaleX, maxScaleY);
         }
 
@@ -611,7 +610,7 @@ namespace LottieUWP
 
             public override int GetHashCode()
             {
-                int hashCode = 17;
+                var hashCode = 17;
                 if (!string.IsNullOrEmpty(LayerName))
                 {
                     hashCode = hashCode * 31 * LayerName.GetHashCode();
@@ -636,7 +635,7 @@ namespace LottieUWP
                     return false;
                 }
 
-                ColorFilterData other = (ColorFilterData)obj;
+                var other = (ColorFilterData)obj;
 
                 return GetHashCode() == other.GetHashCode() && _colorFilter == other._colorFilter;
             }

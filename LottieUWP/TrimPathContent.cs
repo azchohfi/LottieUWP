@@ -28,7 +28,7 @@ namespace LottieUWP
 
         public void OnValueChanged()
         {
-            for (int i = 0; i < _listeners.Count; i++)
+            for (var i = 0; i < _listeners.Count; i++)
             {
                 _listeners[i].OnValueChanged();
             }

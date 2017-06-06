@@ -6,7 +6,6 @@ namespace LottieUWP
     {
         private ValueAnimator()
         {
-
         }
 
         readonly List<LottieDrawable.IValueAnimatorAnimatorUpdateListener> _updateListeners = new List<LottieDrawable.IValueAnimatorAnimatorUpdateListener>();

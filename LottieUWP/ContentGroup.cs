@@ -23,22 +23,21 @@ namespace LottieUWP
         {
             Name = shapeGroup.Name;
             _lottieDrawable = lottieDrawable;
-            IList<object> items = shapeGroup.Items;
+            var items = shapeGroup.Items;
             if (items.Count == 0)
             {
                 return;
             }
 
-            var animatableTransform = items[items.Count - 1] as AnimatableTransform;
-            if (animatableTransform != null)
+            if (items[items.Count - 1] is AnimatableTransform animatableTransform)
             {
                 _transformAnimation = animatableTransform.CreateAnimation();
-                //noinspection ConstantConditions
+
                 _transformAnimation.AddAnimationsToLayer(layer);
                 _transformAnimation.AddListener(this);
             }
 
-            for (int i = 0; i < items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i];
                 if (item is ShapeFill)
@@ -81,13 +80,13 @@ namespace LottieUWP
                 {
                     _contents.Add(new TrimPathContent(layer, (ShapeTrimPath)item));
                 }
-                else //noinspection StatementWithEmptyBody
+                else
                 {
-                    if (item is MergePaths)
+                    if (item is MergePaths mergePaths)
                     {
                         if (lottieDrawable.EnableMergePathsForKitKatAndAbove())
                         {
-                            _contents.Add(new MergePathsContent((MergePaths)item));
+                            _contents.Add(new MergePathsContent(mergePaths));
                         }
                         else
                         {
@@ -99,11 +98,11 @@ namespace LottieUWP
 
             IList<IContent> contentsToRemove = new List<IContent>();
             MergePathsContent currentMergePathsContent = null;
-            for (int i = _contents.Count - 1; i >= 0; i--)
+            for (var i = _contents.Count - 1; i >= 0; i--)
             {
-                IContent content = _contents[i];
-                if(content is MergePathsContent)
-                    currentMergePathsContent = (MergePathsContent) content;
+                var content = _contents[i];
+                if (content is MergePathsContent mergePathsContent)
+                    currentMergePathsContent = mergePathsContent;
                 if (currentMergePathsContent != null && content != currentMergePathsContent)
                 {
                     currentMergePathsContent.AddContentIfNeeded(content);
@@ -111,7 +110,7 @@ namespace LottieUWP
                 }
             }
 
-            for (int i = _contents.Count - 1; i >= 0; i--)
+            for (var i = _contents.Count - 1; i >= 0; i--)
             {
                 if (contentsToRemove.Contains(_contents[i]))
                 {
@@ -129,10 +128,9 @@ namespace LottieUWP
 
         public virtual void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
         {
-            for (int i = 0; i < _contents.Count; i++)
+            for (var i = 0; i < _contents.Count; i++)
             {
-                var drawingContent = _contents[i] as IDrawingContent;
-                if (drawingContent != null)
+                if (_contents[i] is IDrawingContent drawingContent)
                 {
                     if (contentName == null || contentName.Equals(drawingContent.Name))
                     {
@@ -152,9 +150,9 @@ namespace LottieUWP
             var myContentsBefore = new List<IContent>(contentsBefore.Count + _contents.Count);
             myContentsBefore.AddRange(contentsBefore);
 
-            for (int i = _contents.Count - 1; i >= 0; i--)
+            for (var i = _contents.Count - 1; i >= 0; i--)
             {
-                IContent content = _contents[i];
+                var content = _contents[i];
                 content.SetContents(myContentsBefore, _contents.Take(i + 1).ToList());
                 myContentsBefore.Add(content);
             }
@@ -167,10 +165,9 @@ namespace LottieUWP
                 if (_pathContents == null)
                 {
                     _pathContents = new List<IPathContent>();
-                    for (int i = 0; i < _contents.Count; i++)
+                    for (var i = 0; i < _contents.Count; i++)
                     {
-                        var content = _contents[i] as IPathContent;
-                        if (content != null)
+                        if (_contents[i] is IPathContent content)
                         {
                             _pathContents.Add(content);
                         }
@@ -204,10 +201,9 @@ namespace LottieUWP
                     _matrix.Set(_transformAnimation.Matrix);
                 }
                 _path.Reset();
-                for (int i = _contents.Count - 1; i >= 0; i--)
+                for (var i = _contents.Count - 1; i >= 0; i--)
                 {
-                    var pathContent = _contents[i] as IPathContent;
-                    if (pathContent != null)
+                    if (_contents[i] is IPathContent pathContent)
                     {
                         _path.AddPath(pathContent.Path, _matrix);
                     }
@@ -230,7 +226,7 @@ namespace LottieUWP
                 alpha = parentAlpha;
             }
 
-            for (int i = _contents.Count - 1; i >= 0; i--)
+            for (var i = _contents.Count - 1; i >= 0; i--)
             {
                 var drawingContent = _contents[i] as IDrawingContent;
                 drawingContent?.Draw(canvas, _matrix, alpha);
@@ -245,10 +241,9 @@ namespace LottieUWP
                 _matrix = MatrixExt.PreConcat(_matrix, _transformAnimation.Matrix);
             }
             RectExt.Set(ref _rect, 0, 0, 0, 0);
-            for (int i = _contents.Count - 1; i >= 0; i--)
+            for (var i = _contents.Count - 1; i >= 0; i--)
             {
-                var drawingContent = _contents[i] as IDrawingContent;
-                if (drawingContent != null)
+                if (_contents[i] is IDrawingContent drawingContent)
                 {
                     drawingContent.GetBounds(out _rect, _matrix);
                     if (outBounds.IsEmpty)
@@ -257,10 +252,10 @@ namespace LottieUWP
                     }
                     else
                     {
-                        RectExt.Set(ref outBounds, 
-                            Math.Min(outBounds.Left, _rect.Left), 
-                            Math.Min(outBounds.Top, _rect.Top), 
-                            Math.Max(outBounds.Right, _rect.Right), 
+                        RectExt.Set(ref outBounds,
+                            Math.Min(outBounds.Left, _rect.Left),
+                            Math.Min(outBounds.Top, _rect.Top),
+                            Math.Max(outBounds.Right, _rect.Right),
                             Math.Max(outBounds.Bottom, _rect.Bottom));
                     }
                 }

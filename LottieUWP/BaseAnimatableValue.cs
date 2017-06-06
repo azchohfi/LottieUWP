@@ -29,7 +29,7 @@ namespace LottieUWP
 
         public abstract IBaseKeyframeAnimation<TO> CreateAnimation();
 
-        public virtual bool HasAnimation()
+        public bool HasAnimation()
         {
             return Keyframes.Count > 0;
         }
@@ -38,7 +38,7 @@ namespace LottieUWP
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("parseInitialValue=").Append(_initialValue);
             if (Keyframes.Count > 0)
             {

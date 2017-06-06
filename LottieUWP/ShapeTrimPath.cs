@@ -66,7 +66,7 @@ namespace LottieUWP
 
             public static Type ValueOf(string name)
             {
-                foreach (Type enumInstance in ValueList)
+                foreach (var enumInstance in ValueList)
                 {
                     if (enumInstance._nameValue == name)
                     {
@@ -91,7 +91,7 @@ namespace LottieUWP
             _offset = offset;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static ShapeTrimPath NewInstance(JsonObject json, LottieComposition composition)
             {

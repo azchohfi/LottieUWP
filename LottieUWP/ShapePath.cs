@@ -15,11 +15,11 @@ namespace LottieUWP
             _shapePath = shapePath;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static ShapePath NewInstance(JsonObject json, LottieComposition composition)
             {
-                AnimatableShapeValue animatableShapeValue = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("ks"), composition);
+                var animatableShapeValue = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("ks"), composition);
                 return new ShapePath(json.GetNamedString("nm"), (int)json.GetNamedNumber("ind"), animatableShapeValue);
             }
         }

@@ -8,7 +8,7 @@ namespace LottieUWP
     {
         internal static object ShapeItemWithJson(JsonObject json, LottieComposition composition)
         {
-            string type = json.GetNamedString("ty");
+            var type = json.GetNamedString("ty");
 
             switch (type)
             {
@@ -37,7 +37,7 @@ namespace LottieUWP
                 case "mm":
                     return MergePaths.Factory.NewInstance(json);
                 default:
-                    Debug.WriteLine("Unknown shape type " + type, L.Tag);
+                    Debug.WriteLine("Unknown shape type " + type, "LOTTIE");
                     break;
             }
             return null;
@@ -52,17 +52,17 @@ namespace LottieUWP
             _items = items;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static ShapeGroup NewInstance(JsonObject json, LottieComposition composition)
             {
                 var jsonItems = json.GetNamedArray("it");
-                string name = json.GetNamedString("nm");
+                var name = json.GetNamedString("nm");
                 IList<object> items = new List<object>();
 
                 for (uint i = 0; i < jsonItems.Count; i++)
                 {
-                    object newItem = ShapeItemWithJson(jsonItems.GetObjectAt(i), composition);
+                    var newItem = ShapeItemWithJson(jsonItems.GetObjectAt(i), composition);
                     if (newItem != null)
                     {
                         items.Add(newItem);

@@ -17,7 +17,7 @@ namespace LottieUWP
 
         internal async Task<LottieComposition> Execute(params System.IO.Stream[] @params)
         {
-            TaskCompletionSource<LottieComposition> tcs = new TaskCompletionSource<LottieComposition>();
+            var tcs = new TaskCompletionSource<LottieComposition>();
             var resolutionScale = DisplayInformation.GetForCurrentView().ResolutionScale;
             await Task.Run(() =>
             {

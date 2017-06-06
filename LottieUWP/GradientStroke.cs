@@ -42,11 +42,11 @@ namespace LottieUWP
 
         internal virtual AnimatableFloatValue DashOffset { get; }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static GradientStroke NewInstance(JsonObject json, LottieComposition composition)
             {
-                string name = json.GetNamedString("nm");
+                var name = json.GetNamedString("nm");
                 var jsonColor = json.GetNamedObject("g", null);
                 if (jsonColor != null && jsonColor.ContainsKey("k"))
                 {
@@ -65,8 +65,8 @@ namespace LottieUWP
                     opacity = AnimatableIntegerValue.Factory.NewInstance(jsonOpacity, composition);
                 }
 
-                int gradientTypeInt = (int)json.GetNamedNumber("t", 1);
-                GradientType gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
+                var gradientTypeInt = (int)json.GetNamedNumber("t", 1);
+                var gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
 
                 var jsonStartPoint = json.GetNamedObject("s", null);
                 AnimatablePointValue startPoint = null;
@@ -81,21 +81,21 @@ namespace LottieUWP
                 {
                     endPoint = AnimatablePointValue.Factory.NewInstance(jsonEndPoint, composition);
                 }
-                AnimatableFloatValue width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
+                var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
 
 
-                ShapeStroke.LineCapType capType = ShapeStroke.LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
-                ShapeStroke.LineJoinType joinType = ShapeStroke.LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
+                var capType = ShapeStroke.LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
+                var joinType = ShapeStroke.LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
 
                 AnimatableFloatValue offset = null;
                 IList<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
                 if (json.ContainsKey("d"))
                 {
                     var dashesJson = json.GetNamedArray("d");
-                    for (int i = 0; i < dashesJson.Count; i++)
+                    for (var i = 0; i < dashesJson.Count; i++)
                     {
                         var dashJson = dashesJson[i].GetObject();
-                        string n = dashJson.GetNamedString("n");
+                        var n = dashJson.GetNamedString("n");
                         if (n.Equals("o"))
                         {
                             var value = dashJson.GetNamedObject("v");

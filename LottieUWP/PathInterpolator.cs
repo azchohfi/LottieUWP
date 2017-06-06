@@ -33,11 +33,11 @@ namespace LottieUWP
             else
             {
                 // Calculate t
-                double a = 3.0 * _controlX1 - 3.0 * _controlX2 + 1.0;
-                double b = -6.0 * _controlX1 + 3.0 * _controlX2;
-                double c = 3.0 * _controlX1;
+                var a = 3.0 * _controlX1 - 3.0 * _controlX2 + 1.0;
+                var b = -6.0 * _controlX1 + 3.0 * _controlX2;
+                var c = 3.0 * _controlX1;
                 double d = x;
-                double? tTemp = SolveCubic(a, b, c, d);
+                var tTemp = SolveCubic(a, b, c, d);
                 if (tTemp == null)
                     return x;
                 t = tTemp.Value;
@@ -58,26 +58,26 @@ namespace LottieUWP
             b /= a;
             c /= a;
             d /= a;
-            double q = (3.0 * c - Squared(b)) / 9.0;
-            double r = (-27.0 * d + b * (9.0 * c - 2.0 * Squared(b))) / 54.0;
-            double disc = Cubed(q) + Squared(r);
-            double term1 = b / 3.0;
+            var q = (3.0 * c - Squared(b)) / 9.0;
+            var r = (-27.0 * d + b * (9.0 * c - 2.0 * Squared(b))) / 54.0;
+            var disc = Cubed(q) + Squared(r);
+            var term1 = b / 3.0;
 
             if (disc > 0)
             {
-                double s = r + Math.Sqrt(disc);
+                var s = r + Math.Sqrt(disc);
                 s = s < 0 ? -CubicRoot(-s) : CubicRoot(s);
-                double t = r - Math.Sqrt(disc);
+                var t = r - Math.Sqrt(disc);
                 t = t < 0 ? -CubicRoot(-t) : CubicRoot(t);
 
-                double result = -term1 + s + t;
+                var result = -term1 + s + t;
                 if (result >= 0 && result <= 1) return result;
             }
             else if (disc == 0)
             {
-                double r13 = r < 0 ? -CubicRoot(-r) : CubicRoot(r);
+                var r13 = r < 0 ? -CubicRoot(-r) : CubicRoot(r);
 
-                double result = -term1 + 2.0 * r13;
+                var result = -term1 + 2.0 * r13;
                 if (result >= 0 && result <= 1) return result;
 
                 result = -(r13 + term1);
@@ -86,11 +86,11 @@ namespace LottieUWP
             else
             {
                 q = -q;
-                double dum1 = q * q * q;
+                var dum1 = q * q * q;
                 dum1 = Math.Acos(r / Math.Sqrt(dum1));
-                double r13 = 2.0 * Math.Sqrt(q);
+                var r13 = 2.0 * Math.Sqrt(q);
 
-                double result = -term1 + r13 * Math.Cos(dum1 / 3.0);
+                var result = -term1 + r13 * Math.Cos(dum1 / 3.0);
                 if (result >= 0 && result <= 1) return result;
 
                 result = -term1 + r13 * Math.Cos((dum1 + 2.0 * Math.PI) / 3.0);
@@ -105,7 +105,7 @@ namespace LottieUWP
 
         private static double? SolveQuadratic(double a, double b, double c)
         {
-            double result = (-b + Math.Sqrt(Squared(b) - 4 * a * c)) / (2 * a);
+            var result = (-b + Math.Sqrt(Squared(b) - 4 * a * c)) / (2 * a);
             if (result >= 0 && result <= 1) return result;
 
             result = (-b - Math.Sqrt(Squared(b) - 4 * a * c)) / (2 * a);

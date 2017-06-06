@@ -42,14 +42,14 @@ namespace LottieUWP
             _dashPatternAnimations = new List<IBaseKeyframeAnimation<float?>>(dashPattern.Count);
             _dashPatternValues = new float[dashPattern.Count];
 
-            for (int i = 0; i < dashPattern.Count; i++)
+            for (var i = 0; i < dashPattern.Count; i++)
             {
                 _dashPatternAnimations.Add(dashPattern[i].CreateAnimation());
             }
 
             layer.AddAnimation(_opacityAnimation);
             layer.AddAnimation(_widthAnimation);
-            for (int i = 0; i < _dashPatternAnimations.Count; i++)
+            for (var i = 0; i < _dashPatternAnimations.Count; i++)
             {
                 layer.AddAnimation(_dashPatternAnimations[i]);
             }
@@ -61,14 +61,11 @@ namespace LottieUWP
             _opacityAnimation.AddUpdateListener(this);
             _widthAnimation.AddUpdateListener(this);
 
-            for (int i = 0; i < dashPattern.Count; i++)
+            for (var i = 0; i < dashPattern.Count; i++)
             {
                 _dashPatternAnimations[i].AddUpdateListener(this);
             }
-            if (_dashPatternOffsetAnimation != null)
-            {
-                _dashPatternOffsetAnimation.AddUpdateListener(this);
-            }
+            _dashPatternOffsetAnimation?.AddUpdateListener(this);
         }
 
         public virtual void OnValueChanged()
@@ -81,31 +78,28 @@ namespace LottieUWP
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
             TrimPathContent trimPathContentBefore = null;
-            for (int i = contentsBefore.Count - 1; i >= 0; i--)
+            for (var i = contentsBefore.Count - 1; i >= 0; i--)
             {
-                IContent content = contentsBefore[i];
-                if (content is TrimPathContent && ((TrimPathContent)content).Type == ShapeTrimPath.Type.Individually)
+                var content = contentsBefore[i];
+                if (content is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Individually)
                 {
-                    trimPathContentBefore = (TrimPathContent)content;
+                    trimPathContentBefore = trimPathContent;
                 }
             }
-            if (trimPathContentBefore != null)
-            {
-                trimPathContentBefore.AddListener(this);
-            }
+            trimPathContentBefore?.AddListener(this);
 
             PathGroup currentPathGroup = null;
-            for (int i = contentsAfter.Count - 1; i >= 0; i--)
+            for (var i = contentsAfter.Count - 1; i >= 0; i--)
             {
-                IContent content = contentsAfter[i];
-                if (content is TrimPathContent && ((TrimPathContent)content).Type == ShapeTrimPath.Type.Individually)
+                var content = contentsAfter[i];
+                if (content is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Individually)
                 {
                     if (currentPathGroup != null)
                     {
                         _pathGroups.Add(currentPathGroup);
                     }
-                    currentPathGroup = new PathGroup((TrimPathContent)content);
-                    ((TrimPathContent)content).AddListener(this);
+                    currentPathGroup = new PathGroup(trimPathContent);
+                    trimPathContent.AddListener(this);
                 }
                 else if (content is IPathContent)
                 {
@@ -124,7 +118,7 @@ namespace LottieUWP
 
         public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
         {
-            int alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
+            var alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             Paint.Alpha = alpha;
             Paint.StrokeWidth = _widthAnimation.Value.Value * Utils.GetScale(parentMatrix);
             if (Paint.StrokeWidth <= 0)
@@ -134,9 +128,9 @@ namespace LottieUWP
             }
             ApplyDashPatternIfNeeded(parentMatrix);
 
-            for (int i = 0; i < _pathGroups.Count; i++)
+            for (var i = 0; i < _pathGroups.Count; i++)
             {
-                PathGroup pathGroup = _pathGroups[i];
+                var pathGroup = _pathGroups[i];
 
                 if (pathGroup.TrimPath != null)
                 {
@@ -145,7 +139,7 @@ namespace LottieUWP
                 else
                 {
                     _path.Reset();
-                    for (int j = pathGroup.Paths.Count - 1; j >= 0; j--)
+                    for (var j = pathGroup.Paths.Count - 1; j >= 0; j--)
                     {
                         _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
                     }
@@ -161,27 +155,27 @@ namespace LottieUWP
                 return;
             }
             _path.Reset();
-            for (int j = pathGroup.Paths.Count - 1; j >= 0; j--)
+            for (var j = pathGroup.Paths.Count - 1; j >= 0; j--)
             {
                 _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
             }
             _pm.SetPath(_path, false);
-            float totalLength = _pm.Length;
+            var totalLength = _pm.Length;
             while (_pm.NextContour())
             {
                 totalLength += _pm.Length;
             }
-            float offsetLength = totalLength * pathGroup.TrimPath.Offset.Value.Value / 360f;
-            float startLength = totalLength * pathGroup.TrimPath.Start.Value.Value / 100f + offsetLength;
-            float endLength = totalLength * pathGroup.TrimPath.End.Value.Value / 100f + offsetLength;
+            var offsetLength = totalLength * pathGroup.TrimPath.Offset.Value.Value / 360f;
+            var startLength = totalLength * pathGroup.TrimPath.Start.Value.Value / 100f + offsetLength;
+            var endLength = totalLength * pathGroup.TrimPath.End.Value.Value / 100f + offsetLength;
 
             float currentLength = 0;
-            for (int j = pathGroup.Paths.Count - 1; j >= 0; j--)
+            for (var j = pathGroup.Paths.Count - 1; j >= 0; j--)
             {
                 _trimPathPath.Set(pathGroup.Paths[j].Path);
                 _trimPathPath.Transform(parentMatrix);
                 _pm.SetPath(_trimPathPath, false);
-                float length = _pm.Length;
+                var length = _pm.Length;
                 if (endLength > totalLength && endLength - totalLength < currentLength + length && currentLength < endLength - totalLength)
                 {
                     // Draw the segment when the end is greater than the length which wraps around to the
@@ -195,13 +189,12 @@ namespace LottieUWP
                     {
                         startValue = 0;
                     }
-                    float endValue = Math.Min((endLength - totalLength) / length, 1);
+                    var endValue = Math.Min((endLength - totalLength) / length, 1);
                     Utils.ApplyTrimPathIfNeeded(_trimPathPath, startValue, endValue, 0);
                     canvas.DrawPath(_trimPathPath, Paint);
                 }
                 else
                 {
-                    //noinspection StatementWithEmptyBody
                     if (currentLength + length < startLength || currentLength > endLength)
                     {
                         // Do nothing
@@ -241,17 +234,17 @@ namespace LottieUWP
         public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
         {
             _path.Reset();
-            for (int i = 0; i < _pathGroups.Count; i++)
+            for (var i = 0; i < _pathGroups.Count; i++)
             {
-                PathGroup pathGroup = _pathGroups[i];
-                for (int j = 0; j < pathGroup.Paths.Count; j++)
+                var pathGroup = _pathGroups[i];
+                for (var j = 0; j < pathGroup.Paths.Count; j++)
                 {
                     _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
                 }
             }
             _path.ComputeBounds(out _rect, false);
 
-            float width = _widthAnimation.Value.Value;
+            var width = _widthAnimation.Value.Value;
             RectExt.Set(ref _rect, _rect.Left - width / 2f, _rect.Top - width / 2f, _rect.Right + width / 2f, _rect.Bottom + width / 2f);
             RectExt.Set(ref outBounds, _rect);
             // Add padding to account for rounding errors.
@@ -267,8 +260,8 @@ namespace LottieUWP
                 return;
             }
 
-            float scale = Utils.GetScale(parentMatrix);
-            for (int i = 0; i < _dashPatternAnimations.Count; i++)
+            var scale = Utils.GetScale(parentMatrix);
+            for (var i = 0; i < _dashPatternAnimations.Count; i++)
             {
                 _dashPatternValues[i] = _dashPatternAnimations[i].Value.Value;
                 // If the value of the dash pattern or gap is too small, the number of individual sections
@@ -291,7 +284,7 @@ namespace LottieUWP
                 }
                 _dashPatternValues[i] *= scale;
             }
-            float offset = _dashPatternOffsetAnimation?.Value ?? 0f;
+            var offset = _dashPatternOffsetAnimation?.Value ?? 0f;
             Paint.PathEffect = new DashPathEffect(_dashPatternValues, offset);
         }
 

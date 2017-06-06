@@ -15,7 +15,7 @@ namespace LottieUWP
 
         internal static Path CreatePath(PointF startPoint, PointF endPoint, PointF cp1, PointF cp2)
         {
-            Path path = new Path();
+            var path = new Path();
             path.MoveTo(startPoint.X, startPoint.Y);
 
             if (cp1 != null && cp2 != null && (cp1.LengthSquared() != 0 || cp2.LengthSquared() != 0))
@@ -66,8 +66,8 @@ namespace LottieUWP
             _points[2] = Sqrt2;
             _points[3] = Sqrt2;
             matrix.MapPoints(ref _points);
-            float dx = _points[2] - _points[0];
-            float dy = _points[3] - _points[1];
+            var dx = _points[2] - _points[0];
+            var dy = _points[3] - _points[1];
 
             // TODO: figure out why the result needs to be divided by 2.
             return (float)MathExt.Hypot(dx, dy) / 2f;
@@ -86,17 +86,17 @@ namespace LottieUWP
         {
             PathMeasure.SetPath(path, false);
 
-            float length = PathMeasure.Length;
+            var length = PathMeasure.Length;
             if (length == 0f || Math.Abs(endValue - startValue - 1) < .01)
             {
                 return;
             }
-            float start = length * startValue;
-            float end = length * endValue;
-            float newStart = Math.Min(start, end);
-            float newEnd = Math.Max(start, end);
+            var start = length * startValue;
+            var end = length * endValue;
+            var newStart = Math.Min(start, end);
+            var newEnd = Math.Max(start, end);
 
-            float offset = offsetValue * length;
+            var offset = offsetValue * length;
             newStart += offset;
             newEnd += offset;
 
@@ -148,7 +148,7 @@ namespace LottieUWP
 
         public static Color GetSolidColorBrush(string hex)
         {
-            int index = 1; // Skip '#'
+            var index = 1; // Skip '#'
             // '#AARRGGBB'
             byte a = 255;
             if (hex.Length == 9)
@@ -156,11 +156,11 @@ namespace LottieUWP
                 a = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
                 index += 2;
             }
-            byte r = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
+            var r = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
             index += 2;
-            byte g = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
+            var g = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
             index += 2;
-            byte b = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
+            var b = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
             return Color.FromArgb(a, r, g, b);
         }
     }

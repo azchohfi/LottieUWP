@@ -11,7 +11,7 @@ namespace LottieUWP
             Size = size;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static CircleShape NewInstance(JsonObject json, LottieComposition composition)
             {

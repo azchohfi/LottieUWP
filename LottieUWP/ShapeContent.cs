@@ -34,10 +34,9 @@ namespace LottieUWP
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < contentsBefore.Count; i++)
+            for (var i = 0; i < contentsBefore.Count; i++)
             {
-                var trimPathContent = contentsBefore[i] as TrimPathContent;
-                if (trimPathContent != null && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
+                if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     // Trim path individually will be handled by the stroke where paths are combined.
                     _trimPath = trimPathContent;

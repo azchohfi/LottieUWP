@@ -70,7 +70,7 @@ namespace LottieUWP
 
             public static LineCapType ValueOf(string name)
             {
-                foreach (LineCapType enumInstance in ValueList)
+                foreach (var enumInstance in ValueList)
                 {
                     if (enumInstance._nameValue == name)
                     {
@@ -146,7 +146,7 @@ namespace LottieUWP
 
             public static LineJoinType ValueOf(string name)
             {
-                foreach (LineJoinType enumInstance in ValueList)
+                foreach (var enumInstance in ValueList)
                 {
                     if (enumInstance._nameValue == name)
                     {
@@ -169,17 +169,17 @@ namespace LottieUWP
             JoinType = joinType;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static ShapeStroke NewInstance(JsonObject json, LottieComposition composition)
             {
-                string name = json.GetNamedString("nm");
+                var name = json.GetNamedString("nm");
                 IList<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
-                AnimatableColorValue color = AnimatableColorValue.Factory.NewInstance(json.GetNamedObject("c"), composition);
-                AnimatableFloatValue width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
-                AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.NewInstance(json.GetNamedObject("o"), composition);
-                LineCapType capType = LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
-                LineJoinType joinType = LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
+                var color = AnimatableColorValue.Factory.NewInstance(json.GetNamedObject("c"), composition);
+                var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
+                var opacity = AnimatableIntegerValue.Factory.NewInstance(json.GetNamedObject("o"), composition);
+                var capType = LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
+                var joinType = LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
                 AnimatableFloatValue offset = null;
 
                 if (json.ContainsKey("d"))
@@ -188,7 +188,7 @@ namespace LottieUWP
                     for (uint i = 0; i < dashesJson.Count; i++)
                     {
                         var dashJson = dashesJson.GetObjectAt(i);
-                        string n = dashJson.GetNamedString("n");
+                        var n = dashJson.GetNamedString("n");
                         if (n.Equals("o"))
                         {
                             var value = dashJson.GetNamedObject("v");

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Windows.Data.Json;
-using Windows.Foundation;
 using Windows.UI;
 
 namespace LottieUWP
@@ -107,9 +106,9 @@ namespace LottieUWP
 
         internal virtual string ToString(string prefix)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(prefix).Append(Name).Append("\n");
-            Layer parent = _composition.LayerModelForId(ParentId);
+            var parent = _composition.LayerModelForId(ParentId);
             if (parent != null)
             {
                 sb.Append("\t\tParents: ").Append(parent.Name);
@@ -132,7 +131,7 @@ namespace LottieUWP
             if (_shapes.Count > 0)
             {
                 sb.Append(prefix).Append("\tShapes:\n");
-                foreach (object shape in _shapes)
+                foreach (var shape in _shapes)
                 {
                     sb.Append(prefix).Append("\t\t").Append(shape).Append("\n");
                 }
@@ -140,27 +139,27 @@ namespace LottieUWP
             return sb.ToString();
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static Layer NewInstance(LottieComposition composition)
             {
                 // TODO: make sure in out keyframes work
-                Rect bounds = composition.Bounds;
+                var bounds = composition.Bounds;
                 return new Layer(new List<object>(), composition, null, -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, new List<IKeyframe<float?>>(), MatteType.None);
             }
 
             internal static Layer NewInstance(JsonObject json, LottieComposition composition)
             {
-                string layerName = json.GetNamedString("nm");
-                string refId = json.GetNamedString("refId", string.Empty);
-                long layerId = (long)json.GetNamedNumber("ind");
-                int solidWidth = 0;
-                int solidHeight = 0;
+                var layerName = json.GetNamedString("nm");
+                var refId = json.GetNamedString("refId", string.Empty);
+                var layerId = (long)json.GetNamedNumber("ind");
+                var solidWidth = 0;
+                var solidHeight = 0;
                 Color solidColor;
-                int preCompWidth = 0;
-                int preCompHeight = 0;
+                var preCompWidth = 0;
+                var preCompHeight = 0;
                 LayerType layerType;
-                int layerTypeInt = (int)json.GetNamedNumber("ty", -1);
+                var layerTypeInt = (int)json.GetNamedNumber("ty", -1);
                 if (layerTypeInt < (int)LayerType.Unknown)
                 {
                     layerType = (LayerType)layerTypeInt;
@@ -170,7 +169,7 @@ namespace LottieUWP
                     layerType = LayerType.Unknown;
                 }
 
-                long parentId = (long)json.GetNamedNumber("parent", -1);
+                var parentId = (long)json.GetNamedNumber("parent", -1);
 
                 if (layerType == LayerType.Solid)
                 {
@@ -180,17 +179,17 @@ namespace LottieUWP
                     Debug.WriteLine("\tSolid=" + string.Format("{0:X}", solidColor) + " " + solidWidth + "x" + solidHeight + " " + composition.Bounds, Tag);
                 }
 
-                AnimatableTransform transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("ks"), composition);
-                MatteType matteType = (MatteType)(int)json.GetNamedNumber("tt", 0);
+                var transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("ks"), composition);
+                var matteType = (MatteType)(int)json.GetNamedNumber("tt", 0);
                 IList<object> shapes = new List<object>();
                 IList<Mask> masks = new List<Mask>();
                 IList<IKeyframe<float?>> inOutKeyframes = new List<IKeyframe<float?>>();
                 var jsonMasks = json.GetNamedArray("masksProperties", null);
                 if (jsonMasks != null)
                 {
-                    for (int i = 0; i < jsonMasks.Count; i++)
+                    for (var i = 0; i < jsonMasks.Count; i++)
                     {
-                        Mask mask = Mask.Factory.NewMask(jsonMasks[i].GetObject(), composition);
+                        var mask = Mask.Factory.NewMask(jsonMasks[i].GetObject(), composition);
                         masks.Add(mask);
                     }
                 }
@@ -198,9 +197,9 @@ namespace LottieUWP
                 var shapesJson = json.GetNamedArray("shapes", null);
                 if (shapesJson != null)
                 {
-                    for (int i = 0; i < shapesJson.Count; i++)
+                    for (var i = 0; i < shapesJson.Count; i++)
                     {
-                        object shape = ShapeGroup.ShapeItemWithJson(shapesJson[i].GetObject(), composition);
+                        var shape = ShapeGroup.ShapeItemWithJson(shapesJson[i].GetObject(), composition);
                         if (shape != null)
                         {
                             shapes.Add(shape);
@@ -208,10 +207,10 @@ namespace LottieUWP
                     }
                 }
 
-                float timeStretch = (float)json.GetNamedNumber("sr", 1.0);
-                float startFrame = (float)json.GetNamedNumber("st");
-                float frames = composition.DurationFrames;
-                float startProgress = startFrame / frames;
+                var timeStretch = (float)json.GetNamedNumber("sr", 1.0);
+                var startFrame = (float)json.GetNamedNumber("st");
+                var frames = composition.DurationFrames;
+                var startProgress = startFrame / frames;
 
                 if (layerType == LayerType.PreComp)
                 {
@@ -219,24 +218,24 @@ namespace LottieUWP
                     preCompHeight = (int)(json.GetNamedNumber("h") * composition.DpScale);
                 }
 
-                float inFrame = (float)json.GetNamedNumber("ip");
-                float outFrame = (float)json.GetNamedNumber("op");
+                var inFrame = (float)json.GetNamedNumber("ip");
+                var outFrame = (float)json.GetNamedNumber("op");
 
                 // Before the in frame
                 if (inFrame > 0)
                 {
-                    Keyframe<float?> preKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, 0f, inFrame);
+                    var preKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, 0f, inFrame);
                     inOutKeyframes.Add(preKeyframe);
                 }
 
                 // The + 1 is because the animation should be visible on the out frame itself.
                 outFrame = outFrame > 0 ? outFrame : composition.EndFrame + 1;
-                Keyframe<float?> visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
+                var visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
                 inOutKeyframes.Add(visibleKeyframe);
 
                 if (outFrame <= composition.DurationFrames)
                 {
-                    Keyframe<float?> outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, composition.EndFrame);
+                    var outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, composition.EndFrame);
                     inOutKeyframes.Add(outKeyframe);
                 }
 

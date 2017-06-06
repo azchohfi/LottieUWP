@@ -33,7 +33,7 @@ namespace LottieUWP
             _lottieDrawable = lottieDrawable;
 
             Name = polystarShape.Name;
-            _type = polystarShape.getType();
+            _type = polystarShape.GetType();
             _pointsAnimation = polystarShape.Points.CreateAnimation();
             _positionAnimation = polystarShape.Position.CreateAnimation();
             _rotationAnimation = polystarShape.Rotation.CreateAnimation();
@@ -86,10 +86,9 @@ namespace LottieUWP
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < contentsBefore.Count; i++)
+            for (var i = 0; i < contentsBefore.Count; i++)
             {
-                var trimPathContent = contentsBefore[i] as TrimPathContent;
-                if (trimPathContent != null && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
+                if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
                     _trimPath.AddListener(this);
@@ -131,31 +130,31 @@ namespace LottieUWP
 
         private void CreateStarPath()
         {
-            float points = _pointsAnimation.Value.Value;
+            var points = _pointsAnimation.Value.Value;
             double currentAngle = _rotationAnimation?.Value ?? 0f;
             // Start at +y instead of +x
             currentAngle -= 90;
             // convert to radians
             currentAngle = MathExt.ToRadians(currentAngle);
             // adjust current angle for partial points
-            float anglePerPoint = (float)(2 * Math.PI / points);
-            float halfAnglePerPoint = anglePerPoint / 2.0f;
-            float partialPointAmount = points - (int)points;
+            var anglePerPoint = (float)(2 * Math.PI / points);
+            var halfAnglePerPoint = anglePerPoint / 2.0f;
+            var partialPointAmount = points - (int)points;
             if (partialPointAmount != 0)
             {
                 currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
             }
 
-            float outerRadius = _outerRadiusAnimation.Value.Value;
-            //noinspection ConstantConditions
-            float innerRadius = _innerRadiusAnimation.Value.Value;
+            var outerRadius = _outerRadiusAnimation.Value.Value;
+            
+            var innerRadius = _innerRadiusAnimation.Value.Value;
 
-            float innerRoundedness = 0f;
+            var innerRoundedness = 0f;
             if (_innerRoundednessAnimation != null)
             {
                 innerRoundedness = _innerRoundednessAnimation.Value.Value / 100f;
             }
-            float outerRoundedness = 0f;
+            var outerRoundedness = 0f;
             if (_outerRoundednessAnimation != null)
             {
                 outerRoundedness = _outerRoundednessAnimation.Value.Value / 100f;
@@ -181,12 +180,12 @@ namespace LottieUWP
             }
 
             // True means the line will go to outer radius. False means inner radius.
-            bool longSegment = false;
-            double numPoints = Math.Ceiling(points) * 2;
-            for (int i = 0; i < numPoints; i++)
+            var longSegment = false;
+            var numPoints = (int)Math.Ceiling(points) * 2;
+            for (var i = 0; i < numPoints; i++)
             {
-                float radius = longSegment ? outerRadius : innerRadius;
-                float dTheta = halfAnglePerPoint;
+                var radius = longSegment ? outerRadius : innerRadius;
+                var dTheta = halfAnglePerPoint;
                 if (partialPointRadius != 0 && i == numPoints - 2)
                 {
                     dTheta = anglePerPoint * partialPointAmount / 2f;
@@ -206,23 +205,23 @@ namespace LottieUWP
                 }
                 else
                 {
-                    float cp1Theta = (float)(Math.Atan2(previousY, previousX) - Math.PI / 2f);
-                    float cp1Dx = (float)Math.Cos(cp1Theta);
-                    float cp1Dy = (float)Math.Sin(cp1Theta);
+                    var cp1Theta = (float)(Math.Atan2(previousY, previousX) - Math.PI / 2f);
+                    var cp1Dx = (float)Math.Cos(cp1Theta);
+                    var cp1Dy = (float)Math.Sin(cp1Theta);
 
-                    float cp2Theta = (float)(Math.Atan2(y, x) - Math.PI / 2f);
-                    float cp2Dx = (float)Math.Cos(cp2Theta);
-                    float cp2Dy = (float)Math.Sin(cp2Theta);
+                    var cp2Theta = (float)(Math.Atan2(y, x) - Math.PI / 2f);
+                    var cp2Dx = (float)Math.Cos(cp2Theta);
+                    var cp2Dy = (float)Math.Sin(cp2Theta);
 
-                    float cp1Roundedness = longSegment ? innerRoundedness : outerRoundedness;
-                    float cp2Roundedness = longSegment ? outerRoundedness : innerRoundedness;
-                    float cp1Radius = longSegment ? innerRadius : outerRadius;
-                    float cp2Radius = longSegment ? outerRadius : innerRadius;
+                    var cp1Roundedness = longSegment ? innerRoundedness : outerRoundedness;
+                    var cp2Roundedness = longSegment ? outerRoundedness : innerRoundedness;
+                    var cp1Radius = longSegment ? innerRadius : outerRadius;
+                    var cp2Radius = longSegment ? outerRadius : innerRadius;
 
-                    float cp1X = cp1Radius * cp1Roundedness * PolystarMagicNumber * cp1Dx;
-                    float cp1Y = cp1Radius * cp1Roundedness * PolystarMagicNumber * cp1Dy;
-                    float cp2X = cp2Radius * cp2Roundedness * PolystarMagicNumber * cp2Dx;
-                    float cp2Y = cp2Radius * cp2Roundedness * PolystarMagicNumber * cp2Dy;
+                    var cp1X = cp1Radius * cp1Roundedness * PolystarMagicNumber * cp1Dx;
+                    var cp1Y = cp1Radius * cp1Roundedness * PolystarMagicNumber * cp1Dy;
+                    var cp2X = cp2Radius * cp2Roundedness * PolystarMagicNumber * cp2Dx;
+                    var cp2Y = cp2Radius * cp2Roundedness * PolystarMagicNumber * cp2Dy;
                     if (partialPointAmount != 0)
                     {
                         if (i == 0)
@@ -245,24 +244,24 @@ namespace LottieUWP
             }
 
 
-            PointF position = _positionAnimation.Value;
+            var position = _positionAnimation.Value;
             _path.Offset(position.X, position.Y);
             _path.Close();
         }
 
         private void CreatePolygonPath()
         {
-            float points = (float)Math.Floor(_pointsAnimation.Value.Value);
+            var points = (float)Math.Floor(_pointsAnimation.Value.Value);
             double currentAngle = _rotationAnimation?.Value ?? 0f;
             // Start at +y instead of +x
             currentAngle -= 90;
             // convert to radians
             currentAngle = MathExt.ToRadians(currentAngle);
             // adjust current angle for partial points
-            float anglePerPoint = (float)(2 * Math.PI / points);
+            var anglePerPoint = (float)(2 * Math.PI / points);
 
-            float roundedness = _outerRoundednessAnimation.Value.Value / 100f;
-            float radius = _outerRadiusAnimation.Value.Value;
+            var roundedness = _outerRoundednessAnimation.Value.Value / 100f;
+            var radius = _outerRadiusAnimation.Value.Value;
             float x;
             float y;
             x = (float)(radius * Math.Cos(currentAngle));
@@ -270,8 +269,8 @@ namespace LottieUWP
             _path.MoveTo(x, y);
             currentAngle += anglePerPoint;
 
-            double numPoints = Math.Ceiling(points);
-            for (int i = 0; i < numPoints; i++)
+            var numPoints = (int)Math.Ceiling(points);
+            for (var i = 0; i < numPoints; i++)
             {
                 var previousX = x;
                 var previousY = y;
@@ -280,18 +279,18 @@ namespace LottieUWP
 
                 if (roundedness != 0)
                 {
-                    float cp1Theta = (float)(Math.Atan2(previousY, previousX) - Math.PI / 2f);
-                    float cp1Dx = (float)Math.Cos(cp1Theta);
-                    float cp1Dy = (float)Math.Sin(cp1Theta);
+                    var cp1Theta = (float)(Math.Atan2(previousY, previousX) - Math.PI / 2f);
+                    var cp1Dx = (float)Math.Cos(cp1Theta);
+                    var cp1Dy = (float)Math.Sin(cp1Theta);
 
-                    float cp2Theta = (float)(Math.Atan2(y, x) - Math.PI / 2f);
-                    float cp2Dx = (float)Math.Cos(cp2Theta);
-                    float cp2Dy = (float)Math.Sin(cp2Theta);
+                    var cp2Theta = (float)(Math.Atan2(y, x) - Math.PI / 2f);
+                    var cp2Dx = (float)Math.Cos(cp2Theta);
+                    var cp2Dy = (float)Math.Sin(cp2Theta);
 
-                    float cp1X = radius * roundedness * PolygonMagicNumber * cp1Dx;
-                    float cp1Y = radius * roundedness * PolygonMagicNumber * cp1Dy;
-                    float cp2X = radius * roundedness * PolygonMagicNumber * cp2Dx;
-                    float cp2Y = radius * roundedness * PolygonMagicNumber * cp2Dy;
+                    var cp1X = radius * roundedness * PolygonMagicNumber * cp1Dx;
+                    var cp1Y = radius * roundedness * PolygonMagicNumber * cp1Dy;
+                    var cp2X = radius * roundedness * PolygonMagicNumber * cp2Dx;
+                    var cp2Y = radius * roundedness * PolygonMagicNumber * cp2Dy;
                     _path.CubicTo(previousX - cp1X, previousY - cp1Y, x + cp2X, y + cp2Y, x, y);
                 }
                 else
@@ -302,7 +301,7 @@ namespace LottieUWP
                 currentAngle += anglePerPoint;
             }
 
-            PointF position = _positionAnimation.Value;
+            var position = _positionAnimation.Value;
             _path.Offset(position.X, position.Y);
             _path.Close();
         }

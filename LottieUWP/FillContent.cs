@@ -42,12 +42,12 @@ namespace LottieUWP
 
         public virtual void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < contentsAfter.Count; i++)
+            for (var i = 0; i < contentsAfter.Count; i++)
             {
-                IContent content = contentsAfter[i];
-                if (content is IPathContent)
+                var content = contentsAfter[i];
+                if (content is IPathContent pathContent)
                 {
-                    _paths.Add((IPathContent)content);
+                    _paths.Add(pathContent);
                 }
             }
         }
@@ -62,11 +62,11 @@ namespace LottieUWP
         public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
         {
             _paint.Color = _colorAnimation.Value;
-            int alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
+            var alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
 
             _path.Reset();
-            for (int i = 0; i < _paths.Count; i++)
+            for (var i = 0; i < _paths.Count; i++)
             {
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
@@ -77,7 +77,7 @@ namespace LottieUWP
         public virtual void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
         {
             _path.Reset();
-            for (int i = 0; i < _paths.Count; i++)
+            for (var i = 0; i < _paths.Count; i++)
             {
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }

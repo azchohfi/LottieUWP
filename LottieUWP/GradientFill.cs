@@ -36,18 +36,18 @@ namespace LottieUWP
 
         internal virtual AnimatableFloatValue HighlightAngle { get; }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static GradientFill NewInstance(JsonObject json, LottieComposition composition)
             {
-                string name = json.GetNamedString("nm");
+                var name = json.GetNamedString("nm");
 
                 var jsonColor = json.GetNamedObject("g", null);
                 if (jsonColor != null && jsonColor.ContainsKey("k"))
                 {
                     // This is a hack because the "p" value which contains the number of color points is outside
                     // of "k" which contains the useful data.
-                    int points = (int) jsonColor.GetNamedNumber("p");
+                    var points = (int) jsonColor.GetNamedNumber("p");
                     jsonColor = jsonColor.GetNamedObject("k");
                     try
                     {
@@ -71,11 +71,11 @@ namespace LottieUWP
                     opacity = AnimatableIntegerValue.Factory.NewInstance(jsonOpacity, composition);
                 }
 
-                int fillTypeInt = (int) json.GetNamedNumber("r", 1);
-                PathFillType fillType = fillTypeInt == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
+                var fillTypeInt = (int) json.GetNamedNumber("r", 1);
+                var fillType = fillTypeInt == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
 
-                int gradientTypeInt = (int) json.GetNamedNumber("t", 1);
-                GradientType gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
+                var gradientTypeInt = (int) json.GetNamedNumber("t", 1);
+                var gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
 
                 var jsonStartPoint = json.GetNamedObject("s", null);
                 AnimatablePointValue startPoint = null;

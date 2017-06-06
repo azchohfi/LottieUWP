@@ -49,10 +49,9 @@ namespace LottieUWP
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {
-            for (int i = 0; i < contentsBefore.Count; i++)
+            for (var i = 0; i < contentsBefore.Count; i++)
             {
-                var trimPathContent = contentsBefore[i] as TrimPathContent;
-                if (trimPathContent != null && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
+                if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
                     _trimPath.AddListener(this);
@@ -71,18 +70,18 @@ namespace LottieUWP
 
                 _path.Reset();
 
-                PointF size = _sizeAnimation.Value;
+                var size = _sizeAnimation.Value;
                 var halfWidth = size.X / 2f;
                 var halfHeight = size.Y / 2f;
-                float radius = _cornerRadiusAnimation?.Value ?? 0f;
-                float maxRadius = Math.Min(halfWidth, halfHeight);
+                var radius = _cornerRadiusAnimation?.Value ?? 0f;
+                var maxRadius = Math.Min(halfWidth, halfHeight);
                 if (radius > maxRadius)
                 {
                     radius = maxRadius;
                 }
 
                 // Draw the rectangle top right to bottom left.
-                PointF position = _positionAnimation.Value;
+                var position = _positionAnimation.Value;
 
                 _path.MoveTo(position.X + halfWidth, position.Y - halfHeight + radius);
 

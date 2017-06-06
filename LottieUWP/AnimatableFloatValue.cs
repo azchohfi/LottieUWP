@@ -41,7 +41,7 @@ namespace LottieUWP
             }
         }
 
-        internal sealed class Factory
+        internal static class Factory
         {
             internal static AnimatableFloatValue NewInstance()
             {
@@ -50,12 +50,12 @@ namespace LottieUWP
 
             internal static AnimatableFloatValue NewInstance(JsonObject json, LottieComposition composition, bool isDp = true)
             {
-                float scale = isDp ? composition.DpScale : 1f;
+                var scale = isDp ? composition.DpScale : 1f;
                 if (json.ContainsKey("x"))
                 {
-                    Debug.WriteLine("Animation has expressions which are not supported.", L.Tag);
+                    Debug.WriteLine("Animation has expressions which are not supported.", "LOTTIE");
                 }
-                AnimatableValueParser<float?>.Result result = AnimatableValueParser<float?>.NewInstance(json, scale, composition, ValueFactory.Instance).ParseJson();
+                var result = AnimatableValueParser<float?>.NewInstance(json, scale, composition, ValueFactory.Instance).ParseJson();
                 return new AnimatableFloatValue(result.Keyframes, result.InitialValue);
             }
         }

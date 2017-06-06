@@ -5,7 +5,6 @@ namespace LottieUWP
 {
     internal class ColorKeyframeAnimation : KeyframeAnimation<Color>
     {
-
         internal ColorKeyframeAnimation(IList<IKeyframe<Color>> keyframes) : base(keyframes)
         {
         }

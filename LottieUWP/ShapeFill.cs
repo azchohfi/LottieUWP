@@ -17,14 +17,14 @@ namespace LottieUWP
             _opacity = opacity;
         }
 
-        internal class Factory
+        internal static class Factory
         {
             internal static ShapeFill NewInstance(JsonObject json, LottieComposition composition)
             {
                 AnimatableColorValue color = null;
                 bool fillEnabled;
                 AnimatableIntegerValue opacity = null;
-                string name = json.GetNamedString("nm");
+                var name = json.GetNamedString("nm");
 
                 var jsonColor = json.GetNamedObject("c", null);
                 if (jsonColor != null)
@@ -39,8 +39,8 @@ namespace LottieUWP
                 }
                 fillEnabled = json.GetNamedBoolean("fillEnabled", false);
 
-                int fillTypeInt = (int)json.GetNamedNumber("r", 1);
-                PathFillType fillType = fillTypeInt == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
+                var fillTypeInt = (int)json.GetNamedNumber("r", 1);
+                var fillType = fillTypeInt == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
 
                 return new ShapeFill(name, fillEnabled, fillType, color, opacity);
             }
