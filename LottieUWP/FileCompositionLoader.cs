@@ -6,12 +6,10 @@ namespace LottieUWP
 {
     internal sealed class FileCompositionLoader
     {
-        private readonly IOnCompositionLoadedListener _loadedListener;
         private readonly CancellationToken _cancellationToken;
 
-        internal FileCompositionLoader(IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken)
+        internal FileCompositionLoader(CancellationToken cancellationToken)
         {
-            _loadedListener = loadedListener;
             _cancellationToken = cancellationToken;
         }
 
@@ -23,9 +21,7 @@ namespace LottieUWP
             {
                 tcs.SetResult(LottieComposition.Factory.FromInputStream(resolutionScale, @params[0]));
             }, _cancellationToken);
-            var result = await tcs.Task;
-            _loadedListener.OnCompositionLoaded(result);
-            return result;
+            return await tcs.Task;
         }
     }
 }

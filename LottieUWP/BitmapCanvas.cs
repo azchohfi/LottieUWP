@@ -89,10 +89,13 @@ namespace LottieUWP
             
         }
 
-        public void DrawBitmap(WriteableBitmap bitmap, Rect src, Rect dst, Paint paint)
+        public void DrawBitmap(BitmapSource bitmap, Rect src, Rect dst, Paint paint)
         {
-            // Should use paint.ColorFilter and paint.Alpha
-            Bitmap.Blit(dst, bitmap, src, WriteableBitmapExtensions.BlendMode.Additive);
+            if (bitmap is WriteableBitmap writeableBitmap)
+            {
+                // TODO: Should use paint.ColorFilter and paint.Alpha
+                Bitmap.Blit(dst, writeableBitmap, src, WriteableBitmapExtensions.BlendMode.Additive);
+            }
         }
     }
 

@@ -7,12 +7,10 @@ namespace LottieUWP
 {
     internal sealed class JsonCompositionLoader
     {
-        private readonly IOnCompositionLoadedListener _loadedListener;
         private readonly CancellationToken _cancellationToken;
 
-        internal JsonCompositionLoader(IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken)
+        internal JsonCompositionLoader(CancellationToken cancellationToken)
         {
-            _loadedListener = loadedListener;
             _cancellationToken = cancellationToken;
         }
 
@@ -24,9 +22,7 @@ namespace LottieUWP
             {
                 tcs.SetResult(LottieComposition.Factory.FromJsonSync(resolutionScale, @params[0]));
             }, _cancellationToken);
-            var result = await tcs.Task;
-            _loadedListener.OnCompositionLoaded(result);
-            return result;
+            return await tcs.Task;
         }
     }
 }

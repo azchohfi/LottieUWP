@@ -11,7 +11,7 @@ namespace LottieUWP
         private readonly string _imagesFolder;
         private IImageAssetDelegate _assetDelegate;
         private readonly IDictionary<string, LottieImageAsset> _imageAssets;
-        private readonly IDictionary<string, WriteableBitmap> _bitmaps = new Dictionary<string, WriteableBitmap>();
+        private readonly IDictionary<string, BitmapSource> _bitmaps = new Dictionary<string, BitmapSource>();
 
         internal ImageAssetBitmapManager(string imagesFolder, IImageAssetDelegate assetDelegate, IDictionary<string, LottieImageAsset> imageAssets)
         {
@@ -37,15 +37,15 @@ namespace LottieUWP
             set => _assetDelegate = value;
         }
 
-        internal WriteableBitmap UpdateBitmap(string id, WriteableBitmap bitmap)
+        internal BitmapSource UpdateBitmap(string id, BitmapSource bitmap)
         {
             _bitmaps.Add(id, bitmap);
             return bitmap;
         }
 
-        internal virtual WriteableBitmap BitmapForId(string id)
+        internal virtual BitmapSource BitmapForId(string id)
         {
-            WriteableBitmap bitmap;
+            BitmapSource bitmap;
             if (_bitmaps.TryGetValue(id, out bitmap))
             {
                 var imageAsset = _imageAssets[id];
@@ -89,7 +89,7 @@ namespace LottieUWP
 
         internal virtual void RecycleBitmaps()
         {
-            var keyValuePairs = new HashSet<KeyValuePair<string, WriteableBitmap>>();
+            var keyValuePairs = new HashSet<KeyValuePair<string, BitmapSource>>();
             foreach (var keyValuePair in _bitmaps)
             {
                 keyValuePairs.Add(keyValuePair);
@@ -98,7 +98,7 @@ namespace LottieUWP
             for (var i = keyValuePairs.Count - 1; i >= 0; i--)
             {
                 var entry = keyValuePairs.ElementAt(i);
-                //entry.Value.recycle(); // TODO: Urgent, dispose!
+                //entry.Value.Recycle(); // TODO: Urgent, dispose!
                 keyValuePairs.Remove(entry);
             }
         }

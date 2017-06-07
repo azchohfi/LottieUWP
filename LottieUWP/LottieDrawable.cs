@@ -12,7 +12,7 @@ namespace LottieUWP
     /// If there are masks or mattes, then you MUST call <seealso cref="#recycleBitmaps()"/> when you are done
     /// or else you will leak bitmaps.
     /// <para>
-    /// It is preferable to use <seealso cref="com.airbnb.lottie.LottieAnimationView"/> when possible because it
+    /// It is preferable to use <seealso cref="LottieAnimationView"/> when possible because it
     /// handles bitmap recycling and asynchronous loading
     /// of compositions.
     /// </para>
@@ -28,7 +28,6 @@ namespace LottieUWP
 
         private readonly ISet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
         private ImageAssetBitmapManager _imageAssetBitmapManager;
-        private string _imageAssetsFolder;
         private IImageAssetDelegate _imageAssetDelegate;
         private bool _playAnimationWhenCompositionAdded;
         private bool _reverseAnimationWhenCompositionAdded;
@@ -36,47 +35,24 @@ namespace LottieUWP
         private bool _enableMergePaths;
         private CompositionLayer _compositionLayer;
         private int _alpha = 255;
+        internal BitmapCanvas Canvas;
 
-        public LottieDrawable(LottieAnimationView lottieAnimationView)
+        public LottieDrawable()
         {
             _animator.Loop = false;
             _animator.Interpolator = new LinearInterpolator();
-            _animator.AddUpdateListener(new AnimatorUpdateListenerAnonymousInnerClass(this, lottieAnimationView));
-        }
-
-        public interface IValueAnimatorAnimatorUpdateListener
-        {
-            void OnAnimationUpdate(ValueAnimator animation);
-        }
-
-        private class AnimatorUpdateListenerAnonymousInnerClass : IValueAnimatorAnimatorUpdateListener
-        {
-            private readonly LottieDrawable _outerInstance;
-            private readonly LottieAnimationView _lottieAnimationView;
-
-            public AnimatorUpdateListenerAnonymousInnerClass(LottieDrawable outerInstance, LottieAnimationView lottieAnimationView)
+            _animator.Update += (sender, e) =>
             {
-                _outerInstance = outerInstance;
-                _lottieAnimationView = lottieAnimationView;
-            }
-
-            public void OnAnimationUpdate(ValueAnimator animation)
-            {
-                if (_outerInstance._systemAnimationsAreDisabled)
+                if (_systemAnimationsAreDisabled)
                 {
-                    _outerInstance._animator.Cancel();
-                    _outerInstance.Progress = 1f;
+                    _animator.Cancel();
+                    Progress = 1f;
                 }
                 else
                 {
-                    _outerInstance.Progress = animation.AnimatedValue;
-                    if (_lottieAnimationView.Canvas != null)
-                    {
-                        _lottieAnimationView.Canvas.Bitmap.Clear(Colors.Transparent);
-                        _outerInstance.Draw(_lottieAnimationView.Canvas);
-                    }
+                    Progress = e.Animation.AnimatedValue;
                 }
-            }
+            };
         }
 
         /// <summary>
@@ -129,12 +105,7 @@ namespace LottieUWP
         /// are done. Calling <seealso cref="#recycleBitmaps()"/> doesn't have to be final and <seealso cref="LottieDrawable"/>
         /// will recreate the bitmaps if needed but they will leak if you don't recycle them.
         /// </summary>
-        public virtual string ImagesAssetsFolder
-        {
-            set => _imageAssetsFolder = value;
-        }
-
-        public virtual string ImageAssetsFolder => _imageAssetsFolder;
+        public virtual string ImageAssetsFolder { get; set; }
 
         /// <summary>
         /// If you have image assets and use <seealso cref="LottieDrawable"/> directly, you must call this yourself.
@@ -336,7 +307,7 @@ namespace LottieUWP
             set => _animator.Loop = value;
         }
 
-        public virtual bool Animating => _animator.Running;
+        public virtual bool IsAnimating => _animator.IsRunning;
 
         public virtual void PlayAnimation()
         {
@@ -415,10 +386,22 @@ namespace LottieUWP
             set
             {
                 _progress = value;
+                _animator.Progress = value;
                 if (_compositionLayer != null)
                 {
                     _compositionLayer.Progress = value;
                 }
+
+                if (Canvas == null)
+                {
+                    Canvas = CanvasPool.Instance.Acquire(Width, Height);
+                }
+                else
+                {
+                    Canvas.Bitmap.Clear(Colors.Transparent);
+                }
+
+                Draw(Canvas);
             }
             get => _progress;
         }
@@ -482,14 +465,10 @@ namespace LottieUWP
             _animator.Cancel();
         }
 
-        public virtual void AddAnimatorUpdateListener(IValueAnimatorAnimatorUpdateListener updateListener)
+        public event EventHandler<ValueAnimator.ValueAnimatorUpdateEventArgs> AnimatorUpdate
         {
-            _animator.AddUpdateListener(updateListener);
-        }
-
-        public virtual void RemoveAnimatorUpdateListener(IValueAnimatorAnimatorUpdateListener updateListener)
-        {
-            _animator.RemoveUpdateListener(updateListener);
+            add => _animator.Update += value;
+            remove => _animator.Update -= value;
         }
 
         public virtual void AddAnimatorListener(Animator.IAnimatorListener listener)
@@ -517,7 +496,7 @@ namespace LottieUWP
         /// <returns> the previous Bitmap or null.
         ///  </returns>
 
-        public virtual WriteableBitmap UpdateBitmap(string id, WriteableBitmap bitmap)
+        public virtual BitmapSource UpdateBitmap(string id, BitmapSource bitmap)
         {
             var bm = ImageAssetBitmapManager;
             if (bm == null)
@@ -530,7 +509,7 @@ namespace LottieUWP
             return ret;
         }
 
-        internal virtual WriteableBitmap GetImageAsset(string id)
+        internal virtual BitmapSource GetImageAsset(string id)
         {
             return ImageAssetBitmapManager?.BitmapForId(id);
         }
@@ -547,7 +526,7 @@ namespace LottieUWP
 
                 if (_imageAssetBitmapManager == null)
                 {
-                    _imageAssetBitmapManager = new ImageAssetBitmapManager(_imageAssetsFolder, _imageAssetDelegate, _composition.Images);
+                    _imageAssetBitmapManager = new ImageAssetBitmapManager(ImageAssetsFolder, _imageAssetDelegate, _composition.Images);
                 }
 
                 return _imageAssetBitmapManager;

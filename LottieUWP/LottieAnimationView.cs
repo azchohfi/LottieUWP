@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -46,27 +47,6 @@ namespace LottieUWP
         private static readonly IDictionary<string, LottieComposition> StrongRefCache = new Dictionary<string, LottieComposition>();
         private static readonly IDictionary<string, WeakReference<LottieComposition>> WeakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
 
-        private readonly IOnCompositionLoadedListener _loadedListener;
-
-        private class OnCompositionLoadedListenerAnonymousInnerClass : IOnCompositionLoadedListener
-        {
-            private readonly LottieAnimationView _lottieAnimationView;
-
-            public OnCompositionLoadedListenerAnonymousInnerClass(LottieAnimationView lottieAnimationView)
-            {
-                _lottieAnimationView = lottieAnimationView;
-            }
-
-            public void OnCompositionLoaded(LottieComposition composition)
-            {
-                if (composition != null)
-                {
-                    _lottieAnimationView.Composition = composition;
-                }
-                _lottieAnimationView._compositionLoader = null;
-            }
-        }
-
         private readonly LottieDrawable _lottieDrawable;
 
         public CacheStrategy DefaultCacheStrategy
@@ -99,10 +79,10 @@ namespace LottieUWP
         public static readonly DependencyProperty FileNameProperty =
             DependencyProperty.Register("FileName", typeof(string), typeof(LottieAnimationView), new PropertyMetadata(null, FileNamePropertyChangedCallback));
 
-        private static void FileNamePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        private static async void FileNamePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             var lottieAnimationView = dependencyObject as LottieAnimationView;
-            lottieAnimationView?.SetAnimation((string)e.NewValue);
+            await lottieAnimationView?.SetAnimationAsync((string)e.NewValue);
         }
 
         public bool AutoPlay
@@ -159,7 +139,7 @@ namespace LottieUWP
         private static void ImageAssetsFolderPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             if (dependencyObject is LottieAnimationView lottieAnimationView)
-                lottieAnimationView._lottieDrawable.ImagesAssetsFolder = (string)e.NewValue;
+                lottieAnimationView._lottieDrawable.ImageAssetsFolder = (string)e.NewValue;
         }
 
         public Color ColorFilter
@@ -191,8 +171,6 @@ namespace LottieUWP
         public static readonly DependencyProperty ScaleProperty =
             DependencyProperty.Register("Scale", typeof(float), typeof(LottieAnimationView), new PropertyMetadata(1, ScalePropertyChangedCallback));
 
-        internal BitmapCanvas Canvas;
-
         private static void ScalePropertyChangedCallback(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs e)
         {
@@ -209,12 +187,11 @@ namespace LottieUWP
 
         public LottieAnimationView()
         {
-            _lottieDrawable = new LottieDrawable(this);
-            _loadedListener = new OnCompositionLoadedListenerAnonymousInnerClass(this);
+            _lottieDrawable = new LottieDrawable();
 
             if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled && !string.IsNullOrEmpty(FileName))
             {
-                SetAnimation(FileName);
+                SetAnimationAsync(FileName).RunSynchronously();
             }
             if (AutoPlay)
             {
@@ -254,8 +231,11 @@ namespace LottieUWP
                     RecycleBitmaps();
                 }
 
-                // TODO: verify
-                //base.ImageDrawable = value;
+                Content = new Image
+                {
+                    Stretch = Stretch.None,
+                    Source = value?.Canvas.Bitmap
+                };
             }
         }
 
@@ -414,9 +394,9 @@ namespace LottieUWP
         /// Will not cache the composition once loaded.
         /// </para>
         /// </summary>
-        public virtual void SetAnimation(string animationName)
+        public virtual async Task SetAnimationAsync(string animationName)
         {
-            SetAnimation(animationName, DefaultCacheStrategy);
+            await SetAnimationAsync(animationName, DefaultCacheStrategy);
         }
 
         /// <summary>
@@ -428,14 +408,13 @@ namespace LottieUWP
         /// and deserialized. <seealso cref="CacheStrategy#Weak"/> will hold a weak reference to said composition.
         /// </para>
         /// </summary>
-        public virtual void SetAnimation(string animationName, CacheStrategy cacheStrategy)
+        public virtual async Task SetAnimationAsync(string animationName, CacheStrategy cacheStrategy)
         {
             _animationName = animationName;
             if (WeakRefCache.ContainsKey(animationName))
             {
                 var compRef = WeakRefCache[animationName];
-                LottieComposition lottieComposition;
-                if (compRef.TryGetTarget(out lottieComposition))
+                if (compRef.TryGetTarget(out LottieComposition lottieComposition))
                 {
                     Composition = lottieComposition;
                     return;
@@ -452,37 +431,21 @@ namespace LottieUWP
             CancelLoaderTask();
 
             var cancellationTokenSource = new CancellationTokenSource();
-            LottieComposition.Factory.FromAssetFileNameAsync(animationName, new OnCompositionLoadedListenerAnonymousInnerClass2(this, animationName, cacheStrategy), cancellationTokenSource.Token);
+
             _compositionLoader = cancellationTokenSource;
-        }
 
-        private class OnCompositionLoadedListenerAnonymousInnerClass2 : IOnCompositionLoadedListener
-        {
-            private readonly LottieAnimationView _outerInstance;
+            var composition = await LottieComposition.Factory.FromAssetFileNameAsync(animationName, cancellationTokenSource.Token);
 
-            private readonly string _animationName;
-            private readonly CacheStrategy _cacheStrategy;
-
-            public OnCompositionLoadedListenerAnonymousInnerClass2(LottieAnimationView outerInstance, string animationName, CacheStrategy cacheStrategy)
+            if (cacheStrategy == CacheStrategy.Strong)
             {
-                _outerInstance = outerInstance;
-                _animationName = animationName;
-                _cacheStrategy = cacheStrategy;
+                StrongRefCache[animationName] = composition;
+            }
+            else if (cacheStrategy == CacheStrategy.Weak)
+            {
+                WeakRefCache[animationName] = new WeakReference<LottieComposition>(composition);
             }
 
-            public void OnCompositionLoaded(LottieComposition composition)
-            {
-                if (_cacheStrategy == CacheStrategy.Strong)
-                {
-                    StrongRefCache[_animationName] = composition;
-                }
-                else if (_cacheStrategy == CacheStrategy.Weak)
-                {
-                    WeakRefCache[_animationName] = new WeakReference<LottieComposition>(composition);
-                }
-
-                _outerInstance.Composition = composition;
-            }
+            Composition = composition;
         }
 
         /// <summary>
@@ -493,15 +456,20 @@ namespace LottieUWP
         /// bodymovin json from the network and pass it directly here.
         /// </para>
         /// </summary>
-        public virtual JsonObject Animation
+        public virtual async Task SetAnimationAsync(JsonObject value)
         {
-            set
+            CancelLoaderTask();
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            _compositionLoader = cancellationTokenSource;
+
+            var composition = await LottieComposition.Factory.FromJsonAsync(value, cancellationTokenSource.Token);
+
+            if (composition != null)
             {
-                CancelLoaderTask();
-                var cancellationTokenSource = new CancellationTokenSource();
-                LottieComposition.Factory.FromJsonAsync(value, _loadedListener, cancellationTokenSource.Token);
-                _compositionLoader = cancellationTokenSource;
+                Composition = composition;
             }
+            _compositionLoader = null;
         }
 
         private void CancelLoaderTask()
@@ -551,16 +519,6 @@ namespace LottieUWP
                 ImageDrawable = null;
                 ImageDrawable = _lottieDrawable;
 
-                Progress = 0.5f;
-                Canvas = CanvasPool.Instance.Acquire(_lottieDrawable.Width, _lottieDrawable.Height);
-                _lottieDrawable.Draw(Canvas);
-
-                Content = new Image
-                {
-                    Stretch = Stretch.None,
-                    Source = Canvas.Bitmap
-                };
-
                 _composition = value;
 
                 UpdateLayout(); // TODO: Is this equivalent?
@@ -585,14 +543,10 @@ namespace LottieUWP
             return _lottieDrawable.HasMatte();
         }
 
-        public virtual void AddAnimatorUpdateListener(LottieDrawable.IValueAnimatorAnimatorUpdateListener updateListener)
+        public event EventHandler<ValueAnimator.ValueAnimatorUpdateEventArgs> AnimatorUpdate
         {
-            _lottieDrawable.AddAnimatorUpdateListener(updateListener);
-        }
-
-        public virtual void RemoveUpdateListener(LottieDrawable.IValueAnimatorAnimatorUpdateListener updateListener)
-        {
-            _lottieDrawable.RemoveAnimatorUpdateListener(updateListener);
+            add => _lottieDrawable.AnimatorUpdate += value;
+            remove => _lottieDrawable.AnimatorUpdate -= value;
         }
 
         public virtual void AddAnimatorListener(Animator.IAnimatorListener listener)
@@ -605,7 +559,7 @@ namespace LottieUWP
             _lottieDrawable.RemoveAnimatorListener(listener);
         }
 
-        public virtual bool Animating => _lottieDrawable.Animating;
+        public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
 
         public virtual void PlayAnimation()
         {
@@ -641,7 +595,7 @@ namespace LottieUWP
         /// Allows you to modify or clear a bitmap that was loaded for an image either automatically 
         /// through {@link #setImageAssetsFolder(String)} or with an {@link ImageAssetDelegate}. 
         /// Return the previous Bitmap or null. 
-        public WriteableBitmap UpdateBitmap(string id, WriteableBitmap bitmap)
+        public BitmapSource UpdateBitmap(string id, BitmapSource bitmap)
         {
             return _lottieDrawable.UpdateBitmap(id, bitmap);
         }
@@ -680,7 +634,7 @@ namespace LottieUWP
 
         private void EnableOrDisableHardwareLayer()
         {
-            var useHardwareLayer = _useHardwareLayer && _lottieDrawable.Animating;
+            var useHardwareLayer = _useHardwareLayer && _lottieDrawable.IsAnimating;
             //setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
             // TODO: FIX
         }

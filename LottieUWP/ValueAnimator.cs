@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 
 namespace LottieUWP
 {
@@ -6,19 +6,20 @@ namespace LottieUWP
     {
         private ValueAnimator()
         {
+            Interpolator = new AccelerateDecelerateInterpolator();
         }
 
-        readonly List<LottieDrawable.IValueAnimatorAnimatorUpdateListener> _updateListeners = new List<LottieDrawable.IValueAnimatorAnimatorUpdateListener>();
-
-        public void AddUpdateListener(LottieDrawable.IValueAnimatorAnimatorUpdateListener updateListener)
+        public class ValueAnimatorUpdateEventArgs : EventArgs
         {
-            _updateListeners.Add(updateListener);
+            public ValueAnimator Animation { get; }
+
+            public ValueAnimatorUpdateEventArgs(ValueAnimator animation)
+            {
+                Animation = animation;
+            }
         }
 
-        public void RemoveUpdateListener(LottieDrawable.IValueAnimatorAnimatorUpdateListener updateListener)
-        {
-            _updateListeners.Remove(updateListener);
-        }
+        public event EventHandler<ValueAnimatorUpdateEventArgs> Update;
 
         private float _floatValue1;
         private float _floatValue2;
@@ -37,10 +38,7 @@ namespace LottieUWP
 
         void OnAnimationUpdate()
         {
-            foreach (var listener in _updateListeners)
-            {
-                listener.OnAnimationUpdate(this);
-            }
+            Update?.Invoke(this, new ValueAnimatorUpdateEventArgs(this));
         }
 
         protected override void TimerCallback(object sender, object e)

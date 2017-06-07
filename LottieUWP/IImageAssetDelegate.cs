@@ -7,6 +7,6 @@ namespace LottieUWP
     /// </summary>
     public interface IImageAssetDelegate
     {
-        WriteableBitmap FetchBitmap(LottieImageAsset asset);
+        BitmapSource FetchBitmap(LottieImageAsset asset);
     }
 }

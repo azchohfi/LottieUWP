@@ -88,7 +88,7 @@ namespace LottieUWP
             /// <summary>
             /// Loads a composition from a file stored in /assets.
             /// </summary>
-            public static async Task<LottieComposition> FromAssetFileNameAsync(string fileName, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<LottieComposition> FromAssetFileNameAsync(string fileName, CancellationToken cancellationToken = default(CancellationToken))
             {
                 Stream stream;
                 try
@@ -99,7 +99,7 @@ namespace LottieUWP
                 {
                     throw new InvalidOperationException("Unable to find file " + fileName, e);
                 }
-                return await FromInputStreamAsync(stream, loadedListener, cancellationToken);
+                return await FromInputStreamAsync(stream, cancellationToken);
             }
 
             /// <summary>
@@ -108,9 +108,9 @@ namespace LottieUWP
             /// ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
             /// </para>
             /// </summary>
-            public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var loader = new FileCompositionLoader(loadedListener, cancellationToken);
+                var loader = new FileCompositionLoader(cancellationToken);
                 return await loader.Execute(stream);
             }
 
@@ -132,9 +132,9 @@ namespace LottieUWP
             /// Loads a composition from a raw json object. This is useful for animations loaded from the
             /// network.
             /// </summary>
-            public static async Task<LottieComposition> FromJsonAsync(JsonObject json, IOnCompositionLoadedListener loadedListener, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<LottieComposition> FromJsonAsync(JsonObject json, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var loader = new JsonCompositionLoader(loadedListener, cancellationToken);
+                var loader = new JsonCompositionLoader(cancellationToken);
                 return await loader.Execute(json);
             }
 

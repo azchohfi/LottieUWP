@@ -29,14 +29,14 @@ namespace LottieUWP.Sample
             }
         }
 
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listView = sender as ListView;
 
             if (listView == null)
                 return;
 
-            LottieAnimationView.SetAnimation((string)listView.SelectedItem);
+            await LottieAnimationView.SetAnimationAsync((string)listView.SelectedItem);
             LottieAnimationView.PlayAnimation();
         }
     }

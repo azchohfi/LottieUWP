@@ -18,8 +18,12 @@ namespace LottieUWP
         public bool Loop { get; set; }
         public long Duration { get; set; }
         public long CurrentPlayTime { get; set; }
-        public bool Running => _timer != null;
-        public float Progress => CurrentPlayTime / (float) Duration;
+        public bool IsRunning => _timer != null;
+        public float Progress
+        {
+            get => CurrentPlayTime / (float) Duration;
+            set => CurrentPlayTime = (long)(Duration * value);
+        }
 
         protected Animator()
         {

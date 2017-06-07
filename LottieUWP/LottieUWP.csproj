@@ -107,6 +107,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AccelerateDecelerateInterpolator.cs" />
     <Compile Include="AnimatableColorValue.cs" />
     <Compile Include="AnimatableFloatValue.cs" />
     <Compile Include="AnimatableGradientColorValue.cs" />
@@ -182,7 +183,6 @@
     <Compile Include="MiscUtils.cs" />
     <Compile Include="IModifierContent.cs" />
     <Compile Include="NullLayer.cs" />
-    <Compile Include="IOnCompositionLoadedListener.cs" />
     <Compile Include="Paint.cs" />
     <Compile Include="Path.cs" />
     <Compile Include="IPathContent.cs" />

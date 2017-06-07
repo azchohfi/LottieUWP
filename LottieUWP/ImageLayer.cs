@@ -44,7 +44,7 @@ namespace LottieUWP
             }
         }
 
-        private WriteableBitmap Bitmap
+        private BitmapSource Bitmap
         {
             get
             {
