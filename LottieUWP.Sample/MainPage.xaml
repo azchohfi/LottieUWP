@@ -12,9 +12,7 @@
             <RowDefinition Height="3*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="LottieAnimationViewContainer">
-            <lottieUwp:LottieAnimationView FileName="Assets/Gears.json" AutoPlay="True" Loop="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        </Grid>
+        <lottieUwp:LottieAnimationView x:Name="LottieAnimationView" FileName="Assets/Gears.json" AutoPlay="True" Loop="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <ListView Grid.Row="1" ItemsSource="{x:Bind Files}" SelectionChanged="Selector_OnSelectionChanged"/>
     </Grid>
 </Page>

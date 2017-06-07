@@ -36,16 +36,8 @@ namespace LottieUWP.Sample
             if (listView == null)
                 return;
 
-            LottieAnimationViewContainer.Children.RemoveAt(0);
-            var lottieAnimationView = new LottieAnimationView
-            {
-                FileName = (string) listView.SelectedItem,
-                AutoPlay = true,
-                Loop = true,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            LottieAnimationViewContainer.Children.Add(lottieAnimationView);
+            LottieAnimationView.SetAnimation((string)listView.SelectedItem);
+            LottieAnimationView.PlayAnimation();
         }
     }
 }

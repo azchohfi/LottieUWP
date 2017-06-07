@@ -45,8 +45,8 @@ namespace LottieUWP
 
         internal virtual WriteableBitmap BitmapForId(string id)
         {
-            var bitmap = _bitmaps[id];
-            if (bitmap == null)
+            WriteableBitmap bitmap;
+            if (_bitmaps.TryGetValue(id, out bitmap))
             {
                 var imageAsset = _imageAssets[id];
                 if (imageAsset == null)
