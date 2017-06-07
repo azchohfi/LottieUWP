@@ -8,8 +8,8 @@ namespace LottieUWP
         {
             rect.X = x;
             rect.Y = y;
-            rect.Width = width;
-            rect.Height = height;
+            rect.Width = width > 0 ?  width : 0;
+            rect.Height = height > 0 ? height : 0;
         }
 
         public static void Set(ref Rect rect, Rect newRect)

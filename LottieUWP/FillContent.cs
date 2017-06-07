@@ -81,7 +81,7 @@ namespace LottieUWP
             {
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
-            _path.ComputeBounds(out outBounds, false);
+            _path.ComputeBounds(out outBounds);
             // Add padding to account for rounding errors.
             RectExt.Set(ref outBounds, outBounds.Left - 1, outBounds.Top - 1, outBounds.Right + 1, outBounds.Bottom + 1);
         }

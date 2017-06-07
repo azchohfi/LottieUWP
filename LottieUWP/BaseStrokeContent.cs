@@ -242,7 +242,7 @@ namespace LottieUWP
                     _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
                 }
             }
-            _path.ComputeBounds(out _rect, false);
+            _path.ComputeBounds(out _rect);
 
             var width = _widthAnimation.Value.Value;
             RectExt.Set(ref _rect, _rect.Left - width / 2f, _rect.Top - width / 2f, _rect.Right + width / 2f, _rect.Bottom + width / 2f);

@@ -69,15 +69,12 @@ namespace LottieUWP
                     var p1 = points[i];
                     var p2 = points[i + 1];
                     var d = new PointF(p2.X - p1.X, p2.Y - p1.Y).Length();
-                    if (sum + d < distance)
-                    {
-                        sum += d;
-                    }
-                    else
+                    if (sum + d >= distance)
                     {
                         var p = (sum + d - distance) / d;
                         return new PointF((float)(p1.X + (p2.X - p1.X) * p), (float)(p1.Y + (p2.Y - p1.Y) * p));
                     }
+                    sum += d;
                 }
             }
 

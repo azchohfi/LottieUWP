@@ -244,7 +244,7 @@ namespace LottieUWP
                         return;
                     case Mask.MaskMode.MaskModeAdd:
                     default:
-                        _path.ComputeBounds(out _tempMaskBoundsRect, false);
+                        _path.ComputeBounds(out _tempMaskBoundsRect);
                         // As we iterate through the masks, we want to calculate the union region of the masks.
                         // We initialize the rect with the first mask. If we don't call set() on the first call,
                         // the rect will always extend to (0,0).

@@ -61,8 +61,20 @@ namespace LottieUWP
                 contour[i].Set(multiplied[0, i], multiplied[1, i]);
         }
 
-        public void ComputeBounds(out Rect rect, bool b)
+        public void ComputeBounds(out Rect rect)
         {
+            if (Points.Sum(p => p.Count) <= 1)
+            {
+                RectExt.Set(ref rect, 0, 0, 0, 0);
+                return;
+            }
+
+            double x = Points.Min(p => p.Min(point => point.X));
+            double y = Points.Min(p => p.Min(point => point.Y));
+            double width = Points.Max(p => p.Max(point => point.X)) - x;
+            double height = Points.Max(p => p.Max(point => point.Y)) - y;
+
+            RectExt.Set(ref rect, x, y, width, height);
         }
 
         public void AddPath(Path path, DenseMatrix matrix)

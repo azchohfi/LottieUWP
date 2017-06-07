@@ -8,6 +8,13 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <lottieUwp:LottieAnimationView FileName="Assets/Gears.json" AutoPlay="True" Loop="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="LottieAnimationViewContainer">
+            <lottieUwp:LottieAnimationView FileName="Assets/Gears.json" AutoPlay="True" Loop="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
+        <ListView Grid.Row="1" ItemsSource="{x:Bind Files}" SelectionChanged="Selector_OnSelectionChanged"/>
     </Grid>
 </Page>

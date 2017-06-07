@@ -76,7 +76,7 @@ namespace LottieUWP
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
 
-            _path.ComputeBounds(out _boundsRect, false);
+            _path.ComputeBounds(out _boundsRect);
 
             Shader shader;
             if (_type == GradientType.Linear)
@@ -105,7 +105,7 @@ namespace LottieUWP
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
 
-            _path.ComputeBounds(out outBounds, false);
+            _path.ComputeBounds(out outBounds);
             // Add padding to account for rounding errors.
             RectExt.Set(ref outBounds, outBounds.Left - 1, outBounds.Top - 1, outBounds.Right + 1, outBounds.Bottom + 1);
         }
