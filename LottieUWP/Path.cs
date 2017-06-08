@@ -87,6 +87,7 @@ namespace LottieUWP
 
         public void AddPath(Path path)
         {
+            // should we consider _isClosed?
             Points.AddRange(path.Points.Select(p => p.Select(p2 => new PointF(p2.X, p2.Y)).ToList()).ToList());
         }
 

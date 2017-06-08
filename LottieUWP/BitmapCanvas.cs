@@ -55,10 +55,8 @@ namespace LottieUWP
             }
             else
             {
-                var points = new List<int>();
                 for (var i = 0; i < path.Points.Count; i++)
                 {
-                    points.AddRange(path.Points[i].Select(p => new[] {(int) p.X, (int) p.Y}).SelectMany(p => p));
                     Bitmap.FillPolygon(path.Points[i].Select(p => new[] { (int)p.X, (int)p.Y }).SelectMany(p => p).ToArray(), paint.Color);
                 }
             }

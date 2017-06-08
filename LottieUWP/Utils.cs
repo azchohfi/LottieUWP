@@ -129,18 +129,18 @@ namespace LottieUWP
             }
 
             _tempPath.Reset();
-            PathMeasure.GetSegment(newStart, newEnd, out _tempPath, true);
+            PathMeasure.GetSegment(newStart, newEnd, ref _tempPath, true);
 
             if (newEnd > length)
             {
                 _tempPath2.Reset();
-                PathMeasure.GetSegment(0, newEnd % length, out _tempPath2, true);
+                PathMeasure.GetSegment(0, newEnd % length, ref _tempPath2, true);
                 _tempPath.AddPath(_tempPath2);
             }
             else if (newStart < 0)
             {
                 _tempPath2.Reset();
-                PathMeasure.GetSegment(length + newStart, length, out _tempPath2, true);
+                PathMeasure.GetSegment(length + newStart, length, ref _tempPath2, true);
                 _tempPath.AddPath(_tempPath2);
             }
             path.Set(_tempPath);

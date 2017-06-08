@@ -392,7 +392,7 @@ namespace LottieUWP
                     _compositionLayer.Progress = value;
                 }
 
-                if (Canvas == null)
+                if (Canvas == null || Canvas.Width != Width || Canvas.Height != Height)
                 {
                     Canvas = CanvasPool.Instance.Acquire(Width, Height);
                 }
