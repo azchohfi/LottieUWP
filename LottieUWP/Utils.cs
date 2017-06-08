@@ -87,6 +87,10 @@ namespace LottieUWP
             PathMeasure.SetPath(path, false);
 
             var length = PathMeasure.Length;
+            if (startValue == 1f && endValue == 0f)
+            {
+                return;
+            }
             if (length == 0f || Math.Abs(endValue - startValue - 1) < .01)
             {
                 return;

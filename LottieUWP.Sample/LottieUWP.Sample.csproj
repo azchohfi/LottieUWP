@@ -106,11 +106,9 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <Content Include="Assets\9squares-AlBoardman.json" />
-    <Content Include="Assets\Belo Foggy.json" />
     <Content Include="Assets\EmptyState.json" />
     <Content Include="Assets\HamburgerArrow.json" />
     <Content Include="Assets\Logo\LogoSmall.json" />
-    <Content Include="Assets\LottieBoundsTest_01.json" />
     <Content Include="Assets\lottiefiles.com - Animated Graph.json" />
     <Content Include="Assets\lottiefiles.com - ATM.json" />
     <Content Include="Assets\lottiefiles.com - Beating Heart.json" />
@@ -192,6 +190,15 @@
     <Content Include="Assets\Walkthrough\Walkthrough.json" />
     <Content Include="Assets\WeAccept.json" />
     <Content Include="Assets\Gears.json" />
+    <Content Include="Assets\lottiefiles.com - Curly Hair.json" />
+    <Content Include="Assets\lottiefiles.com - Day Night.json" />
+    <Content Include="Assets\lottiefiles.com - Loader 5.json" />
+    <Content Include="Assets\lottiefiles.com - Notifications.json" />
+    <Content Include="Assets\lottiefiles.com - Nudge.json" />
+    <Content Include="Assets\lottiefiles.com - React.json" />
+    <Content Include="Assets\lottiefiles.com - VR Sickness.json" />
+    <Content Include="Assets\lottiefiles.com - VR.json" />
+    <Content Include="Assets\lottifiles.com - QR Scan.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
