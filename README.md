@@ -81,8 +81,9 @@ if (animationView.IsAnimating)
 animationView.Progress = 0.5f;
 ...
 // Custom animation speed or duration.
-ValueAnimator animator = ValueAnimator.OfFloat(0f, 1f).SetDuration(500);
-animator.Update += (sender, e) => animationView.Progress = (float)e.Animation.AnimatedValue;
+ValueAnimator animator = ValueAnimator.OfFloat(0f, 1f);
+animator.Duration = 500;
+animator.Update += (sender, e) => animationView.Progress = e.Animation.AnimatedValue;
 animator.Start();
 ...
 animationView.CancelAnimation();
