@@ -7,6 +7,7 @@ Lottie is a mobile library for Android and iOS that parses [Adobe After Effects]
 
 UWP: [![NuGet Badge](https://chohfi.visualstudio.com/_apis/public/build/definitions/be40ef7f-40f7-491c-8bca-b3c52c625319/14/badge)](https://www.nuget.org/packages/LottieUWP/)
 
+MyGet: [https://www.myget.org/F/azchohfi/api/v3/index.json](https://www.myget.org/F/azchohfi/api/v3/index.json)
 
 For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it by hand. They say a picture is worth 1,000 words so here are 13,000:
 
