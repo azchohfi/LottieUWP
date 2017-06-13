@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Windows.Data.Json;
 
 namespace LottieUWP
@@ -43,7 +42,7 @@ namespace LottieUWP
             {
                 if (json.ContainsKey("x"))
                 {
-                    Debug.WriteLine("Animation has expressions which are not supported.", "LOTTIE");
+                    composition.AddWarning("Lottie doesn't support expressions.");
                 }
                 var result = AnimatableValueParser<int?>.NewInstance(json, 1, composition, ValueFactory.Instance).ParseJson();
                 var initialValue = result.InitialValue;

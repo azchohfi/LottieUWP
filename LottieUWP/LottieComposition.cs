@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace LottieUWP
         private readonly IDictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
         private readonly Dictionary<long, Layer> _layerMap = new Dictionary<long, Layer>();
         private readonly IList<Layer> _layers = new List<Layer>();
+        // This is stored as a set to avoid duplicates.
+        private readonly HashSet<string> _warnings = new HashSet<string>();
         private readonly long _startFrame;
         private readonly long _endFrame;
         private readonly int _frameRate;
@@ -35,6 +38,14 @@ namespace LottieUWP
             _frameRate = frameRate;
             DpScale = dpScale;
         }
+
+        internal void AddWarning(string warning)
+        {
+            Debug.WriteLine(warning, "LOTTIE");
+            _warnings.Add(warning);
+        }
+
+        public List<string> Warnings => _warnings.ToList();
 
         internal virtual Layer LayerModelForId(long id)
         {
@@ -71,7 +82,7 @@ namespace LottieUWP
 
         internal virtual float DurationFrames => Duration * (float)_frameRate / 1000f;
 
-        public virtual float DpScale { get; }
+        internal virtual float DpScale { get; }
 
         public override string ToString()
         {
@@ -195,7 +206,7 @@ namespace LottieUWP
             {
                 var jsonLayers = json.GetNamedArray("layers", null);
                 // This should never be null. Bodymovin always exports at least an empty array.
-                // However, it seems as if the demarshalling from the React Native library sometimes
+                // However, it seems as if the unmarshalling from the React Native library sometimes
                 // causes this to be null. The proper fix should be done there but this will prevent a crash.
                 // https://github.com/airbnb/lottie-android/issues/279
                 if (jsonLayers == null)
@@ -203,10 +214,20 @@ namespace LottieUWP
                     return;
                 }
                 var length = jsonLayers.Count;
+                var imageCount = 0;
                 for (var i = 0; i < length; i++)
                 {
                     var layer = Layer.Factory.NewInstance(jsonLayers[i].GetObject(), composition);
+                    if (layer.GetLayerType() == Layer.LayerType.Image)
+                    {
+                        imageCount++;
+                    }
                     AddLayer(composition._layers, composition._layerMap, layer);
+                }
+
+                if (imageCount > 4)
+                {
+                    composition.AddWarning($"You have {imageCount} images. Lottie should primarily be used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers to shape layers.");
                 }
             }
 

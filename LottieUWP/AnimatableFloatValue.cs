@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Windows.Data.Json;
 
 namespace LottieUWP
@@ -53,12 +52,11 @@ namespace LottieUWP
                 var scale = isDp ? composition.DpScale : 1f;
                 if (json.ContainsKey("x"))
                 {
-                    Debug.WriteLine("Animation has expressions which are not supported.", "LOTTIE");
+                    composition.AddWarning("Lottie doesn't support expressions.");
                 }
                 var result = AnimatableValueParser<float?>.NewInstance(json, scale, composition, ValueFactory.Instance).ParseJson();
                 return new AnimatableFloatValue(result.Keyframes, result.InitialValue);
             }
         }
     }
-
 }

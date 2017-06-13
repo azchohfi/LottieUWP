@@ -152,6 +152,12 @@ namespace LottieUWP
             {
                 var layerName = json.GetNamedString("nm");
                 var refId = json.GetNamedString("refId", string.Empty);
+
+                if (layerName.EndsWith(".ai") || json.GetNamedString("cl", "").Equals("ai"))
+                {
+                    composition.AddWarning("Convert your Illustrator layers to shape layers.");
+                }
+
                 var layerId = (long)json.GetNamedNumber("ind");
                 var solidWidth = 0;
                 var solidHeight = 0;
@@ -205,6 +211,13 @@ namespace LottieUWP
                             shapes.Add(shape);
                         }
                     }
+                }
+
+                if (json.ContainsKey("ef"))
+                {
+                    composition.AddWarning("Lottie doesn't support layer effects. If you are using them for " +
+                                            " fills, strokes, trim paths etc. then try adding them directly as contents " +
+                                            " in your shape.");
                 }
 
                 var timeStretch = (float)json.GetNamedNumber("sr", 1.0);
