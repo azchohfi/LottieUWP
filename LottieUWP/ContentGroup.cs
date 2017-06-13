@@ -212,14 +212,14 @@ namespace LottieUWP
             }
         }
 
-        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             _matrix.Set(parentMatrix);
-            int alpha;
+            byte alpha;
             if (_transformAnimation != null)
             {
                 _matrix = MatrixExt.PreConcat(_matrix, _transformAnimation.Matrix);
-                alpha = (int)(_transformAnimation.Opacity.Value / 100f * parentAlpha / 255f * 255);
+                alpha = (byte)(_transformAnimation.Opacity.Value / 100f * parentAlpha / 255f * 255);
             }
             else
             {

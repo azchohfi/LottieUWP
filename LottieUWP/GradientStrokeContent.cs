@@ -41,7 +41,7 @@ namespace LottieUWP
             layer.AddAnimation(_endPointAnimation);
         }
 
-        public override void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             GetBounds(out _boundsRect, parentMatrix);
             if (_type == GradientType.Linear)

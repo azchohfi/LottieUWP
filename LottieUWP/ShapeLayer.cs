@@ -16,7 +16,7 @@ namespace LottieUWP
             _contentGroup.SetContents(new List<IContent>(), new List<IContent>());
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             _contentGroup.Draw(canvas, parentMatrix, parentAlpha);
         }

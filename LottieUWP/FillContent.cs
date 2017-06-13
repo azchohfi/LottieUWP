@@ -59,10 +59,10 @@ namespace LottieUWP
             _paint.ColorFilter = colorFilter;
         }
 
-        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             _paint.Color = _colorAnimation.Value;
-            var alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
+            var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
 
             _path.Reset();

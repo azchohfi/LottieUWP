@@ -4,6 +4,8 @@ namespace LottieUWP
 {
     public class PointF
     {
+        public static readonly PointF Zero = new PointF(0, 0);
+
         public PointF(float x, float y)
         {
             X = x;

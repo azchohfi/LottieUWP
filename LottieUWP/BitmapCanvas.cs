@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media.Imaging;
 using MathNet.Numerics.LinearAlgebra.Single;
@@ -46,6 +45,23 @@ namespace LottieUWP
 
         public void DrawPath(Path path, Paint paint)
         {
+            if (paint.Style == Paint.PaintStyle.Stroke)
+            {
+                DrawPathStroke(path, paint);
+            }
+            else if (paint.Style == Paint.PaintStyle.Fill)
+            {
+                DrawPathFill(path, paint);
+            }
+            else if (paint.Style == Paint.PaintStyle.FillAndStroke)
+            {
+                DrawPathFill(path, paint);
+                DrawPathStroke(path, paint);
+            }
+        }
+
+        private void DrawPathFill(Path path, Paint paint)
+        {
             if (path.FillType == PathFillType.EvenOdd)
             {
                 var polygons = path.Points
@@ -55,9 +71,36 @@ namespace LottieUWP
             }
             else
             {
-                for (var i = 0; i < path.Points.Count; i++)
+                if (paint.PathEffect != null)
                 {
-                    Bitmap.FillPolygon(path.Points[i].Select(p => new[] { (int)p.X, (int)p.Y }).SelectMany(p => p).ToArray(), paint.Color);
+                    for (var i = 0; i < path.Points.Count; i++)
+                    {
+                        Bitmap.FillPolygon(
+                            path.Points[i].Select(p => new[] { (int)p.X, (int)p.Y }).SelectMany(p => p).ToArray(),
+                            paint.PathEffect.GetColor(paint));
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < path.Points.Count; i++)
+                    {
+                        Bitmap.FillPolygon(
+                            path.Points[i].Select(p => new[] {(int) p.X, (int) p.Y}).SelectMany(p => p).ToArray(),
+                            paint.Color);
+                    }
+                }
+            }
+        }
+
+        private void DrawPathStroke(Path path, Paint paint)
+        {
+            for (var i = 0; i < path.Points.Count; i++)
+            {
+                for (int j = 0; j < path.Points[i].Count - 1; j++)
+                {
+                    var p1 = path.Points[i][j];
+                    var p2 = path.Points[i][j + 1];
+                    Bitmap.DrawLineAa((int) p1.X, (int) p1.Y, (int) p2.X, (int) p2.Y, paint.Color, (int)paint.StrokeWidth);
                 }
             }
         }

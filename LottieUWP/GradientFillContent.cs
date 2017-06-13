@@ -68,7 +68,7 @@ namespace LottieUWP
             }
         }
 
-        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)
@@ -91,7 +91,7 @@ namespace LottieUWP
             shader.LocalMatrix = _shaderMatrix;
             _paint.Shader = shader;
 
-            var alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
+            var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
 
             canvas.DrawPath(_path, _paint);

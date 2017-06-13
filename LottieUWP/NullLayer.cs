@@ -9,7 +9,7 @@ namespace LottieUWP
         {
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             // Do nothing.
         }

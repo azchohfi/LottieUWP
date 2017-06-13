@@ -34,7 +34,7 @@ namespace LottieUWP
         private bool _systemAnimationsAreDisabled;
         private bool _enableMergePaths;
         private CompositionLayer _compositionLayer;
-        private int _alpha = 255;
+        private byte _alpha = 255;
         internal BitmapCanvas Canvas;
 
         public LottieDrawable()
@@ -193,7 +193,7 @@ namespace LottieUWP
             //}
         }
 
-        public void SetAlpha(int alpha)
+        public void SetAlpha(byte alpha)
         {
             _alpha = alpha;
         }

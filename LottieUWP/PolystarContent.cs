@@ -244,7 +244,7 @@ namespace LottieUWP
             }
 
 
-            var position = _positionAnimation.Value;
+            var position = _positionAnimation.Value ?? PointF.Zero;
             _path.Offset(position.X, position.Y);
             _path.Close();
         }
@@ -301,7 +301,7 @@ namespace LottieUWP
                 currentAngle += anglePerPoint;
             }
 
-            var position = _positionAnimation.Value;
+            var position = _positionAnimation.Value ?? PointF.Zero;
             _path.Offset(position.X, position.Y);
             _path.Close();
         }

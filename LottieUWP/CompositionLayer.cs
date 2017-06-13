@@ -56,7 +56,7 @@ namespace LottieUWP
             }
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             canvas.GetClipBounds(out _originalClipRect);
             RectExt.Set(ref _newClipRect, 0, 0, _layerModel.PreCompWidth, _layerModel.PreCompHeight);

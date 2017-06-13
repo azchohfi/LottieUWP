@@ -64,7 +64,7 @@ namespace LottieUWP
                     _matrix = MatrixExt.PreScale(_matrix, scaleTransform.ScaleX, scaleTransform.ScaleY);
                 }
 
-                var anchorPoint = _anchorPoint.Value;
+                var anchorPoint = _anchorPoint.Value ?? PointF.Zero;
                 if (anchorPoint.X != 0 || anchorPoint.Y != 0)
                 {
                     _matrix = MatrixExt.PreTranslate(_matrix, -anchorPoint.X, -anchorPoint.Y);

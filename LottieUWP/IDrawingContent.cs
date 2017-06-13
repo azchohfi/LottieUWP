@@ -5,7 +5,7 @@ namespace LottieUWP
 {
     internal interface IDrawingContent : IContent
     {
-        void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int alpha);
+        void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte alpha);
         void GetBounds(out Rect outBounds, DenseMatrix parentMatrix);
 
         /// <summary>

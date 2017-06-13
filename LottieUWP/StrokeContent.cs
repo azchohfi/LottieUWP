@@ -20,7 +20,7 @@ namespace LottieUWP
             Paint.ColorFilter = colorFilter;
         }
 
-        public override void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             Paint.Color = _colorAnimation.Value;
             base.Draw(canvas, parentMatrix, parentAlpha);

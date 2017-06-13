@@ -116,9 +116,9 @@ namespace LottieUWP
             }
         }
 
-        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
-            var alpha = (int)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
+            var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             Paint.Alpha = alpha;
             Paint.StrokeWidth = _widthAnimation.Value.Value * Utils.GetScale(parentMatrix);
             if (Paint.StrokeWidth <= 0)

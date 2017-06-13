@@ -17,7 +17,7 @@ namespace LottieUWP
             _density = density;
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             var bitmap = Bitmap;
             if (bitmap == null)

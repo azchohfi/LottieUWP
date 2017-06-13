@@ -32,11 +32,22 @@ namespace LottieUWP
 
         public enum PaintStyle
         {
-            Stroke,
-            Fill
+            Fill,
+            FillAndStroke,
+            Stroke
         }
 
-        public float Alpha { get; set; }
+        public byte Alpha
+        {
+            get => Color.A;
+            set
+            {
+                var color = Color;
+                color.A = value;
+                Color = color;
+            }
+        }
+
         public Color Color { get; set; }
         public PaintStyle Style { get; set; }
         public ColorFilter ColorFilter { get; set; }

@@ -16,7 +16,7 @@ namespace LottieUWP
             _paint.Color = layerModel.SolidColor;
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             int backgroundAlpha = _layerModel.SolidColor.A;
             if (backgroundAlpha == 0)
@@ -24,7 +24,7 @@ namespace LottieUWP
                 return;
             }
 
-            var alpha = (int)(backgroundAlpha / 255f * Transform.Opacity.Value / 100f * 255);
+            var alpha = (byte)(backgroundAlpha / 255f * Transform.Opacity.Value / 100f * 255);
             _paint.Alpha = alpha;
             if (alpha > 0)
             {

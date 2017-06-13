@@ -161,7 +161,7 @@ namespace LottieUWP
             BoundsMatrix = MatrixExt.PreConcat(BoundsMatrix, Transform.Matrix);
         }
 
-        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha)
+        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             if (!_visible)
             {
@@ -174,7 +174,7 @@ namespace LottieUWP
             {
                 _matrix = MatrixExt.PreConcat(_matrix, _parentLayers[i].Transform.Matrix);
             }
-            var alpha = (int)(parentAlpha / 255f * (float)Transform.Opacity.Value / 100f * 255);
+            var alpha = (byte)(parentAlpha / 255f * (float)Transform.Opacity.Value / 100f * 255);
             if (!HasMatteOnThisLayer() && !HasMasksOnThisLayer())
             {
                 _matrix = MatrixExt.PreConcat(_matrix, Transform.Matrix);
@@ -279,7 +279,7 @@ namespace LottieUWP
             RectExt.Set(ref rect, Math.Max(rect.Left, _matteBoundsRect.Left), Math.Max(rect.Top, _matteBoundsRect.Top), Math.Min(rect.Right, _matteBoundsRect.Right), Math.Min(rect.Bottom, _matteBoundsRect.Bottom));
         }
 
-        public abstract void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, int parentAlpha);
+        public abstract void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha);
 
         private void ApplyMasks(BitmapCanvas canvas, DenseMatrix matrix)
         {
