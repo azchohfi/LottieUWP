@@ -127,7 +127,6 @@
     <Compile Include="BaseLayer.cs" />
     <Compile Include="BaseStrokeContent.cs" />
     <Compile Include="BitmapCanvas.cs" />
-    <Compile Include="CanvasPool.cs" />
     <Compile Include="CircleShape.cs" />
     <Compile Include="ColorFactory.cs" />
     <Compile Include="ColorFilter.cs" />
@@ -227,9 +226,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>5.3.3</Version>
-    </PackageReference>
-    <PackageReference Include="WriteableBitmapEx">
-      <Version>1.5.1</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

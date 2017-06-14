@@ -4,7 +4,7 @@ namespace LottieUWP
 {
     internal class TransformKeyframeAnimation
     {
-        private DenseMatrix _matrix = new DenseMatrix(3, 3);
+        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
 
         private readonly IBaseKeyframeAnimation<PointF> _anchorPoint;
         private readonly IBaseKeyframeAnimation<PointF> _position;
@@ -52,20 +52,19 @@ namespace LottieUWP
                     _matrix = MatrixExt.PreTranslate(_matrix, position.X, position.Y);
                 }
 
-                var rotation = _rotation.Value.Value;
-                if (rotation != 0f)
+                if (_rotation.Value.HasValue && _rotation.Value.Value != 0f)
                 {
-                    _matrix = MatrixExt.PreRotate(_matrix, rotation);
+                    _matrix = MatrixExt.PreRotate(_matrix, _rotation.Value.Value);
                 }
 
                 var scaleTransform = _scale.Value;
-                if (scaleTransform.ScaleX != 1f || scaleTransform.ScaleY != 1f)
+                if (scaleTransform != null && (scaleTransform.ScaleX != 1f || scaleTransform.ScaleY != 1f))
                 {
                     _matrix = MatrixExt.PreScale(_matrix, scaleTransform.ScaleX, scaleTransform.ScaleY);
                 }
 
-                var anchorPoint = _anchorPoint.Value ?? PointF.Zero;
-                if (anchorPoint.X != 0 || anchorPoint.Y != 0)
+                var anchorPoint = _anchorPoint.Value;
+                if (anchorPoint != null && (anchorPoint.X != 0 || anchorPoint.Y != 0))
                 {
                     _matrix = MatrixExt.PreTranslate(_matrix, -anchorPoint.X, -anchorPoint.Y);
                 }

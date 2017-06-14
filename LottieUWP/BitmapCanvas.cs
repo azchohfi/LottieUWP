@@ -1,17 +1,22 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using Windows.Foundation;
-using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    public class BitmapCanvas
+    public class BitmapCanvas : Canvas
     {
-        internal readonly WriteableBitmap Bitmap;
+        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
+        private readonly Stack<DenseMatrix> _matrixSaves = new Stack<DenseMatrix>();
 
-        public BitmapCanvas(WriteableBitmap bitmap)
+        public BitmapCanvas(int width, int height)
         {
-            Bitmap = bitmap;
+            Width = width;
+            Height = height;
         }
 
         public static int ClipSaveFlag;
@@ -19,28 +24,32 @@ namespace LottieUWP
         public static int MatrixSaveFlag;
         public static int AllSaveFlag;
 
-        public double Width => Bitmap.PixelWidth;
-
-        public double Height => Bitmap.PixelHeight;
-
-        public void SaveLayer(Rect rect, Paint contentPaint, object allSaveFlag)
-        {
-
-        }
-
-        public void Restore()
-        {
-
-        }
-
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
-            Bitmap.DrawRectangle((int)x1, (int)y1, (int)x2, (int)y2, paint.Color);
+            var rectangle = new Rectangle
+            {
+                Width = x2 - x1,
+                Height = y2 - y1,
+                RenderTransform = GetCurrentRenderTransform(),
+                Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
+            };
+            SetLeft(rectangle, x1);
+            SetTop(rectangle, y1);
+            Children.Add(rectangle);
         }
 
         internal void DrawRect(Rect rect, Paint paint)
         {
-            Bitmap.DrawRectangle((int) rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom, paint.Color);
+            var rectangle = new Rectangle
+            {
+                Width = rect.Width,
+                Height = rect.Height,
+                RenderTransform = GetCurrentRenderTransform(),
+                Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
+            };
+            SetLeft(rectangle, rect.Left);
+            SetTop(rectangle, rect.Top);
+            Children.Add(rectangle);
         }
 
         public void DrawPath(Path path, Paint paint)
@@ -62,33 +71,21 @@ namespace LottieUWP
 
         private void DrawPathFill(Path path, Paint paint)
         {
-            if (path.FillType == PathFillType.EvenOdd)
+            for (int i = 0; i < path.Points.Count; i++)
             {
-                var polygons = path.Points
-                    .Select(poly => poly.Select(p => new[] {(int) p.X, (int) p.Y}).SelectMany(p => p).ToArray())
-                    .ToArray();
-                Bitmap.FillPolygonsEvenOdd(polygons, paint.Color);
-            }
-            else
-            {
-                if (paint.PathEffect != null)
+                var pointCollection = new PointCollection();
+                foreach (var pointF in path.Points[i])
                 {
-                    for (var i = 0; i < path.Points.Count; i++)
-                    {
-                        Bitmap.FillPolygon(
-                            path.Points[i].Select(p => new[] { (int)p.X, (int)p.Y }).SelectMany(p => p).ToArray(),
-                            paint.PathEffect.GetColor(paint));
-                    }
+                    pointCollection.Add(new Point(pointF.X, pointF.Y));
                 }
-                else
+                var polygon = new Polygon
                 {
-                    for (var i = 0; i < path.Points.Count; i++)
-                    {
-                        Bitmap.FillPolygon(
-                            path.Points[i].Select(p => new[] {(int) p.X, (int) p.Y}).SelectMany(p => p).ToArray(),
-                            paint.Color);
-                    }
-                }
+                    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
+                    Points = pointCollection,
+                    RenderTransform = GetCurrentRenderTransform(),
+                    Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
+                };
+                Children.Add(polygon);
             }
         }
 
@@ -96,13 +93,35 @@ namespace LottieUWP
         {
             for (var i = 0; i < path.Points.Count; i++)
             {
-                for (int j = 0; j < path.Points[i].Count - 1; j++)
+                var pointCollection = new PointCollection();
+                foreach (var pointF in path.Points[i])
                 {
-                    var p1 = path.Points[i][j];
-                    var p2 = path.Points[i][j + 1];
-                    Bitmap.DrawLineAa((int) p1.X, (int) p1.Y, (int) p2.X, (int) p2.Y, paint.Color, (int)paint.StrokeWidth);
+                    pointCollection.Add(new Point(pointF.X, pointF.Y));
                 }
+                var dashPathEffect = paint.PathEffect as DashPathEffect;
+
+                var polyline = new Polyline
+                {
+                    Points = pointCollection,
+                    Stroke = new SolidColorBrush(paint.Color),
+                    StrokeThickness = paint.StrokeWidth,
+                    StrokeDashCap = paint.StrokeCap,
+                    StrokeLineJoin = paint.StrokeJoin,
+                    StrokeDashArray = dashPathEffect?.Intervals,
+                    StrokeDashOffset = dashPathEffect?.Phase ?? 0,
+                    RenderTransform = GetCurrentRenderTransform()
+                };
+                //paint.PathEffect?.GetColor(paint)
+                Children.Add(polyline);
             }
+        }
+
+        private MatrixTransform GetCurrentRenderTransform()
+        {
+            return new MatrixTransform
+            {
+                Matrix = new Windows.UI.Xaml.Media.Matrix(_matrix[0, 0], _matrix[0, 1], _matrix[1, 0], _matrix[1, 1], _matrix[2, 0], _matrix[2, 1])
+            };
         }
 
         public bool ClipRect(Rect newClipRect)
@@ -115,28 +134,67 @@ namespace LottieUWP
 
         }
 
-        public void GetClipBounds(out Rect originalClipRect)
-        {
-            RectExt.Set(ref originalClipRect, 0, 0, Bitmap.PixelWidth, Bitmap.PixelHeight);
-        }
-
-        public void Save()
-        {
-
-        }
-
         public void Concat(DenseMatrix parentMatrix)
         {
-            
+            _matrix = MatrixExt.PreConcat(_matrix, parentMatrix);
         }
 
-        public void DrawBitmap(BitmapSource bitmap, Rect src, Rect dst, Paint paint)
+        // concat or clipRect
+        public void Save()
         {
-            if (bitmap is WriteableBitmap writeableBitmap)
+            _matrixSaves.Push(_matrix);
+        }
+
+        public void SaveLayer(Rect rect, Paint contentPaint, object allSaveFlag)
+        {
+            _matrixSaves.Push(_matrix);
+        }
+
+        public void Restore()
+        {
+            _matrix = _matrixSaves.Pop();
+        }
+
+        public void DrawBitmap(ImageSource bitmap, Rect src, Rect dst, Paint paint)
+        {
+            _matrix.MapRect(ref dst);
+            
+            var image = new Image
             {
-                // TODO: Should use paint.ColorFilter and paint.Alpha
-                Bitmap.Blit(dst, writeableBitmap, src, WriteableBitmapExtensions.BlendMode.Additive);
-            }
+                Width = dst.Width,
+                Height = dst.Height,
+                Stretch = Stretch.Fill,
+                RenderTransform = GetCurrentRenderTransform(),
+                Source = bitmap
+                //Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
+            };
+            SetLeft(image, dst.X);
+            SetTop(image, dst.Y);
+            Children.Add(image);
+            // TODO: Should use paint.ColorFilter and paint.Alpha
+            //_bitmap.Blit(dst, writeableBitmap, src, WriteableBitmapExtensions.BlendMode.Additive);
+        }
+
+        public void GetClipBounds(out Rect originalClipRect)
+        {
+            RectExt.Set(ref originalClipRect, 0, 0, Width, Height);
+        }
+
+        public void Clear(Color color)
+        {
+            Children.Clear();
+            Background = new SolidColorBrush(color);
+        }
+
+        public Viewbox GetImage()
+        {
+            return new Viewbox
+            {
+                Child = this,
+                Width = Width,
+                Height = Height,
+                Stretch = Stretch.None
+            };
         }
     }
 

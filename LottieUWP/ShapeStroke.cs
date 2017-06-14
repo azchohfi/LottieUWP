@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Windows.Data.Json;
+using Windows.UI.Xaml.Media;
 
 namespace LottieUWP
 {
@@ -39,17 +40,17 @@ namespace LottieUWP
                 InnerEnumValue = innerEnum;
             }
 
-            internal Paint.Cap ToPaintCap()
+            internal PenLineCap ToPaintCap()
             {
                 switch (InnerEnumValue)
                 {
                     case InnerEnum.Butt:
-                        return Paint.Cap.Butt;
+                        return PenLineCap.Flat;
                     case InnerEnum.Round:
-                        return Paint.Cap.Round;
+                        return PenLineCap.Round;
                     case InnerEnum.Unknown:
                     default:
-                        return Paint.Cap.Square;
+                        return PenLineCap.Square;
                 }
             }
 
@@ -115,17 +116,17 @@ namespace LottieUWP
                 InnerEnumValue = innerEnum;
             }
 
-            internal Paint.Join ToPaintJoin()
+            internal PenLineJoin ToPaintJoin()
             {
                 switch (InnerEnumValue)
                 {
                     case InnerEnum.Bevel:
-                        return Paint.Join.Bevel;
+                        return PenLineJoin.Bevel;
                     case InnerEnum.Miter:
-                        return Paint.Join.Miter;
+                        return PenLineJoin.Miter;
                     case InnerEnum.Round:
                     default:
-                        return Paint.Join.Round;
+                        return PenLineJoin.Round;
                 }
             }
 

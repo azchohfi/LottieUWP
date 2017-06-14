@@ -46,6 +46,11 @@ namespace LottieUWP
         {
             set
             {
+                if (value < 0 || float.IsNaN(value))
+                    value = 0;
+                if (value > 1)
+                    value = 1;
+
                 if (value < StartDelayProgress)
                 {
                     value = 0f;
@@ -126,9 +131,31 @@ namespace LottieUWP
             }
         }
 
-        private float StartDelayProgress => _keyframes.Count == 0 ? 0f : _keyframes[0].StartProgress;
+        private float StartDelayProgress
+        {
+            get
+            {
+                var startDelayProgress = _keyframes.Count == 0 ? 0f : _keyframes[0].StartProgress;
+                if (startDelayProgress < 0)
+                    return 0;
+                if (startDelayProgress > 1)
+                    return 1;
+                return startDelayProgress;
+            }
+        }
 
-        private float EndProgress => _keyframes.Count == 0 ? 1f : _keyframes[_keyframes.Count - 1].EndProgress;
+        private float EndProgress
+        {
+            get
+            {
+                var endProgress = _keyframes.Count == 0 ? 1f : _keyframes[_keyframes.Count - 1].EndProgress;
+                if (endProgress < 0)
+                    return 0;
+                if (endProgress > 1)
+                    return 1;
+                return endProgress;
+            }
+        }
 
         public virtual TA Value => GetValue(CurrentKeyframe, CurrentKeyframeProgress);
 

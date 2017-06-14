@@ -34,7 +34,7 @@ namespace LottieUWP
         }
 
         private readonly Path _path = new Path();
-        private DenseMatrix _matrix = new DenseMatrix(3, 3);
+        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Paint _contentPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _maskPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _mattePaint = new Paint(Paint.AntiAliasFlag);
@@ -43,7 +43,7 @@ namespace LottieUWP
         private Rect _maskBoundsRect;
         private Rect _matteBoundsRect;
         private Rect _tempMaskBoundsRect;
-        internal DenseMatrix BoundsMatrix = new DenseMatrix(3, 3);
+        internal DenseMatrix BoundsMatrix = DenseMatrix.CreateIdentity(3);
         internal readonly LottieDrawable LottieDrawable;
         internal Layer _layerModel { get; set; }
         private readonly MaskKeyframeAnimation _mask;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
@@ -13,7 +14,7 @@ namespace LottieUWP
         private Rect _rect;
         private readonly LottieDrawable _lottieDrawable;
         private readonly IList<PathGroup> _pathGroups = new List<PathGroup>();
-        private readonly float[] _dashPatternValues;
+        private readonly double[] _dashPatternValues;
         internal readonly Paint Paint = new Paint(Paint.AntiAliasFlag);
 
         private readonly IBaseKeyframeAnimation<float?> _widthAnimation;
@@ -21,7 +22,7 @@ namespace LottieUWP
         private readonly IList<IBaseKeyframeAnimation<float?>> _dashPatternAnimations;
         private readonly IBaseKeyframeAnimation<float?> _dashPatternOffsetAnimation;
 
-        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap, Paint.Join join, AnimatableIntegerValue opacity, AnimatableFloatValue width, IList<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
+        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, PenLineCap cap, PenLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, IList<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
             _lottieDrawable = lottieDrawable;
             Paint.Style = Paint.PaintStyle.Stroke;
@@ -40,7 +41,7 @@ namespace LottieUWP
                 _dashPatternOffsetAnimation = offset.CreateAnimation();
             }
             _dashPatternAnimations = new List<IBaseKeyframeAnimation<float?>>(dashPattern.Count);
-            _dashPatternValues = new float[dashPattern.Count];
+            _dashPatternValues = new double[dashPattern.Count];
 
             for (var i = 0; i < dashPattern.Count; i++)
             {

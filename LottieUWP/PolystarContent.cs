@@ -146,7 +146,7 @@ namespace LottieUWP
             }
 
             var outerRadius = _outerRadiusAnimation.Value.Value;
-            
+
             var innerRadius = _innerRadiusAnimation.Value.Value;
 
             var innerRoundedness = 0f;
@@ -244,8 +244,11 @@ namespace LottieUWP
             }
 
 
-            var position = _positionAnimation.Value ?? PointF.Zero;
-            _path.Offset(position.X, position.Y);
+            var position = _positionAnimation.Value;
+            if (position != null)
+            {
+                _path.Offset(position.X, position.Y);
+            }
             _path.Close();
         }
 
@@ -301,8 +304,11 @@ namespace LottieUWP
                 currentAngle += anglePerPoint;
             }
 
-            var position = _positionAnimation.Value ?? PointF.Zero;
-            _path.Offset(position.X, position.Y);
+            var position = _positionAnimation.Value;
+            if (position != null)
+            {
+                _path.Offset(position.X, position.Y);
+            }
             _path.Close();
         }
     }

@@ -10,7 +10,7 @@ namespace LottieUWP
     internal class ContentGroup : IDrawingContent, IPathContent, BaseKeyframeAnimation.IAnimationListener
     {
         private static readonly string Tag = typeof(ContentGroup).Name;
-        private DenseMatrix _matrix = new DenseMatrix(3, 3);
+        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private Rect _rect;
 

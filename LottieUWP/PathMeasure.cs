@@ -57,6 +57,13 @@ namespace LottieUWP
 
         public void GetPosTan(float distance, out float[] pos)
         {
+            if (distance < 0)
+                distance = 0;
+
+            var length = Length;
+            if (distance > length)
+                distance = length;
+
             var point = PathPointAtDistance(distance);
 
             pos = new[] { point.X, point.Y };
@@ -86,6 +93,8 @@ namespace LottieUWP
                 if (sum + d >= distance)
                 {
                     var p = 1 - (sum + d - distance) / d;
+                    if (double.IsNaN(p))
+                        p = 0;
                     indexP2 = i + 1;
                     pointF = new PointF((float) (p1.X + (p2.X - p1.X) * p), (float) (p1.Y + (p2.Y - p1.Y) * p));
                     return true;

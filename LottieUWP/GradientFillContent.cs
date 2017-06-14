@@ -14,7 +14,7 @@ namespace LottieUWP
 
         private readonly Dictionary<long, LinearGradient> _linearGradientCache = new Dictionary<long, LinearGradient>();
         private readonly Dictionary<long, RadialGradient> _radialGradientCache = new Dictionary<long, RadialGradient>();
-        private readonly DenseMatrix _shaderMatrix = new DenseMatrix(3, 3);
+        private readonly DenseMatrix _shaderMatrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         private Rect _boundsRect;
