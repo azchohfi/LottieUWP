@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
@@ -54,66 +55,72 @@ namespace LottieUWP
 
         public void DrawPath(Path path, Paint paint)
         {
-            if (paint.Style == Paint.PaintStyle.Stroke)
-            {
-                DrawPathStroke(path, paint);
-            }
-            else if (paint.Style == Paint.PaintStyle.Fill)
-            {
-                DrawPathFill(path, paint);
-            }
-            else if (paint.Style == Paint.PaintStyle.FillAndStroke)
-            {
-                DrawPathFill(path, paint);
-                DrawPathStroke(path, paint);
-            }
-        }
+            var dashPathEffect = paint.PathEffect as DashPathEffect;
 
-        private void DrawPathFill(Path path, Paint paint)
-        {
-            for (int i = 0; i < path.Points.Count; i++)
+            var pathSegmentCollection = new PathSegmentCollection();
+
+            var firstPoint = path.Contours.FirstOrDefault()?.Points?.First();
+            if (firstPoint == null)
+                return;
+
+            var windowsPath = new Windows.UI.Xaml.Shapes.Path
             {
-                var pointCollection = new PointCollection();
-                foreach (var pointF in path.Points[i])
-                {
-                    pointCollection.Add(new Point(pointF.X, pointF.Y));
-                }
-                var polygon = new Polygon
+                Stroke = new SolidColorBrush(paint.Color),
+                StrokeThickness = paint.StrokeWidth,
+                StrokeDashCap = paint.StrokeCap,
+                StrokeLineJoin = paint.StrokeJoin,
+                StrokeDashArray = dashPathEffect?.Intervals,
+                StrokeDashOffset = dashPathEffect?.Phase ?? 0,
+                RenderTransform = GetCurrentRenderTransform(),
+                Data = new PathGeometry
                 {
                     FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
-                    Points = pointCollection,
-                    RenderTransform = GetCurrentRenderTransform(),
-                    Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
-                };
-                Children.Add(polygon);
-            }
-        }
-
-        private void DrawPathStroke(Path path, Paint paint)
-        {
-            for (var i = 0; i < path.Points.Count; i++)
-            {
-                var pointCollection = new PointCollection();
-                foreach (var pointF in path.Points[i])
-                {
-                    pointCollection.Add(new Point(pointF.X, pointF.Y));
+                    Figures = new PathFigureCollection
+                    {
+                        new PathFigure
+                        {
+                            StartPoint = new Point(firstPoint.X, firstPoint.Y),
+                            Segments = pathSegmentCollection
+                        }
+                    }
                 }
-                var dashPathEffect = paint.PathEffect as DashPathEffect;
-
-                var polyline = new Polyline
-                {
-                    Points = pointCollection,
-                    Stroke = new SolidColorBrush(paint.Color),
-                    StrokeThickness = paint.StrokeWidth,
-                    StrokeDashCap = paint.StrokeCap,
-                    StrokeLineJoin = paint.StrokeJoin,
-                    StrokeDashArray = dashPathEffect?.Intervals,
-                    StrokeDashOffset = dashPathEffect?.Phase ?? 0,
-                    RenderTransform = GetCurrentRenderTransform()
-                };
-                //paint.PathEffect?.GetColor(paint)
-                Children.Add(polyline);
+            };
+            if (paint.Style != Paint.PaintStyle.Stroke)
+            {
+                windowsPath.Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color);
             }
+
+            for (var i = 0; i < path.Contours.Count; i++)
+            {
+                var contour = path.Contours[i];
+
+                var pointCollection = new PointCollection();
+                PathSegment pathSegment;
+                if (contour is Path.BezierCurve)
+                {
+                    foreach (var pointF in contour.Points.Skip(1))
+                    {
+                        pointCollection.Add(new Point(pointF.X, pointF.Y));
+                    }
+                    pathSegment = new PolyBezierSegment
+                    {
+                        Points = pointCollection
+                    };
+                }
+                else
+                {
+                    foreach (var pointF in contour.Points)
+                    {
+                        pointCollection.Add(new Point(pointF.X, pointF.Y));
+                    }
+                    pathSegment = new PolyLineSegment
+                    {
+                        Points = pointCollection
+                    };
+                }
+                pathSegmentCollection.Add(pathSegment);
+            }
+            Children.Add(windowsPath);
         }
 
         private MatrixTransform GetCurrentRenderTransform()
@@ -158,7 +165,7 @@ namespace LottieUWP
         public void DrawBitmap(ImageSource bitmap, Rect src, Rect dst, Paint paint)
         {
             _matrix.MapRect(ref dst);
-            
+
             var image = new Image
             {
                 Width = dst.Width,

@@ -18,7 +18,7 @@ namespace LottieUWP
         {
             var pathKeyframe = (PathKeyframe) keyframe;
             var path = pathKeyframe.Path;
-            if (path == null)
+            if (path == null || path.Contours.Count == 0)
             {
                 return keyframe.StartValue;
             }
