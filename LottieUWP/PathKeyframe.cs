@@ -10,7 +10,7 @@ namespace LottieUWP
         {
         }
 
-        internal class PathKeyframeFactory
+        internal static class PathKeyframeFactory
         {
             internal static PathKeyframe NewInstance(JsonObject json, LottieComposition composition, IAnimatableValueFactory<PointF> valueFactory)
             {

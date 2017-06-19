@@ -80,7 +80,7 @@ namespace LottieUWP
             return "Keyframe{" + "startValue=" + StartValue + ", endValue=" + EndValue + ", startFrame=" + StartFrame + ", endFrame=" + EndFrame + ", interpolator=" + Interpolator + '}';
         }
 
-        internal class KeyFrameFactory
+        internal static class KeyFrameFactory
         {
             internal static Keyframe<T> NewInstance(JsonObject json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
