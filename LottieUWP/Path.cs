@@ -57,7 +57,7 @@ namespace LottieUWP
                 return new BezierCurve(Points.Select(p2 => new PointF(p2.X, p2.Y)).ToList());
             }
 
-            public bool IsEmpty => Points.Any();
+            public bool IsEmpty => Points.Count == 0;
             public float X => Points.Min(p => p.X);
             public float Y => Points.Min(p => p.Y);
             public float XMax => Points.Max(p => p.X);

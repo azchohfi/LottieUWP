@@ -172,7 +172,8 @@ namespace LottieUWP
                 Height = dst.Height,
                 Stretch = Stretch.Fill,
                 RenderTransform = GetCurrentRenderTransform(),
-                Source = bitmap
+                Source = bitmap,
+                Opacity = paint.Alpha / 255f
                 //Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
             };
             SetLeft(image, dst.X);
