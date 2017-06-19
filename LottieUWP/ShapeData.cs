@@ -5,7 +5,7 @@ namespace LottieUWP
 {
     internal class ShapeData
     {
-        private readonly IList<CubicCurveData> _curves = new List<CubicCurveData>();
+        private readonly List<CubicCurveData> _curves = new List<CubicCurveData>();
         private PointF _initialPoint;
         private bool _closed;
 
@@ -13,7 +13,7 @@ namespace LottieUWP
         {
             _initialPoint = initialPoint;
             _closed = closed;
-            ((List<CubicCurveData>)_curves).AddRange(curves);
+            _curves.AddRange(curves);
         }
 
         internal ShapeData()
@@ -34,7 +34,7 @@ namespace LottieUWP
 
         internal virtual bool Closed => _closed;
 
-        internal virtual IList<CubicCurveData> Curves => _curves;
+        internal virtual List<CubicCurveData> Curves => _curves;
 
         internal virtual void InterpolateBetween(ShapeData shapeData1, ShapeData shapeData2, float percentage)
         {
@@ -130,7 +130,7 @@ namespace LottieUWP
                 vertex.X *= scale;
                 vertex.Y *= scale;
                 var initialPoint = vertex;
-                IList<CubicCurveData> curves = new List<CubicCurveData>(length);
+                List<CubicCurveData> curves = new List<CubicCurveData>(length);
 
                 for (var i = 1; i < length; i++)
                 {
