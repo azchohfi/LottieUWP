@@ -24,12 +24,6 @@ namespace LottieUWP
 
                 if (cp1.Equals(currentPoint) && cp2.Equals(vertex))
                 {
-                    // On some phones like Samsung phones, zero valued control points can cause artifacting.
-                    // https://github.com/airbnb/lottie-android/issues/275
-                    //
-                    // This does its best to add a tiny value to the vertex without affecting the final
-                    // animation as much as possible.
-                    // outPath.rMoveTo(0.01f, 0.01f);
                     outPath.LineTo(vertex.X, vertex.Y);
                 }
                 else

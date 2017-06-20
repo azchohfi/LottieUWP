@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
@@ -17,66 +19,81 @@ namespace LottieUWP
             float XMax { get; }
             float YMax { get; }
             float Lenght { get; }
-            List<PointF> Points { get; }
+            PointF First { get; }
+            PointF Last { get; }
+            PathSegment GetPathSegment();
             void Offset(float dx, float dy);
             bool PointAtDistance(float distance, ref double sum, ref PointF pointF, ref int indexP2);
             bool GetSegment(float startD, float stopD, ref Path dst, bool startWithMoveTo);
         }
 
-        public class BezierCurve : IContour
+        public class Arc : IContour
         {
-            public List<PointF> Points { get; }
+            private readonly PointF _startPoint;
+            private readonly PointF _endPoint;
+            private readonly float _width;
+            private readonly float _height;
+            private readonly float _sweepAngle;
 
-            public BezierCurve(List<PointF> points)
+            public Arc(PointF startPoint, PointF endPoint, float width, float height, float sweepAngle)
             {
-                Points = points.ToList();
-            }
-
-            public BezierCurve(params PointF[] points)
-            {
-                Points = points.ToList();
+                _startPoint = new PointF(startPoint.X, startPoint.Y);
+                _endPoint = new PointF(endPoint.X, endPoint.Y);
+                _width = width;
+                _height = height;
+                _sweepAngle = sweepAngle;
             }
 
             public void Transform(DenseMatrix matrix)
             {
-                var denseMatrix = new DenseMatrix(3, Points.Count);
-                for (var i = 0; i < Points.Count; i++)
+                var points = new[] { _startPoint, _endPoint };
+
+                var denseMatrix = new DenseMatrix(3, points.Length);
+                for (var i = 0; i < points.Length; i++)
                 {
-                    denseMatrix[0, i] = Points[i].X;
-                    denseMatrix[1, i] = Points[i].Y;
+                    denseMatrix[0, i] = points[i].X;
+                    denseMatrix[1, i] = points[i].Y;
                     denseMatrix[2, i] = 1;
                 }
                 var multiplied = matrix * denseMatrix;
 
-                for (var i = 0; i < Points.Count; i++)
-                    Points[i].Set(multiplied[0, i], multiplied[1, i]);
+                _startPoint.Set(multiplied[0, 0], multiplied[1, 0]);
+                _endPoint.Set(multiplied[0, 1], multiplied[1, 1]);
             }
 
             public IContour Copy()
             {
-                return new BezierCurve(Points.Select(p2 => new PointF(p2.X, p2.Y)).ToList());
+                return new Arc(_startPoint, _endPoint, _width, _height, _sweepAngle);
             }
 
-            public bool IsEmpty => Points.Count == 0;
-            public float X => Points.Min(p => p.X);
-            public float Y => Points.Min(p => p.Y);
-            public float XMax => Points.Max(p => p.X);
-            public float YMax => Points.Max(p => p.Y);
-            public float Lenght
+            public bool IsEmpty => _startPoint.Equals(_endPoint);
+            public float X => Math.Min(_startPoint.X, _endPoint.X);
+            public float Y => Math.Min(_startPoint.Y, _endPoint.Y);
+            public float XMax => Math.Max(_startPoint.X, _endPoint.X);
+            public float YMax => Math.Max(_startPoint.Y, _endPoint.Y);
+
+            // since angle is always 90º, lenght is always 1/4 of elipse lenght
+            public float Lenght => (float)(Math.PI * (3 * (_width + _height) - Math.Sqrt((3 * _width + _height) * (_width + 3 * _height))) / 4);
+
+            public PointF First => _startPoint;
+
+            public PointF Last => _endPoint;
+
+            public PathSegment GetPathSegment()
             {
-                get
+                return new ArcSegment
                 {
-                    return 10;
-                }
+                    SweepDirection = SweepDirection.Clockwise,
+                    RotationAngle = _sweepAngle,
+                    Point = new Point(_endPoint.X, _endPoint.Y),
+                    Size = new Size(_width, _height)
+                };
             }
 
             public void Offset(float dx, float dy)
             {
-                foreach (var pointF in Points)
-                {
-                    pointF.X += dx;
-                    pointF.Y += dy;
-                }
+                _endPoint.X += dx;
+                _endPoint.Y += dy;
             }
 
             public bool PointAtDistance(float distance, ref double sum, ref PointF pointF, ref int indexP2)
@@ -90,10 +107,201 @@ namespace LottieUWP
                 // TODO
                 return false;
             }
+        }
+
+        public class BezierCurve : IContour
+        {
+            private readonly List<PointF> _points;
+
+            public BezierCurve(List<PointF> points)
+            {
+                _points = points.ToList();
+            }
+
+            public BezierCurve(params PointF[] points)
+            {
+                _points = points.ToList();
+            }
+
+            public void Transform(DenseMatrix matrix)
+            {
+                var denseMatrix = new DenseMatrix(3, _points.Count);
+                for (var i = 0; i < _points.Count; i++)
+                {
+                    denseMatrix[0, i] = _points[i].X;
+                    denseMatrix[1, i] = _points[i].Y;
+                    denseMatrix[2, i] = 1;
+                }
+                var multiplied = matrix * denseMatrix;
+
+                for (var i = 0; i < _points.Count; i++)
+                    _points[i].Set(multiplied[0, i], multiplied[1, i]);
+            }
+
+            public IContour Copy()
+            {
+                return new BezierCurve(_points.Select(p2 => new PointF(p2.X, p2.Y)).ToList());
+            }
+
+            public bool IsEmpty => _points.Count == 0;
+            public float X => _points.Min(p => p.X);
+            public float Y => _points.Min(p => p.Y);
+            public float XMax => _points.Max(p => p.X);
+            public float YMax => _points.Max(p => p.Y);
+            public float Lenght
+            {
+                get
+                {
+                    double sum = 0;
+                    for (int i = 0; i + 3 < _points.Count; i += 3)
+                    {
+                        sum += BezLength(_points[i], _points[i + 1], _points[i + 2], _points[i + 3]);
+                    }
+                    return (float)sum;
+                }
+            }
+
+            double BezLength(PointF c0, PointF c1, PointF c2, PointF c3)
+            {
+                const double steps = 1000d; // TODO: improve
+
+                var length = 0d;
+                var prevPt = new PointF();
+
+                for (var i = 0d; i < steps; i++)
+                {
+                    var pt = GetPointAtT(c0, c1, c2, c3, i / steps);
+
+                    if (i > 0)
+                    {
+                        var x = pt.X - prevPt.X;
+                        var y = pt.Y - prevPt.Y;
+                        length = length + Math.Sqrt(x * x + y * y);
+                    }
+
+                    prevPt.X = pt.X;
+                    prevPt.Y = pt.Y;
+                }
+                return length;
+            }
+
+            private static PointF GetPointAtT(PointF c0, PointF c1, PointF c2, PointF c3, double t)
+            {
+                var t1 = 1d - t;
+
+                if (t1 < 5e-6)
+                {
+                    t = 1.0;
+                    t1 = 0.0;
+                }
+
+                var t13 = t1 * t1 * t1;
+                var t13A = 3 * t * (t1 * t1);
+                var t13B = 3 * t * t * t1;
+                var t13C = t * t * t;
+
+                var ptX = (float) (c0.X * t13 + t13A * c1.X + t13B * c2.X + t13C * c3.X);
+                var ptY = (float) (c0.Y * t13 + t13A * c1.Y + t13B * c2.Y + t13C * c3.Y);
+
+                var pt = new PointF(ptX, ptY);
+                return pt;
+            }
+
+            public PointF First => _points.First();
+
+            public PointF Last => _points.Last();
+
+            public PathSegment GetPathSegment()
+            {
+                var pointCollection = new PointCollection();
+                foreach (var pointF in _points.Skip(1))
+                {
+                    pointCollection.Add(new Point(pointF.X, pointF.Y));
+                }
+                return new PolyBezierSegment
+                {
+                    Points = pointCollection
+                };
+            }
+
+            public void Offset(float dx, float dy)
+            {
+                foreach (var pointF in _points)
+                {
+                    pointF.X += dx;
+                    pointF.Y += dy;
+                }
+            }
+
+            public bool PointAtDistance(float distance, ref double sum, ref PointF pointF, ref int indexP2)
+            {
+                for (int i = 0; i + 3 < _points.Count; i += 3)
+                {
+                    var d = BezLength(_points[i], _points[i + 1], _points[i + 2], _points[i + 3]);
+                    if (sum + d >= distance)
+                    {
+                        var p = 1 - (sum + d - distance) / d;
+                        if (double.IsNaN(p))
+                            p = 0;
+                        indexP2 = i + 1;
+                        pointF = GetPointAtT(_points[i], _points[i + 1], _points[i + 2], _points[i + 3], p);
+                        return true;
+                    }
+                    sum += d;
+                }
+                indexP2 = _points.Count - 1;
+                pointF = _points.Last();
+                return false;
+            }
+
+            public bool GetSegment(float startD, float stopD, ref Path dst, bool startWithMoveTo)
+            {
+                PointF point1 = null;
+                PointF point2 = null;
+                double sum = 0;
+                int indexP12 = -1;
+                int indexP22 = -1;
+
+                PointAtDistance(startD, ref sum, ref point1, ref indexP12);
+                sum = 0;
+                PointAtDistance(stopD, ref sum, ref point2, ref indexP22);
+
+                if (point1 != null)
+                {
+                    if (startWithMoveTo)
+                    {
+                        dst.MoveTo(point1.X, point1.Y);
+                    }
+
+                    // TODO
+
+                    var newPoints = new Line(new List<PointF> { point1 }); // FirstPoint
+
+                    var middlePoints = _points.Skip(indexP12).Take(indexP22 - indexP12).ToList();
+
+                    if (middlePoints.FirstOrDefault() == point1)
+                        middlePoints.RemoveAt(0);
+
+                    if (point2 != null && middlePoints.LastOrDefault() == point2)
+                        middlePoints.RemoveAt(middlePoints.Count - 1);
+
+                    newPoints.AddRange(middlePoints); // Path
+
+                    if (point2 != null)
+                        newPoints.Add(point2); // LastPoint
+
+                    dst.AddPath(new Path
+                    {
+                        Contours = { newPoints }
+                    });
+                }
+
+                return true;
+            }
 
             public void AddBezier(PointF controlPoint1, PointF controlPoint2, PointF endPoint)
             {
-                Points.AddRange(new[] { controlPoint1, controlPoint2, endPoint });
+                _points.AddRange(new[] { controlPoint1, controlPoint2, endPoint });
             }
         }
 
@@ -146,7 +354,22 @@ namespace LottieUWP
                 }
             }
 
-            public List<PointF> Points => this;
+            public PointF First => this.First();
+
+            public PointF Last => this.Last();
+
+            public PathSegment GetPathSegment()
+            {
+                var pointCollection = new PointCollection();
+                foreach (var pointF in this)
+                {
+                    pointCollection.Add(new Point(pointF.X, pointF.Y));
+                }
+                return new PolyLineSegment
+                {
+                    Points = pointCollection
+                };
+            }
 
             public void Offset(float dx, float dy)
             {
@@ -228,8 +451,8 @@ namespace LottieUWP
 
         public List<IContour> Contours { get; private set; }
 
-        public float CurrentX { get; private set; }
-        public float CurrentY { get; private set; }
+        private float _currentX;
+        private float _currentY;
 
         public Path()
         {
@@ -241,8 +464,8 @@ namespace LottieUWP
         {
             Contours = path.Contours.Select(p => p.Copy()).ToList();
             FillType = path.FillType;
-            CurrentX = path.CurrentX;
-            CurrentY = path.CurrentY;
+            _currentX = path._currentX;
+            _currentY = path._currentY;
         }
 
         public void Transform(DenseMatrix matrix)
@@ -252,10 +475,10 @@ namespace LottieUWP
                 Contours[j].Transform(matrix);
             }
 
-            var currentContour = new Line(new List<PointF> { new PointF(CurrentX, CurrentY) });
+            var currentContour = new Line(new List<PointF> { new PointF(_currentX, _currentY) });
             currentContour.Transform(matrix);
-            CurrentX = currentContour[0].X;
-            CurrentY = currentContour[0].Y;
+            _currentX = currentContour[0].X;
+            _currentY = currentContour[0].Y;
         }
 
         public void ComputeBounds(out Rect rect)
@@ -290,15 +513,15 @@ namespace LottieUWP
         public void Reset()
         {
             Contours.Clear();
-            CurrentX = 0;
-            CurrentY = 0;
+            _currentX = 0;
+            _currentY = 0;
             FillType = PathFillType.Winding;
         }
 
         public void MoveTo(float x, float y)
         {
-            CurrentX = x;
-            CurrentY = y;
+            _currentX = x;
+            _currentY = y;
         }
 
         public void CubicTo(float x1, float y1, float x2, float y2, float x3, float y3)
@@ -314,7 +537,7 @@ namespace LottieUWP
             else
             {
                 var bezier = new BezierCurve(
-                    new PointF(CurrentX, CurrentY),
+                    new PointF(_currentX, _currentY),
                     new PointF(x1, y1),
                     new PointF(x2, y2),
                     new PointF(x3, y3)
@@ -322,8 +545,8 @@ namespace LottieUWP
                 Contours.Add(bezier);
             }
 
-            CurrentX = x3;
-            CurrentY = y3;
+            _currentX = x3;
+            _currentY = y3;
         }
 
         public void LineTo(float x, float y)
@@ -336,12 +559,12 @@ namespace LottieUWP
             }
             else
             {
-                var newLine = new Line(new List<PointF> { new PointF(CurrentX, CurrentY), new PointF(x, y) });
+                var newLine = new Line(new List<PointF> { new PointF(_currentX, _currentY), new PointF(x, y) });
                 Contours.Add(newLine);
             }
 
-            CurrentX = x;
-            CurrentY = y;
+            _currentX = x;
+            _currentY = y;
         }
 
         public void Offset(float dx, float dy)
@@ -354,20 +577,15 @@ namespace LottieUWP
 
         public void Close()
         {
-            var lastContour = Contours.LastOrDefault();
-            if (lastContour == null)
+            var firstContour = Contours.FirstOrDefault();
+            if (firstContour == null)
             {
                 return;
             }
 
-            var firstPointOfLastContour = lastContour.Points.First();
-            var lastPointOfLastContour = lastContour.Points.Last();
-            if (!lastPointOfLastContour.Equals(firstPointOfLastContour))
-                LineTo(firstPointOfLastContour.X, firstPointOfLastContour.Y);
-
-            //Close the current contour. 
-            //If the current point is not equal to the first point of the contour, 
-            //a line segment is automatically added. 
+            var firstPointOfFirstContour = firstContour.First;
+            if (firstPointOfFirstContour.X != _currentX || firstPointOfFirstContour.Y != _currentY)
+                LineTo(firstPointOfFirstContour.X, firstPointOfFirstContour.Y);
         }
 
         public void Op(Path firstPath, Path remainderPath, Op op1)
@@ -375,9 +593,14 @@ namespace LottieUWP
 
         }
 
-        public void ArcTo(Rect rect, int p1, int p2, bool p3)
+        public void ArcTo(float x, float y, float sweepAngle)
         {
+            var newArc = new Arc(new PointF(_currentX, _currentY), new PointF(x, y), Math.Abs(_currentX - x), Math.Abs(_currentY - y), sweepAngle);
+            Contours.Add(newArc);
 
+            var last = newArc.Last;
+            _currentX = last.X;
+            _currentY = last.Y;
         }
     }
 

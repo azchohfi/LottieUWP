@@ -59,9 +59,11 @@ namespace LottieUWP
 
             var pathSegmentCollection = new PathSegmentCollection();
 
-            var firstPoint = path.Contours.FirstOrDefault()?.Points?.First();
+            var firstPoint = path.Contours.FirstOrDefault()?.First;
             if (firstPoint == null)
                 return;
+
+            var lastPoint = path.Contours.LastOrDefault()?.Last;
 
             var windowsPath = new Windows.UI.Xaml.Shapes.Path
             {
@@ -80,6 +82,7 @@ namespace LottieUWP
                         new PathFigure
                         {
                             StartPoint = new Point(firstPoint.X, firstPoint.Y),
+                            IsClosed = firstPoint.Equals(lastPoint),
                             Segments = pathSegmentCollection
                         }
                     }
@@ -92,33 +95,7 @@ namespace LottieUWP
 
             for (var i = 0; i < path.Contours.Count; i++)
             {
-                var contour = path.Contours[i];
-
-                var pointCollection = new PointCollection();
-                PathSegment pathSegment;
-                if (contour is Path.BezierCurve)
-                {
-                    foreach (var pointF in contour.Points.Skip(1))
-                    {
-                        pointCollection.Add(new Point(pointF.X, pointF.Y));
-                    }
-                    pathSegment = new PolyBezierSegment
-                    {
-                        Points = pointCollection
-                    };
-                }
-                else
-                {
-                    foreach (var pointF in contour.Points)
-                    {
-                        pointCollection.Add(new Point(pointF.X, pointF.Y));
-                    }
-                    pathSegment = new PolyLineSegment
-                    {
-                        Points = pointCollection
-                    };
-                }
-                pathSegmentCollection.Add(pathSegment);
+                pathSegmentCollection.Add(path.Contours[i].GetPathSegment());
             }
             Children.Add(windowsPath);
         }

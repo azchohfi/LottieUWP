@@ -68,7 +68,7 @@ namespace LottieUWP
                     return pointF;
             }
 
-            return _path.Contours.Last().Points.Last();
+            return _path.Contours.Last().Last;
         }
 
         public bool GetSegment(float startD, float stopD, ref Path dst, bool startWithMoveTo)
