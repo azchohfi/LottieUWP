@@ -6,155 +6,46 @@ namespace LottieUWP
 {
     internal class ShapeStroke
     {
-        internal sealed class LineCapType
+        internal enum LineCapType
         {
-            public static readonly LineCapType Butt = new LineCapType("Butt", InnerEnum.Butt);
-            public static readonly LineCapType Round = new LineCapType("Round", InnerEnum.Round);
-            public static readonly LineCapType Unknown = new LineCapType("Unknown", InnerEnum.Unknown);
+            Butt,
+            Round,
+            Unknown
+        }
 
-            private static readonly IList<LineCapType> ValueList = new List<LineCapType>();
-
-            static LineCapType()
+        internal static PenLineCap LineCapTypeToPaintCap(LineCapType lineCapType)
+        {
+            switch (lineCapType)
             {
-                ValueList.Add(Butt);
-                ValueList.Add(Round);
-                ValueList.Add(Unknown);
-            }
-
-            public enum InnerEnum
-            {
-                Butt,
-                Round,
-                Unknown
-            }
-
-            public readonly InnerEnum InnerEnumValue;
-            private readonly string _nameValue;
-            private readonly int _ordinalValue;
-            private static int _nextOrdinal;
-
-            private LineCapType(string name, InnerEnum innerEnum)
-            {
-                _nameValue = name;
-                _ordinalValue = _nextOrdinal++;
-                InnerEnumValue = innerEnum;
-            }
-
-            internal PenLineCap ToPaintCap()
-            {
-                switch (InnerEnumValue)
-                {
-                    case InnerEnum.Butt:
-                        return PenLineCap.Flat;
-                    case InnerEnum.Round:
-                        return PenLineCap.Round;
-                    case InnerEnum.Unknown:
-                    default:
-                        return PenLineCap.Square;
-                }
-            }
-
-            public static IList<LineCapType> Values()
-            {
-                return ValueList;
-            }
-
-            public int Ordinal()
-            {
-                return _ordinalValue;
-            }
-
-            public override string ToString()
-            {
-                return _nameValue;
-            }
-
-            public static LineCapType ValueOf(string name)
-            {
-                foreach (var enumInstance in ValueList)
-                {
-                    if (enumInstance._nameValue == name)
-                    {
-                        return enumInstance;
-                    }
-                }
-                throw new System.ArgumentException(name);
+                case LineCapType.Butt:
+                    return PenLineCap.Flat;
+                case LineCapType.Round:
+                    return PenLineCap.Round;
+                case LineCapType.Unknown:
+                default:
+                    return PenLineCap.Square;
             }
         }
 
-        internal sealed class LineJoinType
+
+        internal enum LineJoinType
         {
-            public static readonly LineJoinType Miter = new LineJoinType("Miter", InnerEnum.Miter);
-            public static readonly LineJoinType Round = new LineJoinType("Round", InnerEnum.Round);
-            public static readonly LineJoinType Bevel = new LineJoinType("Bevel", InnerEnum.Bevel);
+            Miter,
+            Round,
+            Bevel
+        }
 
-            private static readonly IList<LineJoinType> ValueList = new List<LineJoinType>();
-
-            static LineJoinType()
+        internal static PenLineJoin LineJoinTypeToPaintLineJoin(LineJoinType lineJoinType)
+        {
+            switch (lineJoinType)
             {
-                ValueList.Add(Miter);
-                ValueList.Add(Round);
-                ValueList.Add(Bevel);
-            }
-
-            public enum InnerEnum
-            {
-                Miter,
-                Round,
-                Bevel
-            }
-
-            public readonly InnerEnum InnerEnumValue;
-            private readonly string _nameValue;
-            private readonly int _ordinalValue;
-            private static int _nextOrdinal;
-
-            private LineJoinType(string name, InnerEnum innerEnum)
-            {
-                _nameValue = name;
-                _ordinalValue = _nextOrdinal++;
-                InnerEnumValue = innerEnum;
-            }
-
-            internal PenLineJoin ToPaintJoin()
-            {
-                switch (InnerEnumValue)
-                {
-                    case InnerEnum.Bevel:
-                        return PenLineJoin.Bevel;
-                    case InnerEnum.Miter:
-                        return PenLineJoin.Miter;
-                    case InnerEnum.Round:
-                    default:
-                        return PenLineJoin.Round;
-                }
-            }
-
-            public static IList<LineJoinType> Values()
-            {
-                return ValueList;
-            }
-
-            public int Ordinal()
-            {
-                return _ordinalValue;
-            }
-
-            public override string ToString()
-            {
-                return _nameValue;
-            }
-
-            public static LineJoinType ValueOf(string name)
-            {
-                foreach (var enumInstance in ValueList)
-                {
-                    if (enumInstance._nameValue == name)
-                    {
-                        return enumInstance;
-                    }
-                }
-                throw new System.ArgumentException(name);
+                case LineJoinType.Bevel:
+                    return PenLineJoin.Bevel;
+                case LineJoinType.Miter:
+                    return PenLineJoin.Miter;
+                case LineJoinType.Round:
+                default:
+                    return PenLineJoin.Round;
             }
         }
 
@@ -179,8 +70,8 @@ namespace LottieUWP
                 var color = AnimatableColorValue.Factory.NewInstance(json.GetNamedObject("c"), composition);
                 var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
                 var opacity = AnimatableIntegerValue.Factory.NewInstance(json.GetNamedObject("o"), composition);
-                var capType = LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
-                var joinType = LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
+                var capType = (LineCapType)(int)(json.GetNamedNumber("lc") - 1);
+                var joinType = (LineJoinType)(int)(json.GetNamedNumber("lj") - 1);
                 AnimatableFloatValue offset = null;
 
                 if (json.ContainsKey("d"))

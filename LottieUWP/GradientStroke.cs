@@ -84,8 +84,8 @@ namespace LottieUWP
                 var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
 
 
-                var capType = ShapeStroke.LineCapType.Values()[(int)(json.GetNamedNumber("lc") - 1)];
-                var joinType = ShapeStroke.LineJoinType.Values()[(int)(json.GetNamedNumber("lj") - 1)];
+                var capType = (ShapeStroke.LineCapType)(int)(json.GetNamedNumber("lc") - 1);
+                var joinType = (ShapeStroke.LineJoinType)(int)(json.GetNamedNumber("lj") - 1);
 
                 AnimatableFloatValue offset = null;
                 IList<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();

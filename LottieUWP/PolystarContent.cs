@@ -107,12 +107,12 @@ namespace LottieUWP
 
                 _path.Reset();
 
-                switch (_type.InnerEnumValue)
+                switch (_type)
                 {
-                    case PolystarShape.Type.InnerEnum.Star:
+                    case PolystarShape.Type.Star:
                         CreateStarPath();
                         break;
-                    case PolystarShape.Type.InnerEnum.Polygon:
+                    case PolystarShape.Type.Polygon:
                         CreatePolygonPath();
                         break;
                 }
