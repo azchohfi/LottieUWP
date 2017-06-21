@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
 
 namespace LottieUWP.Sample
@@ -38,6 +38,12 @@ namespace LottieUWP.Sample
 
             await LottieAnimationView.SetAnimationAsync((string)listView.SelectedItem);
             LottieAnimationView.PlayAnimation();
+        }
+
+        private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            LottieAnimationView.PauseAnimation();
+            LottieAnimationView.Progress = (float) (e.NewValue / 1000);
         }
     }
 }

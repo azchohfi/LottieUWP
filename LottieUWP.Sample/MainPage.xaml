@@ -10,9 +10,11 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <lottieUwp:LottieAnimationView x:Name="LottieAnimationView" FileName="Assets/Gears.json" AutoPlay="True" Loop="True" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <ListView Grid.Row="1" ItemsSource="{x:Bind Files}" SelectionChanged="Selector_OnSelectionChanged"/>
+        <lottieUwp:LottieAnimationView x:Name="LottieAnimationView" FileName="Assets/Gears.json" AutoPlay="True" Loop="True" ImageAssetsFolder="Assets/Images/WeAccept" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Slider Grid.Row="1" Minimum="0" Maximum="1000" SmallChange="1" ValueChanged="RangeBase_OnValueChanged" />
+        <ListView Grid.Row="2" ItemsSource="{x:Bind Files}" SelectionChanged="Selector_OnSelectionChanged"/>
     </Grid>
 </Page>
