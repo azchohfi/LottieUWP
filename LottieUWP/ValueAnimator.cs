@@ -23,15 +23,23 @@ namespace LottieUWP
 
         private float _floatValue1;
         private float _floatValue2;
+        private float _animatedValue;
 
         public IInterpolator Interpolator { get; set; }
-        public float AnimatedValue { get; private set; }
+
+        public float AnimatedValue
+        {
+            get => _animatedValue;
+            private set
+            {
+                _animatedValue = value;
+                OnAnimationUpdate();
+            }
+        }
 
         public override void Start()
         {
             AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, Interpolator.GetInterpolation(0));
-
-            OnAnimationUpdate();
 
             base.Start();
         }
@@ -46,8 +54,6 @@ namespace LottieUWP
             base.TimerCallback(sender, e);
 
             AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, Interpolator.GetInterpolation(Progress));
-
-            OnAnimationUpdate();
         }
 
         public void SetFloatValues(float floatValue1, float floatValue2)

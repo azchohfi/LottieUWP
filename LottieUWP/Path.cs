@@ -554,7 +554,7 @@ namespace LottieUWP
             var lastContour = Contours.LastOrDefault();
             if (lastContour is Line line)
             {
-                var points = new Line(new List<PointF> { new PointF(x, y) });
+                var points = new List<PointF> { new PointF(x, y) };
                 line.AddRange(points);
             }
             else
