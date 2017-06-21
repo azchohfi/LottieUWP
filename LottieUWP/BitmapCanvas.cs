@@ -67,6 +67,10 @@ namespace LottieUWP
 
             var windowsPath = new Windows.UI.Xaml.Shapes.Path
             {
+                Clip = new RectangleGeometry
+                {
+                    Rect = new Rect(0, 0, Width, Height)
+                },
                 Stroke = new SolidColorBrush(paint.Color),
                 StrokeThickness = paint.StrokeWidth,
                 StrokeDashCap = paint.StrokeCap,
