@@ -38,7 +38,7 @@ namespace LottieUWP
                     var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(jsonKeyframe, composition, ValueFactory.Instance);
                     _keyframes.Add(keyframe);
                 }
-                Keyframe<PathKeyframe>.SetEndFrames<IKeyframe<PointF>, PointF>(_keyframes.Cast<IKeyframe<PointF>>().ToList());
+                Keyframe<PathKeyframe>.SetEndFrames<PathKeyframe, PointF>(_keyframes);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace LottieUWP
             return firstObject.ValueType == JsonValueType.Object && firstObject.GetObject().ContainsKey("t");
         }
 
-        public virtual IBaseKeyframeAnimation<PointF> CreateAnimation()
+        public IBaseKeyframeAnimation<PointF> CreateAnimation()
         {
             if (!HasAnimation())
             {
@@ -65,7 +65,7 @@ namespace LottieUWP
             return new PathKeyframeAnimation(_keyframes.Cast<IKeyframe<PointF>>().ToList());
         }
 
-        public virtual bool HasAnimation()
+        public bool HasAnimation()
         {
             return _keyframes.Count > 0;
         }
@@ -79,7 +79,7 @@ namespace LottieUWP
         {
             internal static readonly IAnimatableValueFactory<PointF> Instance = new ValueFactory();
 
-            public virtual PointF ValueFromObject(IJsonValue @object, float scale)
+            public PointF ValueFromObject(IJsonValue @object, float scale)
             {
                 return JsonUtils.PointFromJsonArray(@object.GetArray(), scale);
             }
