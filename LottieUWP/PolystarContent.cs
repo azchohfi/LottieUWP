@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LottieUWP
 {
-    internal class PolystarContent : IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class PolystarContent : IPathContent
     {
         /// <summary>
         /// This was empirically derived by creating polystars, converting them to
@@ -61,19 +61,19 @@ namespace LottieUWP
                 layer.AddAnimation(_innerRoundednessAnimation);
             }
 
-            _pointsAnimation.AddUpdateListener(this);
-            _positionAnimation.AddUpdateListener(this);
-            _rotationAnimation.AddUpdateListener(this);
-            _outerRadiusAnimation.AddUpdateListener(this);
-            _outerRoundednessAnimation.AddUpdateListener(this);
+            _pointsAnimation.ValueChanged += OnValueChanged;
+            _positionAnimation.ValueChanged += OnValueChanged;
+            _rotationAnimation.ValueChanged += OnValueChanged;
+            _outerRadiusAnimation.ValueChanged += OnValueChanged;
+            _outerRoundednessAnimation.ValueChanged += OnValueChanged;
             if (_type == PolystarShape.Type.Star)
             {
-                _outerRadiusAnimation.AddUpdateListener(this);
-                _outerRoundednessAnimation.AddUpdateListener(this);
+                _outerRadiusAnimation.ValueChanged += OnValueChanged;
+                _outerRoundednessAnimation.ValueChanged += OnValueChanged;
             }
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             Invalidate();
         }
@@ -91,12 +91,12 @@ namespace LottieUWP
                 if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
-                    _trimPath.AddListener(this);
+                    _trimPath.ValueChanged += OnValueChanged;
                 }
             }
         }
 
-        public virtual Path Path
+        public Path Path
         {
             get
             {

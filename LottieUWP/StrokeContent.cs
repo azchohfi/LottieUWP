@@ -11,7 +11,7 @@ namespace LottieUWP
         {
             Name = stroke.Name;
             _colorAnimation = (KeyframeAnimation<Color>)stroke.Color.CreateAnimation();
-            _colorAnimation.AddUpdateListener(this);
+            _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
         }
 

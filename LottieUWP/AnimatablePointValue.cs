@@ -9,9 +9,9 @@ namespace LottieUWP
         {
         }
 
-        internal override PointF ConvertType(PointF value)
+        protected override PointF ConvertType(PointF value)
         {
-            return value;
+            return new PointF(value.X, value.Y);
         }
 
         public override IBaseKeyframeAnimation<PointF> CreateAnimation()

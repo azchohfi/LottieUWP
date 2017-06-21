@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra.Single;
+﻿using System;
+using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -30,13 +31,24 @@ namespace LottieUWP
             layer.AddAnimation(_opacity);
         }
 
-        internal virtual void AddListener(BaseKeyframeAnimation.IAnimationListener listener)
+        internal event EventHandler ValueChanged
         {
-            _anchorPoint.AddUpdateListener(listener);
-            _position.AddUpdateListener(listener);
-            _scale.AddUpdateListener(listener);
-            _rotation.AddUpdateListener(listener);
-            _opacity.AddUpdateListener(listener);
+            add
+            {
+                _anchorPoint.ValueChanged += value;
+                _position.ValueChanged += value;
+                _scale.ValueChanged += value;
+                _rotation.ValueChanged += value;
+                _opacity.ValueChanged += value;
+            }
+            remove
+            {
+                _anchorPoint.ValueChanged -= value;
+                _position.ValueChanged -= value;
+                _scale.ValueChanged -= value;
+                _rotation.ValueChanged -= value;
+                _opacity.ValueChanged -= value;
+            }
         }
 
         internal virtual IBaseKeyframeAnimation<int?> Opacity => _opacity;

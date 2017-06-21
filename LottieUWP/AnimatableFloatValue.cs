@@ -13,7 +13,7 @@ namespace LottieUWP
         {
         }
 
-        internal override float? ConvertType(float? value)
+        protected override float? ConvertType(float? value)
         {
             return value;
         }

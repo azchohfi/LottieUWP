@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LottieUWP
 {
-    internal class RectangleContent : IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class RectangleContent : IPathContent
     {
         private readonly Path _path = new Path();
 
@@ -27,14 +27,14 @@ namespace LottieUWP
             layer.AddAnimation(_sizeAnimation);
             layer.AddAnimation(_cornerRadiusAnimation);
 
-            _positionAnimation.AddUpdateListener(this);
-            _sizeAnimation.AddUpdateListener(this);
-            _cornerRadiusAnimation.AddUpdateListener(this);
+            _positionAnimation.ValueChanged += OnValueChanged;
+            _sizeAnimation.ValueChanged += OnValueChanged;
+            _cornerRadiusAnimation.ValueChanged += OnValueChanged;
         }
 
         public string Name { get; }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             Invalidate();
         }
@@ -52,7 +52,7 @@ namespace LottieUWP
                 if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
-                    _trimPath.AddListener(this);
+                    _trimPath.ValueChanged += OnValueChanged;
                 }
             }
         }

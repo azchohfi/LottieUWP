@@ -84,7 +84,7 @@ namespace LottieUWP
 
         internal static void ApplyTrimPathIfNeeded(Path path, float startValue, float endValue, float offsetValue)
         {
-            PathMeasure.SetPath(path, false);
+            PathMeasure.SetPath(path);
 
             var length = PathMeasure.Length;
             if (startValue == 1f && endValue == 0f)

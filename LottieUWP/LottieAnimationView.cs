@@ -544,14 +544,10 @@ namespace LottieUWP
             remove => _lottieDrawable.AnimatorUpdate -= value;
         }
 
-        public virtual void AddAnimatorListener(Animator.IAnimatorListener listener)
+        public event EventHandler ValueChanged
         {
-            _lottieDrawable.AddAnimatorListener(listener);
-        }
-
-        public virtual void RemoveAnimatorListener(Animator.IAnimatorListener listener)
-        {
-            _lottieDrawable.RemoveAnimatorListener(listener);
+            add => _lottieDrawable.ValueChanged += value;
+            remove => _lottieDrawable.ValueChanged -= value;
         }
 
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;

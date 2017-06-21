@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    internal class GradientFillContent : IDrawingContent, BaseKeyframeAnimation.IAnimationListener
+    internal class GradientFillContent : IDrawingContent
     {
         /// <summary>
         /// Cache the gradients such that it runs at 30fps.
@@ -36,23 +36,23 @@ namespace LottieUWP
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
 
             _colorAnimation = (KeyframeAnimation<GradientColor>)fill.GradientColor.CreateAnimation();
-            _colorAnimation.AddUpdateListener(this);
+            _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
 
             _opacityAnimation = (KeyframeAnimation<int?>)fill.Opacity.CreateAnimation();
-            _opacityAnimation.AddUpdateListener(this);
+            _opacityAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_opacityAnimation);
 
             _startPointAnimation = (KeyframeAnimation<PointF>)fill.StartPoint.CreateAnimation();
-            _startPointAnimation.AddUpdateListener(this);
+            _startPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_startPointAnimation);
 
             _endPointAnimation = (KeyframeAnimation<PointF>)fill.EndPoint.CreateAnimation();
-            _endPointAnimation.AddUpdateListener(this);
+            _endPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_endPointAnimation);
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             _lottieDrawable.InvalidateSelf();
         }

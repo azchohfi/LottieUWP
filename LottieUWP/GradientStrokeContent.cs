@@ -29,15 +29,15 @@ namespace LottieUWP
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
 
             _colorAnimation = (KeyframeAnimation<GradientColor>)stroke.GradientColor.CreateAnimation();
-            _colorAnimation.AddUpdateListener(this);
+            _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
 
             _startPointAnimation = (KeyframeAnimation<PointF>)stroke.StartPoint.CreateAnimation();
-            _startPointAnimation.AddUpdateListener(this);
+            _startPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_startPointAnimation);
 
             _endPointAnimation = (KeyframeAnimation<PointF>)stroke.EndPoint.CreateAnimation();
-            _endPointAnimation.AddUpdateListener(this);
+            _endPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_endPointAnimation);
         }
 

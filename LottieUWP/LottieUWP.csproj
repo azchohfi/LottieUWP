@@ -120,7 +120,6 @@
     <Compile Include="AnimatableTransform.cs" />
     <Compile Include="IAnimatableValue.cs" />
     <Compile Include="AnimatableValueParser.cs" />
-    <Compile Include="IAnimationListener.cs" />
     <Compile Include="Animator.cs" />
     <Compile Include="BaseAnimatableValue.cs" />
     <Compile Include="BaseKeyframeAnimation.cs" />

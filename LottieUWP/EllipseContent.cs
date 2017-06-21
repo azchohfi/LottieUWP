@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LottieUWP
 {
-    internal class EllipseContent : IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class EllipseContent : IPathContent
     {
         private const float EllipseControlPointPercentage = 0.55228f;
 
@@ -25,11 +26,11 @@ namespace LottieUWP
             layer.AddAnimation(_sizeAnimation);
             layer.AddAnimation(_positionAnimation);
 
-            _sizeAnimation.AddUpdateListener(this);
-            _positionAnimation.AddUpdateListener(this);
+            _sizeAnimation.ValueChanged += OnValueChanged;
+            _positionAnimation.ValueChanged += OnValueChanged;
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             Invalidate();
         }
@@ -47,7 +48,7 @@ namespace LottieUWP
                 if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
-                    _trimPath.AddListener(this);
+                    _trimPath.ValueChanged += OnValueChanged;
                 }
             }
         }

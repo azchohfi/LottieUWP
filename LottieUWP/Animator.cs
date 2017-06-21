@@ -6,12 +6,7 @@ namespace LottieUWP
 {
     public abstract class Animator
     {
-        public interface IAnimatorListener
-        {
-
-        }
-
-        private readonly List<IAnimatorListener> _listeners = new List<IAnimatorListener>();
+        public event EventHandler ValueChanged;
         private readonly DispatcherTimer _timer;
         private bool _isReverse;
 
@@ -43,16 +38,6 @@ namespace LottieUWP
         public void Cancel()
         {
             _timer.Stop();
-        }
-
-        public void AddListener(IAnimatorListener listener)
-        {
-            _listeners.Add(listener);
-        }
-
-        public void RemoveListener(IAnimatorListener listener)
-        {
-            _listeners.Remove(listener);
         }
 
         protected virtual void TimerCallback(object sender, object e)

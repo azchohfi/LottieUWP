@@ -25,7 +25,7 @@ namespace LottieUWP
 
             if (_pathMeasureKeyframe != pathKeyframe)
             {
-                _pathMeasure = new PathMeasure(path, false);
+                _pathMeasure = new PathMeasure(path);
                 _pathMeasureKeyframe = pathKeyframe;
             }
 

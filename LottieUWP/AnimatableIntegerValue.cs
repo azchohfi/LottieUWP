@@ -14,7 +14,7 @@ namespace LottieUWP
         {
         }
 
-        internal override int? ConvertType(int? value)
+        protected override int? ConvertType(int? value)
         {
             return value;
         }
@@ -54,7 +54,7 @@ namespace LottieUWP
         {
             internal static readonly ValueFactory Instance = new ValueFactory();
 
-            public virtual int? ValueFromObject(IJsonValue @object, float scale)
+            public int? ValueFromObject(IJsonValue @object, float scale)
             {
                 return (int?) Math.Round(JsonUtils.ValueFromObject(@object) * scale);
             }

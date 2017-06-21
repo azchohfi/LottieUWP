@@ -25,11 +25,11 @@ namespace LottieUWP
         /// Convert the value type of the keyframe to the value type of the animation. Often, these
         /// are the same type.
         /// </summary>
-        internal abstract TO ConvertType(TV value);
+        protected abstract TO ConvertType(TV value);
 
         public abstract IBaseKeyframeAnimation<TO> CreateAnimation();
 
-        public bool HasAnimation()
+        public virtual bool HasAnimation()
         {
             return Keyframes.Count > 0;
         }

@@ -471,14 +471,10 @@ namespace LottieUWP
             remove => _animator.Update -= value;
         }
 
-        public virtual void AddAnimatorListener(Animator.IAnimatorListener listener)
+        public event EventHandler ValueChanged
         {
-            _animator.AddListener(listener);
-        }
-
-        public virtual void RemoveAnimatorListener(Animator.IAnimatorListener listener)
-        {
-            _animator.RemoveListener(listener);
+            add => _animator.ValueChanged += value;
+            remove => _animator.ValueChanged -= value;
         }
 
         public int IntrinsicWidth => _composition == null ? -1 : (int)(_composition.Bounds.Width * _scale);

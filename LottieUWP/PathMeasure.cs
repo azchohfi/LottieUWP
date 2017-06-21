@@ -5,24 +5,21 @@ namespace LottieUWP
     internal class PathMeasure
     {
         private Path _path;
-        private bool _forceClosed;
         private int _currentContourIndex;
 
-        public PathMeasure(Path path, bool forceClosed)
+        public PathMeasure(Path path)
         {
             _path = path;
-            _forceClosed = forceClosed;
         }
 
         public PathMeasure()
         {
         }
 
-        public void SetPath(Path path, bool forceClosed)
+        public void SetPath(Path path)
         {
             _currentContourIndex = 0;
             _path = path;
-            _forceClosed = forceClosed;
         }
 
         public float Length

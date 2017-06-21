@@ -13,7 +13,7 @@ namespace LottieUWP
         {
         }
 
-        internal override ScaleXy ConvertType(ScaleXy value)
+        protected override ScaleXy ConvertType(ScaleXy value)
         {
             return value;
         }

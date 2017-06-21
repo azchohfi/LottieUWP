@@ -20,7 +20,7 @@ namespace LottieUWP
             return new ShapeKeyframeAnimation(Keyframes);
         }
 
-        internal override Path ConvertType(ShapeData shapeData)
+        protected override Path ConvertType(ShapeData shapeData)
         {
             _convertTypePath.Reset();
             MiscUtils.GetPathFromData(shapeData, _convertTypePath);

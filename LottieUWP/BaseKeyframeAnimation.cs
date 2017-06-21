@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LottieUWP
 {
     public interface IBaseKeyframeAnimation
     {
         float Progress { get; set; }
-        void AddUpdateListener(BaseKeyframeAnimation.IAnimationListener listener);
+        event EventHandler ValueChanged;
     }
     public interface IBaseKeyframeAnimation<out TA> : IBaseKeyframeAnimation
     {
@@ -18,8 +19,7 @@ namespace LottieUWP
     /// <typeparam name="TA">Animation type</typeparam>
     public abstract class BaseKeyframeAnimation<TK, TA> : IBaseKeyframeAnimation<TA>
     {
-        // This is not a Set because we don't want to create an iterator object on every setProgress. 
-        internal readonly IList<BaseKeyframeAnimation.IAnimationListener> Listeners = new List<BaseKeyframeAnimation.IAnimationListener>();
+        public virtual event EventHandler ValueChanged;
         private bool _isDiscrete;
 
         private readonly IList<IKeyframe<TK>> _keyframes;
@@ -35,11 +35,6 @@ namespace LottieUWP
         internal virtual void SetIsDiscrete()
         {
             _isDiscrete = true;
-        }
-
-        public virtual void AddUpdateListener(BaseKeyframeAnimation.IAnimationListener listener)
-        {
-            Listeners.Add(listener);
         }
 
         public virtual float Progress
@@ -66,12 +61,14 @@ namespace LottieUWP
                 }
                 _progress = value;
 
-                for (var i = 0; i < Listeners.Count; i++)
-                {
-                    Listeners[i].OnValueChanged();
-                }
+                OnValueChanged();
             }
             get => _progress;
+        }
+
+        protected virtual void OnValueChanged()
+        {
+            ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private IKeyframe<TK> CurrentKeyframe

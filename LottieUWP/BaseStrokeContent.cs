@@ -6,7 +6,7 @@ using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    public abstract class BaseStrokeContent : IDrawingContent, BaseKeyframeAnimation.IAnimationListener
+    public abstract class BaseStrokeContent : IDrawingContent
     {
         private readonly PathMeasure _pm = new PathMeasure();
         private readonly Path _path = new Path();
@@ -59,17 +59,20 @@ namespace LottieUWP
                 layer.AddAnimation(_dashPatternOffsetAnimation);
             }
 
-            _opacityAnimation.AddUpdateListener(this);
-            _widthAnimation.AddUpdateListener(this);
+            _opacityAnimation.ValueChanged += OnValueChanged;
+            _widthAnimation.ValueChanged += OnValueChanged;
 
             for (var i = 0; i < dashPattern.Count; i++)
             {
-                _dashPatternAnimations[i].AddUpdateListener(this);
+                _dashPatternAnimations[i].ValueChanged += OnValueChanged;
             }
-            _dashPatternOffsetAnimation?.AddUpdateListener(this);
+            if (_dashPatternOffsetAnimation != null)
+            {
+                _dashPatternOffsetAnimation.ValueChanged += OnValueChanged;
+            }
         }
 
-        public virtual void OnValueChanged()
+        public virtual void OnValueChanged(object sender, EventArgs eventArgs)
         {
             _lottieDrawable.InvalidateSelf();
         }
@@ -87,7 +90,10 @@ namespace LottieUWP
                     trimPathContentBefore = trimPathContent;
                 }
             }
-            trimPathContentBefore?.AddListener(this);
+            if (trimPathContentBefore != null)
+            {
+                trimPathContentBefore.ValueChanged += OnValueChanged;
+            }
 
             PathGroup currentPathGroup = null;
             for (var i = contentsAfter.Count - 1; i >= 0; i--)
@@ -100,7 +106,7 @@ namespace LottieUWP
                         _pathGroups.Add(currentPathGroup);
                     }
                     currentPathGroup = new PathGroup(trimPathContent);
-                    trimPathContent.AddListener(this);
+                    trimPathContent.ValueChanged += OnValueChanged;
                 }
                 else if (content is IPathContent)
                 {
@@ -160,7 +166,7 @@ namespace LottieUWP
             {
                 _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
             }
-            _pm.SetPath(_path, false);
+            _pm.SetPath(_path);
             var totalLength = _pm.Length;
             while (_pm.NextContour())
             {
@@ -175,7 +181,7 @@ namespace LottieUWP
             {
                 _trimPathPath.Set(pathGroup.Paths[j].Path);
                 _trimPathPath.Transform(parentMatrix);
-                _pm.SetPath(_trimPathPath, false);
+                _pm.SetPath(_trimPathPath);
                 var length = _pm.Length;
                 if (endLength > totalLength && endLength - totalLength < currentLength + length && currentLength < endLength - totalLength)
                 {
