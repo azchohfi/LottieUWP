@@ -279,7 +279,7 @@ Contributors are more than welcome. Just upload a PR with a description of your 
 
 ## Classes to improve
 * Animator.cs
-* BitmapCanvas.cs (fully change to DD?)
+* BitmapCanvas.cs
 * ColorFilter.cs
 * DashPathEffect.cs
 * Gradient.cs
