@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LottieUWP
 {
-    internal class PolystarContent : IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class PolystarContent : IPathContent
     {
         /// <summary>
         /// This was empirically derived by creating polystars, converting them to
@@ -61,19 +61,19 @@ namespace LottieUWP
                 layer.AddAnimation(_innerRoundednessAnimation);
             }
 
-            _pointsAnimation.AddUpdateListener(this);
-            _positionAnimation.AddUpdateListener(this);
-            _rotationAnimation.AddUpdateListener(this);
-            _outerRadiusAnimation.AddUpdateListener(this);
-            _outerRoundednessAnimation.AddUpdateListener(this);
+            _pointsAnimation.ValueChanged += OnValueChanged;
+            _positionAnimation.ValueChanged += OnValueChanged;
+            _rotationAnimation.ValueChanged += OnValueChanged;
+            _outerRadiusAnimation.ValueChanged += OnValueChanged;
+            _outerRoundednessAnimation.ValueChanged += OnValueChanged;
             if (_type == PolystarShape.Type.Star)
             {
-                _outerRadiusAnimation.AddUpdateListener(this);
-                _outerRoundednessAnimation.AddUpdateListener(this);
+                _outerRadiusAnimation.ValueChanged += OnValueChanged;
+                _outerRoundednessAnimation.ValueChanged += OnValueChanged;
             }
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             Invalidate();
         }
@@ -91,12 +91,12 @@ namespace LottieUWP
                 if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
-                    _trimPath.AddListener(this);
+                    _trimPath.ValueChanged += OnValueChanged;
                 }
             }
         }
 
-        public virtual Path Path
+        public Path Path
         {
             get
             {
@@ -107,12 +107,12 @@ namespace LottieUWP
 
                 _path.Reset();
 
-                switch (_type.InnerEnumValue)
+                switch (_type)
                 {
-                    case PolystarShape.Type.InnerEnum.Star:
+                    case PolystarShape.Type.Star:
                         CreateStarPath();
                         break;
-                    case PolystarShape.Type.InnerEnum.Polygon:
+                    case PolystarShape.Type.Polygon:
                         CreatePolygonPath();
                         break;
                 }
@@ -146,7 +146,7 @@ namespace LottieUWP
             }
 
             var outerRadius = _outerRadiusAnimation.Value.Value;
-            
+
             var innerRadius = _innerRadiusAnimation.Value.Value;
 
             var innerRoundedness = 0f;
@@ -244,8 +244,11 @@ namespace LottieUWP
             }
 
 
-            var position = _positionAnimation.Value ?? PointF.Zero;
-            _path.Offset(position.X, position.Y);
+            var position = _positionAnimation.Value;
+            if (position != null)
+            {
+                _path.Offset(position.X, position.Y);
+            }
             _path.Close();
         }
 
@@ -301,8 +304,11 @@ namespace LottieUWP
                 currentAngle += anglePerPoint;
             }
 
-            var position = _positionAnimation.Value ?? PointF.Zero;
-            _path.Offset(position.X, position.Y);
+            var position = _positionAnimation.Value;
+            if (position != null)
+            {
+                _path.Offset(position.X, position.Y);
+            }
             _path.Close();
         }
     }

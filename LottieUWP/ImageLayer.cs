@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using MathNet.Numerics.LinearAlgebra.Single;
 
@@ -27,8 +28,8 @@ namespace LottieUWP
             _paint.Alpha = parentAlpha;
             canvas.Save();
             canvas.Concat(parentMatrix);
-            RectExt.Set(ref _src, 0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
-            RectExt.Set(ref _dst, 0, 0, (int)(bitmap.PixelWidth * _density), (int)(bitmap.PixelHeight * _density));
+            RectExt.Set(ref _src, 0, 0, PixelWidth, PixelHeight);
+            RectExt.Set(ref _dst, 0, 0, (int)(PixelWidth * _density), (int)(PixelHeight * _density));
             canvas.DrawBitmap(bitmap, _src, _dst, _paint);
             canvas.Restore();
         }
@@ -39,12 +40,35 @@ namespace LottieUWP
             var bitmap = Bitmap;
             if (bitmap != null)
             {
-                RectExt.Set(ref outBounds, outBounds.Left, outBounds.Top, Math.Min(outBounds.Right, bitmap.PixelWidth), Math.Min(outBounds.Bottom, bitmap.PixelHeight));
+                RectExt.Set(ref outBounds, outBounds.Left, outBounds.Top, Math.Min(outBounds.Right, PixelWidth), Math.Min(outBounds.Bottom, PixelHeight));
                 BoundsMatrix.MapRect(ref outBounds);
             }
         }
+        private int PixelWidth
+        {
+            get
+            {
+                if (Bitmap is BitmapSource bitmapSource)
+                    return bitmapSource.PixelWidth;
+                if (Bitmap is RenderTargetBitmap renderTargetBitmap)
+                    return renderTargetBitmap.PixelWidth;
+                return 0;
+            }
+        }
 
-        private BitmapSource Bitmap
+        private int PixelHeight
+        {
+            get
+            {
+                if (Bitmap is BitmapSource bitmapSource)
+                    return bitmapSource.PixelHeight;
+                if (Bitmap is RenderTargetBitmap renderTargetBitmap)
+                    return renderTargetBitmap.PixelHeight;
+                return 0;
+            }
+        }
+
+        private ImageSource Bitmap
         {
             get
             {

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LottieUWP
 {
-    internal class TrimPathContent : IContent, BaseKeyframeAnimation.IAnimationListener
+    internal class TrimPathContent : IContent
     {
-        private readonly IList<BaseKeyframeAnimation.IAnimationListener> _listeners = new List<BaseKeyframeAnimation.IAnimationListener>();
+        public event EventHandler ValueChanged;
         private readonly IBaseKeyframeAnimation<float?> _startAnimation;
         private readonly IBaseKeyframeAnimation<float?> _endAnimation;
         private readonly IBaseKeyframeAnimation<float?> _offsetAnimation;
@@ -21,17 +22,14 @@ namespace LottieUWP
             layer.AddAnimation(_endAnimation);
             layer.AddAnimation(_offsetAnimation);
 
-            _startAnimation.AddUpdateListener(this);
-            _endAnimation.AddUpdateListener(this);
-            _offsetAnimation.AddUpdateListener(this);
+            _startAnimation.ValueChanged += OnValueChanged;
+            _endAnimation.ValueChanged += OnValueChanged;
+            _offsetAnimation.ValueChanged += OnValueChanged;
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
-            for (var i = 0; i < _listeners.Count; i++)
-            {
-                _listeners[i].OnValueChanged();
-            }
+            ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
@@ -40,11 +38,6 @@ namespace LottieUWP
         }
 
         public string Name { get; }
-
-        internal virtual void AddListener(BaseKeyframeAnimation.IAnimationListener listener)
-        {
-            _listeners.Add(listener);
-        }
 
         internal virtual ShapeTrimPath.Type Type { get; }
 

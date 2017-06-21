@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    internal class FillContent : IDrawingContent, BaseKeyframeAnimation.IAnimationListener
+    internal class FillContent : IDrawingContent
     {
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
@@ -28,16 +28,17 @@ namespace LottieUWP
             _path.FillType = fill.FillType;
 
             _colorAnimation = fill.Color.CreateAnimation();
-            _colorAnimation.AddUpdateListener(this);
+            _colorAnimation.ValueChanged += (sender, args) =>
+            {
+                _lottieDrawable.InvalidateSelf();
+            };
             layer.AddAnimation(_colorAnimation);
             _opacityAnimation = (KeyframeAnimation<int?>)fill.Opacity.CreateAnimation();
-            _opacityAnimation.AddUpdateListener(this);
+            _opacityAnimation.ValueChanged += (sender, args) =>
+            {
+                _lottieDrawable.InvalidateSelf();
+            };
             layer.AddAnimation(_opacityAnimation);
-        }
-
-        public void OnValueChanged()
-        {
-            _lottieDrawable.InvalidateSelf();
         }
 
         public virtual void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)

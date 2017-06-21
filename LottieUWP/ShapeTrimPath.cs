@@ -1,80 +1,13 @@
-﻿using System.Collections.Generic;
-using Windows.Data.Json;
+﻿using Windows.Data.Json;
 
 namespace LottieUWP
 {
     internal class ShapeTrimPath
     {
-        internal sealed class Type
+        internal enum Type
         {
-            public static readonly Type Simultaneously = new Type("Simultaneously", InnerEnum.Simultaneously);
-            public static readonly Type Individually = new Type("Individually", InnerEnum.Individually);
-
-            private static readonly IList<Type> ValueList = new List<Type>();
-
-            static Type()
-            {
-                ValueList.Add(Simultaneously);
-                ValueList.Add(Individually);
-            }
-
-            public enum InnerEnum
-            {
-                Simultaneously,
-                Individually
-            }
-
-            private readonly InnerEnum _innerEnumValue;
-            private readonly string _nameValue;
-            private readonly int _ordinalValue;
-            private static int _nextOrdinal;
-
-            private Type(string name, InnerEnum innerEnum)
-            {
-                _nameValue = name;
-                _ordinalValue = _nextOrdinal++;
-                _innerEnumValue = innerEnum;
-            }
-
-            internal static Type ForId(int id)
-            {
-                switch (id)
-                {
-                    case 1:
-                        return Simultaneously;
-                    case 2:
-                        return Individually;
-                    default:
-                        throw new System.ArgumentException("Unknown trim path type " + id);
-                }
-            }
-
-            public static IList<Type> Values()
-            {
-                return ValueList;
-            }
-
-            public int Ordinal()
-            {
-                return _ordinalValue;
-            }
-
-            public override string ToString()
-            {
-                return _nameValue;
-            }
-
-            public static Type ValueOf(string name)
-            {
-                foreach (var enumInstance in ValueList)
-                {
-                    if (enumInstance._nameValue == name)
-                    {
-                        return enumInstance;
-                    }
-                }
-                throw new System.ArgumentException(name);
-            }
+            Simultaneously = 1,
+            Individually = 2
         }
 
         private readonly Type _type;
@@ -95,7 +28,7 @@ namespace LottieUWP
         {
             internal static ShapeTrimPath NewInstance(JsonObject json, LottieComposition composition)
             {
-                return new ShapeTrimPath(json.GetNamedString("nm"), Type.ForId((int)json.GetNamedNumber("m", 1)), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("s"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("e"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o"), composition, false));
+                return new ShapeTrimPath(json.GetNamedString("nm"), (Type)(int)json.GetNamedNumber("m", 1), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("s"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("e"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o"), composition, false));
             }
         }
 

@@ -64,9 +64,31 @@ namespace LottieUWP
             EndFrame = endFrame;
         }
 
-        public virtual float StartProgress => StartFrame.Value / _composition.DurationFrames;
+        public virtual float StartProgress
+        {
+            get
+            {
+                var startProgress = StartFrame.Value / _composition.DurationFrames;
+                if (startProgress < 0)
+                    return 0;
+                if (startProgress > 1)
+                    return 1;
+                return startProgress;
+            }
+        }
 
-        public virtual float EndProgress => EndFrame == null ? 1f : EndFrame.Value / _composition.DurationFrames;
+        public virtual float EndProgress
+        {
+            get
+            {
+                var endProgress = EndFrame == null ? 1f : EndFrame.Value / _composition.DurationFrames;
+                if (endProgress < 0)
+                    return 0;
+                if (endProgress > 1)
+                    return 1;
+                return endProgress;
+            }
+        }
 
         public virtual bool Static => Interpolator == null;
 

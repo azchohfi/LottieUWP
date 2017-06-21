@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Foundation;
 
 namespace LottieUWP
 {
-    internal class RectangleContent : IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class RectangleContent : IPathContent
     {
         private readonly Path _path = new Path();
-        private Rect _rect;
 
         private readonly LottieDrawable _lottieDrawable;
         private readonly IBaseKeyframeAnimation<PointF> _positionAnimation;
@@ -29,14 +27,14 @@ namespace LottieUWP
             layer.AddAnimation(_sizeAnimation);
             layer.AddAnimation(_cornerRadiusAnimation);
 
-            _positionAnimation.AddUpdateListener(this);
-            _sizeAnimation.AddUpdateListener(this);
-            _cornerRadiusAnimation.AddUpdateListener(this);
+            _positionAnimation.ValueChanged += OnValueChanged;
+            _sizeAnimation.ValueChanged += OnValueChanged;
+            _cornerRadiusAnimation.ValueChanged += OnValueChanged;
         }
 
         public string Name { get; }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             Invalidate();
         }
@@ -54,7 +52,7 @@ namespace LottieUWP
                 if (contentsBefore[i] is TrimPathContent trimPathContent && trimPathContent.Type == ShapeTrimPath.Type.Simultaneously)
                 {
                     _trimPath = trimPathContent;
-                    _trimPath.AddListener(this);
+                    _trimPath.ValueChanged += OnValueChanged;
                 }
             }
         }
@@ -89,32 +87,28 @@ namespace LottieUWP
 
                 if (radius > 0)
                 {
-                    RectExt.Set(ref _rect, position.X + halfWidth - 2 * radius, position.Y + halfHeight - 2 * radius, position.X + halfWidth, position.Y + halfHeight);
-                    _path.ArcTo(_rect, 0, 90, false);
+                    _path.ArcTo(position.X + halfWidth - radius, position.Y + halfHeight - radius, 90);
                 }
 
                 _path.LineTo(position.X - halfWidth + radius, position.Y + halfHeight);
 
                 if (radius > 0)
                 {
-                    RectExt.Set(ref _rect, position.X - halfWidth, position.Y + halfHeight - 2 * radius, position.X - halfWidth + 2 * radius, position.Y + halfHeight);
-                    _path.ArcTo(_rect, 90, 90, false);
+                    _path.ArcTo(position.X - halfWidth, position.Y + halfHeight - radius, 90);
                 }
 
                 _path.LineTo(position.X - halfWidth, position.Y - halfHeight + radius);
 
                 if (radius > 0)
                 {
-                    RectExt.Set(ref _rect, position.X - halfWidth, position.Y - halfHeight, position.X - halfWidth + 2 * radius, position.Y - halfHeight + 2 * radius);
-                    _path.ArcTo(_rect, 180, 90, false);
+                    _path.ArcTo(position.X - halfWidth + radius, position.Y - halfHeight, 90);
                 }
 
                 _path.LineTo(position.X + halfWidth - radius, position.Y - halfHeight);
 
                 if (radius > 0)
                 {
-                    RectExt.Set(ref _rect, position.X + halfWidth - 2 * radius, position.Y - halfHeight, position.X + halfWidth, position.Y - halfHeight + 2 * radius);
-                    _path.ArcTo(_rect, 270, 90, false);
+                    _path.ArcTo(position.X + halfWidth, position.Y - halfHeight + radius, 90);
                 }
                 _path.Close();
 

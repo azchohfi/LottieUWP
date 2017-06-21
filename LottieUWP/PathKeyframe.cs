@@ -40,6 +40,6 @@ namespace LottieUWP
         /// <summary>
         /// This will be null if the startValue and endValue are the same.
         /// </summary>
-        internal virtual Path Path => _path;
+        internal Path Path => _path;
     }
 }

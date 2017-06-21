@@ -11,12 +11,12 @@
             _animatableYDimension = animatableYDimension;
         }
 
-        public virtual IBaseKeyframeAnimation<PointF> CreateAnimation()
+        public IBaseKeyframeAnimation<PointF> CreateAnimation()
         {
             return new SplitDimensionPathKeyframeAnimation((KeyframeAnimation<float?>)_animatableXDimension.CreateAnimation(), (KeyframeAnimation<float?>)_animatableYDimension.CreateAnimation());
         }
 
-        public virtual bool HasAnimation()
+        public bool HasAnimation()
         {
             return _animatableXDimension.HasAnimation() || _animatableYDimension.HasAnimation();
         }

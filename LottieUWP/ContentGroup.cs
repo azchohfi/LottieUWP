@@ -7,22 +7,20 @@ using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    internal class ContentGroup : IDrawingContent, IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class ContentGroup : IDrawingContent, IPathContent
     {
         private static readonly string Tag = typeof(ContentGroup).Name;
-        private DenseMatrix _matrix = new DenseMatrix(3, 3);
+        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private Rect _rect;
 
         private readonly List<IContent> _contents = new List<IContent>();
-        private readonly LottieDrawable _lottieDrawable;
         private IList<IPathContent> _pathContents;
         private readonly TransformKeyframeAnimation _transformAnimation;
 
         internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup)
         {
             Name = shapeGroup.Name;
-            _lottieDrawable = lottieDrawable;
             var items = shapeGroup.Items;
             if (items.Count == 0)
             {
@@ -34,7 +32,10 @@ namespace LottieUWP
                 _transformAnimation = animatableTransform.CreateAnimation();
 
                 _transformAnimation.AddAnimationsToLayer(layer);
-                _transformAnimation.AddListener(this);
+                _transformAnimation.ValueChanged += (sender, args) =>
+                {
+                    lottieDrawable.InvalidateSelf();
+                };
             }
 
             for (var i = 0; i < items.Count; i++)
@@ -117,11 +118,6 @@ namespace LottieUWP
                     _contents.RemoveAt(i);
                 }
             }
-        }
-
-        public void OnValueChanged()
-        {
-            _lottieDrawable.InvalidateSelf();
         }
 
         public virtual string Name { get; }

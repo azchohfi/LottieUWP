@@ -6,7 +6,7 @@ using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    internal abstract class BaseLayer : IDrawingContent, BaseKeyframeAnimation.IAnimationListener
+    internal abstract class BaseLayer : IDrawingContent
     {
         private static readonly int SaveFlags = BitmapCanvas.ClipSaveFlag | BitmapCanvas.ClipToLayerSaveFlag | BitmapCanvas.MatrixSaveFlag;
 
@@ -34,7 +34,7 @@ namespace LottieUWP
         }
 
         private readonly Path _path = new Path();
-        private DenseMatrix _matrix = new DenseMatrix(3, 3);
+        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Paint _contentPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _maskPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _mattePaint = new Paint(Paint.AntiAliasFlag);
@@ -43,7 +43,7 @@ namespace LottieUWP
         private Rect _maskBoundsRect;
         private Rect _matteBoundsRect;
         private Rect _tempMaskBoundsRect;
-        internal DenseMatrix BoundsMatrix = new DenseMatrix(3, 3);
+        internal DenseMatrix BoundsMatrix = DenseMatrix.CreateIdentity(3);
         internal readonly LottieDrawable LottieDrawable;
         internal Layer _layerModel { get; set; }
         private readonly MaskKeyframeAnimation _mask;
@@ -71,7 +71,7 @@ namespace LottieUWP
             }
 
             Transform = layerModel.Transform.CreateAnimation();
-            Transform.AddListener(this);
+            Transform.ValueChanged += OnValueChanged;
             Transform.AddAnimationsToLayer(this);
 
             if (layerModel.Masks != null && layerModel.Masks.Count > 0)
@@ -80,13 +80,13 @@ namespace LottieUWP
                 foreach (var animation in _mask.MaskAnimations)
                 {
                     AddAnimation(animation);
-                    animation.AddUpdateListener(this);
+                    animation.ValueChanged += OnValueChanged;
                 }
             }
             SetupInOutAnimations();
         }
 
-        public virtual void OnValueChanged()
+        public virtual void OnValueChanged(object sender, EventArgs eventArgs)
         {
             InvalidateSelf();
         }
@@ -114,31 +114,16 @@ namespace LottieUWP
             {
                 var inOutAnimation = new FloatKeyframeAnimation(_layerModel.InOutKeyframes);
                 inOutAnimation.SetIsDiscrete();
-                inOutAnimation.AddUpdateListener(new AnimationListenerAnonymousInnerClass(this, inOutAnimation));
+                inOutAnimation.ValueChanged += (sender, args) =>
+                {
+                    Visible = inOutAnimation.Value == 1f;
+                };
                 Visible = inOutAnimation.Value == 1f;
                 AddAnimation(inOutAnimation);
             }
             else
             {
                 Visible = true;
-            }
-        }
-
-        private class AnimationListenerAnonymousInnerClass : BaseKeyframeAnimation.IAnimationListener
-        {
-            private readonly BaseLayer _outerInstance;
-
-            private readonly FloatKeyframeAnimation _inOutAnimation;
-
-            public AnimationListenerAnonymousInnerClass(BaseLayer outerInstance, FloatKeyframeAnimation inOutAnimation)
-            {
-                _outerInstance = outerInstance;
-                _inOutAnimation = inOutAnimation;
-            }
-
-            public virtual void OnValueChanged()
-            {
-                _outerInstance.Visible = _inOutAnimation.Value == 1f;
             }
         }
 

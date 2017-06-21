@@ -1,83 +1,13 @@
-﻿using System.Collections.Generic;
-using Windows.Data.Json;
+﻿using Windows.Data.Json;
 
 namespace LottieUWP
 {
     internal class PolystarShape
     {
-        internal sealed class Type
+        internal enum Type
         {
-            public static readonly Type Star = new Type("Star", InnerEnum.Star, 1);
-            public static readonly Type Polygon = new Type("Polygon", InnerEnum.Polygon, 2);
-
-            private static readonly IList<Type> ValueList = new List<Type>();
-
-            static Type()
-            {
-                ValueList.Add(Star);
-                ValueList.Add(Polygon);
-            }
-
-            public enum InnerEnum
-            {
-                Star,
-                Polygon
-            }
-
-            public readonly InnerEnum InnerEnumValue;
-            private readonly string _nameValue;
-            private readonly int _ordinalValue;
-            private static int _nextOrdinal;
-
-            internal readonly int Value;
-
-            internal Type(string name, InnerEnum innerEnum, int value)
-            {
-                Value = value;
-
-                _nameValue = name;
-                _ordinalValue = _nextOrdinal++;
-                InnerEnumValue = innerEnum;
-            }
-
-            internal static Type ForValue(int value)
-            {
-                foreach (var type in Values())
-                {
-                    if (type.Value == value)
-                    {
-                        return type;
-                    }
-                }
-                return null;
-            }
-
-            public static IList<Type> Values()
-            {
-                return ValueList;
-            }
-
-            public int Ordinal()
-            {
-                return _ordinalValue;
-            }
-
-            public override string ToString()
-            {
-                return _nameValue;
-            }
-
-            public static Type ValueOf(string name)
-            {
-                foreach (var enumInstance in ValueList)
-                {
-                    if (enumInstance._nameValue == name)
-                    {
-                        return enumInstance;
-                    }
-                }
-                throw new System.ArgumentException(name);
-            }
+            Star = 1,
+            Polygon = 2
         }
 
         private readonly Type _type;
@@ -100,7 +30,7 @@ namespace LottieUWP
             internal static PolystarShape NewInstance(JsonObject json, LottieComposition composition)
             {
                 var name = json.GetNamedString("nm");
-                var type = Type.ForValue((int)json.GetNamedNumber("sy"));
+                var type = (Type)(int)json.GetNamedNumber("sy");
                 var points = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("pt"), composition, false);
                 var position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(json.GetNamedObject("p"), composition);
                 var rotation = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("r"), composition, false);

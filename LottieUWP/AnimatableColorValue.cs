@@ -10,7 +10,7 @@ namespace LottieUWP
         {
         }
 
-        internal override Color ConvertType(Color value)
+        protected override Color ConvertType(Color value)
         {
             return value;
         }

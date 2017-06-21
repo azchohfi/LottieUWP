@@ -1,4 +1,5 @@
 using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace LottieUWP
 {
@@ -16,24 +17,9 @@ namespace LottieUWP
         {
         }
 
-        public enum Cap
-        {
-            Butt,
-            Round,
-            Square
-        }
-
-        public enum Join
-        {
-            Bevel,
-            Miter,
-            Round
-        }
-
         public enum PaintStyle
         {
             Fill,
-            FillAndStroke,
             Stroke
         }
 
@@ -51,8 +37,8 @@ namespace LottieUWP
         public Color Color { get; set; }
         public PaintStyle Style { get; set; }
         public ColorFilter ColorFilter { get; set; }
-        public Cap StrokeCap { get; set; }
-        public Join StrokeJoin { get; set; }
+        public PenLineCap StrokeCap { get; set; }
+        public PenLineJoin StrokeJoin { get; set; }
         public float StrokeWidth { get; set; }
         public PathEffect PathEffect { get; set; }
         public PorterDuffXfermode Xfermode { get; set; }

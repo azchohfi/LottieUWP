@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace LottieUWP
         private readonly string _imagesFolder;
         private IImageAssetDelegate _assetDelegate;
         private readonly IDictionary<string, LottieImageAsset> _imageAssets;
-        private readonly IDictionary<string, BitmapSource> _bitmaps = new Dictionary<string, BitmapSource>();
+        private readonly IDictionary<string, BitmapImage> _bitmaps = new Dictionary<string, BitmapImage>();
 
         internal ImageAssetBitmapManager(string imagesFolder, IImageAssetDelegate assetDelegate, IDictionary<string, LottieImageAsset> imageAssets)
         {
@@ -37,16 +38,16 @@ namespace LottieUWP
             set => _assetDelegate = value;
         }
 
-        internal BitmapSource UpdateBitmap(string id, BitmapSource bitmap)
+        internal BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
         {
             _bitmaps.Add(id, bitmap);
             return bitmap;
         }
 
-        internal virtual BitmapSource BitmapForId(string id)
+        internal virtual BitmapImage BitmapForId(string id)
         {
-            BitmapSource bitmap;
-            if (_bitmaps.TryGetValue(id, out bitmap))
+            BitmapImage bitmap;
+            if (!_bitmaps.TryGetValue(id, out bitmap))
             {
                 var imageAsset = _imageAssets[id];
                 if (imageAsset == null)
@@ -68,7 +69,7 @@ namespace LottieUWP
                 {
                     if (string.IsNullOrEmpty(_imagesFolder))
                     {
-                        throw new System.InvalidOperationException("You must set an images folder before loading an image." + " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
+                        throw new InvalidOperationException("You must set an images folder before loading an image." + " Set it with LottieDrawable.ImageAssetsFolder");
                     }
                     @is = File.OpenRead(_imagesFolder + imageAsset.FileName);
                 }
@@ -80,7 +81,8 @@ namespace LottieUWP
                 //BitmapFactory.Options opts = new BitmapFactory.Options(); // TODO: handle  density
                 //opts.inScaled = true;
                 //opts.inDensity = 160;
-                bitmap = BitmapFactory.FromStream(@is).Result; // TODO: use await...
+                bitmap = new BitmapImage();
+                bitmap.SetSourceAsync(@is.AsRandomAccessStream());
 
                 _bitmaps[id] = bitmap;
             }
@@ -89,7 +91,7 @@ namespace LottieUWP
 
         internal virtual void RecycleBitmaps()
         {
-            var keyValuePairs = new HashSet<KeyValuePair<string, BitmapSource>>();
+            var keyValuePairs = new HashSet<KeyValuePair<string, BitmapImage>>();
             foreach (var keyValuePair in _bitmaps)
             {
                 keyValuePairs.Add(keyValuePair);

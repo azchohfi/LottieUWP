@@ -11,7 +11,7 @@ namespace LottieUWP
         {
         }
 
-        internal override GradientColor ConvertType(GradientColor value)
+        protected override GradientColor ConvertType(GradientColor value)
         {
             return value;
         }
@@ -37,11 +37,11 @@ namespace LottieUWP
 
         private class ValueFactory : IAnimatableValueFactory<GradientColor>
         {
-            internal readonly int ColorPoints;
+            private readonly int _colorPoints;
 
             internal ValueFactory(int colorPoints)
             {
-                ColorPoints = colorPoints;
+                _colorPoints = colorPoints;
             }
 
             /// <summary>
@@ -64,19 +64,19 @@ namespace LottieUWP
             ///     ...
             /// ]
             /// </summary>
-            public virtual GradientColor ValueFromObject(IJsonValue @object, float scale)
+            public GradientColor ValueFromObject(IJsonValue @object, float scale)
             {
                 var array = @object.GetArray();
-                var positions = new float[ColorPoints];
-                var colors = new Color[ColorPoints];
+                var positions = new float[_colorPoints];
+                var colors = new Color[_colorPoints];
                 var gradientColor = new GradientColor(positions, colors);
                 var r = 0;
                 var g = 0;
-                if (array.Count != ColorPoints * 4)
+                if (array.Count != _colorPoints * 4)
                 {
-                    Debug.WriteLine("Unexpected gradient length: " + array.Count + ". Expected " + ColorPoints * 4 + ". This may affect the appearance of the gradient. " + "Make sure to save your After Effects file before exporting an animation with " + "gradients.", "LOTTIE");
+                    Debug.WriteLine("Unexpected gradient length: " + array.Count + ". Expected " + _colorPoints * 4 + ". This may affect the appearance of the gradient. " + "Make sure to save your After Effects file before exporting an animation with " + "gradients.", "LOTTIE");
                 }
-                for (var i = 0; i < ColorPoints * 4; i++)
+                for (var i = 0; i < _colorPoints * 4; i++)
                 {
                     var colorIndex = i / 4;
                     var value = array[i].GetNumber();
@@ -112,9 +112,9 @@ namespace LottieUWP
             /// This should be a good approximation is nearly all cases. However, if there are many more
             /// opacity stops than color stops, information will be lost.
             /// </summary>
-            internal virtual void AddOpacityStopsToGradientIfNeeded(GradientColor gradientColor, JsonArray array)
+            private void AddOpacityStopsToGradientIfNeeded(GradientColor gradientColor, JsonArray array)
             {
-                var startIndex = ColorPoints * 4;
+                var startIndex = _colorPoints * 4;
                 if (array.Count <= startIndex)
                 {
                     return;
@@ -145,7 +145,7 @@ namespace LottieUWP
                 }
             }
 
-            internal virtual int GetOpacityAtPosition(double position, double[] positions, double[] opacities)
+            private int GetOpacityAtPosition(double position, double[] positions, double[] opacities)
             {
                 for (var i = 1; i < positions.Length; i++)
                 {

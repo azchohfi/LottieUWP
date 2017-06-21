@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.UI;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using MathNet.Numerics.LinearAlgebra.Single;
 
@@ -383,6 +384,7 @@ namespace LottieUWP
 
         public virtual float Progress
         {
+            get => _progress;
             set
             {
                 _progress = value;
@@ -394,18 +396,16 @@ namespace LottieUWP
 
                 if (Canvas == null || Canvas.Width != Width || Canvas.Height != Height)
                 {
-                    Canvas = CanvasPool.Instance.Acquire(Width, Height);
+                    Canvas = new BitmapCanvas(Width, Height);
                 }
                 else
                 {
-                    Canvas.Bitmap.Clear(Colors.Transparent);
+                    Canvas.Clear(Colors.Transparent);
                 }
 
                 Draw(Canvas);
             }
-            get => _progress;
         }
-
 
         /// <summary>
         /// Set the scale on the current composition. The only cost of this function is re-rendering the
@@ -471,14 +471,10 @@ namespace LottieUWP
             remove => _animator.Update -= value;
         }
 
-        public virtual void AddAnimatorListener(Animator.IAnimatorListener listener)
+        public event EventHandler ValueChanged
         {
-            _animator.AddListener(listener);
-        }
-
-        public virtual void RemoveAnimatorListener(Animator.IAnimatorListener listener)
-        {
-            _animator.RemoveListener(listener);
+            add => _animator.ValueChanged += value;
+            remove => _animator.ValueChanged -= value;
         }
 
         public int IntrinsicWidth => _composition == null ? -1 : (int)(_composition.Bounds.Width * _scale);
@@ -496,7 +492,7 @@ namespace LottieUWP
         /// <returns> the previous Bitmap or null.
         ///  </returns>
 
-        public virtual BitmapSource UpdateBitmap(string id, BitmapSource bitmap)
+        public virtual BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
         {
             var bm = ImageAssetBitmapManager;
             if (bm == null)
@@ -509,7 +505,7 @@ namespace LottieUWP
             return ret;
         }
 
-        internal virtual BitmapSource GetImageAsset(string id)
+        internal virtual ImageSource GetImageAsset(string id)
         {
             return ImageAssetBitmapManager?.BitmapForId(id);
         }

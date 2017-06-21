@@ -23,10 +23,7 @@ namespace LottieUWP
                 _yAnimation.Progress = value;
                 _point.X = _xAnimation.Value ?? 0;
                 _point.Y = _yAnimation.Value ?? 0;
-                for (var i = 0; i < Listeners.Count; i++)
-                {
-                    Listeners[i].OnValueChanged();
-                }
+                OnValueChanged();
             }
         }
 

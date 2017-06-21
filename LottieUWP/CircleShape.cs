@@ -19,10 +19,10 @@ namespace LottieUWP
             }
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        public virtual IAnimatableValue<PointF> Position { get; }
+        public IAnimatableValue<PointF> Position { get; }
 
-        public virtual AnimatablePointValue Size { get; }
+        public AnimatablePointValue Size { get; }
     }
 }

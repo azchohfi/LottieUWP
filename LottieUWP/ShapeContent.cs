@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LottieUWP
 {
-    internal class ShapeContent : IPathContent, BaseKeyframeAnimation.IAnimationListener
+    internal class ShapeContent : IPathContent
     {
         private readonly Path _path = new Path();
 
@@ -18,10 +19,10 @@ namespace LottieUWP
             _lottieDrawable = lottieDrawable;
             _shapeAnimation = shape.GetShapePath().CreateAnimation();
             layer.AddAnimation(_shapeAnimation);
-            _shapeAnimation.AddUpdateListener(this);
+            _shapeAnimation.ValueChanged += OnValueChanged;
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             Invalidate();
         }
@@ -40,7 +41,7 @@ namespace LottieUWP
                 {
                     // Trim path individually will be handled by the stroke where paths are combined.
                     _trimPath = trimPathContent;
-                    _trimPath.AddListener(this);
+                    _trimPath.ValueChanged += OnValueChanged;
                 }
             }
         }

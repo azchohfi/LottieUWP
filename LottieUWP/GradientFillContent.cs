@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
-    internal class GradientFillContent : IDrawingContent, BaseKeyframeAnimation.IAnimationListener
+    internal class GradientFillContent : IDrawingContent
     {
         /// <summary>
         /// Cache the gradients such that it runs at 30fps.
@@ -14,7 +14,7 @@ namespace LottieUWP
 
         private readonly Dictionary<long, LinearGradient> _linearGradientCache = new Dictionary<long, LinearGradient>();
         private readonly Dictionary<long, RadialGradient> _radialGradientCache = new Dictionary<long, RadialGradient>();
-        private readonly DenseMatrix _shaderMatrix = new DenseMatrix(3, 3);
+        private readonly DenseMatrix _shaderMatrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         private Rect _boundsRect;
@@ -36,23 +36,23 @@ namespace LottieUWP
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
 
             _colorAnimation = (KeyframeAnimation<GradientColor>)fill.GradientColor.CreateAnimation();
-            _colorAnimation.AddUpdateListener(this);
+            _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
 
             _opacityAnimation = (KeyframeAnimation<int?>)fill.Opacity.CreateAnimation();
-            _opacityAnimation.AddUpdateListener(this);
+            _opacityAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_opacityAnimation);
 
             _startPointAnimation = (KeyframeAnimation<PointF>)fill.StartPoint.CreateAnimation();
-            _startPointAnimation.AddUpdateListener(this);
+            _startPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_startPointAnimation);
 
             _endPointAnimation = (KeyframeAnimation<PointF>)fill.EndPoint.CreateAnimation();
-            _endPointAnimation.AddUpdateListener(this);
+            _endPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_endPointAnimation);
         }
 
-        public void OnValueChanged()
+        private void OnValueChanged(object sender, EventArgs eventArgs)
         {
             _lottieDrawable.InvalidateSelf();
         }
@@ -131,7 +131,7 @@ namespace LottieUWP
                 var gradientColor = _colorAnimation.Value;
                 var colors = gradientColor.Colors;
                 var positions = gradientColor.Positions;
-                gradient = new LinearGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, colors, positions, Shader.TileMode.Clamp);
+                gradient = new LinearGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, colors, positions);
                 _linearGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }
@@ -156,7 +156,7 @@ namespace LottieUWP
                 var x1 = endPoint.X;
                 var y1 = endPoint.Y;
                 var r = (float)MathExt.Hypot(x1 - x0, y1 - y0);
-                gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.Clamp);
+                gradient = new RadialGradient(x0, y0, r, colors, positions);
                 _radialGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }

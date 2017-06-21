@@ -4,11 +4,13 @@ namespace LottieUWP
 {
     public static class RectExt
     {
-        public static void Set(ref Rect rect, double x, double y, double width, double height)
+        public static void Set(ref Rect rect, double left, double top, double right, double bottom)
         {
-            rect.X = x;
-            rect.Y = y;
+            rect.X = left;
+            rect.Y = top;
+            var width = right - left;
             rect.Width = width > 0 ?  width : 0;
+            var height = bottom - top;
             rect.Height = height > 0 ? height : 0;
         }
 

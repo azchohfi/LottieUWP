@@ -7,7 +7,6 @@ using Windows.Data.Json;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace LottieUWP
@@ -231,11 +230,7 @@ namespace LottieUWP
                     RecycleBitmaps();
                 }
 
-                Content = new Image
-                {
-                    Stretch = Stretch.None,
-                    Source = value?.Canvas.Bitmap
-                };
+                Content = value?.Canvas.GetImage();
             }
         }
 
@@ -549,14 +544,10 @@ namespace LottieUWP
             remove => _lottieDrawable.AnimatorUpdate -= value;
         }
 
-        public virtual void AddAnimatorListener(Animator.IAnimatorListener listener)
+        public event EventHandler ValueChanged
         {
-            _lottieDrawable.AddAnimatorListener(listener);
-        }
-
-        public virtual void RemoveAnimatorListener(Animator.IAnimatorListener listener)
-        {
-            _lottieDrawable.RemoveAnimatorListener(listener);
+            add => _lottieDrawable.ValueChanged += value;
+            remove => _lottieDrawable.ValueChanged -= value;
         }
 
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
@@ -595,7 +586,7 @@ namespace LottieUWP
         /// Allows you to modify or clear a bitmap that was loaded for an image either automatically 
         /// through {@link #setImageAssetsFolder(String)} or with an {@link ImageAssetDelegate}. 
         /// Return the previous Bitmap or null. 
-        public BitmapSource UpdateBitmap(string id, BitmapSource bitmap)
+        public BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
         {
             return _lottieDrawable.UpdateBitmap(id, bitmap);
         }
@@ -626,8 +617,8 @@ namespace LottieUWP
 
         public virtual float Progress
         {
-            set => _lottieDrawable.Progress = value;
             get => _lottieDrawable.Progress;
+            set => _lottieDrawable.Progress = value;
         }
 
         public virtual long Duration => _composition?.Duration ?? 0;

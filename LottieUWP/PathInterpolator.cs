@@ -19,6 +19,11 @@ namespace LottieUWP
 
         public float GetInterpolation(float x)
         {
+            if (x < 0 || float.IsNaN(x))
+                x = 0;
+            if (x > 1)
+                x = 1;
+
             // Determine t
             double t;
             if (x == 0)

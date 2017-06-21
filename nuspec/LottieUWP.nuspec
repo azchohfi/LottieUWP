@@ -14,7 +14,6 @@
     <tags>c# Lottie animation airbnb uwp android ios</tags>
     <dependencies>
       <dependency id="MathNet.Numerics" version="3.19.0" />
-	  <dependency id="WriteableBitmapEx" version="1.5.1" />
     </dependencies>
   </metadata>
   <files>

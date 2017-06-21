@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LottieUWP
 {
@@ -23,10 +24,18 @@ namespace LottieUWP
             }
         }
 
-        public override void AddUpdateListener(BaseKeyframeAnimation.IAnimationListener listener)
+
+        public override event EventHandler ValueChanged
         {
-            // Do nothing. 
-         }
+            add
+            {
+                // Do nothing. 
+            }
+            remove
+            {
+                // Do nothing. 
+            }
+        }
 
         public override T Value => _initialValue;
 
