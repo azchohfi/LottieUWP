@@ -483,18 +483,18 @@ namespace LottieUWP
 
         public void ComputeBounds(out Rect rect)
         {
-            if (Contours.Sum(p => p.IsEmpty ? 0 : 1) <= 1)
+            if (Contours.All(p => p.IsEmpty))
             {
                 RectExt.Set(ref rect, 0, 0, 0, 0);
                 return;
             }
 
-            double x = Contours.Min(p => p.X);
-            double y = Contours.Min(p => p.Y);
-            var width = Contours.Max(p => p.XMax) - x;
-            var height = Contours.Max(p => p.YMax) - y;
+            double left = Contours.Min(p => p.X);
+            double top = Contours.Min(p => p.Y);
+            var right = Contours.Max(p => p.XMax);
+            var bottom = Contours.Max(p => p.YMax);
 
-            RectExt.Set(ref rect, x, y, width, height);
+            RectExt.Set(ref rect, left, top, right, bottom);
         }
 
         public void AddPath(Path path, DenseMatrix matrix)

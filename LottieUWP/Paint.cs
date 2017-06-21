@@ -20,7 +20,6 @@ namespace LottieUWP
         public enum PaintStyle
         {
             Fill,
-            FillAndStroke,
             Stroke
         }
 

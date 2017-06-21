@@ -131,7 +131,7 @@ namespace LottieUWP
                 var gradientColor = _colorAnimation.Value;
                 var colors = gradientColor.Colors;
                 var positions = gradientColor.Positions;
-                gradient = new LinearGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, colors, positions, Shader.TileMode.Clamp);
+                gradient = new LinearGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, colors, positions);
                 _linearGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }
@@ -156,7 +156,7 @@ namespace LottieUWP
                 var x1 = endPoint.X;
                 var y1 = endPoint.Y;
                 var r = (float)MathExt.Hypot(x1 - x0, y1 - y0);
-                gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.Clamp);
+                gradient = new RadialGradient(x0, y0, r, colors, positions);
                 _radialGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }

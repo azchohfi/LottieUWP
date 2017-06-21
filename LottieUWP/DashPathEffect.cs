@@ -1,4 +1,3 @@
-using Windows.UI;
 using Windows.UI.Xaml.Media;
 
 namespace LottieUWP
@@ -16,7 +15,6 @@ namespace LottieUWP
                 Intervals.Add(intervals[i]);
             }
             Phase = phase;
-            Color = Colors.Black;
         }
     }
 }

@@ -82,7 +82,7 @@ namespace LottieUWP
                 var y0 = (int)(_boundsRect.Top + _boundsRect.Height / 2 + startPoint.Y);
                 var x1 = (int)(_boundsRect.Left + _boundsRect.Width / 2 + endPoint.X);
                 var y1 = (int)(_boundsRect.Top + _boundsRect.Height / 2 + endPoint.Y);
-                gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.Clamp);
+                gradient = new LinearGradient(x0, y0, x1, y1, colors, positions);
                 _linearGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }
@@ -108,7 +108,7 @@ namespace LottieUWP
                 var x1 = (int)(_boundsRect.Left + _boundsRect.Width / 2 + endPoint.X);
                 var y1 = (int)(_boundsRect.Top + _boundsRect.Height / 2 + endPoint.Y);
                 var r = (float)MathExt.Hypot(x1 - x0, y1 - y0);
-                gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.Clamp);
+                gradient = new RadialGradient(x0, y0, r, colors, positions);
                 _radialGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }

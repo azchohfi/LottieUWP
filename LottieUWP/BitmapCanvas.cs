@@ -27,12 +27,18 @@ namespace LottieUWP
 
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
+            var dashPathEffect = paint.PathEffect as DashPathEffect;
+
+            var isStroke = paint.Style == Paint.PaintStyle.Stroke;
+
             var rectangle = new Rectangle
             {
                 Width = x2 - x1,
                 Height = y2 - y1,
                 RenderTransform = GetCurrentRenderTransform(),
-                Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
+                Fill = new SolidColorBrush(paint.Color),
+                StrokeDashArray = isStroke ? dashPathEffect?.Intervals : null,
+                StrokeDashOffset = (isStroke ? dashPathEffect?.Phase : null) ?? 0
             };
             SetLeft(rectangle, x1);
             SetTop(rectangle, y1);
@@ -41,12 +47,20 @@ namespace LottieUWP
 
         internal void DrawRect(Rect rect, Paint paint)
         {
+            // TODO paint.ColorFilter
+            var dashPathEffect = paint.PathEffect as DashPathEffect;
+            var gradient = paint.Shader as Gradient;
+            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(paint.Color);
+            var isStroke = paint.Style == Paint.PaintStyle.Stroke;
+
             var rectangle = new Rectangle
             {
                 Width = rect.Width,
                 Height = rect.Height,
                 RenderTransform = GetCurrentRenderTransform(),
-                Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
+                Fill = brush,
+                StrokeDashArray = isStroke ? dashPathEffect?.Intervals : null,
+                StrokeDashOffset = (isStroke ? dashPathEffect?.Phase : null) ?? 0
             };
             SetLeft(rectangle, rect.Left);
             SetTop(rectangle, rect.Top);
@@ -55,6 +69,7 @@ namespace LottieUWP
 
         public void DrawPath(Path path, Paint paint)
         {
+            // TODO paint.ColorFilter
             var dashPathEffect = paint.PathEffect as DashPathEffect;
 
             var pathSegmentCollection = new PathSegmentCollection();
@@ -65,18 +80,23 @@ namespace LottieUWP
 
             var lastPoint = path.Contours.LastOrDefault()?.Last;
 
+            var isStroke = paint.Style == Paint.PaintStyle.Stroke;
+
+            var gradient = paint.Shader as Gradient;
+            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(paint.Color);
+
             var windowsPath = new Windows.UI.Xaml.Shapes.Path
             {
                 Clip = new RectangleGeometry
                 {
                     Rect = new Rect(0, 0, Width, Height)
                 },
-                Stroke = new SolidColorBrush(paint.Color),
+                Stroke = isStroke ? brush : null,
                 StrokeThickness = paint.StrokeWidth,
                 StrokeDashCap = paint.StrokeCap,
                 StrokeLineJoin = paint.StrokeJoin,
-                StrokeDashArray = dashPathEffect?.Intervals,
-                StrokeDashOffset = dashPathEffect?.Phase ?? 0,
+                StrokeDashArray = isStroke ? dashPathEffect?.Intervals : null,
+                StrokeDashOffset = (isStroke ? dashPathEffect?.Phase : null) ?? 0,
                 RenderTransform = GetCurrentRenderTransform(),
                 Data = new PathGeometry
                 {
@@ -92,9 +112,9 @@ namespace LottieUWP
                     }
                 }
             };
-            if (paint.Style != Paint.PaintStyle.Stroke)
+            if (!isStroke)
             {
-                windowsPath.Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color);
+                windowsPath.Fill = brush;
             }
 
             for (var i = 0; i < path.Contours.Count; i++)
@@ -108,7 +128,7 @@ namespace LottieUWP
         {
             return new MatrixTransform
             {
-                Matrix = new Windows.UI.Xaml.Media.Matrix(_matrix[0, 0], _matrix[0, 1], _matrix[1, 0], _matrix[1, 1], _matrix[2, 0], _matrix[2, 1])
+                Matrix = new Windows.UI.Xaml.Media.Matrix(_matrix[0, 0], _matrix[1, 0], _matrix[0, 1], _matrix[1, 1], _matrix[0, 2], _matrix[1, 2])
             };
         }
 
@@ -145,23 +165,21 @@ namespace LottieUWP
 
         public void DrawBitmap(ImageSource bitmap, Rect src, Rect dst, Paint paint)
         {
+            // TODO paint.ColorFilter
             _matrix.MapRect(ref dst);
 
             var image = new Image
             {
-                Width = dst.Width,
-                Height = dst.Height,
+                Width = src.Width,
+                Height = src.Height,
                 Stretch = Stretch.Fill,
                 RenderTransform = GetCurrentRenderTransform(),
                 Source = bitmap,
                 Opacity = paint.Alpha / 255f
-                //Fill = new SolidColorBrush(paint.PathEffect?.GetColor(paint) ?? paint.Color)
             };
             SetLeft(image, dst.X);
             SetTop(image, dst.Y);
             Children.Add(image);
-            // TODO: Should use paint.ColorFilter and paint.Alpha
-            //_bitmap.Blit(dst, writeableBitmap, src, WriteableBitmapExtensions.BlendMode.Additive);
         }
 
         public void GetClipBounds(out Rect originalClipRect)
