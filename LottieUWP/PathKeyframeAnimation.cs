@@ -29,7 +29,7 @@ namespace LottieUWP
                 _pathMeasureKeyframe = pathKeyframe;
             }
 
-            _pathMeasure.GetPosTan(keyframeProgress * _pathMeasure.Length, out _pos);
+            _pathMeasure.GetPosTan(keyframeProgress * _pathMeasure.Length, ref _pos);
             _point.Set(_pos[0], _pos[1]);
             return _point;
         }

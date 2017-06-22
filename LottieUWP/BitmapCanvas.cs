@@ -69,16 +69,47 @@ namespace LottieUWP
 
         public void DrawPath(Path path, Paint paint)
         {
-            // TODO paint.ColorFilter
-            var dashPathEffect = paint.PathEffect as DashPathEffect;
-
-            var pathSegmentCollection = new PathSegmentCollection();
-
             var firstPoint = path.Contours.FirstOrDefault()?.First;
             if (firstPoint == null)
                 return;
 
-            var lastPoint = path.Contours.LastOrDefault()?.Last;
+            var pathFigureCollection = new PathFigureCollection();
+            var windowsPath = GetWindowsPath(path, paint, pathFigureCollection);
+            var pathFigure = new PathFigure
+            {
+                StartPoint = new Point(firstPoint.X, firstPoint.Y),
+                IsClosed = false,
+                Segments = new PathSegmentCollection()
+            };
+            pathFigureCollection.Add(pathFigure);
+            Children.Add(windowsPath);
+
+            bool dontCreateNew = true;
+            for (var i = 0; i < path.Contours.Count; i++)
+            {
+                if (dontCreateNew == false)
+                {
+                    firstPoint = path.Contours[i].First;
+                    pathFigureCollection = new PathFigureCollection();
+                    windowsPath = GetWindowsPath(path, paint, pathFigureCollection);
+                    pathFigure = new PathFigure
+                    {
+                        StartPoint = new Point(firstPoint.X, firstPoint.Y),
+                        IsClosed = false,
+                        Segments = new PathSegmentCollection()
+                    };
+                    pathFigureCollection.Add(pathFigure);
+                    Children.Add(windowsPath);
+                }
+
+                dontCreateNew = path.Contours[i].AddPathSegment(pathFigure);
+            }
+        }
+
+        private Windows.UI.Xaml.Shapes.Path GetWindowsPath(Path path, Paint paint, PathFigureCollection pathFigureCollection)
+        {
+            // TODO paint.ColorFilter
+            var dashPathEffect = paint.PathEffect as DashPathEffect;
 
             var isStroke = paint.Style == Paint.PaintStyle.Stroke;
 
@@ -101,27 +132,14 @@ namespace LottieUWP
                 Data = new PathGeometry
                 {
                     FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
-                    Figures = new PathFigureCollection
-                    {
-                        new PathFigure
-                        {
-                            StartPoint = new Point(firstPoint.X, firstPoint.Y),
-                            IsClosed = firstPoint.Equals(lastPoint),
-                            Segments = pathSegmentCollection
-                        }
-                    }
+                    Figures = pathFigureCollection
                 }
             };
             if (!isStroke)
             {
                 windowsPath.Fill = brush;
             }
-
-            for (var i = 0; i < path.Contours.Count; i++)
-            {
-                pathSegmentCollection.Add(path.Contours[i].GetPathSegment());
-            }
-            Children.Add(windowsPath);
+            return windowsPath;
         }
 
         private MatrixTransform GetCurrentRenderTransform()

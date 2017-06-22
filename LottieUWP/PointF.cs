@@ -35,6 +35,12 @@ namespace LottieUWP
             Y = y;
         }
 
+        public void Offset(float dx, float dy)
+        {
+            X += dx;
+            Y += dy;
+        }
+
         public bool Equals(PointF pointf)
         {
             return X == pointf.X && Y == pointf.Y;
