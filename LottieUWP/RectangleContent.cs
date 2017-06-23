@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Windows.Foundation;
 
 namespace LottieUWP
 {
     internal class RectangleContent : IPathContent
     {
         private readonly Path _path = new Path();
+        private Rect _rect;
 
         private readonly LottieDrawable _lottieDrawable;
         private readonly IBaseKeyframeAnimation<PointF> _positionAnimation;
@@ -87,28 +89,32 @@ namespace LottieUWP
 
                 if (radius > 0)
                 {
-                    _path.ArcTo(position.X + halfWidth - radius, position.Y + halfHeight - radius, 90);
+                    RectExt.Set(ref _rect, position.X + halfWidth - 2 * radius, position.Y + halfHeight - 2 * radius, position.X + halfWidth, position.Y + halfHeight);
+                    _path.ArcTo(_rect, 0, 90);
                 }
 
                 _path.LineTo(position.X - halfWidth + radius, position.Y + halfHeight);
-
+                
                 if (radius > 0)
                 {
-                    _path.ArcTo(position.X - halfWidth, position.Y + halfHeight - radius, 90);
+                    RectExt.Set(ref _rect, position.X - halfWidth, position.Y + halfHeight - 2 * radius, position.X - halfWidth + 2 * radius, position.Y + halfHeight);
+                    _path.ArcTo(_rect, 90, 90);
                 }
-
+                
                 _path.LineTo(position.X - halfWidth, position.Y - halfHeight + radius);
-
+                
                 if (radius > 0)
                 {
-                    _path.ArcTo(position.X - halfWidth + radius, position.Y - halfHeight, 90);
+                    RectExt.Set(ref _rect, position.X - halfWidth, position.Y - halfHeight, position.X - halfWidth + 2 * radius, position.Y - halfHeight + 2 * radius);
+                    _path.ArcTo(_rect, 180, 90);
                 }
-
+                
                 _path.LineTo(position.X + halfWidth - radius, position.Y - halfHeight);
-
+                
                 if (radius > 0)
                 {
-                    _path.ArcTo(position.X + halfWidth, position.Y - halfHeight + radius, 90);
+                    RectExt.Set(ref _rect, position.X + halfWidth - 2 * radius, position.Y - halfHeight, position.X + halfWidth, position.Y - halfHeight + 2 * radius);
+                    _path.ArcTo(_rect, 270, 90);
                 }
                 _path.Close();
 

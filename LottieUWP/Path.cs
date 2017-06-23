@@ -22,24 +22,29 @@ namespace LottieUWP
             PointF Last { get; }
             bool AddPathSegment(PathFigure pathFigure);
             void Offset(float dx, float dy);
-            bool PointAtDistance(float distance, ref double sum, out PointF pointF);
+            PointF PointAtDistance(float distance);
         }
 
         public class ArcContour : IContour
         {
             private readonly PointF _startPoint;
             private readonly PointF _endPoint;
-            private readonly float _width;
-            private readonly float _height;
+            private readonly Rect _rect;
+            private readonly float _startAngle;
             private readonly float _sweepAngle;
+            private readonly float _a;
+            private readonly float _b;
 
-            public ArcContour(PointF startPoint, PointF endPoint, float width, float height, float sweepAngle)
+            public ArcContour(PointF startPoint, Rect rect, float startAngle, float sweepAngle)
             {
-                _startPoint = new PointF(startPoint.X, startPoint.Y);
-                _endPoint = new PointF(endPoint.X, endPoint.Y);
-                _width = width;
-                _height = height;
+                _startPoint = startPoint;
+                _rect = rect;
+                _a = (float)(rect.Width / 2);
+                _b = (float)(rect.Height / 2);
+                _startAngle = startAngle;
                 _sweepAngle = sweepAngle;
+
+                _endPoint = GetPointAtAngle(startAngle + sweepAngle);
             }
 
             public void Transform(DenseMatrix matrix)
@@ -61,7 +66,7 @@ namespace LottieUWP
 
             public IContour Copy()
             {
-                return new ArcContour(_startPoint, _endPoint, _width, _height, _sweepAngle);
+                return new ArcContour(_startPoint, _rect, _startAngle, _sweepAngle);
             }
 
             public float X => Math.Min(_startPoint.X, _endPoint.X);
@@ -69,8 +74,7 @@ namespace LottieUWP
             public float XMax => Math.Max(_startPoint.X, _endPoint.X);
             public float YMax => Math.Max(_startPoint.Y, _endPoint.Y);
 
-            // since angle is always 90º, lenght is always 1/4 of elipse lenght
-            public float Lenght => (float)(Math.PI * (3 * (_width + _height) - Math.Sqrt((3 * _width + _height) * (_width + 3 * _height))) / 4);
+            public float Lenght => (float)(Math.PI * (3 * (_a + _b) - Math.Sqrt((3 * _a + _b) * (_a + 3 * _b))) / (360 / _sweepAngle));
 
             public PointF First => _startPoint;
 
@@ -82,8 +86,9 @@ namespace LottieUWP
                 {
                     SweepDirection = SweepDirection.Clockwise,
                     RotationAngle = _sweepAngle,
+                    IsLargeArc = false,
                     Point = new Point(_endPoint.X, _endPoint.Y),
-                    Size = new Size(_width, _height)
+                    Size = new Size(_a / 2, _b / 2)
                 });
 
                 return true;
@@ -95,11 +100,25 @@ namespace LottieUWP
                 _endPoint.Offset(dx, dy);
             }
 
-            public bool PointAtDistance(float distance, ref double sum, out PointF pointF)
+            public PointF PointAtDistance(float distance)
             {
-                // TODO
-                pointF = null;
-                return false;
+                var p = distance / Lenght;
+
+                var t = _startAngle + p * _sweepAngle;
+
+                return GetPointAtAngle(t);
+            }
+
+            private PointF GetPointAtAngle(float t)
+            {
+                var u = Math.Tan(MathExt.ToRadians(t) / 2);
+
+                var u2 = u * u;
+
+                var x = _a * (1 - u2) / (u2 + 1);
+                var y = 2 * _b * u / (u2 + 1);
+
+                return new PointF((float)(_rect.Left + _a + x), (float)(_rect.Top + _b + y));
             }
         }
 
@@ -218,22 +237,19 @@ namespace LottieUWP
                 Vertex.Offset(dx, dy);
             }
 
-            public bool PointAtDistance(float distance, ref double sum, out PointF pointF)
+            public PointF PointAtDistance(float distance)
             {
                 var d = BezLength(StartPoint, Control1, Control2, Vertex);
 
-                if (sum + d >= distance)
+                if (d >= distance)
                 {
-                    var p = 1 - (sum + d - distance) / d;
+                    var p = 1 - (d - distance) / d;
                     if (double.IsNaN(p))
                         p = 0;
-                    pointF = GetPointAtT(StartPoint, Control1, Control2, Vertex, p);
-                    return true;
+                    return GetPointAtT(StartPoint, Control1, Control2, Vertex, p);
                 }
-                sum += d;
 
-                pointF = null;
-                return false;
+                return null;
             }
         }
 
@@ -292,22 +308,19 @@ namespace LottieUWP
                 _point.Offset(dx, dy);
             }
 
-            public bool PointAtDistance(float distance, ref double sum, out PointF pointF)
+            public PointF PointAtDistance(float distance)
             {
                 var dist = new PointF(_point.X - _origin.X, _point.Y - _origin.Y);
                 var d = dist.Length();
-                if (sum + d >= distance)
+                if (d >= distance)
                 {
-                    var p = 1 - (sum + d - distance) / d;
+                    var p = 1 - (d - distance) / d;
                     if (double.IsNaN(p))
                         p = 0;
-                    pointF = new PointF((float)(_origin.X + dist.X * p), (float)(_origin.Y + dist.Y * p));
-                    return true;
+                    return new PointF((float)(_origin.X + dist.X * p), (float)(_origin.Y + dist.Y * p));
                 }
-                sum += d;
 
-                pointF = null;
-                return false;
+                return null;
             }
         }
 
@@ -350,16 +363,14 @@ namespace LottieUWP
                 _point.Offset(dx, dy);
             }
 
-            public bool PointAtDistance(float distance, ref double sum, out PointF pointF)
+            public PointF PointAtDistance(float distance)
             {
-                if (sum >= distance)
+                if (distance == 0)
                 {
-                    pointF = new PointF(_point.X, _point.Y);
-                    return true;
+                    return new PointF(_point.X, _point.Y);
                 }
 
-                pointF = null;
-                return false;
+                return null;
             }
 
             public void Transform(DenseMatrix matrix)
@@ -415,16 +426,14 @@ namespace LottieUWP
                 _point.Offset(dx, dy);
             }
 
-            public bool PointAtDistance(float distance, ref double sum, out PointF pointF)
+            public PointF PointAtDistance(float distance)
             {
-                if (sum >= distance)
+                if (distance == 0)
                 {
-                    pointF = new PointF(_point.X, _point.Y);
-                    return true;
+                    return new PointF(_point.X, _point.Y);
                 }
 
-                pointF = null;
-                return false;
+                return null;
             }
 
             public void Transform(DenseMatrix matrix)
@@ -554,11 +563,8 @@ namespace LottieUWP
                 firstPoint = Contours[index].First;
             }
 
-            //if (firstPoint.X != CurrentX || firstPoint.Y != CurrentY)
-            {
-                var close = new CloseContour(firstPoint.X, firstPoint.Y);
-                Contours.Add(close);
-            }
+            var close = new CloseContour(firstPoint.X, firstPoint.Y);
+            Contours.Add(close);
         }
 
         public void Op(Path firstPath, Path remainderPath, Op op1)
@@ -566,9 +572,9 @@ namespace LottieUWP
 
         }
 
-        public void ArcTo(float x, float y, float sweepAngle)
+        public void ArcTo(Rect rect, float startAngle, float sweepAngle)
         {
-            var newArc = new ArcContour(new PointF(CurrentX, CurrentY), new PointF(x, y), Math.Abs(CurrentX - x), Math.Abs(CurrentY - y), sweepAngle);
+            var newArc = new ArcContour(new PointF(CurrentX, CurrentY), rect, startAngle, sweepAngle);
             Contours.Add(newArc);
         }
     }

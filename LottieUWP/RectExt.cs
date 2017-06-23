@@ -1,4 +1,5 @@
-﻿using Windows.Foundation;
+﻿using System;
+using Windows.Foundation;
 
 namespace LottieUWP
 {
@@ -8,10 +9,8 @@ namespace LottieUWP
         {
             rect.X = left;
             rect.Y = top;
-            var width = right - left;
-            rect.Width = width > 0 ?  width : 0;
-            var height = bottom - top;
-            rect.Height = height > 0 ? height : 0;
+            rect.Width = Math.Abs(right - left);
+            rect.Height = Math.Abs(bottom - top);
         }
 
         public static void Set(ref Rect rect, Rect newRect)

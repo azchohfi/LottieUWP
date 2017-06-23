@@ -68,14 +68,20 @@ namespace LottieUWP
 
         private PointF PathPointAtDistance(float distance, out Path.IContour contourAtDistance)
         {
-            double sum = 0;
+            float sum = 0;
             foreach (var contour in _path.Contours)
             {
-                if (contour.PointAtDistance(distance, ref sum, out var pointF))
+                var contourLenght = contour.Lenght;
+                if (distance - sum <= contourLenght)
                 {
-                    contourAtDistance = contour;
-                    return pointF;
+                    var point = contour.PointAtDistance(distance - sum);
+                    if (point != null)
+                    {
+                        contourAtDistance = contour;
+                        return point;
+                    }
                 }
+                sum += contourLenght;
             }
 
             contourAtDistance = null;
