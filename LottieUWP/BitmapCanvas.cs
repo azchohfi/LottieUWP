@@ -18,6 +18,10 @@ namespace LottieUWP
         {
             Width = width;
             Height = height;
+            Clip = new RectangleGeometry
+            {
+                Rect = new Rect(0, 0, Width, Height)
+            };
         }
 
         public static int ClipSaveFlag;
@@ -27,19 +31,15 @@ namespace LottieUWP
 
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
-            var dashPathEffect = paint.PathEffect as DashPathEffect;
-
-            var isStroke = paint.Style == Paint.PaintStyle.Stroke;
-
             var rectangle = new Rectangle
             {
                 Width = x2 - x1,
                 Height = y2 - y1,
                 RenderTransform = GetCurrentRenderTransform(),
                 Fill = new SolidColorBrush(paint.Color),
-                StrokeDashArray = isStroke ? dashPathEffect?.Intervals : null,
-                StrokeDashOffset = (isStroke ? dashPathEffect?.Phase : null) ?? 0
+                
             };
+            paint.PathEffect?.Apply(rectangle, paint);
             SetLeft(rectangle, x1);
             SetTop(rectangle, y1);
             Children.Add(rectangle);
@@ -48,10 +48,8 @@ namespace LottieUWP
         internal void DrawRect(Rect rect, Paint paint)
         {
             // TODO paint.ColorFilter
-            var dashPathEffect = paint.PathEffect as DashPathEffect;
             var gradient = paint.Shader as Gradient;
             var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(paint.Color);
-            var isStroke = paint.Style == Paint.PaintStyle.Stroke;
 
             var rectangle = new Rectangle
             {
@@ -59,9 +57,8 @@ namespace LottieUWP
                 Height = rect.Height,
                 RenderTransform = GetCurrentRenderTransform(),
                 Fill = brush,
-                StrokeDashArray = isStroke ? dashPathEffect?.Intervals : null,
-                StrokeDashOffset = (isStroke ? dashPathEffect?.Phase : null) ?? 0
             };
+            paint.PathEffect?.Apply(rectangle, paint);
             SetLeft(rectangle, rect.Left);
             SetTop(rectangle, rect.Top);
             Children.Add(rectangle);
@@ -120,8 +117,6 @@ namespace LottieUWP
         private Windows.UI.Xaml.Shapes.Path GetWindowsPath(Path path, Paint paint, PathFigureCollection pathFigureCollection)
         {
             // TODO paint.ColorFilter
-            var dashPathEffect = paint.PathEffect as DashPathEffect;
-
             var isStroke = paint.Style == Paint.PaintStyle.Stroke;
 
             var gradient = paint.Shader as Gradient;
@@ -129,16 +124,10 @@ namespace LottieUWP
 
             var windowsPath = new Windows.UI.Xaml.Shapes.Path
             {
-                Clip = new RectangleGeometry
-                {
-                    Rect = new Rect(0, 0, Width, Height)
-                },
                 Stroke = isStroke ? brush : null,
                 StrokeThickness = paint.StrokeWidth,
                 StrokeDashCap = paint.StrokeCap,
                 StrokeLineJoin = paint.StrokeJoin,
-                StrokeDashArray = isStroke ? dashPathEffect?.Intervals : null,
-                StrokeDashOffset = (isStroke ? dashPathEffect?.Phase : null) ?? 0,
                 RenderTransform = GetCurrentRenderTransform(),
                 Data = new PathGeometry
                 {
@@ -146,6 +135,7 @@ namespace LottieUWP
                     Figures = pathFigureCollection
                 }
             };
+            paint.PathEffect?.Apply(windowsPath, paint);
             if (!isStroke)
             {
                 windowsPath.Fill = brush;
@@ -227,9 +217,8 @@ namespace LottieUWP
             return new Viewbox
             {
                 Child = this,
-                Width = Width,
-                Height = Height,
-                Stretch = Stretch.None
+                Stretch = Stretch.Uniform,
+                StretchDirection = StretchDirection.DownOnly
             };
         }
     }
