@@ -50,5 +50,12 @@ namespace LottieUWP
         {
             return $"X:{X} / Y:{Y}";
         }
+
+        public static float Distance(float x1, float y1, float x2, float y2)
+        {
+            var dx = x2 - x1;
+            var dy = y2 - y1;
+            return (float)Math.Sqrt(dx * dx + dy * dy);
+        }
     }
 }

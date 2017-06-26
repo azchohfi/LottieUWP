@@ -84,10 +84,10 @@ namespace LottieUWP
             pathFigureCollection.Add(pathFigure);
             Children.Add(windowsPath);
 
-            bool dontCreateNew = true;
+            var returnDecision = Path.DrawReturnType.JustDraw;
             for (var i = 0; i < path.Contours.Count; i++)
             {
-                if (dontCreateNew == false)
+                if (returnDecision == Path.DrawReturnType.NewPath)
                 {
                     firstPoint = path.Contours[i].First;
                     pathFigureCollection = new PathFigureCollection();
@@ -102,7 +102,18 @@ namespace LottieUWP
                     Children.Add(windowsPath);
                 }
 
-                dontCreateNew = path.Contours[i].AddPathSegment(pathFigure);
+                returnDecision = path.Contours[i].AddPathSegment(pathFigure);
+
+                if (returnDecision == Path.DrawReturnType.NewFigure)
+                {
+                    pathFigure = new PathFigure
+                    {
+                        StartPoint = new Point(path.Contours[i].First.X, path.Contours[i].First.Y),
+                        IsClosed = false,
+                        Segments = new PathSegmentCollection()
+                    };
+                    pathFigureCollection.Add(pathFigure);
+                }
             }
         }
 

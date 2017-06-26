@@ -118,6 +118,7 @@
     <Compile Include="AnimatableShapeValue.cs" />
     <Compile Include="AnimatableSplitDimensionPathValue.cs" />
     <Compile Include="AnimatableTransform.cs" />
+    <Compile Include="CachedPathIterator.cs" />
     <Compile Include="IAnimatableValue.cs" />
     <Compile Include="AnimatableValueParser.cs" />
     <Compile Include="Animator.cs" />

@@ -20,9 +20,18 @@ namespace LottieUWP
             float Lenght { get; }
             PointF First { get; }
             PointF Last { get; }
-            bool AddPathSegment(PathFigure pathFigure);
+            float[] Points { get; }
+            PathIterator.ContourType Type { get; }
+            DrawReturnType AddPathSegment(PathFigure pathFigure);
             void Offset(float dx, float dy);
             PointF PointAtDistance(float distance);
+        }
+
+        public enum DrawReturnType
+        {
+            JustDraw,
+            NewFigure,
+            NewPath
         }
 
         public class ArcContour : IContour
@@ -80,7 +89,11 @@ namespace LottieUWP
 
             public PointF Last => _endPoint;
 
-            public bool AddPathSegment(PathFigure pathFigure)
+            public float[] Points => new[] { _startPoint.X, _startPoint.Y, _endPoint.X, _endPoint.Y };
+
+            public PathIterator.ContourType Type => PathIterator.ContourType.Arc;
+
+            public DrawReturnType AddPathSegment(PathFigure pathFigure)
             {
                 pathFigure.Segments.Add(new ArcSegment
                 {
@@ -91,7 +104,7 @@ namespace LottieUWP
                     Size = new Size(_a / 2, _b / 2)
                 });
 
-                return true;
+                return DrawReturnType.JustDraw;
             }
 
             public void Offset(float dx, float dy)
@@ -166,33 +179,37 @@ namespace LottieUWP
             public float Y => Math.Min(StartPoint.Y, Math.Min(Control1.Y, Math.Min(Control2.Y, Vertex.Y)));
             public float XMax => Math.Max(StartPoint.X, Math.Max(Control1.X, Math.Max(Control2.X, Vertex.X)));
             public float YMax => Math.Max(StartPoint.Y, Math.Max(Control1.Y, Math.Max(Control2.Y, Vertex.Y)));
-            public float Lenght => (float)BezLength(StartPoint, Control1, Control2, Vertex);
+            public float Lenght => (float)BezLength(StartPoint.X, StartPoint.Y, 
+                Control1.X, Control1.Y,
+                Control2.X, Control2.Y, 
+                Vertex.X, Vertex.Y);
 
-            private static double BezLength(PointF c0, PointF c1, PointF c2, PointF c3)
+            internal static double BezLength(float c0X, float c0Y, float c1X, float c1Y, float c2X, float c2Y, float c3X, float c3Y)
             {
                 const double steps = 1000d; // TODO: improve
 
                 var length = 0d;
-                var prevPt = new PointF();
+                float prevPtX = 0;
+                float prevPtY = 0;
 
                 for (var i = 0d; i < steps; i++)
                 {
-                    var pt = GetPointAtT(c0, c1, c2, c3, i / steps);
+                    var pt = GetPointAtT(c0X, c0Y, c1X, c1Y, c2X, c2Y, c3X, c3Y, i / steps);
 
                     if (i > 0)
                     {
-                        var x = pt.X - prevPt.X;
-                        var y = pt.Y - prevPt.Y;
+                        var x = pt.X - prevPtX;
+                        var y = pt.Y - prevPtY;
                         length = length + Math.Sqrt(x * x + y * y);
                     }
 
-                    prevPt.X = pt.X;
-                    prevPt.Y = pt.Y;
+                    prevPtX = pt.X;
+                    prevPtY = pt.Y;
                 }
                 return length;
             }
 
-            private static PointF GetPointAtT(PointF c0, PointF c1, PointF c2, PointF c3, double t)
+            private static PointF GetPointAtT(float c0X, float c0Y, float c1X, float c1Y, float c2X, float c2Y, float c3X, float c3Y, double t)
             {
                 var t1 = 1d - t;
 
@@ -207,8 +224,8 @@ namespace LottieUWP
                 var t13B = 3 * t * t * t1;
                 var t13C = t * t * t;
 
-                var ptX = (float)(c0.X * t13 + t13A * c1.X + t13B * c2.X + t13C * c3.X);
-                var ptY = (float)(c0.Y * t13 + t13A * c1.Y + t13B * c2.Y + t13C * c3.Y);
+                var ptX = (float)(c0X * t13 + t13A * c1X + t13B * c2X + t13C * c3X);
+                var ptY = (float)(c0Y * t13 + t13A * c1Y + t13B * c2Y + t13C * c3Y);
 
                 var pt = new PointF(ptX, ptY);
                 return pt;
@@ -218,7 +235,11 @@ namespace LottieUWP
 
             public PointF Last => Vertex;
 
-            public bool AddPathSegment(PathFigure pathFigure)
+            public float[] Points => new[] { Control1.X, Control1.Y, Control2.X, Control2.Y, Vertex.X, Vertex.Y };
+
+            public PathIterator.ContourType Type => PathIterator.ContourType.Bezier;
+
+            public DrawReturnType AddPathSegment(PathFigure pathFigure)
             {
                 pathFigure.Segments.Add(new BezierSegment
                 {
@@ -226,7 +247,7 @@ namespace LottieUWP
                     Point2 = new Point(Control2.X, Control2.Y),
                     Point3 = new Point(Vertex.X, Vertex.Y)
                 });
-                return true;
+                return DrawReturnType.JustDraw;
             }
 
             public void Offset(float dx, float dy)
@@ -239,14 +260,14 @@ namespace LottieUWP
 
             public PointF PointAtDistance(float distance)
             {
-                var d = BezLength(StartPoint, Control1, Control2, Vertex);
+                var d = BezLength(StartPoint.X, StartPoint.Y, Control1.X, Control1.Y, Control2.X, Control2.Y, Vertex.X, Vertex.Y);
 
                 if (d >= distance)
                 {
                     var p = 1 - (d - distance) / d;
                     if (double.IsNaN(p))
                         p = 0;
-                    return GetPointAtT(StartPoint, Control1, Control2, Vertex, p);
+                    return GetPointAtT(StartPoint.X, StartPoint.Y, Control1.X, Control1.Y, Control2.X, Control2.Y, Vertex.X, Vertex.Y, p);
                 }
 
                 return null;
@@ -293,13 +314,17 @@ namespace LottieUWP
 
             public PointF Last => _point;
 
-            public bool AddPathSegment(PathFigure pathFigure)
+            public float[] Points => new[] { _point.X, _point.Y };
+
+            public PathIterator.ContourType Type => PathIterator.ContourType.Line;
+
+            public DrawReturnType AddPathSegment(PathFigure pathFigure)
             {
                 pathFigure.Segments.Add(new LineSegment
                 {
                     Point = new Point(_point.X, _point.Y)
                 });
-                return true;
+                return DrawReturnType.JustDraw;
             }
 
             public void Offset(float dx, float dy)
@@ -347,15 +372,18 @@ namespace LottieUWP
 
             public PointF Last => _point;
 
+            public float[] Points => new[] { _point.X, _point.Y };
+
+            public PathIterator.ContourType Type => PathIterator.ContourType.MoveTo;
+
             public IContour Copy()
             {
                 return new MoveToContour(_point.X, _point.Y);
             }
 
-            public bool AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(PathFigure pathFigure)
             {
-                pathFigure.StartPoint = new Point(_point.X, _point.Y);
-                return true;
+                return DrawReturnType.NewFigure;
             }
 
             public void Offset(float dx, float dy)
@@ -410,15 +438,19 @@ namespace LottieUWP
 
             public PointF Last => _point;
 
+            public float[] Points => new float[0];
+
+            public PathIterator.ContourType Type => PathIterator.ContourType.Close;
+
             public IContour Copy()
             {
                 return new CloseContour(_point.X, _point.Y);
             }
 
-            public bool AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(PathFigure pathFigure)
             {
                 pathFigure.IsClosed = true;
-                return false;
+                return DrawReturnType.NewPath;
             }
 
             public void Offset(float dx, float dy)
@@ -576,6 +608,28 @@ namespace LottieUWP
         {
             var newArc = new ArcContour(new PointF(CurrentX, CurrentY), rect, startAngle, sweepAngle);
             Contours.Add(newArc);
+        }
+
+        public PointF PathPointAtDistance(float distance, out IContour contourAtDistance)
+        {
+            float sum = 0;
+            foreach (var contour in Contours)
+            {
+                var contourLenght = contour.Lenght;
+                if (distance - sum <= contourLenght)
+                {
+                    var point = contour.PointAtDistance(distance - sum);
+                    if (point != null)
+                    {
+                        contourAtDistance = contour;
+                        return point;
+                    }
+                }
+                sum += contourLenght;
+            }
+
+            contourAtDistance = null;
+            return null;
         }
     }
 

@@ -5,11 +5,13 @@ namespace LottieUWP
 {
     internal class PathMeasure
     {
+        private CachedPathIteratorFactory _originalPathIterator;
         private Path _path;
         private int _currentContourIndex;
 
         public PathMeasure(Path path)
         {
+            _originalPathIterator = new CachedPathIteratorFactory(new FullPathIterator(path));
             _path = path;
         }
 
@@ -20,6 +22,7 @@ namespace LottieUWP
         public void SetPath(Path path)
         {
             _currentContourIndex = 0;
+            _originalPathIterator = new CachedPathIteratorFactory(new FullPathIterator(path));
             _path = path;
         }
 
@@ -28,7 +31,7 @@ namespace LottieUWP
             get
             {
                 if (_path?.Contours?.Count > 0)
-                    return UsefulContours()[_currentContourIndex].Lenght;
+                    return _originalPathIterator.Iterator().TotalLength;
                 return 0;
             }
         }
@@ -59,33 +62,11 @@ namespace LottieUWP
             if (distance > length)
                 distance = length;
 
-            var point = PathPointAtDistance(distance, out _);
+            var point = _path.PathPointAtDistance(distance, out _);
             if (point != null)
             {
                 pos = new[] { point.X, point.Y };
             }
-        }
-
-        private PointF PathPointAtDistance(float distance, out Path.IContour contourAtDistance)
-        {
-            float sum = 0;
-            foreach (var contour in _path.Contours)
-            {
-                var contourLenght = contour.Lenght;
-                if (distance - sum <= contourLenght)
-                {
-                    var point = contour.PointAtDistance(distance - sum);
-                    if (point != null)
-                    {
-                        contourAtDistance = contour;
-                        return point;
-                    }
-                }
-                sum += contourLenght;
-            }
-
-            contourAtDistance = null;
-            return null;
         }
 
         public bool GetSegment(float startD, float stopD, ref Path dst, bool startWithMoveTo)
@@ -107,57 +88,57 @@ namespace LottieUWP
                 return false;
             }
 
+            CachedPathIteratorFactory.CachedPathIterator iterator = _originalPathIterator.Iterator();
+
             float accLength = startD;
             bool isZeroLength = true;
 
-            PathPointAtDistance(accLength, out var c);
+            float[] points = new float[6];
 
-            int index = _path.Contours.IndexOf(c);
+            iterator.JumpToSegment(accLength);
 
-            var e = _path.Contours.Skip(index).GetEnumerator();
-
-            while (e.MoveNext() && stopD - accLength > 0.1f)
+            while (!iterator.Done && stopD - accLength > 0.1f)
             {
-                var point = PathPointAtDistance(stopD - accLength, out var contour);
+                var type = iterator.CurrentSegment(points, stopD - accLength);
 
-                if (accLength - contour.Lenght <= stopD)
+                if (accLength - iterator.CurrentSegmentLength <= stopD)
                 {
                     if (startWithMoveTo)
                     {
                         startWithMoveTo = false;
 
-                        if (contour is Path.MoveToContour == false)
+                        if (type != PathIterator.ContourType.MoveTo == false)
                         {
-                            dst.MoveTo(contour.Last.X, contour.Last.Y);
+                            float[] lastPoint = new float[2];
+                            iterator.GetCurrentSegmentEnd(lastPoint);
+                            dst.MoveTo(lastPoint[0], lastPoint[1]);
                         }
                     }
 
-                    isZeroLength = isZeroLength && contour.Lenght > 0;
-                    switch (contour)
+                    isZeroLength = isZeroLength && iterator.CurrentSegmentLength > 0;
+                    switch (type)
                     {
-                        case Path.MoveToContour _:
-                            dst.MoveTo(point.X, point.Y);
+                        case PathIterator.ContourType.MoveTo:
+                            dst.MoveTo(points[0], points[1]);
                             break;
-                        case Path.LineContour _:
-                            dst.LineTo(point.X, point.Y);
+                        case PathIterator.ContourType.Line:
+                            dst.LineTo(points[0], points[1]);
                             break;
-                        case Path.CloseContour _:
+                        case PathIterator.ContourType.Close:
                             dst.Close();
                             break;
-                        case Path.BezierContour bezier:
-                            dst.CubicTo(bezier.Control1.X, bezier.Control1.Y,
-                                bezier.Control2.X, bezier.Control2.Y,
-                                bezier.Vertex.X, bezier.Vertex.Y);
+                        case PathIterator.ContourType.Bezier:
+                        case PathIterator.ContourType.Arc:
+                            dst.CubicTo(points[0], points[1],
+                                points[2], points[3],
+                                points[4], points[5]);
                             break;
                     }
                 }
 
-                accLength += contour.Lenght;
-
-                PathPointAtDistance(stopD - accLength, out contour);
+                accLength += iterator.CurrentSegmentLength;
+                iterator.Next();
             }
-
-            e.Dispose();
 
             return !isZeroLength;
         }
