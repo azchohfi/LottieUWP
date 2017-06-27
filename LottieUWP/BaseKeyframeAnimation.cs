@@ -21,6 +21,7 @@ namespace LottieUWP
     {
         public virtual event EventHandler ValueChanged;
         private bool _isDiscrete;
+        private TA _previousValue;
 
         private readonly IList<IKeyframe<TK>> _keyframes;
         private float _progress;
@@ -68,7 +69,13 @@ namespace LottieUWP
 
         protected virtual void OnValueChanged()
         {
-            ValueChanged?.Invoke(this, EventArgs.Empty);
+            TA value = Value;
+            // Removed temporarily
+            //if (_previousValue == null || !_previousValue.Equals(value))
+            {
+                _previousValue = value;
+                ValueChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private IKeyframe<TK> CurrentKeyframe
@@ -77,7 +84,7 @@ namespace LottieUWP
             {
                 if (_keyframes.Count == 0)
                 {
-                    throw new System.InvalidOperationException("There are no keyframes");
+                    throw new InvalidOperationException("There are no keyframes");
                 }
 
                 if (_cachedKeyframe != null && _cachedKeyframe.ContainsProgress(_progress))

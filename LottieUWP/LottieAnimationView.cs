@@ -17,14 +17,14 @@ namespace LottieUWP
     /// <para>
     /// You may set the animation in one of two ways:
     /// 1) Attrs: <seealso cref="R.styleable#LottieAnimationView_lottie_fileName"/>
-    /// 2) Programatically: <seealso cref="#setAnimation(String)"/>, <seealso cref="#setComposition(LottieComposition)"/>,
-    /// or <seealso cref="#setAnimation(JSONObject)"/>.
+    /// 2) Programatically: <seealso cref="SetAnimationAsync(string)"/>, <seealso cref="Composition"/>,
+    /// or <seealso cref="SetAnimationAsync(JsonObject)"/>.
     /// </para>
     /// <para>
     /// You can set a default cache strategy with <seealso cref="R.attr#lottie_cacheStrategy"/>.
     /// </para>
     /// <para>
-    /// You can manually set the progress of the animation with <seealso cref="#setProgress(float)"/> or
+    /// You can manually set the progress of the animation with <seealso cref="Progress"/> or
     /// <seealso cref="R.attr#lottie_progress"/>
     /// </para>
     /// </summary>

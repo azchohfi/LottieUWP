@@ -22,6 +22,8 @@ namespace LottieUWP
     {
         private readonly IDictionary<string, IList<Layer>> _precomps = new Dictionary<string, IList<Layer>>();
         private readonly IDictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
+        private readonly IDictionary<string, Font> _fonts = new Dictionary<string, Font>();
+        private readonly IDictionary<int, FontCharacter> _characters = new Dictionary<int, FontCharacter>();
         private readonly Dictionary<long, Layer> _layerMap = new Dictionary<long, Layer>();
         private readonly IList<Layer> _layers = new List<Layer>();
         // This is stored as a set to avoid duplicates.
@@ -73,12 +75,16 @@ namespace LottieUWP
             return _precomps[id];
         }
 
+        internal virtual IDictionary<string, Font> Fonts => _fonts;
+
         public virtual bool HasImages()
         {
             return _images.Count > 0;
         }
 
         internal virtual IDictionary<string, LottieImageAsset> Images => _images;
+
+        internal virtual IDictionary<int, FontCharacter> Characters => _characters;
 
         internal virtual float DurationFrames => Duration * (float)_frameRate / 1000f;
 
@@ -149,13 +155,13 @@ namespace LottieUWP
                 return await loader.Execute(json);
             }
 
-            internal static LottieComposition FromInputStream(ResolutionScale resolutionScale,  Stream stream)
+            internal static LottieComposition FromInputStream(ResolutionScale resolutionScale, Stream stream)
             {
                 try
                 {
                     var size = stream.Length;
                     var buffer = new byte[size];
-                    
+
                     stream.Read(buffer, 0, buffer.Length);
                     var json = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
                     var jsonObject = JsonObject.Parse(json);
@@ -198,6 +204,8 @@ namespace LottieUWP
                 var assetsJson = json.GetNamedArray("assets", null);
                 ParseImages(assetsJson, composition);
                 ParsePrecomps(assetsJson, composition);
+                ParseFonts(json.GetNamedObject("fonts", null), composition);
+                ParseChars(json.GetNamedArray("chars", null), composition);
                 ParseLayers(json, composition);
                 return composition;
             }
@@ -275,6 +283,34 @@ namespace LottieUWP
                     }
                     var image = LottieImageAsset.Factory.NewInstance(assetJson);
                     composition._images[image.Id] = image;
+                }
+            }
+
+            private static void ParseFonts(JsonObject fonts, LottieComposition composition)
+            {
+                var fontsList = fonts?.GetNamedArray("list", null);
+                if (fontsList == null)
+                {
+                    return;
+                }
+                var length = fontsList.Count;
+                for (uint i = 0; i < length; i++)
+                {
+                    var font = Font.Factory.NewInstance(fontsList.GetObjectAt(i));
+                    composition.Fonts.Add(font.Name, font);
+                }
+            }
+
+            private static void ParseChars(JsonArray charsJson, LottieComposition composition)
+            {
+                if (charsJson == null)
+                    return;
+
+                int length = charsJson.Count;
+                for (uint i = 0; i < length; i++)
+                {
+                    var character = FontCharacter.Factory.NewInstance(charsJson.GetObjectAt(i), composition);
+                    composition.Characters.Add(character.GetHashCode(), character);
                 }
             }
 

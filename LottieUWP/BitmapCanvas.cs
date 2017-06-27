@@ -36,8 +36,7 @@ namespace LottieUWP
                 Width = x2 - x1,
                 Height = y2 - y1,
                 RenderTransform = GetCurrentRenderTransform(),
-                Fill = new SolidColorBrush(paint.Color),
-                
+                Fill = new SolidColorBrush(paint.Color)
             };
             paint.PathEffect?.Apply(rectangle, paint);
             SetLeft(rectangle, x1);
@@ -56,7 +55,7 @@ namespace LottieUWP
                 Width = rect.Width,
                 Height = rect.Height,
                 RenderTransform = GetCurrentRenderTransform(),
-                Fill = brush,
+                Fill = brush
             };
             paint.PathEffect?.Apply(rectangle, paint);
             SetLeft(rectangle, rect.Left);
@@ -169,12 +168,16 @@ namespace LottieUWP
         // concat or clipRect
         public void Save()
         {
-            _matrixSaves.Push(_matrix);
+            var copy = new DenseMatrix(3);
+            _matrix.CopyTo(copy);
+            _matrixSaves.Push(copy);
         }
 
         public void SaveLayer(Rect rect, Paint contentPaint, object allSaveFlag)
         {
-            _matrixSaves.Push(_matrix);
+            var copy = new DenseMatrix(3);
+            _matrix.CopyTo(copy);
+            _matrixSaves.Push(copy);
         }
 
         public void Restore()
@@ -209,6 +212,7 @@ namespace LottieUWP
         public void Clear(Color color)
         {
             Children.Clear();
+            _matrixSaves.Clear();
             Background = new SolidColorBrush(color);
         }
 
@@ -220,6 +224,11 @@ namespace LottieUWP
                 Stretch = Stretch.Uniform,
                 StretchDirection = StretchDirection.DownOnly
             };
+        }
+
+        public void Translate(float dx, float dy)
+        {
+            MatrixExt.PreTranslate(_matrix, dx, dy);
         }
     }
 

@@ -7,14 +7,14 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace LottieUWP
 {
-    internal class ImageAssetBitmapManager
+    internal class ImageAssetManager
     {
         private readonly string _imagesFolder;
         private IImageAssetDelegate _assetDelegate;
         private readonly IDictionary<string, LottieImageAsset> _imageAssets;
         private readonly IDictionary<string, BitmapImage> _bitmaps = new Dictionary<string, BitmapImage>();
 
-        internal ImageAssetBitmapManager(string imagesFolder, IImageAssetDelegate assetDelegate, IDictionary<string, LottieImageAsset> imageAssets)
+        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate assetDelegate, IDictionary<string, LottieImageAsset> imageAssets)
         {
             _imagesFolder = imagesFolder;
             if (!string.IsNullOrEmpty(imagesFolder) && _imagesFolder[_imagesFolder.Length - 1] != '/')

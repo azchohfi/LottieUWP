@@ -40,7 +40,7 @@ namespace LottieUWP
 
             internal static AnimatableIntegerValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                if (json.ContainsKey("x"))
+                if (json != null && json.ContainsKey("x"))
                 {
                     composition.AddWarning("Lottie doesn't support expressions.");
                 }

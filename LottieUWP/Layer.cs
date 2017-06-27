@@ -35,7 +35,7 @@ namespace LottieUWP
         private readonly LayerType _layerType;
         private readonly MatteType _matteType;
 
-        private Layer(IList<object> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, IList<IKeyframe<float?>> inOutKeyframes, MatteType matteType)
+        private Layer(IList<object> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType)
         {
             _shapes = shapes;
             _composition = composition;
@@ -53,8 +53,15 @@ namespace LottieUWP
             StartProgress = startProgress;
             PreCompWidth = preCompWidth;
             PreCompHeight = preCompHeight;
+            Text = text;
+            TextProperties = textProperties;
             InOutKeyframes = inOutKeyframes;
             _matteType = matteType;
+
+            if (layerType == LayerType.Text && composition.Characters.Count == 0)
+            {
+                _composition.AddWarning("To use text, you must export text as glyphs in Bodymovin.");
+            }
         }
 
         internal virtual LottieComposition Composition => _composition;
@@ -74,6 +81,10 @@ namespace LottieUWP
         internal virtual int PreCompWidth { get; }
 
         internal virtual int PreCompHeight { get; }
+
+        internal virtual AnimatableTextFrame Text { get; }
+
+        internal virtual AnimatableTextProperties TextProperties { get; }
 
         internal virtual IList<Mask> Masks { get; }
 
@@ -145,7 +156,7 @@ namespace LottieUWP
             {
                 // TODO: make sure in out keyframes work
                 var bounds = composition.Bounds;
-                return new Layer(new List<object>(), composition, null, -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, new List<IKeyframe<float?>>(), MatteType.None);
+                return new Layer(new List<object>(), composition, null, -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None);
             }
 
             internal static Layer NewInstance(JsonObject json, LottieComposition composition)
@@ -187,9 +198,8 @@ namespace LottieUWP
 
                 var transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("ks"), composition);
                 var matteType = (MatteType)(int)json.GetNamedNumber("tt", 0);
-                IList<object> shapes = new List<object>();
-                IList<Mask> masks = new List<Mask>();
-                IList<IKeyframe<float?>> inOutKeyframes = new List<IKeyframe<float?>>();
+                List<Mask> masks = new List<Mask>();
+                List<IKeyframe<float?>> inOutKeyframes = new List<IKeyframe<float?>>();
                 var jsonMasks = json.GetNamedArray("masksProperties", null);
                 if (jsonMasks != null)
                 {
@@ -200,6 +210,7 @@ namespace LottieUWP
                     }
                 }
 
+                IList<object> shapes = new List<object>();
                 var shapesJson = json.GetNamedArray("shapes", null);
                 if (shapesJson != null)
                 {
@@ -211,6 +222,17 @@ namespace LottieUWP
                             shapes.Add(shape);
                         }
                     }
+                }
+
+                AnimatableTextFrame text = null;
+                AnimatableTextProperties textProperties = null;
+                var textJson = json.GetNamedObject("t", null);
+                if (textJson != null)
+                {
+                    text = AnimatableTextFrame.Factory.NewInstance(textJson.GetNamedObject("d", null), composition);
+                    var namedArray = textJson.GetNamedArray("a", null);
+                    var propertiesJson = namedArray?.Count > 0 ? namedArray.GetObjectAt(0) : null;
+                    textProperties = AnimatableTextProperties.Factory.NewInstance(propertiesJson, composition);
                 }
 
                 if (json.ContainsKey("ef"))
@@ -252,7 +274,7 @@ namespace LottieUWP
                     inOutKeyframes.Add(outKeyframe);
                 }
 
-                return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId, masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress, preCompWidth, preCompHeight, inOutKeyframes, matteType);
+                return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId, masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress, preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType);
             }
         }
     }

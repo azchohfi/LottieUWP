@@ -117,8 +117,13 @@
     <Compile Include="AnimatableScaleValue.cs" />
     <Compile Include="AnimatableShapeValue.cs" />
     <Compile Include="AnimatableSplitDimensionPathValue.cs" />
+    <Compile Include="AnimatableTextFrame.cs" />
+    <Compile Include="AnimatableTextProperties.cs" />
     <Compile Include="AnimatableTransform.cs" />
     <Compile Include="CachedPathIterator.cs" />
+    <Compile Include="DocumentData.cs" />
+    <Compile Include="Font.cs" />
+    <Compile Include="FontCharacter.cs" />
     <Compile Include="IAnimatableValue.cs" />
     <Compile Include="AnimatableValueParser.cs" />
     <Compile Include="Animator.cs" />
@@ -150,7 +155,7 @@
     <Compile Include="GradientStroke.cs" />
     <Compile Include="GradientStrokeContent.cs" />
     <Compile Include="GradientType.cs" />
-    <Compile Include="ImageAssetBitmapManager.cs" />
+    <Compile Include="ImageAssetManager.cs" />
     <Compile Include="IImageAssetDelegate.cs" />
     <Compile Include="ImageLayer.cs" />
     <Compile Include="IntegerKeyframeAnimation.cs" />
@@ -214,6 +219,8 @@
     <Compile Include="SplitDimensionPathKeyframeAnimation.cs" />
     <Compile Include="StaticKeyframeAnimation.cs" />
     <Compile Include="StrokeContent.cs" />
+    <Compile Include="TextKeyframeAnimation.cs" />
+    <Compile Include="TextLayer.cs" />
     <Compile Include="TransformKeyframeAnimation.cs" />
     <Compile Include="TrimPathContent.cs" />
     <Compile Include="Utils.cs" />

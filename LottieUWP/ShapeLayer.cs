@@ -10,7 +10,6 @@ namespace LottieUWP
 
         internal ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
-
             var shapeGroup = new ShapeGroup(layerModel.Name, layerModel.Shapes);
             _contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup);
             _contentGroup.SetContents(new List<IContent>(), new List<IContent>());

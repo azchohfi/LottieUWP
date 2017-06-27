@@ -25,6 +25,7 @@ namespace LottieUWP
                 case Layer.LayerType.Null:
                     return new NullLayer(drawable, layerModel);
                 case Layer.LayerType.Text:
+                    return new TextLayer(drawable, layerModel);
                 case Layer.LayerType.Unknown:
                 default:
                     // Do nothing

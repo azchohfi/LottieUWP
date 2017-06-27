@@ -10,7 +10,7 @@ namespace LottieUWP
 {
     /// <summary>
     /// This can be used to show an lottie animation in any place that would normally take a drawable.
-    /// If there are masks or mattes, then you MUST call <seealso cref="#recycleBitmaps()"/> when you are done
+    /// If there are masks or mattes, then you MUST call <seealso cref="RecycleBitmaps()"/> when you are done
     /// or else you will leak bitmaps.
     /// <para>
     /// It is preferable to use <seealso cref="LottieAnimationView"/> when possible because it
@@ -28,7 +28,7 @@ namespace LottieUWP
         private float _progress;
 
         private readonly ISet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
-        private ImageAssetBitmapManager _imageAssetBitmapManager;
+        private ImageAssetManager _imageAssetManager;
         private IImageAssetDelegate _imageAssetDelegate;
         private bool _playAnimationWhenCompositionAdded;
         private bool _reverseAnimationWhenCompositionAdded;
@@ -102,8 +102,8 @@ namespace LottieUWP
         /// `setImageAssetsFolder("airbnb_loader/");`.
         /// 
         /// 
-        /// If you use LottieDrawable directly, you MUST call <seealso cref="#recycleBitmaps()"/> when you
-        /// are done. Calling <seealso cref="#recycleBitmaps()"/> doesn't have to be final and <seealso cref="LottieDrawable"/>
+        /// If you use LottieDrawable directly, you MUST call <seealso cref="RecycleBitmaps()"/> when you
+        /// are done. Calling <seealso cref="RecycleBitmaps()"/> doesn't have to be final and <seealso cref="LottieDrawable"/>
         /// will recreate the bitmaps if needed but they will leak if you don't recycle them.
         /// </summary>
         public virtual string ImageAssetsFolder { get; set; }
@@ -117,7 +117,7 @@ namespace LottieUWP
         /// </summary>
         public virtual void RecycleBitmaps()
         {
-            _imageAssetBitmapManager?.RecycleBitmaps();
+            _imageAssetManager?.RecycleBitmaps();
         }
 
         /// <returns> True if the composition is different from the previously set composition, false otherwise. </returns>
@@ -178,7 +178,7 @@ namespace LottieUWP
         {
             RecycleBitmaps();
             _compositionLayer = null;
-            _imageAssetBitmapManager = null;
+            _imageAssetManager = null;
             InvalidateSelf();
         }
 
@@ -436,9 +436,9 @@ namespace LottieUWP
             set
             {
                 _imageAssetDelegate = value;
-                if (_imageAssetBitmapManager != null)
+                if (_imageAssetManager != null)
                 {
-                    _imageAssetBitmapManager.AssetDelegate = value;
+                    _imageAssetManager.AssetDelegate = value;
                 }
             }
         }
@@ -485,7 +485,7 @@ namespace LottieUWP
         /// <summary>
         /// Allows you to modify or clear a bitmap that was loaded for an image either automatically
         /// 
-        /// through <seealso cref="#setImagesAssetsFolder(String)"/> or with an <seealso cref="ImageAssetDelegate"/>.
+        /// through <seealso cref="ImageAssetsFolder"/> or with an <seealso cref="ImageAssetDelegate"/>.
         /// 
         /// 
         /// </summary>
@@ -494,7 +494,7 @@ namespace LottieUWP
 
         public virtual BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
         {
-            var bm = ImageAssetBitmapManager;
+            var bm = ImageAssetManager;
             if (bm == null)
             {
                 Debug.WriteLine("Cannot update bitmap. Most likely the drawable is not added to a View " + "which prevents Lottie from getting a Context.", "LOTTIE");
@@ -507,25 +507,25 @@ namespace LottieUWP
 
         internal virtual ImageSource GetImageAsset(string id)
         {
-            return ImageAssetBitmapManager?.BitmapForId(id);
+            return ImageAssetManager?.BitmapForId(id);
         }
 
-        private ImageAssetBitmapManager ImageAssetBitmapManager
+        private ImageAssetManager ImageAssetManager
         {
             get
             {
-                if (_imageAssetBitmapManager != null && false)//!imageAssetBitmapManager.hasSameContext(Context))
+                if (_imageAssetManager != null && false)//!_imageAssetManager.hasSameContext(Context))
                 {
-                    _imageAssetBitmapManager.RecycleBitmaps();
-                    _imageAssetBitmapManager = null;
+                    _imageAssetManager.RecycleBitmaps();
+                    _imageAssetManager = null;
                 }
 
-                if (_imageAssetBitmapManager == null)
+                if (_imageAssetManager == null)
                 {
-                    _imageAssetBitmapManager = new ImageAssetBitmapManager(ImageAssetsFolder, _imageAssetDelegate, _composition.Images);
+                    _imageAssetManager = new ImageAssetManager(ImageAssetsFolder, _imageAssetDelegate, _composition.Images);
                 }
 
-                return _imageAssetBitmapManager;
+                return _imageAssetManager;
             }
         }
 

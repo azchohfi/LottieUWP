@@ -116,14 +116,12 @@ namespace LottieUWP
                 if (json.ContainsKey("t"))
                 {
                     startFrame = (float)json.GetNamedNumber("t", 0);
-                    var startValueJson = json.GetNamedArray("s", null);
-                    if (startValueJson != null)
+                    if (json.TryGetValue("s", out var startValueJson))
                     {
                         startValue = valueFactory.ValueFromObject(startValueJson, scale);
                     }
 
-                    var endValueJson = json.GetNamedArray("e", null);
-                    if (endValueJson != null)
+                    if (json.TryGetValue("e", out var endValueJson))
                     {
                         endValue = valueFactory.ValueFromObject(endValueJson, scale);
                     }

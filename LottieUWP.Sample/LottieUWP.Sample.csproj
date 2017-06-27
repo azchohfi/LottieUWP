@@ -199,6 +199,7 @@
     <Content Include="Assets\lottiefiles.com - VR Sickness.json" />
     <Content Include="Assets\lottiefiles.com - VR.json" />
     <Content Include="Assets\lottifiles.com - QR Scan.json" />
+    <Content Include="Assets\Hello World.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

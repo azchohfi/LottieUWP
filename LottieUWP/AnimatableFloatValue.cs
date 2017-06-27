@@ -50,7 +50,7 @@ namespace LottieUWP
             internal static AnimatableFloatValue NewInstance(JsonObject json, LottieComposition composition, bool isDp = true)
             {
                 var scale = isDp ? composition.DpScale : 1f;
-                if (json.ContainsKey("x"))
+                if (json != null && json.ContainsKey("x"))
                 {
                     composition.AddWarning("Lottie doesn't support expressions.");
                 }
