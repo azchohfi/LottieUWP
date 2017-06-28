@@ -50,7 +50,7 @@ namespace LottieUWP
 
         internal static int GetScreenWidth()
         {
-            return (int) DisplayInformation.GetForCurrentView().ScreenWidthInRawPixels;
+            return (int)DisplayInformation.GetForCurrentView().ScreenWidthInRawPixels;
         }
 
         internal static int GetScreenHeight()
@@ -166,6 +166,29 @@ namespace LottieUWP
             index += 2;
             var b = (byte)Convert.ToUInt32(hex.Substring(index, 2), 16);
             return Color.FromArgb(a, r, g, b);
+        }
+
+        public static bool IsAtLeastVersion(LottieComposition composition, int major, int minor, int patch)
+        {
+            if (composition.MajorVersion < major)
+            {
+                return false;
+            }
+            if (composition.MajorVersion > major)
+            {
+                return true;
+            }
+
+            if (composition.MinorVersion < minor)
+            {
+                return false;
+            }
+            if (composition.MinorVersion > minor)
+            {
+                return true;
+            }
+
+            return composition.PatchVersion >= patch;
         }
     }
 }

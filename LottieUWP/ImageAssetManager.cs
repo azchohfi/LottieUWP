@@ -10,11 +10,11 @@ namespace LottieUWP
     internal class ImageAssetManager
     {
         private readonly string _imagesFolder;
-        private IImageAssetDelegate _assetDelegate;
+        private IImageAssetDelegate _delegate;
         private readonly IDictionary<string, LottieImageAsset> _imageAssets;
         private readonly IDictionary<string, BitmapImage> _bitmaps = new Dictionary<string, BitmapImage>();
 
-        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate assetDelegate, IDictionary<string, LottieImageAsset> imageAssets)
+        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, IDictionary<string, LottieImageAsset> imageAssets)
         {
             _imagesFolder = imagesFolder;
             if (!string.IsNullOrEmpty(imagesFolder) && _imagesFolder[_imagesFolder.Length - 1] != '/')
@@ -30,12 +30,12 @@ namespace LottieUWP
             //}
 
             _imageAssets = imageAssets;
-            AssetDelegate = assetDelegate;
+            Delegate = @delegate;
         }
 
-        internal virtual IImageAssetDelegate AssetDelegate
+        internal virtual IImageAssetDelegate Delegate
         {
-            set => _assetDelegate = value;
+            set => _delegate = value;
         }
 
         internal BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
@@ -54,9 +54,9 @@ namespace LottieUWP
                 {
                     return null;
                 }
-                if (_assetDelegate != null)
+                if (_delegate != null)
                 {
-                    bitmap = _assetDelegate.FetchBitmap(imageAsset);
+                    bitmap = _delegate.FetchBitmap(imageAsset);
                     if (bitmap != null)
                     {
                         _bitmaps[id] = bitmap;

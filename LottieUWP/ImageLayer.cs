@@ -72,7 +72,7 @@ namespace LottieUWP
         {
             get
             {
-                var refId = _layerModel.RefId;
+                var refId = LayerModel.RefId;
                 return LottieDrawable.GetImageAsset(refId);
             }
         }

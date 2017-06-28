@@ -35,7 +35,7 @@ namespace LottieUWP
         }
 
         private readonly Path _path = new Path();
-        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
+        internal DenseMatrix Matrix = DenseMatrix.CreateIdentity(3);
         private readonly Paint _contentPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _maskPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _mattePaint = new Paint(Paint.AntiAliasFlag);
@@ -46,7 +46,7 @@ namespace LottieUWP
         private Rect _tempMaskBoundsRect;
         internal DenseMatrix BoundsMatrix = DenseMatrix.CreateIdentity(3);
         internal readonly LottieDrawable LottieDrawable;
-        internal Layer _layerModel { get; set; }
+        internal Layer LayerModel;
         private readonly MaskKeyframeAnimation _mask;
         private BaseLayer _matteLayer;
         private BaseLayer _parentLayer;
@@ -59,7 +59,7 @@ namespace LottieUWP
         internal BaseLayer(LottieDrawable lottieDrawable, Layer layerModel)
         {
             LottieDrawable = lottieDrawable;
-            _layerModel = layerModel;
+            LayerModel = layerModel;
             _clearPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.Clear);
             _maskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstIn);
             if (layerModel.GetMatteType() == Layer.MatteType.Invert)
@@ -92,8 +92,6 @@ namespace LottieUWP
             InvalidateSelf();
         }
 
-        internal virtual Layer LayerModel => _layerModel;
-
         internal virtual BaseLayer MatteLayer
         {
             set => _matteLayer = value;
@@ -111,9 +109,9 @@ namespace LottieUWP
 
         private void SetupInOutAnimations()
         {
-            if (_layerModel.InOutKeyframes.Count > 0)
+            if (LayerModel.InOutKeyframes.Count > 0)
             {
-                var inOutAnimation = new FloatKeyframeAnimation(_layerModel.InOutKeyframes);
+                var inOutAnimation = new FloatKeyframeAnimation(LayerModel.InOutKeyframes);
                 inOutAnimation.SetIsDiscrete();
                 inOutAnimation.ValueChanged += (sender, args) =>
                 {
@@ -154,37 +152,37 @@ namespace LottieUWP
                 return;
             }
             BuildParentLayerListIfNeeded();
-            _matrix.Reset();
-            _matrix.Set(parentMatrix);
+            Matrix.Reset();
+            Matrix.Set(parentMatrix);
             for (var i = _parentLayers.Count - 1; i >= 0; i--)
             {
-                _matrix = MatrixExt.PreConcat(_matrix, _parentLayers[i].Transform.Matrix);
+                Matrix = MatrixExt.PreConcat(Matrix, _parentLayers[i].Transform.Matrix);
             }
             var alpha = (byte)(parentAlpha / 255f * (float)Transform.Opacity.Value / 100f * 255);
             if (!HasMatteOnThisLayer() && !HasMasksOnThisLayer())
             {
-                _matrix = MatrixExt.PreConcat(_matrix, Transform.Matrix);
-                DrawLayer(canvas, _matrix, alpha);
+                Matrix = MatrixExt.PreConcat(Matrix, Transform.Matrix);
+                DrawLayer(canvas, Matrix, alpha);
                 return;
             }
 
             RectExt.Set(ref Rect, 0, 0, 0, 0);
-            GetBounds(out Rect, _matrix);
-            IntersectBoundsWithMatte(Rect, _matrix);
+            GetBounds(out Rect, Matrix);
+            IntersectBoundsWithMatte(Rect, Matrix);
 
-            _matrix = MatrixExt.PreConcat(_matrix, Transform.Matrix);
-            IntersectBoundsWithMask(Rect, _matrix);
+            Matrix = MatrixExt.PreConcat(Matrix, Transform.Matrix);
+            IntersectBoundsWithMask(Rect, Matrix);
 
             RectExt.Set(ref Rect, 0, 0, canvas.Width, canvas.Height);
 
             canvas.SaveLayer(Rect, _contentPaint, BitmapCanvas.AllSaveFlag);
             // Clear the off screen buffer. This is necessary for some phones.
             ClearCanvas(canvas);
-            DrawLayer(canvas, _matrix, alpha);
+            DrawLayer(canvas, Matrix, alpha);
 
             if (HasMasksOnThisLayer())
             {
-                ApplyMasks(canvas, _matrix);
+                ApplyMasks(canvas, Matrix);
             }
 
             if (HasMatteOnThisLayer())
@@ -255,7 +253,7 @@ namespace LottieUWP
             {
                 return;
             }
-            if (_layerModel.GetMatteType() == Layer.MatteType.Invert)
+            if (LayerModel.GetMatteType() == Layer.MatteType.Invert)
             {
                 // We can't trim the bounds if the mask is inverted since it extends all the way to the
                 // composition bounds.
@@ -349,7 +347,7 @@ namespace LottieUWP
             }
         }
 
-        public string Name => _layerModel.Name;
+        public string Name => LayerModel.Name;
 
         public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
         {

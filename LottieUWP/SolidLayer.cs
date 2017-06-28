@@ -9,7 +9,7 @@ namespace LottieUWP
 
         internal SolidLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
-            _layerModel = layerModel;
+            LayerModel = layerModel;
 
             _paint.Alpha = 0;
             _paint.Style = Paint.PaintStyle.Fill;
@@ -18,7 +18,7 @@ namespace LottieUWP
 
         public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
-            int backgroundAlpha = _layerModel.SolidColor.A;
+            int backgroundAlpha = LayerModel.SolidColor.A;
             if (backgroundAlpha == 0)
             {
                 return;
@@ -42,7 +42,7 @@ namespace LottieUWP
 
         private void UpdateRect(DenseMatrix matrix)
         {
-            RectExt.Set(ref Rect, 0, 0, _layerModel.SolidWidth, _layerModel.SolidHeight);
+            RectExt.Set(ref Rect, 0, 0, LayerModel.SolidWidth, LayerModel.SolidHeight);
             matrix.MapRect(ref Rect);
         }
 

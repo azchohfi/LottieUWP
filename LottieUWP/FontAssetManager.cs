@@ -1,0 +1,105 @@
+﻿using System;
+using System.Collections.Generic;
+using Windows.UI.Text;
+
+namespace LottieUWP
+{
+    internal class FontAssetManager
+    {
+        private Tuple<string, string> _tempPair;
+
+        /// <summary>
+        /// Pair is (fontName, fontStyle) </summary>
+        private readonly IDictionary<Tuple<string, string>, Typeface> _fontMap = new Dictionary<Tuple<string, string>, Typeface>();
+        /// <summary>
+        /// Map of font families to their fonts. Necessary to create a font with a different style </summary>
+        private readonly IDictionary<string, Typeface> _fontFamilies = new Dictionary<string, Typeface>();
+        private FontAssetDelegate _delegate;
+        private string _defaultFontFileExtension = ".ttf";
+
+        internal FontAssetManager(FontAssetDelegate @delegate)
+        {
+            _delegate = @delegate;
+        }
+
+        internal virtual FontAssetDelegate Delegate
+        {
+            set => _delegate = value;
+        }
+
+        /// <summary>
+        /// Sets the default file extension (include the `.`).
+        /// 
+        /// e.g. `.ttf` `.otf`
+        /// 
+        /// Defaults to `.ttf`
+        /// </summary>
+        public virtual string DefaultFontFileExtension
+        {
+            set => _defaultFontFileExtension = value;
+        }
+
+        internal virtual Typeface GetTypeface(string fontFamily, string style)
+        {
+            _tempPair = new Tuple<string, string>(fontFamily, style);
+            var typeface = _fontMap[_tempPair];
+            if (typeface != null)
+            {
+                return typeface;
+            }
+            var typefaceWithDefaultStyle = GetFontFamily(fontFamily);
+            typeface = TypefaceForStyle(typefaceWithDefaultStyle, style);
+            _fontMap[_tempPair] = typeface;
+            return typeface;
+        }
+
+        private Typeface GetFontFamily(string fontFamily)
+        {
+            var defaultTypeface = _fontFamilies[fontFamily];
+            if (defaultTypeface != null)
+            {
+                return defaultTypeface;
+            }
+
+            Typeface typeface = null;
+            if (_delegate != null)
+            {
+                typeface = _delegate.FetchFont(fontFamily);
+            }
+
+            if (_delegate != null && typeface == null)
+            {
+                string path = _delegate.GetFontPath(fontFamily);
+                if (!ReferenceEquals(path, null))
+                {
+                    typeface = Typeface.CreateFromAsset(path);
+                }
+            }
+
+            if (typeface == null)
+            {
+                var path = "fonts/" + fontFamily + _defaultFontFileExtension;
+                typeface = Typeface.CreateFromAsset(path);
+            }
+
+            _fontFamilies[fontFamily] = typeface;
+            return typeface;
+        }
+
+        private Typeface TypefaceForStyle(Typeface typeface, string style)
+        {
+            var containsItalic = style.Contains("Italic");
+            var containsBold = style.Contains("Bold");
+
+            var fontStyle = containsItalic ? FontStyle.Italic : FontStyle.Normal;
+            var fontWeight = containsBold ? FontWeights.Bold : FontWeights.Normal;
+
+            if (typeface.Style == fontStyle && typeface.Weight.Weight == fontWeight.Weight)
+            {
+                return typeface;
+            }
+            
+            return Typeface.Create(typeface, fontStyle, fontWeight);
+        }
+    }
+}

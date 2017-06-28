@@ -228,7 +228,29 @@ namespace LottieUWP
 
         public void Translate(float dx, float dy)
         {
-            MatrixExt.PreTranslate(_matrix, dx, dy);
+            _matrix = MatrixExt.PreTranslate(_matrix, dx, dy);
+        }
+
+        public void SetMatrix(DenseMatrix matrix)
+        {
+            _matrix = matrix;
+        }
+
+        public void DrawText(char character, Paint paint)
+        {
+            var gradient = paint.Shader as Gradient;
+            var color = paint.Color;
+            if (paint.ColorFilter != null)
+                color = paint.ColorFilter.Apply(color);
+            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(color);
+
+            var textblock = new TextBlock
+            {
+                Text = new string(character, 1),
+                RenderTransform = GetCurrentRenderTransform(),
+                Foreground = brush
+            };
+            Children.Add(textblock);
         }
     }
 

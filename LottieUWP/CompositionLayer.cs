@@ -59,7 +59,7 @@ namespace LottieUWP
         public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
             canvas.GetClipBounds(out _originalClipRect);
-            RectExt.Set(ref _newClipRect, 0, 0, _layerModel.PreCompWidth, _layerModel.PreCompHeight);
+            RectExt.Set(ref _newClipRect, 0, 0, LayerModel.PreCompWidth, LayerModel.PreCompHeight);
             parentMatrix.MapRect(ref _newClipRect);
 
             for (var i = _layers.Count - 1; i >= 0; i--)
@@ -104,7 +104,7 @@ namespace LottieUWP
             set
             {
                 base.Progress = value;
-                value -= _layerModel.StartProgress;
+                value -= LayerModel.StartProgress;
                 for (var i = _layers.Count - 1; i >= 0; i--)
                 {
                     _layers[i].Progress = value;

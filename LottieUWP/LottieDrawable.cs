@@ -30,6 +30,9 @@ namespace LottieUWP
         private readonly ISet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
         private ImageAssetManager _imageAssetManager;
         private IImageAssetDelegate _imageAssetDelegate;
+        private FontAssetManager _fontAssetManager;
+        private FontAssetDelegate _fontAssetDelegate;
+        private TextDelegate _textDelegate;
         private bool _playAnimationWhenCompositionAdded;
         private bool _reverseAnimationWhenCompositionAdded;
         private bool _systemAnimationsAreDisabled;
@@ -408,6 +411,32 @@ namespace LottieUWP
         }
 
         /// <summary>
+        /// Use this to manually set fonts. 
+        /// </summary>
+        public virtual FontAssetDelegate FontAssetDelegate
+        {
+            set
+            {
+                _fontAssetDelegate = value;
+                if (_fontAssetManager != null)
+                {
+                    _fontAssetManager.Delegate = value;
+                }
+            }
+        }
+
+        public virtual TextDelegate TextDelegate
+        {
+            set => _textDelegate = value;
+            get => _textDelegate;
+        }
+
+        internal virtual bool UseTextGlyphs()
+        {
+            return _textDelegate == null && _composition.Characters.Count > 0;
+        }
+        
+        /// <summary>
         /// Set the scale on the current composition. The only cost of this function is re-rendering the
         /// current frame so you may call it frequent to scale something up or down.
         /// 
@@ -438,7 +467,7 @@ namespace LottieUWP
                 _imageAssetDelegate = value;
                 if (_imageAssetManager != null)
                 {
-                    _imageAssetManager.AssetDelegate = value;
+                    _imageAssetManager.Delegate = value;
                 }
             }
         }
@@ -529,6 +558,15 @@ namespace LottieUWP
             }
         }
 
+        internal virtual Typeface GetTypeface(string fontFamily, string style)
+        {
+            var assetManager = FontAssetManager;
+            return assetManager?.GetTypeface(fontFamily, style);
+        }
+
+        private FontAssetManager FontAssetManager => _fontAssetManager ??
+            (_fontAssetManager = new FontAssetManager(_fontAssetDelegate));
+        
         private float GetMaxScale(BitmapCanvas canvas)
         {
             var maxScaleX = (float)canvas.Width / (float)_composition.Bounds.Width;

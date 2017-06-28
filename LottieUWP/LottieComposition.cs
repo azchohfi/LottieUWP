@@ -22,6 +22,7 @@ namespace LottieUWP
     {
         private readonly IDictionary<string, IList<Layer>> _precomps = new Dictionary<string, IList<Layer>>();
         private readonly IDictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
+        /** Map of font names to fonts */
         private readonly IDictionary<string, Font> _fonts = new Dictionary<string, Font>();
         private readonly IDictionary<int, FontCharacter> _characters = new Dictionary<int, FontCharacter>();
         private readonly Dictionary<long, Layer> _layerMap = new Dictionary<long, Layer>();
@@ -32,13 +33,16 @@ namespace LottieUWP
         private readonly long _endFrame;
         private readonly int _frameRate;
 
-        private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate, float dpScale)
+        private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate, float dpScale, int major, int minor, int patch)
         {
             Bounds = bounds;
             _startFrame = startFrame;
             _endFrame = endFrame;
             _frameRate = frameRate;
             DpScale = dpScale;
+            MajorVersion = major;
+            MinorVersion = minor;
+            PatchVersion = patch;
         }
 
         internal void AddWarning(string warning)
@@ -89,6 +93,11 @@ namespace LottieUWP
         internal virtual float DurationFrames => Duration * (float)_frameRate / 1000f;
 
         internal virtual float DpScale { get; }
+
+        /* Bodymovin version */ 
+        internal int MajorVersion { get; }
+        internal int MinorVersion { get; }
+        internal int PatchVersion { get; }
 
         public override string ToString()
         {
@@ -200,7 +209,12 @@ namespace LottieUWP
                 var startFrame = (long)json.GetNamedNumber("ip", 0);
                 var endFrame = (long)json.GetNamedNumber("op", 0);
                 var frameRate = (int)json.GetNamedNumber("fr", 0);
-                var composition = new LottieComposition(bounds, startFrame, endFrame, frameRate, scale);
+                var version = json.GetNamedString("v");
+                var versions = version.Split('.');
+                var major = int.Parse(versions[0]);
+                var minor = int.Parse(versions[1]);
+                var patch = int.Parse(versions[2]);
+                var composition = new LottieComposition(bounds, startFrame, endFrame, frameRate, scale, major, minor, patch);
                 var assetsJson = json.GetNamedArray("assets", null);
                 ParseImages(assetsJson, composition);
                 ParsePrecomps(assetsJson, composition);

@@ -21,7 +21,6 @@ namespace LottieUWP
     {
         public virtual event EventHandler ValueChanged;
         private bool _isDiscrete;
-        private TA _previousValue;
 
         private readonly IList<IKeyframe<TK>> _keyframes;
         private float _progress;
@@ -69,13 +68,7 @@ namespace LottieUWP
 
         protected virtual void OnValueChanged()
         {
-            TA value = Value;
-            // Removed temporarily
-            //if (_previousValue == null || !_previousValue.Equals(value))
-            {
-                _previousValue = value;
-                ValueChanged?.Invoke(this, EventArgs.Empty);
-            }
+            ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private IKeyframe<TK> CurrentKeyframe

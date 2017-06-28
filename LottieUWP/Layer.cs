@@ -57,11 +57,6 @@ namespace LottieUWP
             TextProperties = textProperties;
             InOutKeyframes = inOutKeyframes;
             _matteType = matteType;
-
-            if (layerType == LayerType.Text && composition.Characters.Count == 0)
-            {
-                _composition.AddWarning("To use text, you must export text as glyphs in Bodymovin.");
-            }
         }
 
         internal virtual LottieComposition Composition => _composition;
@@ -184,6 +179,12 @@ namespace LottieUWP
                 else
                 {
                     layerType = LayerType.Unknown;
+                }
+
+                if (layerType == LayerType.Text && !Utils.IsAtLeastVersion(composition, 4, 7, 0))
+                {
+                    layerType = LayerType.Unknown;
+                    composition.AddWarning("To use text, you must export text as glyphs in Bodymovin.");
                 }
 
                 var parentId = (long)json.GetNamedNumber("parent", -1);

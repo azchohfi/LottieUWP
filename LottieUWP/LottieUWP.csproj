@@ -123,6 +123,8 @@
     <Compile Include="CachedPathIterator.cs" />
     <Compile Include="DocumentData.cs" />
     <Compile Include="Font.cs" />
+    <Compile Include="FontAssetDelegate.cs" />
+    <Compile Include="FontAssetManager.cs" />
     <Compile Include="FontCharacter.cs" />
     <Compile Include="IAnimatableValue.cs" />
     <Compile Include="AnimatableValueParser.cs" />
@@ -219,10 +221,12 @@
     <Compile Include="SplitDimensionPathKeyframeAnimation.cs" />
     <Compile Include="StaticKeyframeAnimation.cs" />
     <Compile Include="StrokeContent.cs" />
+    <Compile Include="TextDelegate.cs" />
     <Compile Include="TextKeyframeAnimation.cs" />
     <Compile Include="TextLayer.cs" />
     <Compile Include="TransformKeyframeAnimation.cs" />
     <Compile Include="TrimPathContent.cs" />
+    <Compile Include="Typeface.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ValueAnimator.cs" />
     <EmbeddedResource Include="Properties\LottieUWP.rd.xml" />

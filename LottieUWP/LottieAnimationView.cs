@@ -151,6 +151,22 @@ namespace LottieUWP
         public static readonly DependencyProperty ColorFilterProperty =
             DependencyProperty.Register("ColorFilter", typeof(Color), typeof(LottieAnimationView), new PropertyMetadata(Colors.Transparent));
 
+        /** 
+        * Use this to manually set fonts. 
+        */
+        public FontAssetDelegate FontAssetDelegate
+        {
+            set => _lottieDrawable.FontAssetDelegate = value;
+        }
+
+        /** 
+         * Set this to replace animation text with custom text at runtime 
+         */
+        public TextDelegate TextDelegate
+        {
+            set => _lottieDrawable.TextDelegate = value;
+        }
+
         /// <summary>
         /// Set the scale on the current composition. The only cost of this function is re-rendering the
         /// current frame so you may call it frequent to scale something up or down.
