@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-
 namespace LottieUWP
 {
     internal class PathMeasure
     {
         private CachedPathIteratorFactory _originalPathIterator;
         private Path _path;
-        private int _currentContourIndex;
 
         public PathMeasure(Path path)
         {
@@ -21,7 +17,6 @@ namespace LottieUWP
 
         public void SetPath(Path path)
         {
-            _currentContourIndex = 0;
             _originalPathIterator = new CachedPathIteratorFactory(new FullPathIterator(path));
             _path = path;
         }
@@ -34,23 +29,6 @@ namespace LottieUWP
                     return _originalPathIterator.Iterator().TotalLength;
                 return 0;
             }
-        }
-
-        private List<Path.IContour> UsefulContours()
-        {
-            return _path.Contours.Where(c =>
-                c is Path.LineContour ||
-                c is Path.ArcContour ||
-                c is Path.BezierContour
-            ).ToList();
-        }
-
-        public bool NextContour()
-        {
-            var result = _currentContourIndex < UsefulContours().Count - 1;
-            if (result)
-                _currentContourIndex++;
-            return result;
         }
 
         public void GetPosTan(float distance, ref float[] pos)

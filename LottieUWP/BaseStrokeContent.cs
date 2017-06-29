@@ -192,10 +192,6 @@ namespace LottieUWP
             }
             _pm.SetPath(_path);
             var totalLength = _pm.Length;
-            while (_pm.NextContour())
-            {
-                totalLength += _pm.Length;
-            }
             var offsetLength = totalLength * pathGroup.TrimPath.Offset.Value.Value / 360f;
             var startLength = totalLength * pathGroup.TrimPath.Start.Value.Value / 100f + offsetLength;
             var endLength = totalLength * pathGroup.TrimPath.End.Value.Value / 100f + offsetLength;
