@@ -640,6 +640,13 @@ namespace LottieUWP
 
         public virtual long Duration => _composition?.Duration ?? 0;
 
+        public virtual bool PerformanceTrackingEnabled
+        {
+            set => _lottieDrawable.PerformanceTrackingEnabled = value;
+        }
+
+        public virtual PerformanceTracker PerformanceTracker => _lottieDrawable.PerformanceTracker;
+
         private void EnableOrDisableHardwareLayer()
         {
             var useHardwareLayer = _useHardwareLayer && _lottieDrawable.IsAnimating;

@@ -170,6 +170,7 @@
     <Compile Include="Layer.cs" />
     <Compile Include="LinearGradient.cs" />
     <Compile Include="LottieLog.cs" />
+    <Compile Include="MeanCalculator.cs" />
     <Compile Include="PathInterpolator.cs" />
     <Compile Include="LinearInterpolator.cs" />
     <Compile Include="LottieAnimationView.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Mask.cs" />
     <Compile Include="MaskKeyframeAnimation.cs" />
     <Compile Include="MathExt.cs" />
+    <Compile Include="PerformanceTracker.cs" />
     <Compile Include="PorterDuff.cs" />
     <Compile Include="PorterDuffColorFilter.cs" />
     <Compile Include="PorterDuffXfermode.cs" />

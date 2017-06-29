@@ -11,7 +11,7 @@ namespace LottieUWP
         private const int MaxDepth = 20;
         private static bool _traceEnabled;
         private static string[] _sections;
-        private static long[] _startTimeMillis;
+        private static long[] _startTimeNs;
         private static int _traceDepth;
 
         private static readonly Queue<string> Msgs = new Queue<string>();
@@ -28,7 +28,7 @@ namespace LottieUWP
                 if (_traceEnabled)
                 {
                     _sections = new string[MaxDepth];
-                    _startTimeMillis = new long[MaxDepth];
+                    _startTimeNs = new long[MaxDepth];
                 }
             }
         }
@@ -40,12 +40,12 @@ namespace LottieUWP
                 return;
             }
             _sections[_traceDepth] = section;
-            _startTimeMillis[_traceDepth] = CurrentUnixTime();
+            _startTimeNs[_traceDepth] = CurrentUnixTime();
             BatchedDebugWriteLine($"Begin Section: {section}");
             _traceDepth++;
         }
 
-        internal static long EndSection(string section)
+        internal static float EndSection(string section)
         {
             if (!_traceEnabled)
             {
@@ -60,7 +60,7 @@ namespace LottieUWP
             {
                 throw new System.InvalidOperationException("Unbalanced trace call " + section + ". Expected " + _sections[_traceDepth] + ".");
             }
-            var duration = CurrentUnixTime() - _startTimeMillis[_traceDepth + 1];
+            var duration = (CurrentUnixTime() - _startTimeNs[_traceDepth + 1]) / 1000000f;
             BatchedDebugWriteLine($"End Section - {duration}ms");
             return duration;
         }

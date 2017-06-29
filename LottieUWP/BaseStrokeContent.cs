@@ -171,8 +171,8 @@ namespace LottieUWP
                         _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
                     }
                     canvas.DrawPath(_path, Paint);
+                    LottieLog.EndSection(_traceSections.DrawPath);
                 }
-                LottieLog.EndSection(_traceSections.DrawPath);
             }
             LottieLog.EndSection(_traceSections.Draw);
         }

@@ -192,7 +192,7 @@ namespace LottieUWP
                 LottieLog.BeginSection(_traceSections.DrawLayer);
                 DrawLayer(canvas, Matrix, alpha);
                 LottieLog.EndSection(_traceSections.DrawLayer);
-                LottieLog.EndSection(_traceSections.Draw);
+                RecordRenderTime(LottieLog.EndSection(_traceSections.Draw));
                 return;
             }
 
@@ -238,7 +238,12 @@ namespace LottieUWP
             LottieLog.BeginSection(_traceSections.RestoreLayer);
             canvas.Restore();
             LottieLog.EndSection(_traceSections.RestoreLayer);
-            LottieLog.EndSection(_traceSections.Draw);
+            RecordRenderTime(LottieLog.EndSection(_traceSections.Draw));
+        }
+
+        private void RecordRenderTime(float ms)
+        {
+            LottieDrawable.Composition.PerformanceTracker.RecordRenderTime(LayerModel.Name, ms);
         }
 
         private void ClearCanvas(BitmapCanvas canvas)

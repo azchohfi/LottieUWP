@@ -39,6 +39,7 @@ namespace LottieUWP
         private bool _enableMergePaths;
         private CompositionLayer _compositionLayer;
         private byte _alpha = 255;
+        private bool _performanceTrackingEnabled;
         internal BitmapCanvas Canvas;
 
         public LottieDrawable()
@@ -155,9 +156,24 @@ namespace LottieUWP
                 _reverseAnimationWhenCompositionAdded = false;
                 ReverseAnimation();
             }
+            composition.PerformanceTrackingEnabled = _performanceTrackingEnabled;
 
             return true;
         }
+
+        public virtual bool PerformanceTrackingEnabled
+        {
+            set
+            {
+                _performanceTrackingEnabled = value;
+                if (_composition != null)
+                {
+                    _composition.PerformanceTrackingEnabled = value;
+                }
+            }
+        }
+
+        public virtual PerformanceTracker PerformanceTracker => _composition?.PerformanceTracker;
 
         private void BuildCompositionLayer()
         {

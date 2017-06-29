@@ -29,6 +29,7 @@ namespace LottieUWP
         private readonly IList<Layer> _layers = new List<Layer>();
         // This is stored as a set to avoid duplicates.
         private readonly HashSet<string> _warnings = new HashSet<string>();
+        private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
         private readonly long _startFrame;
         private readonly long _endFrame;
         private readonly int _frameRate;
@@ -52,6 +53,13 @@ namespace LottieUWP
         }
 
         public List<string> Warnings => _warnings.ToList();
+
+        public virtual bool PerformanceTrackingEnabled
+        {
+            set => _performanceTracker.Enabled = value;
+        }
+
+        public virtual PerformanceTracker PerformanceTracker => _performanceTracker;
 
         internal virtual Layer LayerModelForId(long id)
         {
