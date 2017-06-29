@@ -23,8 +23,7 @@ namespace LottieUWP
         private readonly IDictionary<string, IList<Layer>> _precomps = new Dictionary<string, IList<Layer>>();
         private readonly IDictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
         /** Map of font names to fonts */
-        private readonly IDictionary<string, Font> _fonts = new Dictionary<string, Font>();
-        private readonly IDictionary<int, FontCharacter> _characters = new Dictionary<int, FontCharacter>();
+
         private readonly Dictionary<long, Layer> _layerMap = new Dictionary<long, Layer>();
         private readonly IList<Layer> _layers = new List<Layer>();
         // This is stored as a set to avoid duplicates.
@@ -32,9 +31,9 @@ namespace LottieUWP
         private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
         private readonly long _startFrame;
         private readonly long _endFrame;
-        private readonly int _frameRate;
+        private readonly float _frameRate;
 
-        private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate, float dpScale, int major, int minor, int patch)
+        private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate, float dpScale, int major, int minor, int patch)
         {
             Bounds = bounds;
             _startFrame = startFrame;
@@ -74,7 +73,7 @@ namespace LottieUWP
             get
             {
                 var frameDuration = _endFrame - _startFrame;
-                return (long)(frameDuration / (float)_frameRate * 1000);
+                return (long)(frameDuration / _frameRate * 1000);
             }
         }
 
@@ -87,7 +86,7 @@ namespace LottieUWP
             return _precomps[id];
         }
 
-        internal virtual IDictionary<string, Font> Fonts => _fonts;
+        internal virtual IDictionary<string, Font> Fonts { get; } = new Dictionary<string, Font>();
 
         public virtual bool HasImages()
         {
@@ -96,9 +95,9 @@ namespace LottieUWP
 
         internal virtual IDictionary<string, LottieImageAsset> Images => _images;
 
-        internal virtual IDictionary<int, FontCharacter> Characters => _characters;
+        internal virtual IDictionary<int, FontCharacter> Characters { get; } = new Dictionary<int, FontCharacter>();
 
-        internal virtual float DurationFrames => Duration * (float)_frameRate / 1000f;
+        internal virtual float DurationFrames => Duration * _frameRate / 1000f;
 
         internal virtual float DpScale { get; }
 
@@ -216,7 +215,7 @@ namespace LottieUWP
 
                 var startFrame = (long)json.GetNamedNumber("ip", 0);
                 var endFrame = (long)json.GetNamedNumber("op", 0);
-                var frameRate = (int)json.GetNamedNumber("fr", 0);
+                var frameRate = (float)json.GetNamedNumber("fr", 0);
                 var version = json.GetNamedString("v");
                 var versions = version.Split('.');
                 var major = int.Parse(versions[0]);
