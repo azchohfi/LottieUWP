@@ -151,7 +151,7 @@ namespace LottieUWP
             {
                 // TODO: make sure in out keyframes work
                 var bounds = composition.Bounds;
-                return new Layer(new List<object>(), composition, null, -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None);
+                return new Layer(new List<object>(), composition, "root", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None);
             }
 
             internal static Layer NewInstance(JsonObject json, LottieComposition composition)

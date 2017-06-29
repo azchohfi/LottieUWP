@@ -26,11 +26,13 @@ namespace LottieUWP
         private readonly KeyframeAnimation<PointF> _endPointAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly int _cacheSteps;
+        private readonly string _drawTraceSectionName;
 
         internal GradientFillContent(LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill)
         {
             Name = fill.Name;
             _lottieDrawable = lottieDrawable;
+            _drawTraceSectionName = $"{layer.Name}.Draw";
             _type = fill.GradientType;
             _path.FillType = fill.FillType;
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
@@ -70,6 +72,7 @@ namespace LottieUWP
 
         public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
+            LottieLog.BeginSection(_drawTraceSectionName);
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)
             {
@@ -95,6 +98,7 @@ namespace LottieUWP
             _paint.Alpha = alpha;
 
             canvas.DrawPath(_path, _paint);
+            LottieLog.EndSection(_drawTraceSectionName);
         }
 
         public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)

@@ -13,6 +13,7 @@ namespace LottieUWP.Sample
         public MainPage()
         {
             Files = new ObservableCollection<string>();
+            LottieLog.TraceEnabled = true;
             InitializeComponent();
         }
 

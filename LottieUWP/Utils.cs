@@ -84,15 +84,18 @@ namespace LottieUWP
 
         internal static void ApplyTrimPathIfNeeded(Path path, float startValue, float endValue, float offsetValue)
         {
+            LottieLog.BeginSection("applyTrimPathIfNeeded");
             PathMeasure.SetPath(path);
 
             var length = PathMeasure.Length;
             if (startValue == 1f && endValue == 0f)
             {
+                LottieLog.EndSection("applyTrimPathIfNeeded");
                 return;
             }
             if (length == 0f || Math.Abs(endValue - startValue - 1) < .01)
             {
+                LottieLog.EndSection("applyTrimPathIfNeeded");
                 return;
             }
             var start = length * startValue;
@@ -124,6 +127,7 @@ namespace LottieUWP
             if (newStart == newEnd)
             {
                 path.Reset();
+                LottieLog.EndSection("applyTrimPathIfNeeded");
                 return;
             }
 
@@ -148,6 +152,7 @@ namespace LottieUWP
                 _tempPath.AddPath(_tempPath2);
             }
             path.Set(_tempPath);
+            LottieLog.EndSection("applyTrimPathIfNeeded");
         }
 
         public static Color GetSolidColorBrush(string hex)

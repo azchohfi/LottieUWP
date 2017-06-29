@@ -37,7 +37,7 @@ namespace LottieUWP
                 case "mm":
                     return MergePaths.Factory.NewInstance(json);
                 default:
-                    Debug.WriteLine("Unknown shape type " + type, "LOTTIE");
+                    Debug.WriteLine("Unknown shape type " + type, LottieLog.Tag);
                     break;
             }
             return null;

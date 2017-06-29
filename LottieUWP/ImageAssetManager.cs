@@ -75,7 +75,7 @@ namespace LottieUWP
                 }
                 catch (IOException e)
                 {
-                    Debug.WriteLine($"Unable to open asset. {e}", "LOTTIE");
+                    Debug.WriteLine($"Unable to open asset. {e}", LottieLog.Tag);
                     return null;
                 }
                 //BitmapFactory.Options opts = new BitmapFactory.Options(); // TODO: handle  density

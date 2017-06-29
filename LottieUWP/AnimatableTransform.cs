@@ -43,7 +43,7 @@ namespace LottieUWP
                 {
                     // Cameras don't have an anchor point property. Although we don't support them, at least
                     // we won't crash.
-                    Debug.WriteLine("Layer has no transform property. You may be using an unsupported " + "layer type such as a camera.", "LOTTIE");
+                    Debug.WriteLine("Layer has no transform property. You may be using an unsupported " + "layer type such as a camera.", LottieLog.Tag);
                     anchorPoint = new AnimatablePathValue();
                 }
 

@@ -414,9 +414,9 @@ namespace LottieUWP
         /// Sets the animation from a file in the assets directory.
         /// This will load and deserialize the file asynchronously.
         /// <para>
-        /// You may also specify a cache strategy. Specifying <seealso cref="CacheStrategy#Strong"/> will hold a
+        /// You may also specify a cache strategy. Specifying <seealso cref="CacheStrategy.Strong"/> will hold a
         /// strong reference to the composition once it is loaded
-        /// and deserialized. <seealso cref="CacheStrategy#Weak"/> will hold a weak reference to said composition.
+        /// and deserialized. <seealso cref="CacheStrategy.Weak"/> will hold a weak reference to said composition.
         /// </para>
         /// </summary>
         public virtual async Task SetAnimationAsync(string animationName, CacheStrategy cacheStrategy)
@@ -522,7 +522,7 @@ namespace LottieUWP
                     var yScale = screenHeight / (float)compHeight;
                     var maxScaleForScreen = Math.Min(xScale, yScale);
                     Scale = Math.Min(maxScaleForScreen, _lottieDrawable.Scale);
-                    Debug.WriteLine($"Composition larger than the screen {compWidth:D}x{compHeight:D} vs {screenWidth:D}x{screenHeight:D}. Scaling down.", "LOTTIE");
+                    Debug.WriteLine($"Composition larger than the screen {compWidth:D}x{compHeight:D} vs {screenWidth:D}x{screenHeight:D}. Scaling down.", LottieLog.Tag);
                 }
 
                 // If you set a different value on the view, the bounds will not update unless
@@ -599,9 +599,10 @@ namespace LottieUWP
 
 
         /// <summary>
-        /// Allows you to modify or clear a bitmap that was loaded for an image either automatically 
-        /// through {@link #setImageAssetsFolder(String)} or with an {@link ImageAssetDelegate}. 
-        /// Return the previous Bitmap or null. 
+        /// Allows you to modify or clear a bitmap that was loaded for an image either automatically
+        /// through ImageAssetsFolder or with an ImageAssetDelegate.
+        /// Return the previous Bitmap or null.
+        /// </summary>
         public BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
         {
             return _lottieDrawable.UpdateBitmap(id, bitmap);

@@ -285,6 +285,7 @@ namespace LottieUWP
 
         public void Draw(BitmapCanvas canvas)
         {
+            LottieLog.BeginSection("Drawable.Draw");
             if (_compositionLayer == null)
             {
                 return;
@@ -298,6 +299,7 @@ namespace LottieUWP
             _matrix.Reset();
             _matrix = MatrixExt.PreScale(_matrix, scale, scale);
             _compositionLayer.Draw(canvas, _matrix, _alpha);
+            LottieLog.EndSection("Drawable.Draw");
         }
 
         internal virtual void SystemAnimationsAreDisabled()
@@ -526,7 +528,7 @@ namespace LottieUWP
             var bm = ImageAssetManager;
             if (bm == null)
             {
-                Debug.WriteLine("Cannot update bitmap. Most likely the drawable is not added to a View " + "which prevents Lottie from getting a Context.", "LOTTIE");
+                Debug.WriteLine("Cannot update bitmap. Most likely the drawable is not added to a View " + "which prevents Lottie from getting a Context.", LottieLog.Tag);
                 return null;
             }
             var ret = bm.UpdateBitmap(id, bitmap);

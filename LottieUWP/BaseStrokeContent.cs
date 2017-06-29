@@ -8,6 +8,20 @@ namespace LottieUWP
 {
     public abstract class BaseStrokeContent : IDrawingContent
     {
+        private class TraceSections
+        {
+            internal readonly string Draw;
+            internal readonly string DrawTrimPath;
+            internal readonly string DrawPath;
+
+            public TraceSections(String layerName)
+            {
+                Draw = $"{layerName}.Draw";
+                DrawTrimPath = $"{layerName}.DrawTrimmedPath";
+                DrawPath = $"{layerName}.DrawPath";
+            }
+        }
+
         private readonly PathMeasure _pm = new PathMeasure();
         private readonly Path _path = new Path();
         private readonly Path _trimPathPath = new Path();
@@ -15,6 +29,7 @@ namespace LottieUWP
         private readonly LottieDrawable _lottieDrawable;
         private readonly IList<PathGroup> _pathGroups = new List<PathGroup>();
         private readonly double[] _dashPatternValues;
+        private readonly TraceSections _traceSections;
         internal readonly Paint Paint = new Paint(Paint.AntiAliasFlag);
 
         private readonly IBaseKeyframeAnimation<float?> _widthAnimation;
@@ -25,6 +40,8 @@ namespace LottieUWP
         internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, PenLineCap cap, PenLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, IList<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
             _lottieDrawable = lottieDrawable;
+            _traceSections = new TraceSections(layer.Name);
+
             Paint.Style = Paint.PaintStyle.Stroke;
             Paint.StrokeCap = cap;
             Paint.StrokeJoin = join;
@@ -125,12 +142,14 @@ namespace LottieUWP
 
         public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
+            LottieLog.BeginSection(_traceSections.Draw);
             var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             Paint.Alpha = alpha;
             Paint.StrokeWidth = _widthAnimation.Value.Value * Utils.GetScale(parentMatrix);
             if (Paint.StrokeWidth <= 0)
             {
                 // Android draws a hairline stroke for 0, After Effects doesn't.
+                LottieLog.EndSection(_traceSections.Draw);
                 return;
             }
             ApplyDashPatternIfNeeded(parentMatrix);
@@ -145,6 +164,7 @@ namespace LottieUWP
                 }
                 else
                 {
+                    LottieLog.BeginSection(_traceSections.DrawPath);
                     _path.Reset();
                     for (var j = pathGroup.Paths.Count - 1; j >= 0; j--)
                     {
@@ -152,13 +172,17 @@ namespace LottieUWP
                     }
                     canvas.DrawPath(_path, Paint);
                 }
+                LottieLog.EndSection(_traceSections.DrawPath);
             }
+            LottieLog.EndSection(_traceSections.Draw);
         }
 
         private void ApplyTrimPath(BitmapCanvas canvas, PathGroup pathGroup, DenseMatrix parentMatrix)
         {
+            LottieLog.BeginSection(_traceSections.DrawTrimPath);
             if (pathGroup.TrimPath == null)
             {
+                LottieLog.EndSection(_traceSections.DrawTrimPath);
                 return;
             }
             _path.Reset();
@@ -236,6 +260,7 @@ namespace LottieUWP
                 }
                 currentLength += length;
             }
+            LottieLog.EndSection(_traceSections.DrawTrimPath);
         }
 
         public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)

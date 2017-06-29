@@ -58,6 +58,7 @@ namespace LottieUWP
 
         public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
+            LottieLog.BeginSection("CompositionLayer.Draw");
             canvas.GetClipBounds(out _originalClipRect);
             RectExt.Set(ref _newClipRect, 0, 0, LayerModel.PreCompWidth, LayerModel.PreCompHeight);
             parentMatrix.MapRect(ref _newClipRect);
@@ -71,13 +72,15 @@ namespace LottieUWP
                 }
                 if (nonEmptyClip)
                 {
-                    _layers[i].Draw(canvas, parentMatrix, parentAlpha);
+                    BaseLayer layer = _layers[i];
+                    layer.Draw(canvas, parentMatrix, parentAlpha);
                 }
             }
             if (!_originalClipRect.IsEmpty)
             {
                 canvas.ClipRect(_originalClipRect, Region.Op.Replace);
             }
+            LottieLog.EndSection("CompositionLayer.Draw");
         }
 
         public override void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)

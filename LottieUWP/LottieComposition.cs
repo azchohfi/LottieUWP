@@ -47,7 +47,7 @@ namespace LottieUWP
 
         internal void AddWarning(string warning)
         {
-            Debug.WriteLine(warning, "LOTTIE");
+            Debug.WriteLine(warning, LottieLog.Tag);
             _warnings.Add(warning);
         }
 
@@ -178,11 +178,11 @@ namespace LottieUWP
                 }
                 catch (IOException e)
                 {
-                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to find file.", e), "LOTTIE");
+                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to find file.", e), LottieLog.Tag);
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to load JSON.", e), "LOTTIE");
+                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to load JSON.", e), LottieLog.Tag);
                 }
                 finally
                 {
