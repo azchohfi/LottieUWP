@@ -108,6 +108,11 @@ namespace LottieUWP
                     AddAnimation(animation);
                     animation.ValueChanged += OnValueChanged;
                 }
+                foreach (var animation in _mask.OpacityAnimations)
+                {
+                    AddAnimation(animation);
+                    animation.ValueChanged += OnValueChanged;
+                }
             }
             SetupInOutAnimations();
         }
@@ -343,6 +348,8 @@ namespace LottieUWP
                         _path.FillType = PathFillType.Winding;
                         break;
                 }
+                var opacityAnimation = _mask.OpacityAnimations[i];
+                _contentPaint.Alpha = (byte)(opacityAnimation.Value.Value * 2.55f);
                 canvas.DrawPath(_path, _contentPaint);
             }
             LottieLog.BeginSection(_traceSections.RestoreLayer);

@@ -14,10 +14,11 @@ namespace LottieUWP
 
         private readonly MaskMode _maskMode;
 
-        private Mask(MaskMode maskMode, AnimatableShapeValue maskPath)
+        private Mask(MaskMode maskMode, AnimatableShapeValue maskPath, AnimatableIntegerValue opacity)
         {
             _maskMode = maskMode;
             MaskPath = maskPath;
+            Opacity = opacity;
         }
 
         internal static class Factory
@@ -42,14 +43,9 @@ namespace LottieUWP
                 }
 
                 var maskPath = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("pt"), composition);
-                // TODO: use this
-                // JSONObject opacityJson = json.GetNamedObject("o");
-                // if (opacityJson != null) {
-                //   AnimatableIntegerValue opacity =
-                //       new AnimatableIntegerValue(opacityJson, composition, false, true);
-                // }
-
-                return new Mask(maskMode, maskPath);
+                var opacityJson = json.GetNamedObject("o", null);
+                var opacity = AnimatableIntegerValue.Factory.NewInstance(opacityJson, composition);
+                return new Mask(maskMode, maskPath, opacity);
             }
         }
 
@@ -59,5 +55,6 @@ namespace LottieUWP
         }
 
         internal virtual AnimatableShapeValue MaskPath { get; }
+        internal virtual AnimatableIntegerValue Opacity { get; }
     }
 }
