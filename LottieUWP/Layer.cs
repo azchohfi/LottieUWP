@@ -35,7 +35,7 @@ namespace LottieUWP
         private readonly LayerType _layerType;
         private readonly MatteType _matteType;
 
-        private Layer(IList<object> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType)
+        private Layer(IList<object> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
         {
             _shapes = shapes;
             _composition = composition;
@@ -57,6 +57,7 @@ namespace LottieUWP
             TextProperties = textProperties;
             InOutKeyframes = inOutKeyframes;
             _matteType = matteType;
+            TimeRemapping = timeRemapping;
         }
 
         internal virtual LottieComposition Composition => _composition;
@@ -80,6 +81,8 @@ namespace LottieUWP
         internal virtual AnimatableTextFrame Text { get; }
 
         internal virtual AnimatableTextProperties TextProperties { get; }
+
+        internal virtual AnimatableFloatValue TimeRemapping { get; }
 
         internal virtual IList<Mask> Masks { get; }
 
@@ -151,7 +154,7 @@ namespace LottieUWP
             {
                 // TODO: make sure in out keyframes work
                 var bounds = composition.Bounds;
-                return new Layer(new List<object>(), composition, "root", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None);
+                return new Layer(new List<object>(), composition, "root", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None, null);
             }
 
             internal static Layer NewInstance(JsonObject json, LottieComposition composition)
@@ -275,7 +278,13 @@ namespace LottieUWP
                     inOutKeyframes.Add(outKeyframe);
                 }
 
-                return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId, masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress, preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType);
+                AnimatableFloatValue timeRemapping = null;
+                if (json.ContainsKey("tm"))
+                {
+                    timeRemapping = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("tm", null), composition, false);
+                }
+
+                return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId, masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress, preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType, timeRemapping);
             }
         }
     }

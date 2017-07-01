@@ -7,6 +7,7 @@ namespace LottieUWP
 {
     internal class CompositionLayer : BaseLayer
     {
+        private readonly IBaseKeyframeAnimation<float?> _timeRemapping;
         private readonly IList<BaseLayer> _layers = new List<BaseLayer>();
         private Rect _originalClipRect;
         private Rect _newClipRect;
@@ -16,6 +17,18 @@ namespace LottieUWP
 
         internal CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, IList<Layer> layerModels, LottieComposition composition) : base(lottieDrawable, layerModel)
         {
+            var timeRemapping = layerModel.TimeRemapping;
+            if (timeRemapping != null)
+            {
+                _timeRemapping = timeRemapping.CreateAnimation();
+                AddAnimation(_timeRemapping);
+                _timeRemapping.ValueChanged += OnValueChanged;
+            }
+            else
+            {
+                _timeRemapping = null;
+            }
+
             var layerMap = new Dictionary<long, BaseLayer>(composition.Layers.Count);
 
             BaseLayer mattedLayer = null;
@@ -107,6 +120,14 @@ namespace LottieUWP
             set
             {
                 base.Progress = value;
+
+                if (_timeRemapping?.Value != null)
+                {
+                    var duration = LottieDrawable.Composition.Duration;
+                    var remappedTime = (long)(_timeRemapping.Value.Value * 1000);
+                    value = remappedTime / (float)duration;
+                }
+
                 value -= LayerModel.StartProgress;
                 for (var i = _layers.Count - 1; i >= 0; i--)
                 {
