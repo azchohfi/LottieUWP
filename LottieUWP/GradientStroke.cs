@@ -3,7 +3,7 @@ using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class GradientStroke
+    internal class GradientStroke : IContentModel
     {
         private GradientStroke(string name, GradientType gradientType, AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint, AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType, ShapeStroke.LineJoinType joinType, IList<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue dashOffset)
         {
@@ -41,6 +41,11 @@ namespace LottieUWP
         internal virtual IList<AnimatableFloatValue> LineDashPattern { get; }
 
         internal virtual AnimatableFloatValue DashOffset { get; }
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new GradientStrokeContent(drawable, layer, this);
+        }
 
         internal static class Factory
         {

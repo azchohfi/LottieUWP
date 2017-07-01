@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal class CircleShape
+    internal class CircleShape : IContentModel
     {
         private CircleShape(string name, IAnimatableValue<PointF> position, AnimatablePointValue size)
         {
@@ -24,5 +24,9 @@ namespace LottieUWP
         public IAnimatableValue<PointF> Position { get; }
 
         public AnimatablePointValue Size { get; }
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new EllipseContent(drawable, layer, this);
+        }
     }
 }

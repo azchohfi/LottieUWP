@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal class RectangleShape
+    internal class RectangleShape : IContentModel
     {
         private readonly IAnimatableValue<PointF> _position;
         private readonly AnimatablePointValue _size;
@@ -31,6 +31,11 @@ namespace LottieUWP
         internal virtual AnimatablePointValue Size => _size;
 
         internal virtual IAnimatableValue<PointF> Position => _position;
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new RectangleContent(drawable, layer, this);
+        }
 
         public override string ToString()
         {

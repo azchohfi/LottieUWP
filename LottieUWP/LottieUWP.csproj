@@ -143,6 +143,7 @@
     <Compile Include="ContentGroup.cs" />
     <Compile Include="CubicCurveData.cs" />
     <Compile Include="DashPathEffect.cs" />
+    <Compile Include="IContentModel.cs" />
     <Compile Include="IDrawingContent.cs" />
     <Compile Include="EllipseContent.cs" />
     <Compile Include="FileCompositionLoader.cs" />

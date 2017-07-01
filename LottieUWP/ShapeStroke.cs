@@ -4,7 +4,7 @@ using Windows.UI.Xaml.Media;
 
 namespace LottieUWP
 {
-    internal class ShapeStroke
+    internal class ShapeStroke : IContentModel
     {
         internal enum LineCapType
         {
@@ -59,6 +59,11 @@ namespace LottieUWP
             Width = width;
             CapType = capType;
             JoinType = joinType;
+        }
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new StrokeContent(drawable, layer, this);
         }
 
         internal static class Factory

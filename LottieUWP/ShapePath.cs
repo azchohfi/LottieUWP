@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal class ShapePath
+    internal class ShapePath : IContentModel
     {
         private readonly string _name;
         private readonly int _index;
@@ -15,15 +15,6 @@ namespace LottieUWP
             _shapePath = shapePath;
         }
 
-        internal static class Factory
-        {
-            internal static ShapePath NewInstance(JsonObject json, LottieComposition composition)
-            {
-                var animatableShapeValue = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("ks"), composition);
-                return new ShapePath(json.GetNamedString("nm"), (int)json.GetNamedNumber("ind"), animatableShapeValue);
-            }
-        }
-
         public virtual string Name => _name;
 
         internal virtual AnimatableShapeValue GetShapePath()
@@ -31,9 +22,23 @@ namespace LottieUWP
             return _shapePath;
         }
 
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new ShapeContent(drawable, layer, this);
+        }
+
         public override string ToString()
         {
             return "ShapePath{" + "name=" + _name + ", index=" + _index + ", hasAnimation=" + _shapePath.HasAnimation() + '}';
+        }
+
+        internal static class Factory
+        {
+            internal static ShapePath NewInstance(JsonObject json, LottieComposition composition)
+            {
+                var animatableShapeValue = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("ks"), composition);
+                return new ShapePath(json.GetNamedString("nm"), (int)json.GetNamedNumber("ind"), animatableShapeValue);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
 using MathNet.Numerics.LinearAlgebra.Single;
@@ -9,7 +8,6 @@ namespace LottieUWP
 {
     internal class ContentGroup : IDrawingContent, IPathContent
     {
-        private static readonly string Tag = typeof(ContentGroup).Name;
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private Rect _rect;
@@ -40,61 +38,12 @@ namespace LottieUWP
 
             for (var i = 0; i < items.Count; i++)
             {
-                var item = items[i];
-                if (item is ShapeFill)
+                var content = items[i].ToContent(lottieDrawable, layer);
+                if (content != null)
                 {
-                    _contents.Add(new FillContent(lottieDrawable, layer, (ShapeFill)item));
+                    _contents.Add(content);
                 }
-                else if (item is GradientFill)
-                {
-                    _contents.Add(new GradientFillContent(lottieDrawable, layer, (GradientFill)item));
-                }
-                else if (item is ShapeStroke)
-                {
-                    _contents.Add(new StrokeContent(lottieDrawable, layer, (ShapeStroke)item));
-                }
-                else if (item is GradientStroke)
-                {
-                    _contents.Add(new GradientStrokeContent(lottieDrawable, layer, (GradientStroke)item));
-                }
-                else if (item is ShapeGroup)
-                {
-                    _contents.Add(new ContentGroup(lottieDrawable, layer, (ShapeGroup)item));
-                }
-                else if (item is RectangleShape)
-                {
-                    _contents.Add(new RectangleContent(lottieDrawable, layer, (RectangleShape)item));
-                }
-                else if (item is CircleShape)
-                {
-                    _contents.Add(new EllipseContent(lottieDrawable, layer, (CircleShape)item));
-                }
-                else if (item is ShapePath)
-                {
-                    _contents.Add(new ShapeContent(lottieDrawable, layer, (ShapePath)item));
-                }
-                else if (item is PolystarShape)
-                {
-                    _contents.Add(new PolystarContent(lottieDrawable, layer, (PolystarShape)item));
-                }
-                else if (item is ShapeTrimPath)
-                {
-                    _contents.Add(new TrimPathContent(layer, (ShapeTrimPath)item));
-                }
-                else
-                {
-                    if (item is MergePaths mergePaths)
-                    {
-                        if (lottieDrawable.EnableMergePathsForKitKatAndAbove())
-                        {
-                            _contents.Add(new MergePathsContent(mergePaths));
-                        }
-                        else
-                        {
-                            Debug.WriteLine("Animation contains merge paths but they are disabled.", Tag);
-                        }
-                    }
-                }
+
             }
 
             IList<IContent> contentsToRemove = new List<IContent>();

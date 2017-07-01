@@ -4,7 +4,7 @@ using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class AnimatableTransform : IModifierContent
+    internal class AnimatableTransform : IModifierContent, IContentModel
     {
         private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<PointF> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity)
         {
@@ -114,6 +114,11 @@ namespace LottieUWP
         public virtual TransformKeyframeAnimation CreateAnimation()
         {
             return new TransformKeyframeAnimation(this);
+        }
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return null;
         }
     }
 }

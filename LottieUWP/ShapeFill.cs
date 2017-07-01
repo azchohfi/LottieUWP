@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal class ShapeFill
+    internal class ShapeFill : IContentModel
     {
         private readonly bool _fillEnabled;
         private readonly AnimatableColorValue _color;
@@ -53,6 +53,11 @@ namespace LottieUWP
         internal virtual AnimatableIntegerValue Opacity => _opacity;
 
         internal virtual PathFillType FillType { get; }
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new FillContent(drawable, layer, this);
+        }
 
         public override string ToString()
         {

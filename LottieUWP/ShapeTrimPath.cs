@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal class ShapeTrimPath
+    internal class ShapeTrimPath : IContentModel
     {
         internal enum Type
         {
@@ -24,14 +24,6 @@ namespace LottieUWP
             _offset = offset;
         }
 
-        internal static class Factory
-        {
-            internal static ShapeTrimPath NewInstance(JsonObject json, LottieComposition composition)
-            {
-                return new ShapeTrimPath(json.GetNamedString("nm"), (Type)(int)json.GetNamedNumber("m", 1), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("s"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("e"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o"), composition, false));
-            }
-        }
-
         internal virtual string Name { get; }
 
         internal new virtual Type GetType()
@@ -45,9 +37,22 @@ namespace LottieUWP
 
         internal virtual AnimatableFloatValue Offset => _offset;
 
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new TrimPathContent(layer, this);
+        }
+
         public override string ToString()
         {
             return "Trim Path: {start: " + _start + ", end: " + _end + ", offset: " + _offset + "}";
+        }
+
+        internal static class Factory
+        {
+            internal static ShapeTrimPath NewInstance(JsonObject json, LottieComposition composition)
+            {
+                return new ShapeTrimPath(json.GetNamedString("nm"), (Type)(int)json.GetNamedNumber("m", 1), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("s"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("e"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o"), composition, false));
+            }
         }
     }
 }

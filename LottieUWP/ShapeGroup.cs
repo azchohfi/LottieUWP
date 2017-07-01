@@ -4,9 +4,9 @@ using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class ShapeGroup
+    internal class ShapeGroup : IContentModel
     {
-        internal static object ShapeItemWithJson(JsonObject json, LottieComposition composition)
+        internal static IContentModel ShapeItemWithJson(JsonObject json, LottieComposition composition)
         {
             var type = json.GetNamedString("ty");
 
@@ -44,9 +44,9 @@ namespace LottieUWP
         }
 
         private readonly string _name;
-        private readonly IList<object> _items;
+        private readonly IList<IContentModel> _items;
 
-        internal ShapeGroup(string name, IList<object> items)
+        internal ShapeGroup(string name, IList<IContentModel> items)
         {
             _name = name;
             _items = items;
@@ -58,7 +58,7 @@ namespace LottieUWP
             {
                 var jsonItems = json.GetNamedArray("it");
                 var name = json.GetNamedString("nm");
-                IList<object> items = new List<object>();
+                var items = new List<IContentModel>();
 
                 for (uint i = 0; i < jsonItems.Count; i++)
                 {
@@ -74,7 +74,12 @@ namespace LottieUWP
 
         public virtual string Name => _name;
 
-        internal virtual IList<object> Items => _items;
+        internal virtual IList<IContentModel> Items => _items;
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new ContentGroup(drawable, layer, this);
+        }
 
         public override string ToString()
         {

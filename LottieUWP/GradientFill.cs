@@ -3,7 +3,7 @@ using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class GradientFill
+    internal class GradientFill : IContentModel
     {
         private GradientFill(string name, GradientType gradientType, PathFillType fillType, AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint, AnimatablePointValue endPoint, AnimatableFloatValue highlightLength, AnimatableFloatValue highlightAngle)
         {
@@ -35,6 +35,11 @@ namespace LottieUWP
         internal virtual AnimatableFloatValue HighlightLength { get; }
 
         internal virtual AnimatableFloatValue HighlightAngle { get; }
+
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            return new GradientFillContent(drawable, layer, this);
+        }
 
         internal static class Factory
         {

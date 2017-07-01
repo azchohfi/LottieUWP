@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    public class MergePaths
+    internal class MergePaths : IContentModel
     {
         internal sealed class MergePathsMode
         {
@@ -100,21 +101,31 @@ namespace LottieUWP
             _mode = mode;
         }
 
-        internal static class Factory
-        {
-            internal static MergePaths NewInstance(JsonObject json)
-            {
-                return new MergePaths(json.GetNamedString("nm"), MergePathsMode.ForId((int) json.GetNamedNumber("mm", 1)));
-            }
-        }
-
         public virtual string Name { get; }
 
         internal virtual MergePathsMode Mode => _mode;
 
+        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        {
+            if (!drawable.EnableMergePathsForKitKatAndAbove())
+            {
+                Debug.WriteLine("Animation contains merge paths but they are disabled.", LottieLog.Tag);
+                return null;
+            }
+            return new MergePathsContent(this);
+        }
+
         public override string ToString()
         {
             return "MergePaths{" + "mode=" + _mode + '}';
+        }
+
+        internal static class Factory
+        {
+            internal static MergePaths NewInstance(JsonObject json)
+            {
+                return new MergePaths(json.GetNamedString("nm"), MergePathsMode.ForId((int)json.GetNamedNumber("mm", 1)));
+            }
         }
     }
 }
