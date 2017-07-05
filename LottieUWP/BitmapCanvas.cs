@@ -248,7 +248,11 @@ namespace LottieUWP
             {
                 Text = new string(character, 1),
                 RenderTransform = GetCurrentRenderTransform(),
-                Foreground = brush
+                Foreground = brush,
+                FontSize = paint.TextSize,
+                FontFamily = paint.Typeface.FontFamily,
+                FontStyle = paint.Typeface.Style,
+                FontWeight = paint.Typeface.Weight
             };
             Children.Add(textblock);
         }

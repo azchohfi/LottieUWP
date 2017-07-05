@@ -42,8 +42,7 @@ namespace LottieUWP
         internal virtual Typeface GetTypeface(string fontFamily, string style)
         {
             _tempPair = new Tuple<string, string>(fontFamily, style);
-            var typeface = _fontMap[_tempPair];
-            if (typeface != null)
+            if (_fontMap.TryGetValue(_tempPair, out var typeface))
             {
                 return typeface;
             }
@@ -55,8 +54,7 @@ namespace LottieUWP
 
         private Typeface GetFontFamily(string fontFamily)
         {
-            var defaultTypeface = _fontFamilies[fontFamily];
-            if (defaultTypeface != null)
+            if (_fontFamilies.TryGetValue(fontFamily, out var defaultTypeface))
             {
                 return defaultTypeface;
             }
@@ -78,7 +76,7 @@ namespace LottieUWP
 
             if (typeface == null)
             {
-                var path = "fonts/" + fontFamily + _defaultFontFileExtension;
+                var path = $"Assets/Fonts/{fontFamily.Replace(" ", "")}{_defaultFontFileExtension}#{fontFamily}";
                 typeface = Typeface.CreateFromAsset(path);
             }
 

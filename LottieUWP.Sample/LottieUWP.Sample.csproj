@@ -202,6 +202,12 @@
     <Content Include="Assets\Hello World.json" />
     <Content Include="Assets\Walkthrough\FullScreen.json" />
     <Content Include="Assets\Tests\Repeater.json" />
+    <Content Include="Assets\Fonts\ComicNeue.ttf" />
+    <Content Include="Assets\Fonts\HelveticaNeue.ttf" />
+    <Content Include="Assets\Fonts\Helvetica.ttf" />
+    <Content Include="Assets\Fonts\OpenSans.ttf" />
+    <Content Include="Assets\Fonts\PTSerif.ttf" />
+    <Content Include="Assets\Fonts\Roboto.ttf" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

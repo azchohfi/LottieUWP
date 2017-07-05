@@ -146,7 +146,7 @@ namespace LottieUWP
             }
             _fillPaint.Typeface = typeface;
             _fillPaint.TextSize = documentData.Size * _composition.DpScale;
-            _strokePaint.Typeface = _strokePaint.Typeface;
+            _strokePaint.Typeface = _fillPaint.Typeface;
             _strokePaint.TextSize = _fillPaint.TextSize;
             for (int i = 0; i < text.Length; i++)
             {
