@@ -13,6 +13,7 @@ namespace LottieUWP
         private static string[] _sections;
         private static long[] _startTimeNs;
         private static int _traceDepth;
+        private static int _depthPastMaxDepth;
 
         private static readonly Queue<string> Msgs = new Queue<string>();
 
@@ -35,8 +36,13 @@ namespace LottieUWP
 
         internal static void BeginSection(string section)
         {
-            if (!_traceEnabled || _traceDepth >= MaxDepth)
+            if (!_traceEnabled)
             {
+                return;
+            }
+            if (_traceDepth == MaxDepth)
+            {
+                _depthPastMaxDepth++;
                 return;
             }
             _sections[_traceDepth] = section;
@@ -47,6 +53,11 @@ namespace LottieUWP
 
         internal static float EndSection(string section)
         {
+            if (_depthPastMaxDepth > 0)
+            {
+                _depthPastMaxDepth--;
+                return 0;
+            }
             if (!_traceEnabled)
             {
                 return 0;
@@ -60,7 +71,7 @@ namespace LottieUWP
             {
                 throw new System.InvalidOperationException("Unbalanced trace call " + section + ". Expected " + _sections[_traceDepth] + ".");
             }
-            var duration = (CurrentUnixTime() - _startTimeNs[_traceDepth + 1]) / 1000000f;
+            var duration = (CurrentUnixTime() - _startTimeNs[_traceDepth]) / 1000000f;
             BatchedDebugWriteLine($"End Section - {duration}ms");
             return duration;
         }
