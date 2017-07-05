@@ -208,6 +208,7 @@
     <Content Include="Assets\Fonts\OpenSans.ttf" />
     <Content Include="Assets\Fonts\PTSerif.ttf" />
     <Content Include="Assets\Fonts\Roboto.ttf" />
+    <Content Include="Assets\Name.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
