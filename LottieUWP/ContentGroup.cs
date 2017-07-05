@@ -36,36 +36,23 @@ namespace LottieUWP
                 };
             }
 
+            var greedyContents = new List<IGreedyContent>();
             for (var i = 0; i < items.Count; i++)
             {
                 var content = items[i].ToContent(lottieDrawable, layer);
                 if (content != null)
                 {
                     _contents.Add(content);
-                }
-
-            }
-
-            IList<IContent> contentsToRemove = new List<IContent>();
-            MergePathsContent currentMergePathsContent = null;
-            for (var i = _contents.Count - 1; i >= 0; i--)
-            {
-                var content = _contents[i];
-                if (content is MergePathsContent mergePathsContent)
-                    currentMergePathsContent = mergePathsContent;
-                if (currentMergePathsContent != null && content != currentMergePathsContent)
-                {
-                    currentMergePathsContent.AddContentIfNeeded(content);
-                    contentsToRemove.Add(content);
+                    if (content is IGreedyContent greedyContent)
+                    {
+                        greedyContents.Add(greedyContent);
+                    }
                 }
             }
 
-            for (var i = _contents.Count - 1; i >= 0; i--)
+            for (int i = greedyContents.Count - 1; i >= 0; i--)
             {
-                if (contentsToRemove.Contains(_contents[i]))
-                {
-                    _contents.RemoveAt(i);
-                }
+                greedyContents[i].AbsorbContent(_contents);
             }
         }
 

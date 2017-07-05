@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal class MergePathsContent : IPathContent
+    internal class MergePathsContent : IPathContent, IGreedyContent
     {
         private readonly Path _firstPath = new Path();
         private readonly Path _remainderPath = new Path();
@@ -17,11 +17,25 @@ namespace LottieUWP
             _mergePaths = mergePaths;
         }
 
-        internal virtual void AddContentIfNeeded(IContent content)
+        public void AbsorbContent(List<IContent> contents)
         {
-            if (content is IPathContent pathContent)
+            int index = contents.Count;
+            // Fast forward the iterator until after this content.
+            while (index > 0)
             {
-                _pathContents.Add(pathContent);
+                index--;
+                if (contents[index] == this)
+                    break;
+            }
+            while (index > 0)
+            {
+                index--;
+                var content = contents[index];
+                if (content is IPathContent pathContent)
+                {
+                    _pathContents.Add(pathContent);
+                    contents.RemoveAt(index);
+                }
             }
         }
 

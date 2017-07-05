@@ -126,6 +126,7 @@
     <Compile Include="FontAssetDelegate.cs" />
     <Compile Include="FontAssetManager.cs" />
     <Compile Include="FontCharacter.cs" />
+    <Compile Include="IGreedyContent.cs" />
     <Compile Include="IAnimatableValue.cs" />
     <Compile Include="AnimatableValueParser.cs" />
     <Compile Include="Animator.cs" />
