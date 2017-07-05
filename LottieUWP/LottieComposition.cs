@@ -43,6 +43,10 @@ namespace LottieUWP
             MajorVersion = major;
             MinorVersion = minor;
             PatchVersion = patch;
+            if (!Utils.IsAtLeastVersion(this, 4, 5, 0))
+            {
+                AddWarning("Lottie only supports bodymovin >= 4.5.0");
+            }
         }
 
         internal void AddWarning(string warning)
