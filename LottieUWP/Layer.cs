@@ -183,10 +183,10 @@ namespace LottieUWP
                     layerType = LayerType.Unknown;
                 }
 
-                if (layerType == LayerType.Text && !Utils.IsAtLeastVersion(composition, 4, 7, 0))
+                if (layerType == LayerType.Text && !Utils.IsAtLeastVersion(composition, 4, 8, 0))
                 {
                     layerType = LayerType.Unknown;
-                    composition.AddWarning("To use text, you must export text as glyphs in Bodymovin.");
+                    composition.AddWarning("Text is only supported on bodymovin >= 4.8.0");
                 }
 
                 var parentId = (long)json.GetNamedNumber("parent", -1);
