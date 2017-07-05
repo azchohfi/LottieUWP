@@ -8,26 +8,56 @@ namespace LottieUWP
 {
     internal class ContentGroup : IDrawingContent, IPathContent
     {
+        private static List<IContent> ContentsFromModels(LottieDrawable drawable, BaseLayer layer, List<IContentModel> contentModels)
+        {
+            var contents = new List<IContent>(contentModels.Count);
+            for (int i = 0; i < contentModels.Count; i++)
+            {
+                var content = contentModels[i].ToContent(drawable, layer);
+                if (content != null)
+                {
+                    contents.Add(content);
+                }
+            }
+            return contents;
+        }
+
+        internal static AnimatableTransform FindTransform(List<IContentModel> contentModels)
+        {
+            for (int i = 0; i < contentModels.Count; i++)
+            {
+                var contentModel = contentModels[i];
+                if (contentModel is AnimatableTransform animatableTransform)
+                {
+                    return animatableTransform;
+                }
+            }
+            return null;
+        }
+
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private Rect _rect;
 
-        private readonly List<IContent> _contents = new List<IContent>();
+        private readonly List<IContent> _contents;
         private IList<IPathContent> _pathContents;
         private readonly TransformKeyframeAnimation _transformAnimation;
 
         internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup)
+            : this(lottieDrawable, layer, shapeGroup.Name,
+                ContentsFromModels(lottieDrawable, layer, shapeGroup.Items), 
+                FindTransform(shapeGroup.Items))
         {
-            Name = shapeGroup.Name;
-            var items = shapeGroup.Items;
-            if (items.Count == 0)
-            {
-                return;
-            }
+        }
 
-            if (items[items.Count - 1] is AnimatableTransform animatableTransform)
+        internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, string name, List<IContent> contents, AnimatableTransform transform)
+        {
+            Name = name;
+            _contents = contents;
+
+            if (transform != null)
             {
-                _transformAnimation = animatableTransform.CreateAnimation();
+                _transformAnimation = transform.CreateAnimation();
 
                 _transformAnimation.AddAnimationsToLayer(layer);
                 _transformAnimation.ValueChanged += (sender, args) =>
@@ -37,16 +67,11 @@ namespace LottieUWP
             }
 
             var greedyContents = new List<IGreedyContent>();
-            for (var i = 0; i < items.Count; i++)
+            for (int i = contents.Count - 1; i >= 0; i--)
             {
-                var content = items[i].ToContent(lottieDrawable, layer);
-                if (content != null)
-                {
-                    _contents.Add(content);
-                    if (content is IGreedyContent greedyContent)
-                    {
-                        greedyContents.Add(greedyContent);
-                    }
+                var content = contents[i];
+                if (content is IGreedyContent greedyContent) {
+                    greedyContents.Add(greedyContent);
                 }
             }
 

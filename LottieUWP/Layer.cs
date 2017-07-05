@@ -30,12 +30,12 @@ namespace LottieUWP
             Unknown
         }
 
-        private readonly IList<IContentModel> _shapes;
+        private readonly List<IContentModel> _shapes;
         private readonly LottieComposition _composition;
         private readonly LayerType _layerType;
         private readonly MatteType _matteType;
 
-        private Layer(IList<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
+        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
         {
             _shapes = shapes;
             _composition = composition;
@@ -98,7 +98,7 @@ namespace LottieUWP
 
         internal virtual long ParentId { get; }
 
-        internal virtual IList<IContentModel> Shapes => _shapes;
+        internal virtual List<IContentModel> Shapes => _shapes;
 
         internal virtual AnimatableTransform Transform { get; }
 

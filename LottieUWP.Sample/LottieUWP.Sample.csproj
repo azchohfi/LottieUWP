@@ -201,6 +201,7 @@
     <Content Include="Assets\lottifiles.com - QR Scan.json" />
     <Content Include="Assets\Hello World.json" />
     <Content Include="Assets\Walkthrough\FullScreen.json" />
+    <Content Include="Assets\Tests\Repeater.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

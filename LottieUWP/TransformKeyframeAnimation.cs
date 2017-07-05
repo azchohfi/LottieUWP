@@ -13,6 +13,10 @@ namespace LottieUWP
         private readonly IBaseKeyframeAnimation<float?> _rotation;
         private readonly IBaseKeyframeAnimation<int?> _opacity;
 
+        // Used for repeaters 
+        private readonly IBaseKeyframeAnimation<float?> _startOpacity;
+        private readonly IBaseKeyframeAnimation<float?> _endOpacity;
+
         internal TransformKeyframeAnimation(AnimatableTransform animatableTransform)
         {
             _anchorPoint = animatableTransform.AnchorPoint.CreateAnimation();
@@ -20,6 +24,8 @@ namespace LottieUWP
             _scale = animatableTransform.Scale.CreateAnimation();
             _rotation = animatableTransform.Rotation.CreateAnimation();
             _opacity = animatableTransform.Opacity.CreateAnimation();
+            _startOpacity = animatableTransform.StartOpacity?.CreateAnimation();
+            _endOpacity = animatableTransform.EndOpacity?.CreateAnimation();
         }
 
         internal virtual void AddAnimationsToLayer(BaseLayer layer)
@@ -29,6 +35,14 @@ namespace LottieUWP
             layer.AddAnimation(_scale);
             layer.AddAnimation(_rotation);
             layer.AddAnimation(_opacity);
+            if (_startOpacity != null)
+            {
+                layer.AddAnimation(_startOpacity);
+            }
+            if (_endOpacity != null)
+            {
+                layer.AddAnimation(_endOpacity);
+            }
         }
 
         internal event EventHandler ValueChanged
@@ -40,6 +54,14 @@ namespace LottieUWP
                 _scale.ValueChanged += value;
                 _rotation.ValueChanged += value;
                 _opacity.ValueChanged += value;
+                if (_startOpacity != null)
+                {
+                    _startOpacity.ValueChanged += value;
+                }
+                if (_endOpacity != null)
+                {
+                    _endOpacity.ValueChanged += value;
+                }
             }
             remove
             {
@@ -48,10 +70,22 @@ namespace LottieUWP
                 _scale.ValueChanged -= value;
                 _rotation.ValueChanged -= value;
                 _opacity.ValueChanged -= value;
+                if (_startOpacity != null)
+                {
+                    _startOpacity.ValueChanged -= value;
+                }
+                if (_endOpacity != null)
+                {
+                    _endOpacity.ValueChanged -= value;
+                }
             }
         }
 
         internal virtual IBaseKeyframeAnimation<int?> Opacity => _opacity;
+
+        internal virtual IBaseKeyframeAnimation<float?> StartOpacity => _startOpacity;
+
+        internal virtual IBaseKeyframeAnimation<float?> EndOpacity => _endOpacity;
 
         internal virtual DenseMatrix Matrix
         {
@@ -82,6 +116,26 @@ namespace LottieUWP
                 }
                 return _matrix;
             }
+        }
+
+        /** 
+        * TODO: see if we can use this for the main get_Matrix method. 
+        */
+        internal DenseMatrix GetMatrixForRepeater(float amount)
+        {
+            var position = _position.Value;
+            var anchorPoint = _anchorPoint.Value;
+            var scale = _scale.Value;
+            var rotation = _rotation.Value.Value;
+
+            _matrix.Reset();
+            _matrix = MatrixExt.PreTranslate(_matrix, position.X * amount, position.Y * amount);
+            _matrix = MatrixExt.PreScale(_matrix,
+                (float)Math.Pow(scale.ScaleX, amount),
+                (float)Math.Pow(scale.ScaleY, amount));
+            _matrix = MatrixExt.PreRotate(_matrix, rotation * amount, anchorPoint.X, anchorPoint.Y);
+
+            return _matrix;
         }
     }
 }

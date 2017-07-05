@@ -16,7 +16,12 @@ namespace LottieUWP
 
         public static DenseMatrix PreTranslate(DenseMatrix matrix, float dx, float dy)
         {
-            var translateMatrix = new DenseMatrix(3, 3)
+            return matrix * GetTranslate(dx, dy);
+        }
+
+        private static DenseMatrix GetTranslate(float dx, float dy)
+        {
+            return new DenseMatrix(3, 3)
             {
                 [0, 0] = 1,
                 [0, 2] = dx,
@@ -24,23 +29,38 @@ namespace LottieUWP
                 [1, 2] = dy,
                 [2, 2] = 1
             };
-
-            return matrix * translateMatrix;
         }
 
         public static DenseMatrix PreRotate(DenseMatrix matrix, float rotation)
         {
             var angle = MathExt.ToRadians(rotation);
-            var rotationMatrix = new DenseMatrix(3, 3)
+            var sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+
+            return matrix * GetRotate(sin, cos);
+        }
+
+        public static DenseMatrix PreRotate(DenseMatrix matrix, float rotation, float px, float py)
+        {
+            var angle = MathExt.ToRadians(rotation);
+            var sin = Math.Sin(angle);
+            var cos = Math.Cos(angle);
+
+            var tmp = GetTranslate(-px, -py) * GetRotate(sin, cos) * GetTranslate(px, py);
+
+            return matrix * tmp;
+        }
+
+        private static DenseMatrix GetRotate(double sin, double cos)
+        {
+            return new DenseMatrix(3, 3)
             {
-                [0, 0] = (float)Math.Cos(angle),
-                [0, 1] = (float)-Math.Sin(angle),
-                [1, 0] = (float)Math.Sin(angle),
-                [1, 1] = (float)Math.Cos(angle),
+                [0, 0] = (float)cos,
+                [0, 1] = (float)-sin,
+                [1, 0] = (float)sin,
+                [1, 1] = (float)cos,
                 [2, 2] = 1
             };
-
-            return matrix * rotationMatrix;
         }
 
         public static DenseMatrix PreScale(DenseMatrix matrix, float scaleX, float scaleY)

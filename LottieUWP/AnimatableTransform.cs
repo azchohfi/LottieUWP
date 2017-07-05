@@ -6,13 +6,15 @@ namespace LottieUWP
 {
     internal class AnimatableTransform : IModifierContent, IContentModel
     {
-        private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<PointF> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity)
+        private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<PointF> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity, AnimatableFloatValue startOpacity, AnimatableFloatValue endOpacity)
         {
             AnchorPoint = anchorPoint;
             Position = position;
             Scale = scale;
             Rotation = rotation;
             Opacity = opacity;
+            StartOpacity = startOpacity;
+            EndOpacity = endOpacity;
         }
 
         internal static class Factory
@@ -24,7 +26,9 @@ namespace LottieUWP
                 var scale = AnimatableScaleValue.Factory.NewInstance();
                 var rotation = AnimatableFloatValue.Factory.NewInstance();
                 var opacity = AnimatableIntegerValue.Factory.NewInstance();
-                return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
+                var startOpacity = AnimatableFloatValue.Factory.NewInstance();
+                var endOpacity = AnimatableFloatValue.Factory.NewInstance();
+                return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
             }
 
             internal static AnimatableTransform NewInstance(JsonObject json, LottieComposition composition)
@@ -34,6 +38,8 @@ namespace LottieUWP
                 AnimatableScaleValue scale;
                 AnimatableFloatValue rotation = null;
                 AnimatableIntegerValue opacity;
+                AnimatableFloatValue startOpacity = null;
+                AnimatableFloatValue endOpacity = null;
                 var anchorJson = json.GetNamedObject("a", null);
                 if (anchorJson != null)
                 {
@@ -64,7 +70,7 @@ namespace LottieUWP
                 }
                 else
                 {
-                    // Somehow some community animations don't have scale in the transform.
+                    // Repeaters have start/end opacity instead of opacity 
                     scale = new AnimatableScaleValue(new List<IKeyframe<ScaleXy>>(), new ScaleXy());
                 }
 
@@ -92,7 +98,20 @@ namespace LottieUWP
                     // Somehow some community animations don't have opacity in the transform.
                     opacity = new AnimatableIntegerValue(new List<IKeyframe<int?>>(), 100);
                 }
-                return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
+
+                var startOpacityJson = json.GetNamedObject("so", null);
+                if (startOpacityJson != null)
+                {
+                    startOpacity = AnimatableFloatValue.Factory.NewInstance(startOpacityJson, composition, false);
+                }
+                
+                var endOpacityJson = json.GetNamedObject("eo", null);
+                if (endOpacityJson != null)
+                {
+                    endOpacity = AnimatableFloatValue.Factory.NewInstance(endOpacityJson, composition, false);
+                }
+
+                return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
             }
 
             private static void ThrowMissingTransform(string missingProperty)
@@ -110,6 +129,10 @@ namespace LottieUWP
         internal virtual AnimatableFloatValue Rotation { get; }
 
         internal virtual AnimatableIntegerValue Opacity { get; }
+
+        // Used for repeaters 
+        internal virtual AnimatableFloatValue StartOpacity { get; } 
+        internal virtual AnimatableFloatValue EndOpacity { get; }
 
         public virtual TransformKeyframeAnimation CreateAnimation()
         {

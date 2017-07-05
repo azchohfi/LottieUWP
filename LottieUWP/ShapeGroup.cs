@@ -36,6 +36,8 @@ namespace LottieUWP
                     return PolystarShape.Factory.NewInstance(json, composition);
                 case "mm":
                     return MergePaths.Factory.NewInstance(json);
+                case "rp":
+                    return Repeater.Factory.NewInstance(json, composition);
                 default:
                     Debug.WriteLine("Unknown shape type " + type, LottieLog.Tag);
                     break;
@@ -44,9 +46,9 @@ namespace LottieUWP
         }
 
         private readonly string _name;
-        private readonly IList<IContentModel> _items;
+        private readonly List<IContentModel> _items;
 
-        internal ShapeGroup(string name, IList<IContentModel> items)
+        internal ShapeGroup(string name, List<IContentModel> items)
         {
             _name = name;
             _items = items;
@@ -74,7 +76,7 @@ namespace LottieUWP
 
         public virtual string Name => _name;
 
-        internal virtual IList<IContentModel> Items => _items;
+        internal virtual List<IContentModel> Items => _items;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {
