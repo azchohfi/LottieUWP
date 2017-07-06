@@ -6,7 +6,18 @@ namespace LottieUWP
 {
     public class PerformanceTracker
     {
+        public class FrameRenderedEventArgs : EventArgs
+        {
+            public FrameRenderedEventArgs(float renderTimeMs)
+            {
+                RenderTimeMs = renderTimeMs;
+            }
+
+            public float RenderTimeMs { get; }
+        }
+
         private bool _enabled;
+        public event EventHandler<FrameRenderedEventArgs> FrameRendered;
         private readonly IDictionary<string, MeanCalculator> _layerRenderTimes = new Dictionary<string, MeanCalculator>();
         private readonly IComparer<Tuple<string, float?>> _floatComparator = new ComparatorAnonymousInnerClass();
 
@@ -46,6 +57,10 @@ namespace LottieUWP
                 _layerRenderTimes[layerName] = meanCalculator;
             }
             meanCalculator.Add(millis);
+            if (layerName.Equals("root"))
+            {
+                OnFrameRendered(new FrameRenderedEventArgs(millis));
+            }
         }
 
         public virtual void ClearRenderTimes()
@@ -84,6 +99,11 @@ namespace LottieUWP
                 sortedRenderTimes.Sort(_floatComparator);
                 return sortedRenderTimes;
             }
+        }
+
+        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
+        {
+            FrameRendered?.Invoke(this, e);
         }
     }
 }
