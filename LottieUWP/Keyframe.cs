@@ -54,6 +54,9 @@ namespace LottieUWP
         public float? StartFrame { get; }
         public float? EndFrame { get; set; }
 
+        private float _startProgress = float.MinValue; 
+        private float _endProgress = float.MinValue;
+
         public Keyframe(LottieComposition composition, T startValue, T endValue, IInterpolator interpolator, float? startFrame, float? endFrame)
         {
             _composition = composition;
@@ -68,12 +71,11 @@ namespace LottieUWP
         {
             get
             {
-                var startProgress = StartFrame.Value / _composition.DurationFrames;
-                if (startProgress < 0)
-                    return 0;
-                if (startProgress > 1)
-                    return 1;
-                return startProgress;
+                if (_startProgress == float.MinValue)
+                {
+                    _startProgress = (StartFrame.Value - _composition.StartFrame) / _composition.DurationFrames;
+                }
+                return _startProgress;
             }
         }
 
@@ -81,12 +83,21 @@ namespace LottieUWP
         {
             get
             {
-                var endProgress = EndFrame == null ? 1f : EndFrame.Value / _composition.DurationFrames;
-                if (endProgress < 0)
-                    return 0;
-                if (endProgress > 1)
-                    return 1;
-                return endProgress;
+                if (_endProgress == float.MinValue)
+                {
+                    if (EndFrame == null)
+                    {
+                        _endProgress = 1f;
+                    }
+                    else
+                    {
+                        var startProgress = StartProgress;
+                        var durationFrames = EndFrame.Value - StartFrame.Value;
+                        var durationProgress = durationFrames / _composition.DurationFrames;
+                        _endProgress = startProgress + durationProgress;
+                    }
+                }
+                return _endProgress;
             }
         }
 

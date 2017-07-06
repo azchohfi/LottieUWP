@@ -81,6 +81,8 @@ namespace LottieUWP
             }
         }
 
+        internal virtual long StartFrame => _startFrame;
+
         internal virtual long EndFrame => _endFrame;
 
         internal virtual IList<Layer> Layers => _layers;
