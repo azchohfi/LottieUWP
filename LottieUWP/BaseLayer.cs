@@ -34,29 +34,6 @@ namespace LottieUWP
             }
         }
 
-        private class TraceSections
-        {
-            /** this is cached since it is in a hot code path */
-            internal readonly string Draw;
-            internal readonly string DrawLayer;
-            internal readonly string DrawMask;
-            internal readonly string DrawMatte;
-            internal readonly string SaveLayer;
-            internal readonly string RestoreLayer;
-            internal readonly string ClearLayer;
-
-            public TraceSections(String layerName)
-            {
-                Draw = $"{layerName}.Draw";
-                DrawLayer = $"{layerName}.DrawLayer";
-                DrawMask = $"{layerName}.DrawMask";
-                DrawMatte = $"{layerName}.DrawMatte";
-                SaveLayer = $"{layerName}.SaveLayer";
-                RestoreLayer = $"{layerName}.RestoreLayer";
-                ClearLayer = $"{layerName}.ClearLayer";
-            }
-        }
-
         private readonly Path _path = new Path();
         internal DenseMatrix Matrix = DenseMatrix.CreateIdentity(3);
         private readonly Paint _contentPaint = new Paint(Paint.AntiAliasFlag);
@@ -67,7 +44,7 @@ namespace LottieUWP
         private Rect _maskBoundsRect;
         private Rect _matteBoundsRect;
         private Rect _tempMaskBoundsRect;
-        private readonly TraceSections _traceSections;
+        private readonly string _drawTraceName;
         internal DenseMatrix BoundsMatrix = DenseMatrix.CreateIdentity(3);
         internal readonly LottieDrawable LottieDrawable;
         internal Layer LayerModel;
@@ -84,7 +61,7 @@ namespace LottieUWP
         {
             LottieDrawable = lottieDrawable;
             LayerModel = layerModel;
-            _traceSections = new TraceSections(layerModel.Name);
+            _drawTraceName = layerModel.Name + ".Draw";
             _clearPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.Clear);
             _maskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstIn);
             if (layerModel.GetMatteType() == Layer.MatteType.Invert)
@@ -177,10 +154,10 @@ namespace LottieUWP
 
         public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
-            LottieLog.BeginSection(_traceSections.Draw);
+            LottieLog.BeginSection(_drawTraceName);
             if (!_visible)
             {
-                LottieLog.EndSection(_traceSections.Draw);
+                LottieLog.EndSection(_drawTraceName);
                 return;
             }
             BuildParentLayerListIfNeeded();
@@ -194,10 +171,10 @@ namespace LottieUWP
             if (!HasMatteOnThisLayer() && !HasMasksOnThisLayer())
             {
                 Matrix = MatrixExt.PreConcat(Matrix, Transform.Matrix);
-                LottieLog.BeginSection(_traceSections.DrawLayer);
+                LottieLog.BeginSection("Layer.DrawLayer");
                 DrawLayer(canvas, Matrix, alpha);
-                LottieLog.EndSection(_traceSections.DrawLayer);
-                RecordRenderTime(LottieLog.EndSection(_traceSections.Draw));
+                LottieLog.EndSection("Layer.DrawLayer");
+                RecordRenderTime(LottieLog.EndSection(_drawTraceName));
                 return;
             }
 
@@ -210,15 +187,15 @@ namespace LottieUWP
 
             RectExt.Set(ref Rect, 0, 0, canvas.Width, canvas.Height);
 
-            LottieLog.BeginSection(_traceSections.SaveLayer);
+            LottieLog.BeginSection("Layer.SaveLayer");
             canvas.SaveLayer(Rect, _contentPaint, BitmapCanvas.AllSaveFlag);
-            LottieLog.EndSection(_traceSections.SaveLayer);
+            LottieLog.EndSection("Layer.SaveLayer");
 
             // Clear the off screen buffer. This is necessary for some phones.
             ClearCanvas(canvas);
-            LottieLog.BeginSection(_traceSections.DrawLayer);
+            LottieLog.BeginSection("Layer.DrawLayer");
             DrawLayer(canvas, Matrix, alpha);
-            LottieLog.EndSection(_traceSections.DrawLayer);
+            LottieLog.EndSection("Layer.DrawLayer");
 
             if (HasMasksOnThisLayer())
             {
@@ -227,23 +204,23 @@ namespace LottieUWP
 
             if (HasMatteOnThisLayer())
             {
-                LottieLog.BeginSection(_traceSections.DrawMatte);
-                LottieLog.BeginSection(_traceSections.SaveLayer);
+                LottieLog.BeginSection("Layer.DrawMatte");
+                LottieLog.BeginSection("Layer.SaveLayer");
                 canvas.SaveLayer(Rect, _mattePaint, SaveFlags);
-                LottieLog.EndSection(_traceSections.SaveLayer);
+                LottieLog.EndSection("Layer.SaveLayer");
                 ClearCanvas(canvas);
 
                 _matteLayer.Draw(canvas, parentMatrix, alpha);
-                LottieLog.BeginSection(_traceSections.RestoreLayer);
+                LottieLog.BeginSection("Layer.RestoreLayer");
                 canvas.Restore();
-                LottieLog.EndSection(_traceSections.RestoreLayer);
-                LottieLog.EndSection(_traceSections.DrawMatte);
+                LottieLog.EndSection("Layer.RestoreLayer");
+                LottieLog.EndSection("Layer.DrawMatte");
             }
 
-            LottieLog.BeginSection(_traceSections.RestoreLayer);
+            LottieLog.BeginSection("Layer.RestoreLayer");
             canvas.Restore();
-            LottieLog.EndSection(_traceSections.RestoreLayer);
-            RecordRenderTime(LottieLog.EndSection(_traceSections.Draw));
+            LottieLog.EndSection("Layer.RestoreLayer");
+            RecordRenderTime(LottieLog.EndSection(_drawTraceName));
         }
 
         private void RecordRenderTime(float ms)
@@ -253,10 +230,10 @@ namespace LottieUWP
 
         private void ClearCanvas(BitmapCanvas canvas)
         {
-            LottieLog.BeginSection(_traceSections.ClearLayer);
+            LottieLog.BeginSection("Layer.ClearLayer");
             // If we don't pad the clear draw, some phones leave a 1px border of the graphics buffer.
             canvas.DrawRect(Rect.Left - 1, Rect.Top - 1, Rect.Right + 1, Rect.Bottom + 1, _clearPaint);
-            LottieLog.EndSection(_traceSections.ClearLayer);
+            LottieLog.EndSection("Layer.ClearLayer");
         }
 
         private void IntersectBoundsWithMask(Rect rect, DenseMatrix matrix)
@@ -323,10 +300,10 @@ namespace LottieUWP
 
         private void ApplyMasks(BitmapCanvas canvas, DenseMatrix matrix)
         {
-            LottieLog.BeginSection(_traceSections.DrawMask);
-            LottieLog.BeginSection(_traceSections.SaveLayer);
+            LottieLog.BeginSection("Layer.DrawMask");
+            LottieLog.BeginSection("Layer.SaveLayer");
             canvas.SaveLayer(Rect, _maskPaint, SaveFlags);
-            LottieLog.EndSection(_traceSections.SaveLayer);
+            LottieLog.EndSection("Layer.SaveLayer");
             ClearCanvas(canvas);
 
             var size = _mask.Masks.Count;
@@ -352,10 +329,10 @@ namespace LottieUWP
                 _contentPaint.Alpha = (byte)(opacityAnimation.Value.Value * 2.55f);
                 canvas.DrawPath(_path, _contentPaint);
             }
-            LottieLog.BeginSection(_traceSections.RestoreLayer);
+            LottieLog.BeginSection("Layer.RestoreLayer");
             canvas.Restore();
-            LottieLog.EndSection(_traceSections.RestoreLayer);
-            LottieLog.EndSection(_traceSections.DrawMask);
+            LottieLog.EndSection("Layer.RestoreLayer");
+            LottieLog.EndSection("Layer.DrawMask");
         }
 
         internal virtual bool HasMasksOnThisLayer()

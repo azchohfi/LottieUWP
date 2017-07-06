@@ -13,13 +13,11 @@ namespace LottieUWP
         private readonly IBaseKeyframeAnimation<Color> _colorAnimation;
         private readonly KeyframeAnimation<int?> _opacityAnimation;
         private readonly LottieDrawable _lottieDrawable;
-        private readonly string _drawTraceSectionName;
 
         internal FillContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill)
         {
             Name = fill.Name;
             _lottieDrawable = lottieDrawable;
-            _drawTraceSectionName = $"{layer.Name}.Draw";
             if (fill.Color == null || fill.Opacity == null)
             {
                 _colorAnimation = null;
@@ -64,7 +62,7 @@ namespace LottieUWP
 
         public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
         {
-            LottieLog.BeginSection(_drawTraceSectionName);
+            LottieLog.BeginSection("FillContent.Draw");
             _paint.Color = _colorAnimation.Value;
             var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
@@ -76,7 +74,7 @@ namespace LottieUWP
             }
 
             canvas.DrawPath(_path, _paint);
-            LottieLog.EndSection(_drawTraceSectionName);
+            LottieLog.EndSection("FillContent.Draw");
         }
 
         public virtual void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
