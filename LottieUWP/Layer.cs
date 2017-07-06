@@ -256,8 +256,11 @@ namespace LottieUWP
                     preCompHeight = (int)(json.GetNamedNumber("h") * composition.DpScale);
                 }
 
-                var inFrame = (float)json.GetNamedNumber("ip");
-                var outFrame = (float)json.GetNamedNumber("op");
+                // Bodymovin pre-scales the in frame and out frame by the time stretch. However, that will
+                // cause the stretch to be double counted since the in out animation gets treated the same
+                // as all other animations and will have stretch applied to it again.
+                var inFrame = (float)json.GetNamedNumber("ip") / timeStretch;
+                var outFrame = (float)json.GetNamedNumber("op") / timeStretch;
 
                 // Before the in frame
                 if (inFrame > 0)
@@ -271,11 +274,8 @@ namespace LottieUWP
                 var visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
                 inOutKeyframes.Add(visibleKeyframe);
 
-                if (outFrame <= composition.DurationFrames)
-                {
-                    var outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, composition.EndFrame);
-                    inOutKeyframes.Add(outKeyframe);
-                }
+                var outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, float.MaxValue);
+                inOutKeyframes.Add(outKeyframe);
 
                 AnimatableFloatValue timeRemapping = null;
                 if (json.ContainsKey("tm"))

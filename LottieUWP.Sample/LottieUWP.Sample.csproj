@@ -209,6 +209,7 @@
     <Content Include="Assets\Fonts\PTSerif.ttf" />
     <Content Include="Assets\Fonts\Roboto.ttf" />
     <Content Include="Assets\Name.json" />
+    <Content Include="Assets\Tests\TimeStretch.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

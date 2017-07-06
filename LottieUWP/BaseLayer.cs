@@ -360,6 +360,10 @@ namespace LottieUWP
         {
             set
             {
+                if (LayerModel.TimeStretch != 0)
+                {
+                    value /= LayerModel.TimeStretch;
+                }
                 if (_matteLayer != null)
                 {
                     _matteLayer.Progress = value;

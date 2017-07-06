@@ -127,6 +127,10 @@ namespace LottieUWP
                     var remappedTime = (long)(_timeRemapping.Value.Value * 1000);
                     value = remappedTime / (float)duration;
                 }
+                if (LayerModel.TimeStretch != 0)
+                {
+                    value /= LayerModel.TimeStretch;
+                }
 
                 value -= LayerModel.StartProgress;
                 for (var i = _layers.Count - 1; i >= 0; i--)
