@@ -161,12 +161,14 @@ namespace LottieUWP
                 return;
             }
             BuildParentLayerListIfNeeded();
+            LottieLog.BeginSection("Layer.ParentMatrix");
             Matrix.Reset();
             Matrix.Set(parentMatrix);
             for (var i = _parentLayers.Count - 1; i >= 0; i--)
             {
                 Matrix = MatrixExt.PreConcat(Matrix, _parentLayers[i].Transform.Matrix);
             }
+            LottieLog.EndSection("Layer.ParentMatrix");
             var alpha = (byte)(parentAlpha / 255f * (float)Transform.Opacity.Value / 100f * 255);
             if (!HasMatteOnThisLayer() && !HasMasksOnThisLayer())
             {
@@ -178,6 +180,7 @@ namespace LottieUWP
                 return;
             }
 
+            LottieLog.BeginSection("Layer.ComputeBounds");
             RectExt.Set(ref Rect, 0, 0, 0, 0);
             GetBounds(out Rect, Matrix);
             IntersectBoundsWithMatte(Rect, Matrix);
@@ -186,6 +189,7 @@ namespace LottieUWP
             IntersectBoundsWithMask(Rect, Matrix);
 
             RectExt.Set(ref Rect, 0, 0, canvas.Width, canvas.Height);
+            LottieLog.EndSection("Layer.ComputeBounds");
 
             LottieLog.BeginSection("Layer.SaveLayer");
             canvas.SaveLayer(Rect, _contentPaint, BitmapCanvas.AllSaveFlag);

@@ -148,12 +148,14 @@ namespace LottieUWP
                 }
                 else
                 {
-                    LottieLog.BeginSection("StrokeContent.DrawPath");
+                    LottieLog.BeginSection("StrokeContent.BuildPath");
                     _path.Reset();
                     for (var j = pathGroup.Paths.Count - 1; j >= 0; j--)
                     {
                         _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
                     }
+                    LottieLog.EndSection("StrokeContent.BuildPath");
+                    LottieLog.BeginSection("StrokeContent.DrawPath");
                     canvas.DrawPath(_path, Paint);
                     LottieLog.EndSection("StrokeContent.DrawPath");
                 }
@@ -163,10 +165,10 @@ namespace LottieUWP
 
         private void ApplyTrimPath(BitmapCanvas canvas, PathGroup pathGroup, DenseMatrix parentMatrix)
         {
-            LottieLog.BeginSection("StrokeContent.DrawTrimPath");
+            LottieLog.BeginSection("StrokeContent.ApplyTrimPath");
             if (pathGroup.TrimPath == null)
             {
-                LottieLog.EndSection("StrokeContent.DrawTrimPath");
+                LottieLog.EndSection("StrokeContent.ApplyTrimPath");
                 return;
             }
             _path.Reset();
@@ -240,11 +242,12 @@ namespace LottieUWP
                 }
                 currentLength += length;
             }
-            LottieLog.EndSection("StrokeContent.DrawTrimPath");
+            LottieLog.EndSection("StrokeContent.ApplyTrimPath");
         }
 
         public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
         {
+            LottieLog.BeginSection("StrokeContent.GetBounds");
             _path.Reset();
             for (var i = 0; i < _pathGroups.Count; i++)
             {
@@ -261,14 +264,17 @@ namespace LottieUWP
             RectExt.Set(ref outBounds, _rect);
             // Add padding to account for rounding errors.
             RectExt.Set(ref outBounds, outBounds.Left - 1, outBounds.Top - 1, outBounds.Right + 1, outBounds.Bottom + 1);
+            LottieLog.EndSection("StrokeContent.GetBounds");
         }
 
         public abstract void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter);
 
         private void ApplyDashPatternIfNeeded(DenseMatrix parentMatrix)
         {
+            LottieLog.BeginSection("StrokeContent.ApplyDashPattern");
             if (_dashPatternAnimations.Count == 0)
             {
+                LottieLog.EndSection("StrokeContent.ApplyDashPattern");
                 return;
             }
 
@@ -298,6 +304,7 @@ namespace LottieUWP
             }
             var offset = _dashPatternOffsetAnimation?.Value ?? 0f;
             Paint.PathEffect = new DashPathEffect(_dashPatternValues, offset);
+            LottieLog.EndSection("StrokeContent.ApplyDashPattern");
         }
 
         /// <summary>
