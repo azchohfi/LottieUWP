@@ -330,8 +330,10 @@ namespace LottieUWP
                         break;
                 }
                 var opacityAnimation = _mask.OpacityAnimations[i];
+                var alpha = _contentPaint.Alpha;
                 _contentPaint.Alpha = (byte)(opacityAnimation.Value.Value * 2.55f);
                 canvas.DrawPath(_path, _contentPaint);
+                _contentPaint.Alpha = alpha;
             }
             LottieLog.BeginSection("Layer.RestoreLayer");
             canvas.Restore();
