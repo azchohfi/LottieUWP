@@ -1,26 +1,26 @@
-using Windows.UI;
+﻿using Windows.UI;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace LottieUWP
 {
     public abstract class PorterDuffColorFilter : ColorFilter
     {
-        private Color _color;
-        private readonly PorterDuff.Mode _mode;
+        public Color Color { get; }
+        public PorterDuff.Mode Mode { get; }
 
         protected PorterDuffColorFilter(Color color, PorterDuff.Mode mode)
         {
-            _color = color;
-            _mode = mode;
+            Color = color;
+            Mode = mode;
         }
 
-        public override Color Apply(Color color)
+        public override ICanvasBrush Apply(BitmapCanvas dst, ICanvasBrush brush)
         {
-            switch (_mode)
-            {
-                case PorterDuff.Mode.SrcAtop:
-                    return color; // Todo
-            }
-            return color;
+            //var originalColor = Colors.White;
+            //if (brush is CompositionColorBrush compositionColorBrush)
+            //    originalColor = compositionColorBrush.Color;
+            //TODO
+            return brush;
         }
     }
 }

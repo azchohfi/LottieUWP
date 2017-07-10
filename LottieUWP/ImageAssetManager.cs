@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP
 {
@@ -12,7 +12,7 @@ namespace LottieUWP
         private readonly string _imagesFolder;
         private IImageAssetDelegate _delegate;
         private readonly IDictionary<string, LottieImageAsset> _imageAssets;
-        private readonly IDictionary<string, BitmapImage> _bitmaps = new Dictionary<string, BitmapImage>();
+        private readonly IDictionary<string, CanvasBitmap> _bitmaps = new Dictionary<string, CanvasBitmap>();
 
         internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, IDictionary<string, LottieImageAsset> imageAssets)
         {
@@ -38,15 +38,15 @@ namespace LottieUWP
             set => _delegate = value;
         }
 
-        internal BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
+        internal CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
             _bitmaps.Add(id, bitmap);
             return bitmap;
         }
 
-        internal virtual BitmapImage BitmapForId(string id)
+        internal virtual CanvasBitmap BitmapForId(string id)
         {
-            BitmapImage bitmap;
+            CanvasBitmap bitmap;
             if (!_bitmaps.TryGetValue(id, out bitmap))
             {
                 var imageAsset = _imageAssets[id];
@@ -78,11 +78,11 @@ namespace LottieUWP
                     Debug.WriteLine($"Unable to open asset. {e}", LottieLog.Tag);
                     return null;
                 }
-                //BitmapFactory.Options opts = new BitmapFactory.Options(); // TODO: handle  density
-                //opts.inScaled = true;
-                //opts.inDensity = 160;
-                bitmap = new BitmapImage();
-                bitmap.SetSourceAsync(@is.AsRandomAccessStream());
+                var task = CanvasBitmap.LoadAsync(CanvasDevice.GetSharedDevice(), @is.AsRandomAccessStream(), 160).AsTask();
+                task.Wait();
+                bitmap = task.Result;
+
+                @is.Dispose();
 
                 _bitmaps[id] = bitmap;
             }
@@ -91,7 +91,7 @@ namespace LottieUWP
 
         internal virtual void RecycleBitmaps()
         {
-            var keyValuePairs = new HashSet<KeyValuePair<string, BitmapImage>>();
+            var keyValuePairs = new HashSet<KeyValuePair<string, CanvasBitmap>>();
             foreach (var keyValuePair in _bitmaps)
             {
                 keyValuePairs.Add(keyValuePair);
@@ -100,7 +100,7 @@ namespace LottieUWP
             for (var i = keyValuePairs.Count - 1; i >= 0; i--)
             {
                 var entry = keyValuePairs.ElementAt(i);
-                //entry.Value.Recycle(); // TODO: Urgent, dispose!
+                entry.Value.Dispose();
                 keyValuePairs.Remove(entry);
             }
         }

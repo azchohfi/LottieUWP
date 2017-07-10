@@ -53,21 +53,21 @@ namespace LottieUWP
             {
                 _path.Reset();
 
-                switch (_mergePaths.Mode.InnerEnumValue)
+                switch (_mergePaths.Mode)
                 {
-                    case MergePaths.MergePathsMode.InnerEnum.Merge:
+                    case MergePaths.MergePathsMode.Merge:
                         AddPaths();
                         break;
-                    case MergePaths.MergePathsMode.InnerEnum.Add:
+                    case MergePaths.MergePathsMode.Add:
                         OpFirstPathWithRest(Op.Union);
                         break;
-                    case MergePaths.MergePathsMode.InnerEnum.Subtract:
+                    case MergePaths.MergePathsMode.Subtract:
                         OpFirstPathWithRest(Op.ReverseDifference);
                         break;
-                    case MergePaths.MergePathsMode.InnerEnum.Intersect:
+                    case MergePaths.MergePathsMode.Intersect:
                         OpFirstPathWithRest(Op.Intersect);
                         break;
-                    case MergePaths.MergePathsMode.InnerEnum.ExcludeIntersections:
+                    case MergePaths.MergePathsMode.ExcludeIntersections:
                         OpFirstPathWithRest(Op.Xor);
                         break;
                 }

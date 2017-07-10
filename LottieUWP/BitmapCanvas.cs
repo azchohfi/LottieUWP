@@ -1,11 +1,20 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Numerics;
 using Windows.Foundation;
+using Windows.Graphics.DirectX;
 using Windows.UI;
+using Windows.UI.Composition;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
 using MathNet.Numerics.LinearAlgebra.Single;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.Text;
+using Microsoft.Graphics.Canvas.UI.Composition;
 
 namespace LottieUWP
 {
@@ -13,151 +22,211 @@ namespace LottieUWP
     {
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Stack<DenseMatrix> _matrixSaves = new Stack<DenseMatrix>();
+        private readonly Stack<int> _flagSaves = new Stack<int>();
+
+        class ClipSave
+        {
+            public ClipSave(Rect rect, CanvasActiveLayer layer)
+            {
+                Rect = rect;
+                Layer = layer;
+            }
+
+            public Rect Rect { get; }
+            public CanvasActiveLayer Layer { get; }
+        }
+
+        private readonly Stack<ClipSave> _clipSaves = new Stack<ClipSave>();
+        private Rect _currentClip;
+
+        private ContainerVisual GetVisual()
+        {
+            var hostVisual = ElementCompositionPreview.GetElementVisual(this);
+            var root = hostVisual.Compositor.CreateContainerVisual();
+            ElementCompositionPreview.SetElementChildVisual(this, root);
+            return root;
+        }
 
         public BitmapCanvas(int width, int height)
         {
             Width = width;
             Height = height;
+            _currentClip = new Rect(0, 0, Width, Height);
             Clip = new RectangleGeometry
             {
-                Rect = new Rect(0, 0, Width, Height)
+                Rect = _currentClip
             };
+            
+            _device = CanvasDevice.GetSharedDevice();
+
+            var root = GetVisual();
+            _compositor = root.Compositor;
+
+            var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(_compositor, _device);
+
+            _drawingSurfaceVisual = _compositor.CreateSpriteVisual();
+            _drawingSurface = compositionGraphicsDevice.CreateDrawingSurface(new Size(Width, Height), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            _drawingSurfaceVisual.Brush = _compositor.CreateSurfaceBrush(_drawingSurface);
+
+            root.Children.InsertAtTop(Visual);
+
+            Visual.Size = Size.ToVector2();
+
+            Clear(Colors.Transparent);
         }
 
-        public static int ClipSaveFlag;
-        public static int ClipToLayerSaveFlag;
-        public static int MatrixSaveFlag;
-        public static int AllSaveFlag;
+        public static int MatrixSaveFlag = 0b00001;
+        public static int ClipSaveFlag = 0b00010;
+        //public static int HasAlphaLayerSaveFlag = 0b00100;
+        //public static int FullColorLayerSaveFlag = 0b01000;
+        public static int ClipToLayerSaveFlag = 0b10000;
+        public static int AllSaveFlag = 0b11111;
+
+        private readonly CanvasDevice _device;
+
+        readonly SpriteVisual _drawingSurfaceVisual;
+        private readonly CompositionDrawingSurface _drawingSurface;
+        private readonly Compositor _compositor;
+        private CanvasDrawingSession _drawingSession;
+
+        private Visual Visual => _drawingSurfaceVisual;
+
+        private Size Size => _drawingSurface.Size;
 
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
-            var rectangle = new Rectangle
+            UpdateDrawingSessionWithFlags(paint.Flags);
+            _drawingSession.Transform = GetCurrentTransform();
+            var brush = new CanvasSolidColorBrush(_device, paint.Color);
+
+            if (paint.Style == Paint.PaintStyle.Stroke)
             {
-                Width = x2 - x1,
-                Height = y2 - y1,
-                RenderTransform = GetCurrentRenderTransform(),
-                Fill = new SolidColorBrush(paint.Color)
-            };
-            paint.PathEffect?.Apply(rectangle, paint);
-            SetLeft(rectangle, x1);
-            SetTop(rectangle, y1);
-            Children.Add(rectangle);
+                var style = new CanvasStrokeStyle
+                {
+                    DashCap = paint.StrokeCap,
+                    LineJoin = paint.StrokeJoin
+                };
+                paint.PathEffect?.Apply(style, paint);
+                _drawingSession.DrawRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush, paint.StrokeWidth, style);
+            }
+            else
+            {
+                _drawingSession.FillRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush);
+            }
+
+            Flush();
         }
 
         internal void DrawRect(Rect rect, Paint paint)
         {
-            // TODO paint.ColorFilter
-            var gradient = paint.Shader as Gradient;
-            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(paint.Color);
+            UpdateDrawingSessionWithFlags(paint.Flags);
+            _drawingSession.Transform = GetCurrentTransform();
+            var brush = new CanvasSolidColorBrush(_device, paint.Color);
 
-            var rectangle = new Rectangle
+            if (paint.Style == Paint.PaintStyle.Stroke)
             {
-                Width = rect.Width,
-                Height = rect.Height,
-                RenderTransform = GetCurrentRenderTransform(),
-                Fill = brush
-            };
-            paint.PathEffect?.Apply(rectangle, paint);
-            SetLeft(rectangle, rect.Left);
-            SetTop(rectangle, rect.Top);
-            Children.Add(rectangle);
+                var style = new CanvasStrokeStyle
+                {
+                    DashCap = paint.StrokeCap,
+                    LineJoin = paint.StrokeJoin
+                };
+                paint.PathEffect?.Apply(style, paint);
+                _drawingSession.DrawRectangle(rect, brush, paint.StrokeWidth, style);
+            }
+            else
+            {
+                _drawingSession.FillRectangle(rect, brush);
+            }
+
+            Flush();
         }
 
         public void DrawPath(Path path, Paint paint)
         {
-            var firstPoint = path.Contours.FirstOrDefault()?.First;
-            if (firstPoint == null)
-                return;
+            UpdateDrawingSessionWithFlags(paint.Flags);
 
-            var pathFigureCollection = new PathFigureCollection();
-            var windowsPath = GetWindowsPath(path, paint, pathFigureCollection);
-            var pathFigure = new PathFigure
+            _drawingSession.Transform = GetCurrentTransform();
+
+            var fill = path.FillType == PathFillType.Winding
+                ? CanvasFilledRegionDetermination.Winding
+                : CanvasFilledRegionDetermination.Alternate;
+            //    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
+
+            var style = new CanvasStrokeStyle
             {
-                StartPoint = new Point(firstPoint.X, firstPoint.Y),
-                IsClosed = false,
-                Segments = new PathSegmentCollection()
+                DashCap = paint.StrokeCap,
+                LineJoin = paint.StrokeJoin
             };
-            pathFigureCollection.Add(pathFigure);
-            Children.Add(windowsPath);
+            paint.PathEffect?.Apply(style, paint);
+
+            var gradient = paint.Shader as Gradient;
+            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
+            brush = paint.ColorFilter?.Apply(this, brush) ?? brush;
+
+            var canvasGeometries = new List<CanvasGeometry>();
+            var canvasPathBuilder = new CanvasPathBuilder(_device);
 
             var returnDecision = Path.DrawReturnType.JustDraw;
+
+            var closed = true;
+
             for (var i = 0; i < path.Contours.Count; i++)
             {
                 if (returnDecision == Path.DrawReturnType.NewPath)
                 {
-                    firstPoint = path.Contours[i].First;
-                    pathFigureCollection = new PathFigureCollection();
-                    windowsPath = GetWindowsPath(path, paint, pathFigureCollection);
-                    pathFigure = new PathFigure
-                    {
-                        StartPoint = new Point(firstPoint.X, firstPoint.Y),
-                        IsClosed = false,
-                        Segments = new PathSegmentCollection()
-                    };
-                    pathFigureCollection.Add(pathFigure);
-                    Children.Add(windowsPath);
+                    canvasGeometries.Add(CanvasGeometry.CreatePath(canvasPathBuilder));
+
+                    DrawFigure(CanvasGeometry.CreateGroup(_device, canvasGeometries.ToArray(), fill), paint, brush, style);
+
+                    canvasGeometries.Clear();
+
+                    canvasPathBuilder = new CanvasPathBuilder(_device);
                 }
 
-                returnDecision = path.Contours[i].AddPathSegment(pathFigure);
-
-                if (returnDecision == Path.DrawReturnType.NewFigure)
-                {
-                    pathFigure = new PathFigure
-                    {
-                        StartPoint = new Point(path.Contours[i].First.X, path.Contours[i].First.Y),
-                        IsClosed = false,
-                        Segments = new PathSegmentCollection()
-                    };
-                    pathFigureCollection.Add(pathFigure);
-                }
+                returnDecision = path.Contours[i].AddPathSegment(canvasPathBuilder, ref closed);
             }
+
+            if (!closed)
+            {
+                canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
+            }
+            canvasGeometries.Add(CanvasGeometry.CreatePath(canvasPathBuilder));
+
+            DrawFigure(CanvasGeometry.CreateGroup(_device, canvasGeometries.ToArray(), fill), paint, brush, style);
+
+            Flush();
         }
 
-        private Windows.UI.Xaml.Shapes.Path GetWindowsPath(Path path, Paint paint, PathFigureCollection pathFigureCollection)
+        private void DrawFigure(CanvasGeometry group, Paint paint, ICanvasBrush brush, CanvasStrokeStyle style)
         {
-            // TODO paint.ColorFilter
-            var isStroke = paint.Style == Paint.PaintStyle.Stroke;
-
-            var gradient = paint.Shader as Gradient;
-            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(paint.Color);
-
-            var windowsPath = new Windows.UI.Xaml.Shapes.Path
-            {
-                Stroke = isStroke ? brush : null,
-                StrokeThickness = paint.StrokeWidth,
-                StrokeDashCap = paint.StrokeCap,
-                StrokeLineJoin = paint.StrokeJoin,
-                RenderTransform = GetCurrentRenderTransform(),
-                Data = new PathGeometry
-                {
-                    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
-                    Figures = pathFigureCollection
-                }
-            };
-            paint.PathEffect?.Apply(windowsPath, paint);
-            if (!isStroke)
-            {
-                windowsPath.Fill = brush;
-            }
-            return windowsPath;
+            if (paint.Style == Paint.PaintStyle.Stroke)
+                _drawingSession.DrawGeometry(group, brush, paint.StrokeWidth, style);
+            else
+                _drawingSession.FillGeometry(group, brush);
         }
 
-        private MatrixTransform GetCurrentRenderTransform()
+        private Matrix3x2 GetCurrentTransform()
         {
-            return new MatrixTransform
+            return new Matrix3x2
             {
-                Matrix = new Windows.UI.Xaml.Media.Matrix(_matrix[0, 0], _matrix[1, 0], _matrix[0, 1], _matrix[1, 1], _matrix[0, 2], _matrix[1, 2])
+                M11 = _matrix[0, 0],
+                M12 = _matrix[1, 0],
+                M21 = _matrix[0, 1],
+                M22 = _matrix[1, 1],
+                M31 = _matrix[0, 2],
+                M32 = _matrix[1, 2]
             };
         }
 
-        public bool ClipRect(Rect newClipRect)
+        public bool ClipRect(Rect rect)
         {
-            return true;
+            _currentClip.Intersect(rect);
+            return _currentClip.IsEmpty == false;
         }
 
-        public void ClipRect(Rect originalClipRect, Region.Op replace)
+        public void ClipReplaceRect(Rect rect)
         {
-
+            _currentClip = rect;
         }
 
         public void Concat(DenseMatrix parentMatrix)
@@ -165,58 +234,130 @@ namespace LottieUWP
             _matrix = MatrixExt.PreConcat(_matrix, parentMatrix);
         }
 
-        // concat or clipRect
         public void Save()
+        {
+            _flagSaves.Push(MatrixSaveFlag | ClipSaveFlag);
+            SaveMatrix();
+            SaveClip(255);
+        }
+
+        public void SaveLayer(Rect bounds, Paint paint, int flags)
+        {
+            _flagSaves.Push(flags);
+            if ((flags & MatrixSaveFlag) == MatrixSaveFlag)
+            {
+                SaveMatrix();
+            }
+            if ((flags & ClipSaveFlag) == ClipSaveFlag)
+            {
+                SaveClip(paint.Alpha);
+            }
+            if ((flags & ClipToLayerSaveFlag) == ClipToLayerSaveFlag)
+            {
+                UpdateDrawingSessionWithFlags(paint.Flags);
+
+                //Attributes of the Paint - alpha, Xfermode are applied when the offscreen rendering target is drawn back when restore() is called.
+                if (paint.Xfermode != null)
+                {
+                    var compositeEffect = new CompositeEffect
+                    {
+                        Mode = PorterDuff.ToCanvasComposite(paint.Xfermode.Mode)
+                    };
+                    compositeEffect.Sources.Add(new CompositionEffectSourceParameter("source1"));
+                    compositeEffect.Sources.Add(new CompositionEffectSourceParameter("source2"));
+
+                    var compositeEffectFactory = _compositor.CreateEffectFactory(compositeEffect);
+                    var compositionBrush = compositeEffectFactory.CreateBrush();
+
+                    compositionBrush.SetSourceParameter("source1", _compositor.CreateSurfaceBrush());
+                    compositionBrush.SetSourceParameter("source2", _compositor.CreateSurfaceBrush());
+                }
+
+                // TODO create other drawing surface with *bounds* size, and start drawing in it
+            }
+        }
+
+        private void SaveMatrix()
         {
             var copy = new DenseMatrix(3);
             _matrix.CopyTo(copy);
             _matrixSaves.Push(copy);
         }
 
-        public void SaveLayer(Rect rect, Paint contentPaint, object allSaveFlag)
+        private void SaveClip(byte alpha)
         {
-            var copy = new DenseMatrix(3);
-            _matrix.CopyTo(copy);
-            _matrixSaves.Push(copy);
+            var currentLayer = _drawingSession.CreateLayer(alpha / 255f, _currentClip);
+
+            _clipSaves.Push(new ClipSave(_currentClip, currentLayer));
         }
 
         public void Restore()
         {
-            _matrix = _matrixSaves.Pop();
-        }
-
-        public void DrawBitmap(ImageSource bitmap, Rect src, Rect dst, Paint paint)
-        {
-            // TODO paint.ColorFilter
-            _matrix.MapRect(ref dst);
-
-            var image = new Image
+            var flags = _flagSaves.Pop();
+            if ((flags & MatrixSaveFlag) == MatrixSaveFlag)
             {
-                Width = src.Width,
-                Height = src.Height,
-                Stretch = Stretch.Fill,
-                RenderTransform = GetCurrentRenderTransform(),
-                Source = bitmap,
-                Opacity = paint.Alpha / 255f
-            };
-            SetLeft(image, dst.X);
-            SetTop(image, dst.Y);
-            Children.Add(image);
+                _matrix = _matrixSaves.Pop();
+            }
+            if ((flags & ClipSaveFlag) == ClipSaveFlag)
+            {
+                var clipSave = _clipSaves.Pop();
+                _currentClip = clipSave.Rect;
+                clipSave.Layer.Dispose();
+            }
+            if ((flags & ClipToLayerSaveFlag) == ClipToLayerSaveFlag)
+            {
+                // TODO draw current offlayer 
+            }
         }
 
-        public void GetClipBounds(out Rect originalClipRect)
+        public void DrawBitmap(CanvasBitmap bitmap, Rect src, Rect dst, Paint paint)
         {
-            RectExt.Set(ref originalClipRect, 0, 0, Width, Height);
+            UpdateDrawingSessionWithFlags(paint.Flags);
+            _drawingSession.Transform = GetCurrentTransform();
+
+            var canvasComposite = CanvasComposite.SourceOver;
+            // TODO paint.ColorFilter
+            //if (paint.ColorFilter is PorterDuffColorFilter porterDuffColorFilter)
+            //    canvasComposite = PorterDuff.ToCanvasComposite(porterDuffColorFilter.Mode);
+
+            _drawingSession.DrawImage(bitmap, dst, src, paint.Alpha / 255f, CanvasImageInterpolation.NearestNeighbor, canvasComposite);
+
+            Flush();
+        }
+
+        public void GetClipBounds(out Rect bounds)
+        {
+            RectExt.Set(ref bounds, _currentClip.X, _currentClip.Y, _currentClip.Width, _currentClip.Height);
         }
 
         public void Clear(Color color)
         {
-            Children.Clear();
+            _drawingSession?.Dispose();
+            _drawingSession = CanvasComposition.CreateDrawingSession(_drawingSurface);
+            UpdateDrawingSessionWithFlags(0);
+
+            _drawingSession.Clear(color);
+
             _matrixSaves.Clear();
-            Background = new SolidColorBrush(color);
+            _flagSaves.Clear();
+            _clipSaves.Clear();
         }
 
-        public Viewbox GetImage()
+        private void UpdateDrawingSessionWithFlags(int flags)
+        {
+            Flush();
+
+            _drawingSession.Antialiasing = (flags & Paint.AntiAliasFlag) == Paint.AntiAliasFlag
+                ? CanvasAntialiasing.Antialiased
+                : CanvasAntialiasing.Aliased;
+        }
+
+        public void Flush()
+        {
+            _drawingSession.Flush();
+        }
+
+        public UIElement GetImage()
         {
             return new Viewbox
             {
@@ -233,36 +374,34 @@ namespace LottieUWP
 
         public void SetMatrix(DenseMatrix matrix)
         {
-            _matrix = matrix;
+            matrix.CopyTo(_matrix);
         }
 
-        public void DrawText(char character, Paint paint)
+        public Rect DrawText(char character, Paint paint)
         {
             var gradient = paint.Shader as Gradient;
-            var color = paint.Color;
-            if (paint.ColorFilter != null)
-                color = paint.ColorFilter.Apply(color);
-            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new SolidColorBrush(color);
+            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
+            brush = paint.ColorFilter?.Apply(this, brush) ?? brush;
 
-            var textblock = new TextBlock
+            UpdateDrawingSessionWithFlags(paint.Flags);
+            _drawingSession.Transform = GetCurrentTransform();
+
+            var text = new string(character, 1);
+
+            var textFormat = new CanvasTextFormat
             {
-                Text = new string(character, 1),
-                RenderTransform = GetCurrentRenderTransform(),
-                Foreground = brush,
                 FontSize = paint.TextSize,
                 FontFamily = paint.Typeface.FontFamily,
                 FontStyle = paint.Typeface.Style,
-                FontWeight = paint.Typeface.Weight
+                FontWeight = paint.Typeface.Weight,
+                VerticalAlignment = CanvasVerticalAlignment.Center
             };
-            Children.Add(textblock);
-        }
-    }
+            var textLayout = new CanvasTextLayout(_drawingSession, text, textFormat, 0.0f, 0.0f);
+            _drawingSession.DrawText(text, 0, 0, brush, textFormat);
 
-    public class Region
-    {
-        public enum Op
-        {
-            Replace
+            Flush();
+
+            return textLayout.LayoutBounds;
         }
     }
 }

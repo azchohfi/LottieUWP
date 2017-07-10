@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Windows.Data.Json;
-using Windows.UI.Xaml.Media;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP
 {
@@ -13,17 +13,17 @@ namespace LottieUWP
             Unknown
         }
 
-        internal static PenLineCap LineCapTypeToPaintCap(LineCapType lineCapType)
+        internal static CanvasCapStyle LineCapTypeToPaintCap(LineCapType lineCapType)
         {
             switch (lineCapType)
             {
                 case LineCapType.Butt:
-                    return PenLineCap.Flat;
+                    return CanvasCapStyle.Flat;
                 case LineCapType.Round:
-                    return PenLineCap.Round;
+                    return CanvasCapStyle.Round;
                 case LineCapType.Unknown:
                 default:
-                    return PenLineCap.Square;
+                    return CanvasCapStyle.Square;
             }
         }
 
@@ -35,17 +35,17 @@ namespace LottieUWP
             Bevel
         }
 
-        internal static PenLineJoin LineJoinTypeToPaintLineJoin(LineJoinType lineJoinType)
+        internal static CanvasLineJoin LineJoinTypeToPaintLineJoin(LineJoinType lineJoinType)
         {
             switch (lineJoinType)
             {
                 case LineJoinType.Bevel:
-                    return PenLineJoin.Bevel;
+                    return CanvasLineJoin.Bevel;
                 case LineJoinType.Miter:
-                    return PenLineJoin.Miter;
+                    return CanvasLineJoin.Miter;
                 case LineJoinType.Round:
                 default:
-                    return PenLineJoin.Round;
+                    return CanvasLineJoin.Round;
             }
         }
 

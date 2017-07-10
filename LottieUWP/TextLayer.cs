@@ -104,14 +104,14 @@ namespace LottieUWP
 
         private void DrawTextGlyphs(DocumentData documentData, DenseMatrix parentMatrix, Font font, BitmapCanvas canvas)
         {
-            float fontScale = (float)documentData.Size / 100;
+            var fontScale = (float)documentData.Size / 100;
             var parentScale = Utils.GetScale(parentMatrix);
             var text = documentData.Text;
 
             for (var i = 0; i < text.Length; i++)
             {
                 var c = text[i];
-                int characterHash = FontCharacter.HashFor(c, font.Family, font.Style);
+                var characterHash = FontCharacter.HashFor(c, font.Family, font.Style);
                 if (!_composition.Characters.TryGetValue(characterHash, out var character))
                 {
                     // Something is wrong. Potentially, they didn't export the text as a glyph. 
@@ -132,14 +132,14 @@ namespace LottieUWP
 
         private void DrawTextWithFont(DocumentData documentData, Font font, DenseMatrix parentMatrix, BitmapCanvas canvas)
         {
-            float parentScale = Utils.GetScale(parentMatrix);
-            Typeface typeface = _lottieDrawable.GetTypeface(font.Family, font.Style);
+            var parentScale = Utils.GetScale(parentMatrix);
+            var typeface = _lottieDrawable.GetTypeface(font.Family, font.Style);
             if (typeface == null)
             {
                 return;
             }
             var text = documentData.Text;
-            TextDelegate textDelegate = _lottieDrawable.TextDelegate;
+            var textDelegate = _lottieDrawable.TextDelegate;
             if (textDelegate != null)
             {
                 text = textDelegate.GetTextInternal(text);
@@ -148,18 +148,18 @@ namespace LottieUWP
             _fillPaint.TextSize = documentData.Size * _composition.DpScale;
             _strokePaint.Typeface = _fillPaint.Typeface;
             _strokePaint.TextSize = _fillPaint.TextSize;
-            for (int i = 0; i < text.Length; i++)
+            for (var i = 0; i < text.Length; i++)
             {
-                char character = text[i];
-                DrawCharacterFromFont(character, documentData, canvas);
-                float charWidth = _fillPaint.MeasureText(character);
+                var character = text[i];
+                var size = DrawCharacterFromFont(character, documentData, canvas);
+
                 // Add tracking
-                float tracking = documentData.Tracking / 10f;
+                var tracking = documentData.Tracking / 10f;
                 if (_trackingAnimation?.Value != null)
                 {
                     tracking += _trackingAnimation.Value.Value;
                 }
-                float tx = charWidth + tracking * parentScale;
+                var tx = (float)size.Width + tracking * parentScale;
                 canvas.Translate(tx, 0);
             }
         }
@@ -200,23 +200,21 @@ namespace LottieUWP
             canvas.DrawPath(path, paint);
         }
 
-        private void DrawCharacterFromFont(char c, DocumentData documentData, BitmapCanvas canvas)
+        private Rect DrawCharacterFromFont(char c, DocumentData documentData, BitmapCanvas canvas)
         {
             if (documentData.StrokeOverFill)
             {
                 DrawCharacter(c, _fillPaint, canvas);
-                DrawCharacter(c, _strokePaint, canvas);
+                return DrawCharacter(c, _strokePaint, canvas);
             }
-            else
-            {
-                DrawCharacter(c, _strokePaint, canvas);
-                DrawCharacter(c, _fillPaint, canvas);
-            }
+
+            DrawCharacter(c, _strokePaint, canvas);
+            return DrawCharacter(c, _fillPaint, canvas);
         }
 
-        private void DrawCharacter(char character, Paint paint, BitmapCanvas canvas)
+        private Rect DrawCharacter(char character, Paint paint, BitmapCanvas canvas)
         {
-            canvas.DrawText(character, paint);
+            return canvas.DrawText(character, paint);
         }
 
         private IList<ContentGroup> GetContentsForCharacter(FontCharacter character)
