@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using MathNet.Numerics.LinearAlgebra.Single;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace LottieUWP
 {
@@ -17,7 +20,7 @@ namespace LottieUWP
     /// of compositions.
     /// </para>
     /// </summary>
-    public class LottieDrawable
+    public class LottieDrawable : UserControl
     {
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private LottieComposition _composition;
@@ -39,7 +42,8 @@ namespace LottieUWP
         private CompositionLayer _compositionLayer;
         private byte _alpha = 255;
         private bool _performanceTrackingEnabled;
-        internal BitmapCanvas Canvas;
+        private BitmapCanvas _bitmapCanvas;
+        private CanvasControl _canvasControl;
 
         public LottieDrawable()
         {
@@ -57,6 +61,26 @@ namespace LottieUWP
                     Progress = e.Animation.AnimatedValue;
                 }
             };
+            Loaded += UserControl_Loaded;
+            Unloaded += UserControl_Unloaded;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            _canvasControl = new CanvasControl();
+
+            _canvasControl.Draw += CanvasControlOnDraw;
+            Content = _canvasControl;
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            // Explicitly remove references to allow the Win2D controls to get garbage collected
+            if (_canvasControl != null)
+            {
+                _canvasControl.RemoveFromVisualTree();
+                _canvasControl = null;
+            }
         }
 
         /// <summary>
@@ -136,26 +160,29 @@ namespace LottieUWP
                 return false;
             }
 
-            ClearComposition();
-            _composition = composition;
-            Speed = _speed;
-            Scale = 1f;
-            UpdateBounds();
-            BuildCompositionLayer();
-            ApplyColorFilters();
+            lock (this)
+            {
+                ClearComposition();
+                _composition = composition;
+                Speed = _speed;
+                Scale = 1f;
+                UpdateBounds();
+                BuildCompositionLayer();
+                ApplyColorFilters();
 
-            Progress = _progress;
-            if (_playAnimationWhenCompositionAdded)
-            {
-                _playAnimationWhenCompositionAdded = false;
-                PlayAnimation();
+                Progress = _progress;
+                if (_playAnimationWhenCompositionAdded)
+                {
+                    _playAnimationWhenCompositionAdded = false;
+                    PlayAnimation();
+                }
+                if (_reverseAnimationWhenCompositionAdded)
+                {
+                    _reverseAnimationWhenCompositionAdded = false;
+                    ReverseAnimation();
+                }
+                composition.PerformanceTrackingEnabled = _performanceTrackingEnabled;
             }
-            if (_reverseAnimationWhenCompositionAdded)
-            {
-                _reverseAnimationWhenCompositionAdded = false;
-                ReverseAnimation();
-            }
-            composition.PerformanceTrackingEnabled = _performanceTrackingEnabled;
 
             return true;
         }
@@ -177,6 +204,8 @@ namespace LottieUWP
         private void BuildCompositionLayer()
         {
             _compositionLayer = new CompositionLayer(this, Layer.Factory.NewInstance(_composition), _composition.Layers, _composition);
+
+            _bitmapCanvas = new BitmapCanvas(Width, Height);
         }
 
         private void ApplyColorFilters()
@@ -202,14 +231,7 @@ namespace LottieUWP
 
         public void InvalidateSelf()
         {
-            //InvalidateArrange(); // TODO: is this the equivalent?
-            //InvalidateMeasure();
-
-            //Callback callback = Callback;
-            //if (callback != null)
-            //{
-            //    callback.invalidateDrawable(this);
-            //}
+            _canvasControl?.Invalidate();
         }
 
         public void SetAlpha(byte alpha)
@@ -298,23 +320,30 @@ namespace LottieUWP
         //    }
         //}
 
-        public void Draw(BitmapCanvas canvas)
+        private void CanvasControlOnDraw(CanvasControl canvasControl, CanvasDrawEventArgs args)
         {
-            LottieLog.BeginSection("Drawable.Draw");
-            if (_compositionLayer == null)
+            lock (this)
             {
-                return;
-            }
-            var scale = _scale;
-            if (_compositionLayer.HasMatte())
-            {
-                scale = Math.Min(_scale, GetMaxScale(canvas));
-            }
+                using (_bitmapCanvas.CreateSession(canvasControl.Device, args.DrawingSession))
+                {
+                    _bitmapCanvas.Clear(Colors.Transparent);
+                    LottieLog.BeginSection("Drawable.Draw");
+                    if (_compositionLayer == null)
+                    {
+                        return;
+                    }
+                    var scale = _scale;
+                    if (_compositionLayer.HasMatte())
+                    {
+                        scale = Math.Min(_scale, GetMaxScale(_bitmapCanvas));
+                    }
 
-            _matrix.Reset();
-            _matrix = MatrixExt.PreScale(_matrix, scale, scale);
-            _compositionLayer.Draw(canvas, _matrix, _alpha);
-            LottieLog.EndSection("Drawable.Draw");
+                    _matrix.Reset();
+                    _matrix = MatrixExt.PreScale(_matrix, scale, scale);
+                    _compositionLayer.Draw(_bitmapCanvas, _matrix, _alpha);
+                    LottieLog.EndSection("Drawable.Draw");
+                }
+            }
         }
 
         internal virtual void SystemAnimationsAreDisabled()
@@ -413,17 +442,6 @@ namespace LottieUWP
                 {
                     _compositionLayer.Progress = value;
                 }
-
-                if (Canvas == null || Canvas.Width != Width || Canvas.Height != Height)
-                {
-                    Canvas = new BitmapCanvas(Width, Height);
-                }
-                else
-                {
-                    Canvas.Clear(Colors.Transparent);
-                    Draw(Canvas);
-                    Canvas.Flush();
-                }
             }
         }
 
@@ -452,7 +470,7 @@ namespace LottieUWP
         {
             return _textDelegate == null && _composition.Characters.Count > 0;
         }
-        
+
         /// <summary>
         /// Set the scale on the current composition. The only cost of this function is re-rendering the
         /// current frame so you may call it frequent to scale something up or down.
@@ -500,9 +518,6 @@ namespace LottieUWP
             Width = (int)(_composition.Bounds.Width * _scale);
             Height = (int)(_composition.Bounds.Height * _scale);
         }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
 
         public virtual void CancelAnimation()
         {
@@ -583,47 +598,13 @@ namespace LottieUWP
 
         private FontAssetManager FontAssetManager => _fontAssetManager ??
             (_fontAssetManager = new FontAssetManager(_fontAssetDelegate));
-        
+
         private float GetMaxScale(BitmapCanvas canvas)
         {
             var maxScaleX = (float)canvas.Width / (float)_composition.Bounds.Width;
             var maxScaleY = (float)canvas.Height / (float)_composition.Bounds.Height;
             return Math.Min(maxScaleX, maxScaleY);
         }
-
-        ///// <summary>
-        ///// These Drawable.Callback methods proxy the calls so that this is the drawable that is
-        ///// actually invalidated, not a child one which will not pass the view's validateDrawable check.
-        ///// </summary>
-        //public void invalidateDrawable(Drawable who)
-        //{
-        //    Callback callback = Callback;
-        //    if (callback == null)
-        //    {
-        //        return;
-        //    }
-        //    callback.invalidateDrawable(this);
-        //}
-
-        //public void scheduleDrawable(Drawable who, ThreadStart what, long when)
-        //{
-        //    Callback callback = Callback;
-        //    if (callback == null)
-        //    {
-        //        return;
-        //    }
-        //    callback.scheduleDrawable(this, what, when);
-        //}
-
-        //public void unscheduleDrawable(Drawable who, ThreadStart what)
-        //{
-        //    Callback callback = Callback;
-        //    if (callback == null)
-        //    {
-        //        return;
-        //    }
-        //    callback.unscheduleDrawable(this, what);
-        //}
 
         private class ColorFilterData
         {

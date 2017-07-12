@@ -1,24 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
-using Windows.Graphics.DirectX;
 using Windows.UI;
-using Windows.UI.Composition;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Media;
 using MathNet.Numerics.LinearAlgebra.Single;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
-using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
-using Microsoft.Graphics.Canvas.UI.Composition;
 
 namespace LottieUWP
 {
-    public class BitmapCanvas : Canvas
+    public class BitmapCanvas
     {
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
         private readonly Stack<DenseMatrix> _matrixSaves = new Stack<DenseMatrix>();
@@ -39,43 +31,15 @@ namespace LottieUWP
         private readonly Stack<ClipSave> _clipSaves = new Stack<ClipSave>();
         private Rect _currentClip;
 
-        private ContainerVisual GetVisual()
-        {
-            var hostVisual = ElementCompositionPreview.GetElementVisual(this);
-            var root = hostVisual.Compositor.CreateContainerVisual();
-            ElementCompositionPreview.SetElementChildVisual(this, root);
-            return root;
-        }
-
-        public BitmapCanvas(int width, int height)
+        public BitmapCanvas(double width, double height)
         {
             Width = width;
             Height = height;
             _currentClip = new Rect(0, 0, Width, Height);
-            Clip = new RectangleGeometry
-            {
-                Rect = _currentClip
-            };
-            
-            _device = CanvasDevice.GetSharedDevice();
-
-            var root = GetVisual();
-
-            _compositor = root.Compositor;
-
-            var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(_compositor, _device);
-
-            var drawingSurfaceVisual = _compositor.CreateSpriteVisual();
-
-            _drawingSurface = compositionGraphicsDevice.CreateDrawingSurface(new Size(Width, Height), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-            drawingSurfaceVisual.Brush = _compositor.CreateSurfaceBrush(_drawingSurface);
-
-            root.Children.InsertAtTop(drawingSurfaceVisual);
-
-            drawingSurfaceVisual.Size = _drawingSurface.Size.ToVector2();
-
-            Clear(Colors.Transparent);
         }
+
+        public double Width { get; }
+        public double Height { get; }
 
         public static int MatrixSaveFlag = 0b00001;
         public static int ClipSaveFlag = 0b00010;
@@ -84,11 +48,17 @@ namespace LottieUWP
         public static int ClipToLayerSaveFlag = 0b10000;
         public static int AllSaveFlag = 0b11111;
 
-        private readonly CanvasDevice _device;
+        private CanvasDevice _device;
 
-        private readonly CompositionDrawingSurface _drawingSurface;
-        private readonly Compositor _compositor;
         private CanvasDrawingSession _drawingSession;
+
+        internal CanvasActiveLayer CreateSession(CanvasDevice device, CanvasDrawingSession drawingSession)
+        {
+            _device = device;
+            _drawingSession = drawingSession;
+
+            return _drawingSession.CreateLayer(1f, CanvasGeometry.CreateRectangle(_device, _currentClip));
+        }
 
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
@@ -105,7 +75,7 @@ namespace LottieUWP
                 _drawingSession.FillRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush);
             }
 
-            Flush();
+            _drawingSession.Flush();
         }
 
         private static CanvasStrokeStyle GetCanvasStrokeStyle(Paint paint)
@@ -136,7 +106,7 @@ namespace LottieUWP
                 _drawingSession.FillRectangle(rect, brush);
             }
 
-            Flush();
+            _drawingSession.Flush();
         }
 
         public void DrawPath(Path path, Paint paint)
@@ -187,7 +157,7 @@ namespace LottieUWP
 
             DrawFigure(CanvasGeometry.CreateGroup(_device, canvasGeometries.ToArray(), fill), paint, brush, style);
 
-            Flush();
+            _drawingSession.Flush();
         }
 
         private void DrawFigure(CanvasGeometry group, Paint paint, ICanvasBrush brush, CanvasStrokeStyle style)
@@ -252,18 +222,18 @@ namespace LottieUWP
                 //Attributes of the Paint - alpha, Xfermode are applied when the offscreen rendering target is drawn back when restore() is called.
                 if (paint.Xfermode != null)
                 {
-                    var compositeEffect = new CompositeEffect
-                    {
-                        Mode = PorterDuff.ToCanvasComposite(paint.Xfermode.Mode)
-                    };
-                    compositeEffect.Sources.Add(new CompositionEffectSourceParameter("source1"));
-                    compositeEffect.Sources.Add(new CompositionEffectSourceParameter("source2"));
-
-                    var compositeEffectFactory = _compositor.CreateEffectFactory(compositeEffect);
-                    var compositionBrush = compositeEffectFactory.CreateBrush();
-
-                    compositionBrush.SetSourceParameter("source1", _compositor.CreateSurfaceBrush());
-                    compositionBrush.SetSourceParameter("source2", _compositor.CreateSurfaceBrush());
+                    //var compositeEffect = new CompositeEffect
+                    //{
+                    //    Mode = PorterDuff.ToCanvasComposite(paint.Xfermode.Mode)
+                    //};
+                    //compositeEffect.Sources.Add(new CompositionEffectSourceParameter("source1"));
+                    //compositeEffect.Sources.Add(new CompositionEffectSourceParameter("source2"));
+                    //
+                    //var compositeEffectFactory = _compositor.CreateEffectFactory(compositeEffect);
+                    //var compositionBrush = compositeEffectFactory.CreateBrush();
+                    //
+                    //compositionBrush.SetSourceParameter("source1", _compositor.CreateSurfaceBrush());
+                    //compositionBrush.SetSourceParameter("source2", _compositor.CreateSurfaceBrush());
                 }
 
                 // TODO create other drawing surface with *bounds* size, and start drawing in it
@@ -315,7 +285,7 @@ namespace LottieUWP
 
             _drawingSession.DrawImage(bitmap, dst, src, paint.Alpha / 255f, CanvasImageInterpolation.NearestNeighbor, canvasComposite);
 
-            Flush();
+            _drawingSession.Flush();
         }
 
         public void GetClipBounds(out Rect bounds)
@@ -325,8 +295,6 @@ namespace LottieUWP
 
         public void Clear(Color color)
         {
-            _drawingSession?.Dispose();
-            _drawingSession = CanvasComposition.CreateDrawingSession(_drawingSurface);
             UpdateDrawingSessionWithFlags(0);
 
             _drawingSession.Clear(color);
@@ -338,26 +306,11 @@ namespace LottieUWP
 
         private void UpdateDrawingSessionWithFlags(int flags)
         {
-            Flush();
+            _drawingSession.Flush();
 
             _drawingSession.Antialiasing = (flags & Paint.AntiAliasFlag) == Paint.AntiAliasFlag
                 ? CanvasAntialiasing.Antialiased
                 : CanvasAntialiasing.Aliased;
-        }
-
-        public void Flush()
-        {
-            _drawingSession.Flush();
-        }
-
-        public UIElement GetImage()
-        {
-            return new Viewbox
-            {
-                Child = this,
-                Stretch = Stretch.Uniform,
-                StretchDirection = StretchDirection.DownOnly
-            };
         }
 
         public void Translate(float dx, float dy)
@@ -392,7 +345,7 @@ namespace LottieUWP
             var textLayout = new CanvasTextLayout(_drawingSession, text, textFormat, 0.0f, 0.0f);
             _drawingSession.DrawText(text, 0, 0, brush, textFormat);
 
-            Flush();
+            _drawingSession.Flush();
 
             return textLayout.LayoutBounds;
         }

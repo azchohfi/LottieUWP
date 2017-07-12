@@ -1,13 +1,14 @@
 using System;
 using System.Diagnostics;
-using Windows.UI.Xaml;
+using System.Threading;
 
 namespace LottieUWP
 {
     public abstract class Animator
     {
         public event EventHandler ValueChanged;
-        private readonly DispatcherTimer _timer;
+        private Timer _timer;
+        private readonly TimeSpan _timerInterval;
         private DateTime _lastTick;
         private bool _isReverse;
         private float _currentPlayTime;
@@ -41,28 +42,30 @@ namespace LottieUWP
         protected Animator()
         {
             Duration = 300;
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(Math.Floor(1000.0 / TargetFps))
-            };
-            _timer.Tick += TimerCallback;
+            _timerInterval = TimeSpan.FromMilliseconds(Math.Floor(1000.0 / TargetFps));
         }
 
         public virtual void Start()
         {
             _lastTick = DateTime.Now;
-            _timer.Start();
+
+            _timer?.Dispose();
+            _timer = new Timer(TimerCallback, null, TimeSpan.Zero, _timerInterval);
         }
 
         public void Cancel()
         {
-            _timer.Stop();
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
         }
 
-        protected virtual void TimerCallback(object sender, object e)
+        protected virtual void TimerCallback(object state)
         {
             var tick = (float)(DateTime.Now - _lastTick).TotalMilliseconds;
-            if (tick < _timer.Interval.TotalMilliseconds)
+            if (tick < _timerInterval.TotalMilliseconds)
                 tick = (float)Math.Floor(1000.0 / TargetFps);
             _lastTick = DateTime.Now;
 

@@ -49,9 +49,9 @@ namespace LottieUWP
             Update?.Invoke(this, new ValueAnimatorUpdateEventArgs(this));
         }
 
-        protected override void TimerCallback(object sender, object e)
+        protected override void TimerCallback(object state)
         {
-            base.TimerCallback(sender, e);
+            base.TimerCallback(state);
 
             AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, Interpolator.GetInterpolation(Progress));
         }

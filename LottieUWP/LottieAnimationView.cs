@@ -7,6 +7,7 @@ using Windows.Data.Json;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP
@@ -190,14 +191,7 @@ namespace LottieUWP
             DependencyPropertyChangedEventArgs e)
         {
             if (dependencyObject is LottieAnimationView lottieAnimationView)
-            {
                 lottieAnimationView._lottieDrawable.Scale = (float)e.NewValue;
-                //if (Drawable == lottieDrawable)
-                //{
-                //    ImageDrawable = null;
-                //    ImageDrawable = lottieDrawable;
-                //}
-            }
         }
 
         public LottieAnimationView()
@@ -237,16 +231,30 @@ namespace LottieUWP
         //    }
         //}
 
+        private Viewbox _viewbox;
+
         public LottieDrawable ImageDrawable
         {
             set
             {
+                if (_viewbox?.Child == value)
+                    return;
+
                 if (value != _lottieDrawable)
                 {
                     RecycleBitmaps();
                 }
 
-                Content = value?.Canvas.GetImage();
+                if (_viewbox == null)
+                {
+                    _viewbox = new Viewbox
+                    {
+                        Stretch = Stretch.Uniform,
+                        StretchDirection = StretchDirection.DownOnly
+                    };
+                    Content = _viewbox;
+                }
+                _viewbox.Child = value;
             }
         }
 
@@ -525,16 +533,13 @@ namespace LottieUWP
                     Debug.WriteLine($"Composition larger than the screen {compWidth:D}x{compHeight:D} vs {screenWidth:D}x{screenHeight:D}. Scaling down.", LottieLog.Tag);
                 }
 
-                // If you set a different value on the view, the bounds will not update unless
-                // the drawable is different than the original.
-                ImageDrawable = null;
                 ImageDrawable = _lottieDrawable;
 
                 _composition = value;
-
-                UpdateLayout(); // TODO: Is this equivalent?
-
-                //requestLayout();
+                
+                InvalidateArrange();
+                InvalidateMeasure();
+                _lottieDrawable.InvalidateSelf();
             }
         }
 
