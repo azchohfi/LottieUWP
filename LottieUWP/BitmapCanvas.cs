@@ -60,17 +60,19 @@ namespace LottieUWP
             _device = CanvasDevice.GetSharedDevice();
 
             var root = GetVisual();
+
             _compositor = root.Compositor;
 
             var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(_compositor, _device);
 
-            _drawingSurfaceVisual = _compositor.CreateSpriteVisual();
+            var drawingSurfaceVisual = _compositor.CreateSpriteVisual();
+
             _drawingSurface = compositionGraphicsDevice.CreateDrawingSurface(new Size(Width, Height), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-            _drawingSurfaceVisual.Brush = _compositor.CreateSurfaceBrush(_drawingSurface);
+            drawingSurfaceVisual.Brush = _compositor.CreateSurfaceBrush(_drawingSurface);
 
-            root.Children.InsertAtTop(Visual);
+            root.Children.InsertAtTop(drawingSurfaceVisual);
 
-            Visual.Size = Size.ToVector2();
+            drawingSurfaceVisual.Size = _drawingSurface.Size.ToVector2();
 
             Clear(Colors.Transparent);
         }
@@ -84,14 +86,9 @@ namespace LottieUWP
 
         private readonly CanvasDevice _device;
 
-        readonly SpriteVisual _drawingSurfaceVisual;
         private readonly CompositionDrawingSurface _drawingSurface;
         private readonly Compositor _compositor;
         private CanvasDrawingSession _drawingSession;
-
-        private Visual Visual => _drawingSurfaceVisual;
-
-        private Size Size => _drawingSurface.Size;
 
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
@@ -101,13 +98,7 @@ namespace LottieUWP
 
             if (paint.Style == Paint.PaintStyle.Stroke)
             {
-                var style = new CanvasStrokeStyle
-                {
-                    DashCap = paint.StrokeCap,
-                    LineJoin = paint.StrokeJoin
-                };
-                paint.PathEffect?.Apply(style, paint);
-                _drawingSession.DrawRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush, paint.StrokeWidth, style);
+                _drawingSession.DrawRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
             }
             else
             {
@@ -115,6 +106,19 @@ namespace LottieUWP
             }
 
             Flush();
+        }
+
+        private static CanvasStrokeStyle GetCanvasStrokeStyle(Paint paint)
+        {
+            var style = new CanvasStrokeStyle
+            {
+                StartCap = paint.StrokeCap,
+                DashCap = paint.StrokeCap,
+                EndCap = paint.StrokeCap,
+                LineJoin = paint.StrokeJoin,
+            };
+            paint.PathEffect?.Apply(style, paint);
+            return style;
         }
 
         internal void DrawRect(Rect rect, Paint paint)
@@ -125,13 +129,7 @@ namespace LottieUWP
 
             if (paint.Style == Paint.PaintStyle.Stroke)
             {
-                var style = new CanvasStrokeStyle
-                {
-                    DashCap = paint.StrokeCap,
-                    LineJoin = paint.StrokeJoin
-                };
-                paint.PathEffect?.Apply(style, paint);
-                _drawingSession.DrawRectangle(rect, brush, paint.StrokeWidth, style);
+                _drawingSession.DrawRectangle(rect, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
             }
             else
             {
@@ -152,12 +150,7 @@ namespace LottieUWP
                 : CanvasFilledRegionDetermination.Alternate;
             //    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
 
-            var style = new CanvasStrokeStyle
-            {
-                DashCap = paint.StrokeCap,
-                LineJoin = paint.StrokeJoin
-            };
-            paint.PathEffect?.Apply(style, paint);
+            var style = GetCanvasStrokeStyle(paint);
 
             var gradient = paint.Shader as Gradient;
             var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
