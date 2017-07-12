@@ -6,16 +6,16 @@ namespace LottieUWP
 {
     internal class DocumentData
     {
-        internal string Text;
-        internal string FontName;
-        internal int Size;
-        internal int Justification;
-        internal int Tracking;
-        internal double LineHeight;
-        internal Color Color;
-        internal Color StrokeColor;
-        internal int StrokeWidth;
-        internal bool StrokeOverFill;
+        internal readonly string Text;
+        internal readonly string FontName;
+        internal readonly int Size;
+        internal readonly int Justification;
+        internal readonly int Tracking;
+        internal readonly double LineHeight;
+        internal readonly Color Color;
+        internal readonly Color StrokeColor;
+        internal readonly int StrokeWidth;
+        internal readonly bool StrokeOverFill;
 
         internal DocumentData(string text, string fontName, int size, int justification, int tracking, double lineHeight, Color color, Color strokeColor, int strokeWidth, bool strokeOverFill)
         {
@@ -30,18 +30,6 @@ namespace LottieUWP
             StrokeWidth = strokeWidth;
             StrokeOverFill = strokeOverFill;
         }
-
-        internal virtual void Set(DocumentData documentData)
-        {
-            Text = documentData.Text;
-            FontName = documentData.FontName;
-            Size = documentData.Size;
-            Justification = documentData.Justification;
-            Tracking = documentData.Tracking;
-            LineHeight = documentData.LineHeight;
-            Color = documentData.Color;
-        }
-
 
         internal static class Factory
         {

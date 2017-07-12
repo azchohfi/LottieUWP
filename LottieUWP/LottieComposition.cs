@@ -191,11 +191,13 @@ namespace LottieUWP
                 }
                 catch (IOException e)
                 {
-                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to find file.", e), LottieLog.Tag);
+                    Debug.WriteLine(new InvalidOperationException("Unable to find file.", e), LottieLog.Tag);
+                    Debug.WriteLine("Failed to load composition.", LottieLog.Tag);
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Failed to load composition.", new InvalidOperationException("Unable to load JSON.", e), LottieLog.Tag);
+                    Debug.WriteLine(new InvalidOperationException("Unable to load JSON.", e), LottieLog.Tag);
+                    Debug.WriteLine("Failed to load composition.", LottieLog.Tag);
                 }
                 finally
                 {

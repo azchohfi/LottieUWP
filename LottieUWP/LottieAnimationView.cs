@@ -16,16 +16,16 @@ namespace LottieUWP
     /// bodymovin (https://github.com/bodymovin/bodymovin).
     /// <para>
     /// You may set the animation in one of two ways:
-    /// 1) Attrs: <seealso cref="R.styleable#LottieAnimationView_lottie_fileName"/>
+    /// 1) Attrs: <seealso cref="LottieAnimationView.FileNameProperty"/>
     /// 2) Programatically: <seealso cref="SetAnimationAsync(string)"/>, <seealso cref="Composition"/>,
     /// or <seealso cref="SetAnimationAsync(JsonObject)"/>.
     /// </para>
     /// <para>
-    /// You can set a default cache strategy with <seealso cref="R.attr#lottie_cacheStrategy"/>.
+    /// You can set a default cache strategy with <seealso cref="CacheStrategy.None"/>.
     /// </para>
     /// <para>
     /// You can manually set the progress of the animation with <seealso cref="Progress"/> or
-    /// <seealso cref="R.attr#lottie_progress"/>
+    /// <seealso cref="LottieAnimationView.Progress"/>
     /// </para>
     /// </summary>
     public class LottieAnimationView : UserControl
@@ -495,7 +495,7 @@ namespace LottieUWP
         /// <summary>
         /// Sets a composition.
         /// You can set a default cache strategy if this view was inflated with xml by
-        /// using <seealso cref="R.attr#lottie_cacheStrategy"/>.
+        /// using <seealso cref="LottieAnimationView.CacheStrategy"/>.
         /// </summary>
         public virtual LottieComposition Composition
         {
