@@ -1,6 +1,8 @@
-using Windows.Foundation;
+using System.Numerics;
 using Windows.UI;
-using Windows.UI.Xaml.Media;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using VectorF = MathNet.Numerics.LinearAlgebra.Vector<float>;
 
 namespace LottieUWP
 {
@@ -10,7 +12,7 @@ namespace LottieUWP
         private readonly float _y0;
         private readonly float _x1;
         private readonly float _y1;
-        private readonly LinearGradientBrush _linearGradientBrush;
+        private readonly CanvasLinearGradientBrush _canvasLinearGradientBrush;
 
         public LinearGradient(float x0, float y0, float x1, float y1, Color[] colors, float[] positions)
         {
@@ -18,38 +20,31 @@ namespace LottieUWP
             _y0 = y0;
             _x1 = x1;
             _y1 = y1;
-            var gradientStopCollection = new GradientStopCollection();
+            var canvasGradientStopCollection = new CanvasGradientStop[colors.Length];
             for (int i = 0; i < colors.Length; i++)
             {
-                gradientStopCollection.Add(new GradientStop
+                canvasGradientStopCollection[i] = new CanvasGradientStop
                 {
                     Color = colors[i],
-                    Offset = positions[i]
-                });
+                    Position = positions[i]
+                };
             }
 
-            _linearGradientBrush = new LinearGradientBrush
-            {
-                GradientStops = gradientStopCollection,
-                SpreadMethod = GradientSpreadMethod.Pad,
-                MappingMode = BrushMappingMode.Absolute
-            };
-            
+            _canvasLinearGradientBrush = new CanvasLinearGradientBrush(CanvasDevice.GetSharedDevice(),
+                canvasGradientStopCollection, CanvasEdgeBehavior.Clamp, CanvasAlphaMode.Straight);
         }
 
-        public override Brush GetBrush(byte alpha)
+        public override ICanvasBrush GetBrush(byte alpha)
         {
-            var matrixTransform = GetCurrentRenderTransform();
+            var startP = VectorF.Build.Dense(3);
+            var endP = VectorF.Build.Dense(3);
+            LocalMatrix.Multiply(VectorF.Build.Dense(new[] { _x0, _y0, 1f }), startP);
+            LocalMatrix.Multiply(VectorF.Build.Dense(new[] { _x1, _y1, 1f }), endP);
 
-            var transformedZero = matrixTransform.TransformPoint(new Point(0, 0));
-
-            var startPoint = new Point(transformedZero.X / 2 + _x0, transformedZero.Y / 2 + _y0);
-            var endPoint = new Point(transformedZero.X / 2 + _x1, transformedZero.Y / 2 + _y1);
-
-            _linearGradientBrush.StartPoint = startPoint;
-            _linearGradientBrush.EndPoint = endPoint;
-            _linearGradientBrush.Opacity = alpha / 255f;
-            return _linearGradientBrush;
+            _canvasLinearGradientBrush.StartPoint = new Vector2(startP[0], startP[1]);
+            _canvasLinearGradientBrush.EndPoint = new Vector2(endP[0], endP[1]);
+            _canvasLinearGradientBrush.Opacity = alpha / 255f;
+            return _canvasLinearGradientBrush;
         }
     }
 }

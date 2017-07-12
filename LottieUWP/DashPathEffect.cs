@@ -1,29 +1,24 @@
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP
 {
     internal class DashPathEffect : PathEffect
     {
-        private readonly DoubleCollection _intervals;
-        private readonly double _phase;
+        private readonly float[] _intervals;
+        private readonly float _phase;
 
-        public DashPathEffect(double[] intervals, double phase)
+        public DashPathEffect(float[] intervals, float phase)
         {
-            _intervals = new DoubleCollection();
-            for (var i = 0; i < intervals.Length; i++)
-            {
-                _intervals.Add(intervals[i]);
-            }
+            _intervals = intervals;
             _phase = phase;
         }
 
-        public override void Apply(Shape shape, Paint paint)
+        public override void Apply(CanvasStrokeStyle canvasStrokeStyle, Paint paint)
         {
             if (paint.Style == Paint.PaintStyle.Stroke)
             {
-                shape.StrokeDashArray = _intervals;
-                shape.StrokeDashOffset = _phase;
+                canvasStrokeStyle.CustomDashStyle = _intervals;
+                canvasStrokeStyle.DashOffset = _phase;
             }
         }
     }

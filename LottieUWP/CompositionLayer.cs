@@ -91,7 +91,7 @@ namespace LottieUWP
             }
             if (!_originalClipRect.IsEmpty)
             {
-                canvas.ClipRect(_originalClipRect, Region.Op.Replace);
+                canvas.ClipReplaceRect(_originalClipRect);
             }
             LottieLog.EndSection("CompositionLayer.Draw");
         }

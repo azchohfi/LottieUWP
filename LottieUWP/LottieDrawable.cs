@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.UI;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
@@ -422,9 +421,9 @@ namespace LottieUWP
                 else
                 {
                     Canvas.Clear(Colors.Transparent);
+                    Draw(Canvas);
+                    Canvas.Flush();
                 }
-
-                Draw(Canvas);
             }
         }
 
@@ -539,7 +538,7 @@ namespace LottieUWP
         /// <returns> the previous Bitmap or null.
         ///  </returns>
 
-        public virtual BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
+        public virtual CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
             var bm = ImageAssetManager;
             if (bm == null)
@@ -552,7 +551,7 @@ namespace LottieUWP
             return ret;
         }
 
-        internal virtual ImageSource GetImageAsset(string id)
+        internal virtual CanvasBitmap GetImageAsset(string id)
         {
             return ImageAssetManager?.BitmapForId(id);
         }

@@ -1,4 +1,4 @@
-﻿using Windows.UI.Xaml.Media.Imaging;
+﻿using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP
 {
@@ -7,6 +7,6 @@ namespace LottieUWP
     /// </summary>
     public interface IImageAssetDelegate
     {
-        BitmapImage FetchBitmap(LottieImageAsset asset);
+        CanvasBitmap FetchBitmap(LottieImageAsset asset);
     }
 }

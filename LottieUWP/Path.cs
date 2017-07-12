@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
-using Windows.UI.Xaml.Media;
+using System.Numerics;
+using Microsoft.Graphics.Canvas.Geometry;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
@@ -22,7 +23,7 @@ namespace LottieUWP
             PointF Last { get; }
             float[] Points { get; }
             PathIterator.ContourType Type { get; }
-            DrawReturnType AddPathSegment(PathFigure pathFigure);
+            DrawReturnType AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed);
             void Offset(float dx, float dy);
             PointF PointAtDistance(float distance);
         }
@@ -93,16 +94,12 @@ namespace LottieUWP
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Arc;
 
-            public DrawReturnType AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
             {
-                pathFigure.Segments.Add(new ArcSegment
-                {
-                    SweepDirection = SweepDirection.Clockwise,
-                    RotationAngle = _sweepAngle,
-                    IsLargeArc = false,
-                    Point = new Point(_endPoint.X, _endPoint.Y),
-                    Size = new Size(_a / 2, _b / 2)
-                });
+                canvasPathBuilder.AddArc(new Vector2(_endPoint.X, _endPoint.Y), 
+                    _a/2, _b/2, _sweepAngle, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
+
+                closed = false;
 
                 return DrawReturnType.JustDraw;
             }
@@ -239,14 +236,15 @@ namespace LottieUWP
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Bezier;
 
-            public DrawReturnType AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
             {
-                pathFigure.Segments.Add(new BezierSegment
-                {
-                    Point1 = new Point(Control1.X, Control1.Y),
-                    Point2 = new Point(Control2.X, Control2.Y),
-                    Point3 = new Point(Vertex.X, Vertex.Y)
-                });
+                canvasPathBuilder.AddCubicBezier(
+                    new Vector2(Control1.X, Control1.Y),
+                    new Vector2(Control2.X, Control2.Y),
+                    new Vector2(Vertex.X, Vertex.Y));
+
+                closed = false;
+
                 return DrawReturnType.JustDraw;
             }
 
@@ -318,12 +316,12 @@ namespace LottieUWP
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Line;
 
-            public DrawReturnType AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
             {
-                pathFigure.Segments.Add(new LineSegment
-                {
-                    Point = new Point(_point.X, _point.Y)
-                });
+                canvasPathBuilder.AddLine(_point.X, _point.Y);
+
+                closed = false;
+
                 return DrawReturnType.JustDraw;
             }
 
@@ -381,8 +379,18 @@ namespace LottieUWP
                 return new MoveToContour(_point.X, _point.Y);
             }
 
-            public DrawReturnType AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
             {
+                if (!closed)
+                {
+                    canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
+                }
+                else
+                {
+                    closed = false;
+                }
+                canvasPathBuilder.BeginFigure(First.X, First.Y);
+
                 return DrawReturnType.NewFigure;
             }
 
@@ -447,9 +455,14 @@ namespace LottieUWP
                 return new CloseContour(_point.X, _point.Y);
             }
 
-            public DrawReturnType AddPathSegment(PathFigure pathFigure)
+            public DrawReturnType AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
             {
-                pathFigure.IsClosed = true;
+                if (!closed)
+                {
+                    canvasPathBuilder.EndFigure(CanvasFigureLoop.Closed);
+                    closed = true;
+                }
+
                 return DrawReturnType.NewPath;
             }
 
@@ -599,7 +612,7 @@ namespace LottieUWP
             Contours.Add(close);
         }
 
-        public void Op(Path firstPath, Path remainderPath, Op op1)
+        public void Op(Path path1, Path path2, Op op)
         {
 
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using Windows.Foundation;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
@@ -44,31 +43,11 @@ namespace LottieUWP
                 BoundsMatrix.MapRect(ref outBounds);
             }
         }
-        private int PixelWidth
-        {
-            get
-            {
-                if (Bitmap is BitmapSource bitmapSource)
-                    return bitmapSource.PixelWidth;
-                if (Bitmap is RenderTargetBitmap renderTargetBitmap)
-                    return renderTargetBitmap.PixelWidth;
-                return 0;
-            }
-        }
+        private int PixelWidth => (int)Bitmap.SizeInPixels.Width;
 
-        private int PixelHeight
-        {
-            get
-            {
-                if (Bitmap is BitmapSource bitmapSource)
-                    return bitmapSource.PixelHeight;
-                if (Bitmap is RenderTargetBitmap renderTargetBitmap)
-                    return renderTargetBitmap.PixelHeight;
-                return 0;
-            }
-        }
+        private int PixelHeight => (int)Bitmap.SizeInPixels.Height;
 
-        private ImageSource Bitmap
+        private CanvasBitmap Bitmap
         {
             get
             {

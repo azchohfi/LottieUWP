@@ -1,9 +1,9 @@
-using Windows.UI.Xaml.Shapes;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP
 {
     public abstract class PathEffect
     {
-        public abstract void Apply(Shape shape, Paint paint);
+        public abstract void Apply(CanvasStrokeStyle canvasStrokeStyle, Paint paint);
     }
 }

@@ -7,7 +7,7 @@ using Windows.Data.Json;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP
 {
@@ -603,7 +603,7 @@ namespace LottieUWP
         /// through ImageAssetsFolder or with an ImageAssetDelegate.
         /// Return the previous Bitmap or null.
         /// </summary>
-        public BitmapImage UpdateBitmap(string id, BitmapImage bitmap)
+        public CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
             return _lottieDrawable.UpdateBitmap(id, bitmap);
         }

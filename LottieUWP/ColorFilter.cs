@@ -1,9 +1,9 @@
-using Windows.UI;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace LottieUWP
 {
     public abstract class ColorFilter
     {
-        public abstract Color Apply(Color color);
+        public abstract ICanvasBrush Apply(BitmapCanvas dst, ICanvasBrush brush);
     }
 }

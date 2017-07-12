@@ -1,9 +1,9 @@
-using Windows.UI.Xaml.Media;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace LottieUWP
 {
     internal abstract class Gradient : Shader
     {
-        public abstract Brush GetBrush(byte alpha);
+        public abstract ICanvasBrush GetBrush(byte alpha);
     }
 }
