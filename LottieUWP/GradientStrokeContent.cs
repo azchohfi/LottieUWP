@@ -68,8 +68,7 @@ namespace LottieUWP
             get
             {
                 var gradientHash = GradientHash;
-                LinearGradient gradient;
-                if (_linearGradientCache.TryGetValue(gradientHash, out gradient))
+                if (_linearGradientCache.TryGetValue(gradientHash, out LinearGradient gradient))
                 {
                     return gradient;
                 }
@@ -93,8 +92,7 @@ namespace LottieUWP
             get
             {
                 var gradientHash = GradientHash;
-                RadialGradient gradient;
-                if (_radialGradientCache.TryGetValue(gradientHash, out gradient))
+                if (_radialGradientCache.TryGetValue(gradientHash, out RadialGradient gradient))
                 {
                     return gradient;
                 }

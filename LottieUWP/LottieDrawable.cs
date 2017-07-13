@@ -44,6 +44,7 @@ namespace LottieUWP
         private bool _performanceTrackingEnabled;
         private BitmapCanvas _bitmapCanvas;
         private CanvasControl _canvasControl;
+        private bool _forceSoftwareRenderer;
 
         public LottieDrawable()
         {
@@ -67,7 +68,10 @@ namespace LottieUWP
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            _canvasControl = new CanvasControl();
+            _canvasControl = new CanvasControl
+            {
+                ForceSoftwareRenderer = _forceSoftwareRenderer
+            };
 
             _canvasControl.Draw += CanvasControlOnDraw;
             Content = _canvasControl;
@@ -80,6 +84,15 @@ namespace LottieUWP
             {
                 _canvasControl.RemoveFromVisualTree();
                 _canvasControl = null;
+            }
+        }
+
+        public void ForceSoftwareRenderer(bool force)
+        {
+            _forceSoftwareRenderer = force;
+            if (_canvasControl != null)
+            {
+                _canvasControl.ForceSoftwareRenderer = force;
             }
         }
 
@@ -217,7 +230,7 @@ namespace LottieUWP
 
             foreach (var data in _colorFilterData)
             {
-                _compositionLayer.AddColorFilter(data.LayerName, data.ContentName, data._colorFilter);
+                _compositionLayer.AddColorFilter(data.LayerName, data.ContentName, data.ColorFilter);
             }
         }
 
@@ -552,7 +565,6 @@ namespace LottieUWP
         /// </summary>
         /// <returns> the previous Bitmap or null.
         ///  </returns>
-
         public virtual CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
             var bm = ImageAssetManager;
@@ -568,7 +580,7 @@ namespace LottieUWP
 
         internal virtual CanvasBitmap GetImageAsset(string id)
         {
-            return ImageAssetManager?.BitmapForId(id);
+            return ImageAssetManager?.BitmapForId(_canvasControl.Device, id);
         }
 
         private ImageAssetManager ImageAssetManager
@@ -610,13 +622,13 @@ namespace LottieUWP
         {
             internal readonly string LayerName;
             internal readonly string ContentName;
-            internal readonly ColorFilter _colorFilter;
+            internal readonly ColorFilter ColorFilter;
 
             internal ColorFilterData(string layerName, string contentName, ColorFilter colorFilter)
             {
                 LayerName = layerName;
                 ContentName = contentName;
-                _colorFilter = colorFilter;
+                ColorFilter = colorFilter;
             }
 
             public override int GetHashCode()
@@ -648,7 +660,7 @@ namespace LottieUWP
 
                 var other = (ColorFilterData)obj;
 
-                return GetHashCode() == other.GetHashCode() && _colorFilter == other._colorFilter;
+                return GetHashCode() == other.GetHashCode() && ColorFilter == other.ColorFilter;
             }
         }
     }

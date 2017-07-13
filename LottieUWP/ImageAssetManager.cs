@@ -44,10 +44,9 @@ namespace LottieUWP
             return bitmap;
         }
 
-        internal virtual CanvasBitmap BitmapForId(string id)
+        internal virtual CanvasBitmap BitmapForId(CanvasDevice device, string id)
         {
-            CanvasBitmap bitmap;
-            if (!_bitmaps.TryGetValue(id, out bitmap))
+            if (!_bitmaps.TryGetValue(id, out CanvasBitmap bitmap))
             {
                 var imageAsset = _imageAssets[id];
                 if (imageAsset == null)
@@ -78,7 +77,7 @@ namespace LottieUWP
                     Debug.WriteLine($"Unable to open asset. {e}", LottieLog.Tag);
                     return null;
                 }
-                var task = CanvasBitmap.LoadAsync(CanvasDevice.GetSharedDevice(), @is.AsRandomAccessStream(), 160).AsTask();
+                var task = CanvasBitmap.LoadAsync(device, @is.AsRandomAccessStream(), 160).AsTask();
                 task.Wait();
                 bitmap = task.Result;
 

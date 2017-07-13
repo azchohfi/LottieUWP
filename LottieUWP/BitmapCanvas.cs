@@ -123,7 +123,7 @@ namespace LottieUWP
             var style = GetCanvasStrokeStyle(paint);
 
             var gradient = paint.Shader as Gradient;
-            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
+            var brush = gradient != null ? gradient.GetBrush(_device, paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
             brush = paint.ColorFilter?.Apply(this, brush) ?? brush;
 
             var canvasGeometries = new List<CanvasGeometry>();
@@ -326,7 +326,7 @@ namespace LottieUWP
         public Rect DrawText(char character, Paint paint)
         {
             var gradient = paint.Shader as Gradient;
-            var brush = gradient != null ? gradient.GetBrush(paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
+            var brush = gradient != null ? gradient.GetBrush(_device, paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
             brush = paint.ColorFilter?.Apply(this, brush) ?? brush;
 
             UpdateDrawingSessionWithFlags(paint.Flags);

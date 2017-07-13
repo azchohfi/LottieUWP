@@ -655,8 +655,7 @@ namespace LottieUWP
         private void EnableOrDisableHardwareLayer()
         {
             var useHardwareLayer = _useHardwareLayer && _lottieDrawable.IsAnimating;
-            //setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
-            // TODO: FIX
+            _lottieDrawable.ForceSoftwareRenderer(!useHardwareLayer);
         }
 
         //private class SavedState : BaseSavedState
