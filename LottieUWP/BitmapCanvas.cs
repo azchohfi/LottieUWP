@@ -115,57 +115,18 @@ namespace LottieUWP
 
             _drawingSession.Transform = GetCurrentTransform();
 
-            var fill = path.FillType == PathFillType.Winding
-                ? CanvasFilledRegionDetermination.Winding
-                : CanvasFilledRegionDetermination.Alternate;
-            //    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
-
-            var style = GetCanvasStrokeStyle(paint);
+            var geometry = path.GetGeometry(_device);
 
             var gradient = paint.Shader as Gradient;
             var brush = gradient != null ? gradient.GetBrush(_device, paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
             brush = paint.ColorFilter?.Apply(this, brush) ?? brush;
 
-            var canvasGeometries = new List<CanvasGeometry>();
-            var canvasPathBuilder = new CanvasPathBuilder(_device);
-
-            var returnDecision = Path.DrawReturnType.JustDraw;
-
-            var closed = true;
-
-            for (var i = 0; i < path.Contours.Count; i++)
-            {
-                if (returnDecision == Path.DrawReturnType.NewPath)
-                {
-                    canvasGeometries.Add(CanvasGeometry.CreatePath(canvasPathBuilder));
-
-                    DrawFigure(CanvasGeometry.CreateGroup(_device, canvasGeometries.ToArray(), fill), paint, brush, style);
-
-                    canvasGeometries.Clear();
-
-                    canvasPathBuilder = new CanvasPathBuilder(_device);
-                }
-
-                returnDecision = path.Contours[i].AddPathSegment(canvasPathBuilder, ref closed);
-            }
-
-            if (!closed)
-            {
-                canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
-            }
-            canvasGeometries.Add(CanvasGeometry.CreatePath(canvasPathBuilder));
-
-            DrawFigure(CanvasGeometry.CreateGroup(_device, canvasGeometries.ToArray(), fill), paint, brush, style);
+            if (paint.Style == Paint.PaintStyle.Stroke)
+                _drawingSession.DrawGeometry(geometry, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
+            else
+                _drawingSession.FillGeometry(geometry, brush);
 
             _drawingSession.Flush();
-        }
-
-        private void DrawFigure(CanvasGeometry group, Paint paint, ICanvasBrush brush, CanvasStrokeStyle style)
-        {
-            if (paint.Style == Paint.PaintStyle.Stroke)
-                _drawingSession.DrawGeometry(group, brush, paint.StrokeWidth, style);
-            else
-                _drawingSession.FillGeometry(group, brush);
         }
 
         private Matrix3x2 GetCurrentTransform()

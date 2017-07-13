@@ -212,6 +212,7 @@ namespace LottieUWP
             AddColorFilter(new SimpleColorFilter(ColorFilter));
 
             // TODO: Detect battery saver mode or UWP system animations disabled
+            //Windows.System.Power.PowerManager.EnergySaverStatus == EnergySaverStatus.On
             //float systemAnimationScale = Settings.Global.getFloat(Context.ContentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
             float systemAnimationScale = 1;
             if (systemAnimationScale == 0f)

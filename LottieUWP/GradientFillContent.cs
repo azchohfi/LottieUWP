@@ -17,7 +17,7 @@ namespace LottieUWP
         private readonly DenseMatrix _shaderMatrix = DenseMatrix.CreateIdentity(3);
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
-        private Rect _boundsRect;
+        //private Rect _boundsRect;
         private readonly IList<IPathContent> _paths = new List<IPathContent>();
         private readonly GradientType _type;
         private readonly KeyframeAnimation<GradientColor> _colorAnimation;
@@ -77,7 +77,7 @@ namespace LottieUWP
                 _path.AddPath(_paths[i].Path, parentMatrix);
             }
 
-            _path.ComputeBounds(out _boundsRect);
+            //_path.ComputeBounds(out _boundsRect);
 
             Shader shader;
             if (_type == GradientType.Linear)

@@ -7,7 +7,7 @@ namespace LottieUWP
 {
     internal class TextLayer : BaseLayer
     {
-        private Rect _rectF;
+        //private Rect _rectF;
         private readonly Paint _fillPaint = new Paint(Paint.AntiAliasFlag)
         {
             Style = Paint.PaintStyle.Fill
@@ -170,7 +170,7 @@ namespace LottieUWP
             for (var j = 0; j < contentGroups.Count; j++)
             {
                 var path = contentGroups[j].Path;
-                path.ComputeBounds(out _rectF);
+                //path.ComputeBounds(out _rectF);
                 Matrix.Set(parentMatrix);
                 Matrix = MatrixExt.PreScale(Matrix, fontScale, fontScale);
                 path.Transform(Matrix);
