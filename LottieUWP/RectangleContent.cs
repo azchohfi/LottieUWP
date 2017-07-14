@@ -90,7 +90,7 @@ namespace LottieUWP
                 if (radius > 0)
                 {
                     RectExt.Set(ref _rect, position.X + halfWidth - 2 * radius, position.Y + halfHeight - 2 * radius, position.X + halfWidth, position.Y + halfHeight);
-                    _path.ArcTo(_rect, 0, 90);
+                    _path.ArcTo(position.X + halfWidth, position.Y + halfHeight - radius, _rect, 0, 90);
                 }
 
                 _path.LineTo(position.X - halfWidth + radius, position.Y + halfHeight);
@@ -98,7 +98,7 @@ namespace LottieUWP
                 if (radius > 0)
                 {
                     RectExt.Set(ref _rect, position.X - halfWidth, position.Y + halfHeight - 2 * radius, position.X - halfWidth + 2 * radius, position.Y + halfHeight);
-                    _path.ArcTo(_rect, 90, 90);
+                    _path.ArcTo(position.X - halfWidth + radius, position.Y + halfHeight, _rect, 90, 90);
                 }
                 
                 _path.LineTo(position.X - halfWidth, position.Y - halfHeight + radius);
@@ -106,7 +106,7 @@ namespace LottieUWP
                 if (radius > 0)
                 {
                     RectExt.Set(ref _rect, position.X - halfWidth, position.Y - halfHeight, position.X - halfWidth + 2 * radius, position.Y - halfHeight + 2 * radius);
-                    _path.ArcTo(_rect, 180, 90);
+                    _path.ArcTo(position.X - halfWidth, position.Y - halfHeight + radius, _rect, 180, 90);
                 }
                 
                 _path.LineTo(position.X + halfWidth - radius, position.Y - halfHeight);
@@ -114,7 +114,7 @@ namespace LottieUWP
                 if (radius > 0)
                 {
                     RectExt.Set(ref _rect, position.X + halfWidth - 2 * radius, position.Y - halfHeight, position.X + halfWidth, position.Y - halfHeight + 2 * radius);
-                    _path.ArcTo(_rect, 270, 90);
+                    _path.ArcTo(position.X + halfWidth - radius, position.Y - halfHeight, _rect, 270, 90);
                 }
                 _path.Close();
 

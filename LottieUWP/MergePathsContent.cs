@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP
 {
@@ -59,16 +60,16 @@ namespace LottieUWP
                         AddPaths();
                         break;
                     case MergePaths.MergePathsMode.Add:
-                        OpFirstPathWithRest(Op.Union);
+                        OpFirstPathWithRest(CanvasGeometryCombine.Union);
                         break;
                     case MergePaths.MergePathsMode.Subtract:
-                        OpFirstPathWithRest(Op.ReverseDifference);
+                        OpFirstPathWithRest(CanvasGeometryCombine.Exclude);
                         break;
                     case MergePaths.MergePathsMode.Intersect:
-                        OpFirstPathWithRest(Op.Intersect);
+                        OpFirstPathWithRest(CanvasGeometryCombine.Intersect);
                         break;
                     case MergePaths.MergePathsMode.ExcludeIntersections:
-                        OpFirstPathWithRest(Op.Xor);
+                        OpFirstPathWithRest(CanvasGeometryCombine.Xor);
                         break;
                 }
 
@@ -86,7 +87,7 @@ namespace LottieUWP
             }
         }
 
-        private void OpFirstPathWithRest(Op op)
+        private void OpFirstPathWithRest(CanvasGeometryCombine op)
         {
             _remainderPath.Reset();
             _firstPath.Reset();

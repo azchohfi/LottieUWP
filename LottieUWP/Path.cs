@@ -15,8 +15,6 @@ namespace LottieUWP
         {
             void Transform(DenseMatrix matrix);
             IContour Copy();
-            PointF First { get; }
-            PointF Last { get; }
             float[] Points { get; }
             PathIterator.ContourType Type { get; }
             void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed);
@@ -67,10 +65,6 @@ namespace LottieUWP
                 return new ArcContour(_startPoint, _rect, _startAngle, _sweepAngle);
             }
 
-            public PointF First => _startPoint;
-
-            public PointF Last => _endPoint;
-
             public float[] Points => new[] { _startPoint.X, _startPoint.Y, _endPoint.X, _endPoint.Y };
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Arc;
@@ -104,14 +98,12 @@ namespace LottieUWP
 
         internal class BezierContour : IContour
         {
-            public PointF StartPoint { get; }
             public PointF Control1 { get; }
             public PointF Control2 { get; }
             public PointF Vertex { get; }
 
-            public BezierContour(PointF startPoint, PointF control1, PointF control2, PointF vertex)
+            public BezierContour(PointF control1, PointF control2, PointF vertex)
             {
-                StartPoint = new PointF(startPoint.X, startPoint.Y);
                 Control1 = new PointF(control1.X, control1.Y);
                 Control2 = new PointF(control2.X, control2.Y);
                 Vertex = new PointF(vertex.X, vertex.Y);
@@ -119,9 +111,9 @@ namespace LottieUWP
 
             public void Transform(DenseMatrix matrix)
             {
-                var denseMatrix = new DenseMatrix(3, 4);
+                var denseMatrix = new DenseMatrix(3, 3);
                 var i = 0;
-                foreach (var pointF in new[] { StartPoint, Control1, Control2, Vertex })
+                foreach (var pointF in new[] { Control1, Control2, Vertex })
                 {
                     denseMatrix[0, i] = pointF.X;
                     denseMatrix[1, i] = pointF.Y;
@@ -131,15 +123,14 @@ namespace LottieUWP
 
                 var multiplied = matrix * denseMatrix;
 
-                StartPoint.Set(multiplied[0, 0], multiplied[1, 0]);
-                Control1.Set(multiplied[0, 1], multiplied[1, 1]);
-                Control2.Set(multiplied[0, 2], multiplied[1, 2]);
-                Vertex.Set(multiplied[0, 3], multiplied[1, 3]);
+                Control1.Set(multiplied[0, 0], multiplied[1, 0]);
+                Control2.Set(multiplied[0, 1], multiplied[1, 1]);
+                Vertex.Set(multiplied[0, 2], multiplied[1, 2]);
             }
 
             public IContour Copy()
             {
-                return new BezierContour(StartPoint, Control1, Control2, Vertex);
+                return new BezierContour(Control1, Control2, Vertex);
             }
 
             internal static double BezLength(float c0X, float c0Y, float c1X, float c1Y, float c2X, float c2Y, float c3X, float c3Y)
@@ -189,10 +180,6 @@ namespace LottieUWP
                 return pt;
             }
 
-            public PointF First => StartPoint;
-
-            public PointF Last => Vertex;
-
             public float[] Points => new[] { Control1.X, Control1.Y, Control2.X, Control2.Y, Vertex.X, Vertex.Y };
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Bezier;
@@ -209,7 +196,6 @@ namespace LottieUWP
 
             public void Offset(float dx, float dy)
             {
-                StartPoint.Offset(dx, dy);
                 Control1.Offset(dx, dy);
                 Control2.Offset(dx, dy);
                 Vertex.Offset(dx, dy);
@@ -218,12 +204,10 @@ namespace LottieUWP
 
         class LineContour : IContour
         {
-            private readonly PointF _origin;
             private readonly PointF _point;
 
-            public LineContour(float xOrigin, float yOrigin, float x, float y)
+            public LineContour(float x, float y)
             {
-                _origin = new PointF(xOrigin, yOrigin);
                 _point = new PointF(x, y);
             }
 
@@ -243,12 +227,8 @@ namespace LottieUWP
 
             public IContour Copy()
             {
-                return new LineContour(_origin.X, _origin.Y, _point.X, _point.Y);
+                return new LineContour(_point.X, _point.Y);
             }
-
-            public PointF First => _origin;
-
-            public PointF Last => _point;
 
             public float[] Points => new[] { _point.X, _point.Y };
 
@@ -263,7 +243,6 @@ namespace LottieUWP
 
             public void Offset(float dx, float dy)
             {
-                _origin.Offset(dx, dy);
                 _point.Offset(dx, dy);
             }
         }
@@ -276,10 +255,6 @@ namespace LottieUWP
             {
                 _point = new PointF(x, y);
             }
-
-            public PointF First => _point;
-
-            public PointF Last => _point;
 
             public float[] Points => new[] { _point.X, _point.Y };
 
@@ -300,7 +275,7 @@ namespace LottieUWP
                 {
                     closed = false;
                 }
-                canvasPathBuilder.BeginFigure(First.X, First.Y);
+                canvasPathBuilder.BeginFigure(_point.X, _point.Y);
             }
 
             public void Offset(float dx, float dy)
@@ -324,24 +299,13 @@ namespace LottieUWP
 
         class CloseContour : IContour
         {
-            private readonly PointF _point;
-
-            public CloseContour(float x, float y)
-            {
-                _point = new PointF(x, y);
-            }
-
-            public PointF First => _point;
-
-            public PointF Last => _point;
-
             public float[] Points => new float[0];
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Close;
 
             public IContour Copy()
             {
-                return new CloseContour(_point.X, _point.Y);
+                return new CloseContour();
             }
 
             public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
@@ -355,20 +319,10 @@ namespace LottieUWP
 
             public void Offset(float dx, float dy)
             {
-                _point.Offset(dx, dy);
             }
 
             public void Transform(DenseMatrix matrix)
             {
-                var denseMatrix = new DenseMatrix(3, 1)
-                {
-                    [0, 0] = _point.X,
-                    [1, 0] = _point.Y,
-                    [2, 0] = 1
-                };
-                var multiplied = matrix * denseMatrix;
-
-                _point.Set(multiplied[0, 0], multiplied[1, 0]);
             }
         }
 
@@ -458,7 +412,6 @@ namespace LottieUWP
         public void CubicTo(float x1, float y1, float x2, float y2, float x3, float y3)
         {
             var bezier = new BezierContour(
-                new PointF(CurrentX, CurrentY),
                 new PointF(x1, y1),
                 new PointF(x2, y2),
                 new PointF(x3, y3)
@@ -466,12 +419,9 @@ namespace LottieUWP
             Contours.Add(bezier);
         }
 
-        private float CurrentX => Contours.Last().Last.X;
-        private float CurrentY => Contours.Last().Last.Y;
-
         public void LineTo(float x, float y)
         {
-            var newLine = new LineContour(CurrentX, CurrentY, x, y);
+            var newLine = new LineContour(x, y);
             Contours.Add(newLine);
         }
 
@@ -485,47 +435,24 @@ namespace LottieUWP
 
         public void Close()
         {
-            var lastClose = Contours.LastOrDefault(c => c is CloseContour);
-            PointF firstPoint;
-            if (lastClose == null)
-            {
-                lastClose = Contours.FirstOrDefault();
-                if (lastClose == null)
-                {
-                    return;
-                }
-                firstPoint = lastClose.First;
-            }
-            else
-            {
-                var index = Contours.IndexOf(lastClose) + 1;
-                if (index >= Contours.Count)
-                    return;
-                firstPoint = Contours[index].First;
-            }
-
-            var close = new CloseContour(firstPoint.X, firstPoint.Y);
-            Contours.Add(close);
+            Contours.Add(new CloseContour());
         }
 
-        public void Op(Path path1, Path path2, Op op)
+        /*
+         Set this path to the result of applying the Op to the two specified paths. The resulting path will be constructed from non-overlapping contours. The curve order is reduced where possible so that cubics may be turned into quadratics, and quadratics maybe turned into lines.
+          Path1: The first operand (for difference, the minuend)
+          Path2: The second operand (for difference, the subtrahend)
+        */
+        public void Op(Path path1, Path path2, CanvasGeometryCombine op)
         {
             // TODO
         }
 
-        public void ArcTo(Rect rect, float startAngle, float sweepAngle)
+        public void ArcTo(float x, float y, Rect rect, float startAngle, float sweepAngle)
         {
-            var newArc = new ArcContour(new PointF(CurrentX, CurrentY), rect, startAngle, sweepAngle);
+            var newArc = new ArcContour(new PointF(x, y), rect, startAngle, sweepAngle);
             Contours.Add(newArc);
         }
-    }
-
-    public enum Op
-    {
-        Union,
-        ReverseDifference,
-        Intersect,
-        Xor
     }
 
     public enum PathFillType
