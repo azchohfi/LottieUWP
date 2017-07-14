@@ -12,7 +12,6 @@ namespace LottieUWP
         private readonly PathIterator.ContourType[] _types;
         private readonly float[][] _coordinates;
         private readonly float[] _segmentsLength;
-        private readonly float _totalLength;
 
         public CachedPathIteratorFactory(PathIterator iterator)
         {
@@ -45,7 +44,6 @@ namespace LottieUWP
             // Curves that we can reuse to estimate segments length
             float lastX = 0;
             float lastY = 0;
-            float totalLength = 0;
             for (var i = 0; i < _types.Length; i++)
             {
                 switch (_types[i])
@@ -83,10 +81,7 @@ namespace LottieUWP
                         lastY = _coordinates[i][1];
                         break;
                 }
-                totalLength += _segmentsLength[i];
             }
-
-            _totalLength = totalLength;
         }
 
         private static void QuadCurveSegment(float[] coords, float t0, float t1)
@@ -431,11 +426,6 @@ namespace LottieUWP
 
                 return type;
             }
-
-            /// <summary>
-            /// Returns the total length of the path
-            /// </summary>
-            public float TotalLength => _outerInstance._totalLength;
         }
     }
 

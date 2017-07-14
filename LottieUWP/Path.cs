@@ -15,14 +15,12 @@ namespace LottieUWP
         {
             void Transform(DenseMatrix matrix);
             IContour Copy();
-            float Lenght { get; }
             PointF First { get; }
             PointF Last { get; }
             float[] Points { get; }
             PathIterator.ContourType Type { get; }
             void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed);
             void Offset(float dx, float dy);
-            PointF PointAtDistance(float distance);
         }
 
         class ArcContour : IContour
@@ -69,8 +67,6 @@ namespace LottieUWP
                 return new ArcContour(_startPoint, _rect, _startAngle, _sweepAngle);
             }
 
-            public float Lenght => (float)(Math.PI * (3 * (_a + _b) - Math.Sqrt((3 * _a + _b) * (_a + 3 * _b))) / (360 / _sweepAngle));
-
             public PointF First => _startPoint;
 
             public PointF Last => _endPoint;
@@ -91,15 +87,6 @@ namespace LottieUWP
             {
                 _startPoint.Offset(dx, dy);
                 _endPoint.Offset(dx, dy);
-            }
-
-            public PointF PointAtDistance(float distance)
-            {
-                var p = distance / Lenght;
-
-                var t = _startAngle + p * _sweepAngle;
-
-                return GetPointAtAngle(t);
             }
 
             private PointF GetPointAtAngle(float t)
@@ -154,11 +141,6 @@ namespace LottieUWP
             {
                 return new BezierContour(StartPoint, Control1, Control2, Vertex);
             }
-
-            public float Lenght => (float)BezLength(StartPoint.X, StartPoint.Y, 
-                Control1.X, Control1.Y,
-                Control2.X, Control2.Y, 
-                Vertex.X, Vertex.Y);
 
             internal static double BezLength(float c0X, float c0Y, float c1X, float c1Y, float c2X, float c2Y, float c3X, float c3Y)
             {
@@ -232,21 +214,6 @@ namespace LottieUWP
                 Control2.Offset(dx, dy);
                 Vertex.Offset(dx, dy);
             }
-
-            public PointF PointAtDistance(float distance)
-            {
-                var d = BezLength(StartPoint.X, StartPoint.Y, Control1.X, Control1.Y, Control2.X, Control2.Y, Vertex.X, Vertex.Y);
-
-                if (d >= distance)
-                {
-                    var p = 1 - (d - distance) / d;
-                    if (double.IsNaN(p))
-                        p = 0;
-                    return GetPointAtT(StartPoint.X, StartPoint.Y, Control1.X, Control1.Y, Control2.X, Control2.Y, Vertex.X, Vertex.Y, p);
-                }
-
-                return null;
-            }
         }
 
         class LineContour : IContour
@@ -279,8 +246,6 @@ namespace LottieUWP
                 return new LineContour(_origin.X, _origin.Y, _point.X, _point.Y);
             }
 
-            public float Lenght => (float)new PointF(_origin.X - _point.X, _origin.Y - _point.Y).Length();
-
             public PointF First => _origin;
 
             public PointF Last => _point;
@@ -301,21 +266,6 @@ namespace LottieUWP
                 _origin.Offset(dx, dy);
                 _point.Offset(dx, dy);
             }
-
-            public PointF PointAtDistance(float distance)
-            {
-                var dist = new PointF(_point.X - _origin.X, _point.Y - _origin.Y);
-                var d = dist.Length();
-                if (d >= distance)
-                {
-                    var p = 1 - (d - distance) / d;
-                    if (double.IsNaN(p))
-                        p = 0;
-                    return new PointF((float)(_origin.X + dist.X * p), (float)(_origin.Y + dist.Y * p));
-                }
-
-                return null;
-            }
         }
 
         class MoveToContour : IContour
@@ -326,8 +276,6 @@ namespace LottieUWP
             {
                 _point = new PointF(x, y);
             }
-
-            public float Lenght => 0;
 
             public PointF First => _point;
 
@@ -360,16 +308,6 @@ namespace LottieUWP
                 _point.Offset(dx, dy);
             }
 
-            public PointF PointAtDistance(float distance)
-            {
-                if (distance == 0)
-                {
-                    return new PointF(_point.X, _point.Y);
-                }
-
-                return null;
-            }
-
             public void Transform(DenseMatrix matrix)
             {
                 var denseMatrix = new DenseMatrix(3, 1)
@@ -392,8 +330,6 @@ namespace LottieUWP
             {
                 _point = new PointF(x, y);
             }
-
-            public float Lenght => 0;
 
             public PointF First => _point;
 
@@ -422,16 +358,6 @@ namespace LottieUWP
                 _point.Offset(dx, dy);
             }
 
-            public PointF PointAtDistance(float distance)
-            {
-                if (distance == 0)
-                {
-                    return new PointF(_point.X, _point.Y);
-                }
-
-                return null;
-            }
-
             public void Transform(DenseMatrix matrix)
             {
                 var denseMatrix = new DenseMatrix(3, 1)
@@ -448,7 +374,7 @@ namespace LottieUWP
 
         public PathFillType FillType { get; set; }
 
-        public List<IContour> Contours { get; private set; }
+        public List<IContour> Contours { get; }
 
         public Path()
         {
@@ -458,7 +384,8 @@ namespace LottieUWP
 
         public void Set(Path path)
         {
-            Contours = path.Contours.Select(p => p.Copy()).ToList();
+            Contours.Clear();
+            Contours.AddRange(path.Contours.Select(p => p.Copy()));
             FillType = path.FillType;
         }
 
@@ -476,7 +403,7 @@ namespace LottieUWP
                 ? CanvasFilledRegionDetermination.Winding
                 : CanvasFilledRegionDetermination.Alternate;
             //    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
-
+            
             var canvasPathBuilder = new CanvasPathBuilder(device);
             canvasPathBuilder.SetFilledRegionDetermination(fill);
 
@@ -590,28 +517,6 @@ namespace LottieUWP
         {
             var newArc = new ArcContour(new PointF(CurrentX, CurrentY), rect, startAngle, sweepAngle);
             Contours.Add(newArc);
-        }
-
-        public PointF PathPointAtDistance(float distance, out IContour contourAtDistance)
-        {
-            float sum = 0;
-            foreach (var contour in Contours)
-            {
-                var contourLenght = contour.Lenght;
-                if (distance - sum <= contourLenght)
-                {
-                    var point = contour.PointAtDistance(distance - sum);
-                    if (point != null)
-                    {
-                        contourAtDistance = contour;
-                        return point;
-                    }
-                }
-                sum += contourLenght;
-            }
-
-            contourAtDistance = null;
-            return null;
         }
     }
 

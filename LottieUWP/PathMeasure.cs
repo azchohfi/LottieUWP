@@ -1,14 +1,20 @@
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
+
 namespace LottieUWP
 {
     internal class PathMeasure
     {
         private CachedPathIteratorFactory _originalPathIterator;
         private Path _path;
+        private CanvasGeometry _geometry;
 
         public PathMeasure(Path path)
         {
             _originalPathIterator = new CachedPathIteratorFactory(new FullPathIterator(path));
             _path = path;
+            _geometry = _path.GetGeometry(CanvasDevice.GetSharedDevice());
+            Length = _geometry.ComputePathLength();
         }
 
         public PathMeasure()
@@ -19,19 +25,13 @@ namespace LottieUWP
         {
             _originalPathIterator = new CachedPathIteratorFactory(new FullPathIterator(path));
             _path = path;
+            _geometry = _path.GetGeometry(CanvasDevice.GetSharedDevice());
+            Length = _geometry.ComputePathLength();
         }
 
-        public float Length
-        {
-            get
-            {
-                if (_path?.Contours?.Count > 0)
-                    return _originalPathIterator.Iterator().TotalLength;
-                return 0;
-            }
-        }
+        public float Length { get; private set; }
 
-        public void GetPosTan(float distance, ref float[] pos)
+        public PointF GetPosTan(float distance)
         {
             if (distance < 0)
                 distance = 0;
@@ -40,11 +40,9 @@ namespace LottieUWP
             if (distance > length)
                 distance = length;
 
-            var point = _path.PathPointAtDistance(distance, out _);
-            if (point != null)
-            {
-                pos = new[] { point.X, point.Y };
-            }
+            var vect = _geometry.ComputePointOnPath(distance);
+
+            return new PointF(vect.X, vect.Y);
         }
 
         public bool GetSegment(float startD, float stopD, ref Path dst, bool startWithMoveTo)
