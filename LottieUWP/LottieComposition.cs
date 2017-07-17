@@ -20,12 +20,12 @@ namespace LottieUWP
     /// </summary>
     public class LottieComposition
     {
-        private readonly IDictionary<string, IList<Layer>> _precomps = new Dictionary<string, IList<Layer>>();
-        private readonly IDictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
+        private readonly Dictionary<string, List<Layer>> _precomps = new Dictionary<string, List<Layer>>();
+        private readonly Dictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
         /** Map of font names to fonts */
 
         private readonly Dictionary<long, Layer> _layerMap = new Dictionary<long, Layer>();
-        private readonly IList<Layer> _layers = new List<Layer>();
+        private readonly List<Layer> _layers = new List<Layer>();
         // This is stored as a set to avoid duplicates.
         private readonly HashSet<string> _warnings = new HashSet<string>();
         private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
@@ -85,23 +85,23 @@ namespace LottieUWP
 
         internal virtual long EndFrame => _endFrame;
 
-        internal virtual IList<Layer> Layers => _layers;
+        internal virtual List<Layer> Layers => _layers;
 
-        internal virtual IList<Layer> GetPrecomps(string id)
+        internal virtual List<Layer> GetPrecomps(string id)
         {
             return _precomps[id];
         }
 
-        internal virtual IDictionary<string, Font> Fonts { get; } = new Dictionary<string, Font>();
+        internal virtual Dictionary<string, Font> Fonts { get; } = new Dictionary<string, Font>();
 
         public virtual bool HasImages()
         {
             return _images.Count > 0;
         }
 
-        internal virtual IDictionary<string, LottieImageAsset> Images => _images;
+        internal virtual Dictionary<string, LottieImageAsset> Images => _images;
 
-        internal virtual IDictionary<int, FontCharacter> Characters { get; } = new Dictionary<int, FontCharacter>();
+        internal virtual Dictionary<int, FontCharacter> Characters { get; } = new Dictionary<int, FontCharacter>();
 
         internal virtual float DurationFrames => Duration * _frameRate / 1000f;
 
@@ -283,7 +283,7 @@ namespace LottieUWP
                     {
                         continue;
                     }
-                    IList<Layer> layers = new List<Layer>(layersJson.Count);
+                    var layers = new List<Layer>(layersJson.Count);
                     var layerMap = new Dictionary<long, Layer>();
                     for (var j = 0; j < layersJson.Count; j++)
                     {
@@ -335,7 +335,7 @@ namespace LottieUWP
                 if (charsJson == null)
                     return;
 
-                int length = charsJson.Count;
+                var length = charsJson.Count;
                 for (uint i = 0; i < length; i++)
                 {
                     var character = FontCharacter.Factory.NewInstance(charsJson.GetObjectAt(i), composition);
@@ -343,7 +343,7 @@ namespace LottieUWP
                 }
             }
 
-            internal static void AddLayer(IList<Layer> layers, Dictionary<long, Layer> layerMap, Layer layer)
+            internal static void AddLayer(List<Layer> layers, Dictionary<long, Layer> layerMap, Layer layer)
             {
                 layers.Add(layer);
                 layerMap.Add(layer.Id, layer);

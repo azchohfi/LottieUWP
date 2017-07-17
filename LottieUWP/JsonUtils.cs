@@ -1,21 +1,22 @@
-﻿using Windows.Data.Json;
+﻿using System.Numerics;
+using Windows.Data.Json;
 
 namespace LottieUWP
 {
     internal static class JsonUtils
     {
-        internal static PointF PointFromJsonObject(JsonObject values, float scale)
+        internal static Vector2 PointFromJsonObject(JsonObject values, float scale)
         {
-            return new PointF(ValueFromObject(values["x"]) * scale, ValueFromObject(values["y"]) * scale);
+            return new Vector2(ValueFromObject(values["x"]) * scale, ValueFromObject(values["y"]) * scale);
         }
 
-        internal static PointF PointFromJsonArray(JsonArray values, float scale)
+        internal static Vector2 PointFromJsonArray(JsonArray values, float scale)
         {
             if (values.Count < 2)
             {
                 throw new System.ArgumentException("Unable to parse point for " + values);
             }
-            return new PointF((float)values.GetNumberAt(0, 1) * scale, (float)values.GetNumberAt(1, 1) * scale);
+            return new Vector2((float)values.GetNumberAt(0, 1) * scale, (float)values.GetNumberAt(1, 1) * scale);
         }
 
         internal static float ValueFromObject(IJsonValue @object)

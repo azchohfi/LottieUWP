@@ -1,4 +1,5 @@
-﻿using Windows.Data.Json;
+﻿using System.Numerics;
+using Windows.Data.Json;
 
 namespace LottieUWP
 {
@@ -12,7 +13,7 @@ namespace LottieUWP
 
         private readonly Type _type;
 
-        private PolystarShape(string name, Type type, AnimatableFloatValue points, IAnimatableValue<PointF> position, AnimatableFloatValue rotation, AnimatableFloatValue innerRadius, AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness, AnimatableFloatValue outerRoundedness)
+        private PolystarShape(string name, Type type, AnimatableFloatValue points, IAnimatableValue<Vector2?> position, AnimatableFloatValue rotation, AnimatableFloatValue innerRadius, AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness, AnimatableFloatValue outerRoundedness)
         {
             Name = name;
             _type = type;
@@ -34,7 +35,7 @@ namespace LottieUWP
 
         internal virtual AnimatableFloatValue Points { get; }
 
-        internal virtual IAnimatableValue<PointF> Position { get; }
+        internal virtual IAnimatableValue<Vector2?> Position { get; }
 
         internal virtual AnimatableFloatValue Rotation { get; }
 

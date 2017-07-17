@@ -10,7 +10,7 @@ namespace LottieUWP
         {
         }
 
-        internal AnimatableIntegerValue(IList<IKeyframe<int?>> keyframes, int? initialValue) : base(keyframes, initialValue)
+        internal AnimatableIntegerValue(List<IKeyframe<int?>> keyframes, int? initialValue) : base(keyframes, initialValue)
         {
         }
 

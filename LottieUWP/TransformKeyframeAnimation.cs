@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
@@ -7,8 +8,8 @@ namespace LottieUWP
     {
         private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
 
-        private readonly IBaseKeyframeAnimation<PointF> _anchorPoint;
-        private readonly IBaseKeyframeAnimation<PointF> _position;
+        private readonly IBaseKeyframeAnimation<Vector2?> _anchorPoint;
+        private readonly IBaseKeyframeAnimation<Vector2?> _position;
         private readonly IBaseKeyframeAnimation<ScaleXy> _scale;
         private readonly IBaseKeyframeAnimation<float?> _rotation;
         private readonly IBaseKeyframeAnimation<int?> _opacity;
@@ -93,9 +94,9 @@ namespace LottieUWP
             {
                 _matrix.Reset();
                 var position = _position.Value;
-                if (position != null && (position.X != 0 || position.Y != 0))
+                if (position != null && (position.Value.X != 0 || position.Value.Y != 0))
                 {
-                    _matrix = MatrixExt.PreTranslate(_matrix, position.X, position.Y);
+                    _matrix = MatrixExt.PreTranslate(_matrix, position.Value.X, position.Value.Y);
                 }
 
                 if (_rotation.Value.HasValue && _rotation.Value.Value != 0f)
@@ -110,9 +111,9 @@ namespace LottieUWP
                 }
 
                 var anchorPoint = _anchorPoint.Value;
-                if (anchorPoint != null && (anchorPoint.X != 0 || anchorPoint.Y != 0))
+                if (anchorPoint != null && (anchorPoint.Value.X != 0 || anchorPoint.Value.Y != 0))
                 {
-                    _matrix = MatrixExt.PreTranslate(_matrix, -anchorPoint.X, -anchorPoint.Y);
+                    _matrix = MatrixExt.PreTranslate(_matrix, -anchorPoint.Value.X, -anchorPoint.Value.Y);
                 }
                 return _matrix;
             }
@@ -129,11 +130,11 @@ namespace LottieUWP
             var rotation = _rotation.Value.Value;
 
             _matrix.Reset();
-            _matrix = MatrixExt.PreTranslate(_matrix, position.X * amount, position.Y * amount);
+            _matrix = MatrixExt.PreTranslate(_matrix, position.Value.X * amount, position.Value.Y * amount);
             _matrix = MatrixExt.PreScale(_matrix,
                 (float)Math.Pow(scale.ScaleX, amount),
                 (float)Math.Pow(scale.ScaleY, amount));
-            _matrix = MatrixExt.PreRotate(_matrix, rotation * amount, anchorPoint.X, anchorPoint.Y);
+            _matrix = MatrixExt.PreRotate(_matrix, rotation * amount, anchorPoint.Value.X, anchorPoint.Value.Y);
 
             return _matrix;
         }

@@ -49,7 +49,7 @@ namespace LottieUWP
             }
         }
 
-        private ShapeStroke(string name, AnimatableFloatValue offset, IList<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color, AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType, LineJoinType joinType)
+        private ShapeStroke(string name, AnimatableFloatValue offset, List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color, AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType, LineJoinType joinType)
         {
             Name = name;
             DashOffset = offset;
@@ -71,7 +71,7 @@ namespace LottieUWP
             internal static ShapeStroke NewInstance(JsonObject json, LottieComposition composition)
             {
                 var name = json.GetNamedString("nm");
-                IList<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
+                var lineDashPattern = new List<AnimatableFloatValue>();
                 var color = AnimatableColorValue.Factory.NewInstance(json.GetNamedObject("c"), composition);
                 var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
                 var opacity = AnimatableIntegerValue.Factory.NewInstance(json.GetNamedObject("o"), composition);
@@ -115,7 +115,7 @@ namespace LottieUWP
 
         internal virtual AnimatableFloatValue Width { get; }
 
-        internal virtual IList<AnimatableFloatValue> LineDashPattern { get; }
+        internal virtual List<AnimatableFloatValue> LineDashPattern { get; }
 
         internal virtual AnimatableFloatValue DashOffset { get; }
 

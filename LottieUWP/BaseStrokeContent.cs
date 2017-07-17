@@ -13,16 +13,16 @@ namespace LottieUWP
         private readonly Path _trimPathPath = new Path();
         private Rect _rect;
         private readonly LottieDrawable _lottieDrawable;
-        private readonly IList<PathGroup> _pathGroups = new List<PathGroup>();
+        private readonly List<PathGroup> _pathGroups = new List<PathGroup>();
         private readonly float[] _dashPatternValues;
         internal readonly Paint Paint = new Paint(Paint.AntiAliasFlag);
 
         private readonly IBaseKeyframeAnimation<float?> _widthAnimation;
         private readonly IBaseKeyframeAnimation<int?> _opacityAnimation;
-        private readonly IList<IBaseKeyframeAnimation<float?>> _dashPatternAnimations;
+        private readonly List<IBaseKeyframeAnimation<float?>> _dashPatternAnimations;
         private readonly IBaseKeyframeAnimation<float?> _dashPatternOffsetAnimation;
 
-        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, IList<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
+        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
             _lottieDrawable = lottieDrawable;
 
@@ -80,7 +80,7 @@ namespace LottieUWP
 
         public abstract string Name { get; }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             TrimPathContent trimPathContentBefore = null;
             for (var i = contentsBefore.Count - 1; i >= 0; i--)
@@ -312,7 +312,7 @@ namespace LottieUWP
         /// </summary>
         private sealed class PathGroup
         {
-            internal readonly IList<IPathContent> Paths = new List<IPathContent>();
+            internal readonly List<IPathContent> Paths = new List<IPathContent>();
             internal readonly TrimPathContent TrimPath;
 
             internal PathGroup(TrimPathContent trimPath)

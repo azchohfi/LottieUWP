@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace LottieUWP
 {
-    internal class SplitDimensionPathKeyframeAnimation : KeyframeAnimation<PointF>
+    internal class SplitDimensionPathKeyframeAnimation : KeyframeAnimation<Vector2?>
     {
-        private readonly PointF _point = new PointF();
+        private Vector2 _point;
         private readonly KeyframeAnimation<float?> _xAnimation;
         private readonly KeyframeAnimation<float?> _yAnimation;
 
         internal SplitDimensionPathKeyframeAnimation(KeyframeAnimation<float?> xAnimation, KeyframeAnimation<float?> yAnimation)
-            : base(new List<IKeyframe<PointF>>())
+            : base(new List<IKeyframe<Vector2?>>())
         {
             _xAnimation = xAnimation;
             _yAnimation = yAnimation;
@@ -27,9 +28,9 @@ namespace LottieUWP
             }
         }
 
-        public override PointF Value => GetValue(null, 0);
+        public override Vector2? Value => GetValue(null, 0);
 
-        public override PointF GetValue(IKeyframe<PointF> keyframe, float keyframeProgress)
+        public override Vector2? GetValue(IKeyframe<Vector2?> keyframe, float keyframeProgress)
         {
             return _point;
         }

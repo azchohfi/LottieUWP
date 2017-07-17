@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Windows.Foundation;
 
 namespace LottieUWP
@@ -10,8 +11,8 @@ namespace LottieUWP
         private Rect _rect;
 
         private readonly LottieDrawable _lottieDrawable;
-        private readonly IBaseKeyframeAnimation<PointF> _positionAnimation;
-        private readonly IBaseKeyframeAnimation<PointF> _sizeAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?> _positionAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?> _sizeAnimation;
         private readonly IBaseKeyframeAnimation<float?> _cornerRadiusAnimation;
 
         private TrimPathContent _trimPath;
@@ -47,7 +48,7 @@ namespace LottieUWP
             _lottieDrawable.InvalidateSelf();
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsBefore.Count; i++)
             {
@@ -71,8 +72,8 @@ namespace LottieUWP
                 _path.Reset();
 
                 var size = _sizeAnimation.Value;
-                var halfWidth = size.X / 2f;
-                var halfHeight = size.Y / 2f;
+                var halfWidth = size.Value.X / 2f;
+                var halfHeight = size.Value.Y / 2f;
                 var radius = _cornerRadiusAnimation?.Value ?? 0f;
                 var maxRadius = Math.Min(halfWidth, halfHeight);
                 if (radius > maxRadius)
@@ -81,7 +82,7 @@ namespace LottieUWP
                 }
 
                 // Draw the rectangle top right to bottom left.
-                var position = _positionAnimation.Value;
+                var position = _positionAnimation.Value.Value;
 
                 _path.MoveTo(position.X + halfWidth, position.Y - halfHeight + radius);
 

@@ -30,7 +30,7 @@ namespace LottieUWP
             return new Result(keyframes, initialValue);
         }
 
-        private IList<IKeyframe<T>> ParseKeyframes()
+        private List<IKeyframe<T>> ParseKeyframes()
         {
             if (_json != null)
             {
@@ -44,7 +44,7 @@ namespace LottieUWP
             return new List<IKeyframe<T>>();
         }
 
-        private T ParseInitialValue(IList<IKeyframe<T>> keyframes)
+        private T ParseInitialValue(List<IKeyframe<T>> keyframes)
         {
             if (_json != null)
             {
@@ -70,10 +70,10 @@ namespace LottieUWP
 
         internal class Result
         {
-            internal readonly IList<IKeyframe<T>> Keyframes;
+            internal readonly List<IKeyframe<T>> Keyframes;
             internal readonly T InitialValue;
 
-            internal Result(IList<IKeyframe<T>> keyframes, T initialValue)
+            internal Result(List<IKeyframe<T>> keyframes, T initialValue)
             {
                 Keyframes = keyframes;
                 InitialValue = initialValue;

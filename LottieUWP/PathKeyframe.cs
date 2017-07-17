@@ -1,22 +1,23 @@
-﻿using Windows.Data.Json;
+﻿using System.Numerics;
+using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class PathKeyframe : Keyframe<PointF>
+    internal class PathKeyframe : Keyframe<Vector2?>
     {
         private Path _path;
 
-        private PathKeyframe(LottieComposition composition, PointF startValue, PointF endValue, IInterpolator interpolator, float? startFrame, float? endFrame) : base(composition, startValue, endValue, interpolator, startFrame, endFrame)
+        private PathKeyframe(LottieComposition composition, Vector2? startValue, Vector2? endValue, IInterpolator interpolator, float? startFrame, float? endFrame) : base(composition, startValue, endValue, interpolator, startFrame, endFrame)
         {
         }
 
         internal static class PathKeyframeFactory
         {
-            internal static PathKeyframe NewInstance(JsonObject json, LottieComposition composition, IAnimatableValueFactory<PointF> valueFactory)
+            internal static PathKeyframe NewInstance(JsonObject json, LottieComposition composition, IAnimatableValueFactory<Vector2?> valueFactory)
             {
                 var keyframe = KeyFrameFactory.NewInstance(json, composition, composition.DpScale, valueFactory);
-                PointF cp1 = null;
-                PointF cp2 = null;
+                Vector2? cp1 = null;
+                Vector2? cp2 = null;
                 var tiJson = json.GetNamedArray("ti", null);
                 var toJson = json.GetNamedArray("to", null);
                 if (tiJson != null && toJson != null)
@@ -28,10 +29,10 @@ namespace LottieUWP
                 var pathKeyframe = new PathKeyframe(composition, keyframe.StartValue, keyframe.EndValue, keyframe.Interpolator, keyframe.StartFrame, keyframe.EndFrame);
 
                 var equals = keyframe.EndValue != null && keyframe.StartValue != null && keyframe.StartValue.Equals(keyframe.EndValue);
-                
+
                 if (pathKeyframe.EndValue != null && !equals)
                 {
-                    pathKeyframe._path = Utils.CreatePath(keyframe.StartValue, keyframe.EndValue, cp1, cp2);
+                    pathKeyframe._path = Utils.CreatePath(keyframe.StartValue.Value, keyframe.EndValue.Value, cp1, cp2);
                 }
                 return pathKeyframe;
             }

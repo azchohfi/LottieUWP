@@ -5,7 +5,7 @@ namespace LottieUWP
 {
     internal class GradientStroke : IContentModel
     {
-        private GradientStroke(string name, GradientType gradientType, AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint, AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType, ShapeStroke.LineJoinType joinType, IList<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue dashOffset)
+        private GradientStroke(string name, GradientType gradientType, AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint, AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType, ShapeStroke.LineJoinType joinType, List<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue dashOffset)
         {
             Name = name;
             GradientType = gradientType;
@@ -38,7 +38,7 @@ namespace LottieUWP
 
         internal virtual ShapeStroke.LineJoinType JoinType { get; }
 
-        internal virtual IList<AnimatableFloatValue> LineDashPattern { get; }
+        internal virtual List<AnimatableFloatValue> LineDashPattern { get; }
 
         internal virtual AnimatableFloatValue DashOffset { get; }
 
@@ -93,7 +93,7 @@ namespace LottieUWP
                 var joinType = (ShapeStroke.LineJoinType)(int)(json.GetNamedNumber("lj") - 1);
 
                 AnimatableFloatValue offset = null;
-                IList<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
+                var lineDashPattern = new List<AnimatableFloatValue>();
                 if (json.ContainsKey("d"))
                 {
                     var dashesJson = json.GetNamedArray("d");

@@ -1,10 +1,11 @@
-﻿using Windows.Data.Json;
+﻿using System.Numerics;
+using Windows.Data.Json;
 
 namespace LottieUWP
 {
     internal class CircleShape : IContentModel
     {
-        private CircleShape(string name, IAnimatableValue<PointF> position, AnimatablePointValue size)
+        private CircleShape(string name, IAnimatableValue<Vector2?> position, AnimatablePointValue size)
         {
             Name = name;
             Position = position;
@@ -21,7 +22,7 @@ namespace LottieUWP
 
         internal string Name { get; }
 
-        public IAnimatableValue<PointF> Position { get; }
+        public IAnimatableValue<Vector2?> Position { get; }
 
         public AnimatablePointValue Size { get; }
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)

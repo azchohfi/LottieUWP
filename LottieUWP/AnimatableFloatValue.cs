@@ -9,7 +9,7 @@ namespace LottieUWP
         {
         }
 
-        private AnimatableFloatValue(IList<IKeyframe<float?>> keyframes, float? initialValue) : base(keyframes, initialValue)
+        private AnimatableFloatValue(List<IKeyframe<float?>> keyframes, float? initialValue) : base(keyframes, initialValue)
         {
         }
 

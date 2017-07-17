@@ -5,7 +5,7 @@ namespace LottieUWP
 
     internal class TextKeyframeAnimation : KeyframeAnimation<DocumentData>
     {
-        internal TextKeyframeAnimation(IList<IKeyframe<DocumentData>> keyframes) : base(keyframes)
+        internal TextKeyframeAnimation(List<IKeyframe<DocumentData>> keyframes) : base(keyframes)
         {
         }
 

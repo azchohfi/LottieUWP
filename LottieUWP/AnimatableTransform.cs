@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using Windows.Data.Json;
 
 namespace LottieUWP
 {
     internal class AnimatableTransform : IModifierContent, IContentModel
     {
-        private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<PointF> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity, AnimatableFloatValue startOpacity, AnimatableFloatValue endOpacity)
+        private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<Vector2?> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity, AnimatableFloatValue startOpacity, AnimatableFloatValue endOpacity)
         {
             AnchorPoint = anchorPoint;
             Position = position;
@@ -22,7 +23,7 @@ namespace LottieUWP
             internal static AnimatableTransform NewInstance()
             {
                 var anchorPoint = new AnimatablePathValue();
-                IAnimatableValue<PointF> position = new AnimatablePathValue();
+                var position = new AnimatablePathValue();
                 var scale = AnimatableScaleValue.Factory.NewInstance();
                 var rotation = AnimatableFloatValue.Factory.NewInstance();
                 var opacity = AnimatableIntegerValue.Factory.NewInstance();
@@ -34,7 +35,7 @@ namespace LottieUWP
             internal static AnimatableTransform NewInstance(JsonObject json, LottieComposition composition)
             {
                 AnimatablePathValue anchorPoint;
-                IAnimatableValue<PointF> position = null;
+                IAnimatableValue<Vector2?> position = null;
                 AnimatableScaleValue scale;
                 AnimatableFloatValue rotation = null;
                 AnimatableIntegerValue opacity;
@@ -122,7 +123,7 @@ namespace LottieUWP
 
         internal virtual AnimatablePathValue AnchorPoint { get; }
 
-        internal virtual IAnimatableValue<PointF> Position { get; }
+        internal virtual IAnimatableValue<Vector2?> Position { get; }
 
         internal virtual AnimatableScaleValue Scale { get; }
 

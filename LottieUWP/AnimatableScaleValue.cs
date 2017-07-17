@@ -9,7 +9,7 @@ namespace LottieUWP
         {
         }
 
-        internal AnimatableScaleValue(IList<IKeyframe<ScaleXy>> keyframes, ScaleXy initialValue) : base(keyframes, initialValue)
+        internal AnimatableScaleValue(List<IKeyframe<ScaleXy>> keyframes, ScaleXy initialValue) : base(keyframes, initialValue)
         {
         }
 

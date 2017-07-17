@@ -7,7 +7,7 @@ namespace LottieUWP
     {
         private readonly GradientColor _gradientColor;
 
-        internal GradientColorKeyframeAnimation(IList<IKeyframe<GradientColor>> keyframes) : base(keyframes)
+        internal GradientColorKeyframeAnimation(List<IKeyframe<GradientColor>> keyframes) : base(keyframes)
         {
             var startValue = keyframes[0].StartValue;
             var size = startValue?.Size ?? 0;

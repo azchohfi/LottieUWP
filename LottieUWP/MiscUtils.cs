@@ -2,19 +2,14 @@
 
 namespace LottieUWP
 {
-    internal class MiscUtils
+    internal static class MiscUtils
     {
-        internal static PointF AddPoints(PointF p1, PointF p2)
-        {
-            return new PointF(p1.X + p2.X, p1.Y + p2.Y);
-        }
-
         internal static void GetPathFromData(ShapeData shapeData, Path outPath)
         {
             outPath.Reset();
             var initialPoint = shapeData.InitialPoint;
             outPath.MoveTo(initialPoint.X, initialPoint.Y);
-            var currentPoint = new PointF(initialPoint.X, initialPoint.Y);
+            var currentPoint = initialPoint;
             for (var i = 0; i < shapeData.Curves.Count; i++)
             {
                 var curveData = shapeData.Curves[i];

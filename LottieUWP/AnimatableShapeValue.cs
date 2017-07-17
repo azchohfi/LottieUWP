@@ -7,7 +7,7 @@ namespace LottieUWP
     {
         private readonly Path _convertTypePath = new Path();
 
-        private AnimatableShapeValue(IList<IKeyframe<ShapeData>> keyframes, ShapeData initialValue) : base(keyframes, initialValue)
+        private AnimatableShapeValue(List<IKeyframe<ShapeData>> keyframes, ShapeData initialValue) : base(keyframes, initialValue)
         {
         }
 

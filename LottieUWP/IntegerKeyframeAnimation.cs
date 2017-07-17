@@ -4,7 +4,7 @@ namespace LottieUWP
 {
     internal class IntegerKeyframeAnimation : KeyframeAnimation<int?>
     {
-        internal IntegerKeyframeAnimation(IList<IKeyframe<int?>> keyframes) : base(keyframes)
+        internal IntegerKeyframeAnimation(List<IKeyframe<int?>> keyframes) : base(keyframes)
         {
         }
 

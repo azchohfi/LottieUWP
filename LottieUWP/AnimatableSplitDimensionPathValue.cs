@@ -1,6 +1,8 @@
-﻿namespace LottieUWP
+﻿using System.Numerics;
+
+namespace LottieUWP
 {
-    internal class AnimatableSplitDimensionPathValue : IAnimatableValue<PointF>
+    internal class AnimatableSplitDimensionPathValue : IAnimatableValue<Vector2?>
     {
         private readonly AnimatableFloatValue _animatableXDimension;
         private readonly AnimatableFloatValue _animatableYDimension;
@@ -11,7 +13,7 @@
             _animatableYDimension = animatableYDimension;
         }
 
-        public IBaseKeyframeAnimation<PointF> CreateAnimation()
+        public IBaseKeyframeAnimation<Vector2?> CreateAnimation()
         {
             return new SplitDimensionPathKeyframeAnimation((KeyframeAnimation<float?>)_animatableXDimension.CreateAnimation(), (KeyframeAnimation<float?>)_animatableYDimension.CreateAnimation());
         }

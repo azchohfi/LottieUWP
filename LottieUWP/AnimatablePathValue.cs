@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class AnimatablePathValue : IAnimatableValue<PointF>
+    internal class AnimatablePathValue : IAnimatableValue<Vector2?>
     {
-        internal static IAnimatableValue<PointF> CreateAnimatablePathOrSplitDimensionPath(JsonObject json, LottieComposition composition)
+        internal static IAnimatableValue<Vector2?> CreateAnimatablePathOrSplitDimensionPath(JsonObject json, LottieComposition composition)
         {
             if (json.ContainsKey("k"))
             {
@@ -16,14 +17,14 @@ namespace LottieUWP
         }
 
         private readonly List<PathKeyframe> _keyframes = new List<PathKeyframe>();
-        private readonly PointF _initialPoint;
+        private readonly Vector2 _initialPoint;
 
         /// <summary>
         /// Create a default static animatable path.
         /// </summary>
         internal AnimatablePathValue()
         {
-            _initialPoint = new PointF(0, 0);
+            _initialPoint = new Vector2(0, 0);
         }
 
         internal AnimatablePathValue(IJsonValue json, LottieComposition composition)
@@ -38,7 +39,7 @@ namespace LottieUWP
                     var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(jsonKeyframe, composition, ValueFactory.Instance);
                     _keyframes.Add(keyframe);
                 }
-                Keyframe<PathKeyframe>.SetEndFrames<PathKeyframe, PointF>(_keyframes);
+                Keyframe<PathKeyframe>.SetEndFrames<PathKeyframe, Vector2?>(_keyframes);
             }
             else
             {
@@ -55,14 +56,14 @@ namespace LottieUWP
             return firstObject.ValueType == JsonValueType.Object && firstObject.GetObject().ContainsKey("t");
         }
 
-        public IBaseKeyframeAnimation<PointF> CreateAnimation()
+        public IBaseKeyframeAnimation<Vector2?> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<PointF>(_initialPoint);
+                return new StaticKeyframeAnimation<Vector2?>(_initialPoint);
             }
 
-            return new PathKeyframeAnimation(_keyframes.Cast<IKeyframe<PointF>>().ToList());
+            return new PathKeyframeAnimation(_keyframes.Cast<IKeyframe<Vector2?>>().ToList());
         }
 
         public bool HasAnimation()
@@ -75,11 +76,11 @@ namespace LottieUWP
             return "initialPoint=" + _initialPoint;
         }
 
-        private class ValueFactory : IAnimatableValueFactory<PointF>
+        private class ValueFactory : IAnimatableValueFactory<Vector2?>
         {
-            internal static readonly IAnimatableValueFactory<PointF> Instance = new ValueFactory();
+            internal static readonly IAnimatableValueFactory<Vector2?> Instance = new ValueFactory();
 
-            public PointF ValueFromObject(IJsonValue @object, float scale)
+            public Vector2? ValueFromObject(IJsonValue @object, float scale)
             {
                 return JsonUtils.PointFromJsonArray(@object.GetArray(), scale);
             }

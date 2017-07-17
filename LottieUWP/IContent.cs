@@ -6,6 +6,6 @@ namespace LottieUWP
     {
         string Name { get; }
 
-        void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter);
+        void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter);
     }
 }

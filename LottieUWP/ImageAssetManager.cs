@@ -11,10 +11,10 @@ namespace LottieUWP
     {
         private readonly string _imagesFolder;
         private IImageAssetDelegate _delegate;
-        private readonly IDictionary<string, LottieImageAsset> _imageAssets;
-        private readonly IDictionary<string, CanvasBitmap> _bitmaps = new Dictionary<string, CanvasBitmap>();
+        private readonly Dictionary<string, LottieImageAsset> _imageAssets;
+        private readonly Dictionary<string, CanvasBitmap> _bitmaps = new Dictionary<string, CanvasBitmap>();
 
-        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, IDictionary<string, LottieImageAsset> imageAssets)
+        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, Dictionary<string, LottieImageAsset> imageAssets)
         {
             _imagesFolder = imagesFolder;
             if (!string.IsNullOrEmpty(imagesFolder) && _imagesFolder[_imagesFolder.Length - 1] != '/')

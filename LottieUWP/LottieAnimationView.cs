@@ -44,8 +44,8 @@ namespace LottieUWP
             Strong
         }
 
-        private static readonly IDictionary<string, LottieComposition> StrongRefCache = new Dictionary<string, LottieComposition>();
-        private static readonly IDictionary<string, WeakReference<LottieComposition>> WeakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
+        private static readonly Dictionary<string, LottieComposition> StrongRefCache = new Dictionary<string, LottieComposition>();
+        private static readonly Dictionary<string, WeakReference<LottieComposition>> WeakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
 
         private readonly LottieDrawable _lottieDrawable;
 

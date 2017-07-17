@@ -18,7 +18,7 @@ namespace LottieUWP
         private readonly char _character;
         private readonly string _fontFamily;
 
-        private FontCharacter(IList<ShapeGroup> shapes, char character, int size, double width, string style, string fontFamily)
+        private FontCharacter(List<ShapeGroup> shapes, char character, int size, double width, string style, string fontFamily)
         {
             Shapes = shapes;
             _character = character;
@@ -28,7 +28,7 @@ namespace LottieUWP
             _fontFamily = fontFamily;
         }
 
-        internal IList<ShapeGroup> Shapes { get; }
+        internal List<ShapeGroup> Shapes { get; }
 
         private int _size;
 
@@ -46,7 +46,7 @@ namespace LottieUWP
                 var style = json.GetNamedString("style", "");
                 var fontFamily = json.GetNamedString("fFamily", "");
                 var shapesJson = json.GetNamedObject("data", null)?.GetNamedArray("shapes", null);
-                IList<ShapeGroup> shapes = new List<ShapeGroup>();
+                var shapes = new List<ShapeGroup>();
                 if (shapesJson != null)
                 {
                     shapes = new List<ShapeGroup>(shapesJson.Count);

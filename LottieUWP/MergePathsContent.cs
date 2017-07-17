@@ -9,7 +9,7 @@ namespace LottieUWP
         private readonly Path _remainderPath = new Path();
         private readonly Path _path = new Path();
 
-        private readonly IList<IPathContent> _pathContents = new List<IPathContent>();
+        private readonly List<IPathContent> _pathContents = new List<IPathContent>();
         private readonly MergePaths _mergePaths;
 
         internal MergePathsContent(MergePaths mergePaths)
@@ -20,7 +20,7 @@ namespace LottieUWP
 
         public void AbsorbContent(List<IContent> contents)
         {
-            int index = contents.Count;
+            var index = contents.Count;
             // Fast forward the iterator until after this content.
             while (index > 0)
             {
@@ -40,7 +40,7 @@ namespace LottieUWP
             }
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < _pathContents.Count; i++)
             {

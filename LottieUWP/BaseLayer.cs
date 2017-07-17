@@ -51,9 +51,9 @@ namespace LottieUWP
         private readonly MaskKeyframeAnimation _mask;
         private BaseLayer _matteLayer;
         private BaseLayer _parentLayer;
-        private IList<BaseLayer> _parentLayers;
+        private List<BaseLayer> _parentLayers;
 
-        private readonly IList<IBaseKeyframeAnimation> _animations = new List<IBaseKeyframeAnimation>();
+        private readonly List<IBaseKeyframeAnimation> _animations = new List<IBaseKeyframeAnimation>();
         internal readonly TransformKeyframeAnimation Transform;
         private bool _visible = true;
 
@@ -400,7 +400,7 @@ namespace LottieUWP
 
         public string Name => LayerModel.Name;
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             // Do nothing
         }

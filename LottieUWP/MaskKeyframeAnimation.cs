@@ -7,7 +7,7 @@ namespace LottieUWP
         private readonly List<IBaseKeyframeAnimation<Path>> _maskAnimations;
         private readonly List<IBaseKeyframeAnimation<int?>> _opacityAnimations;
 
-        internal MaskKeyframeAnimation(IList<Mask> masks)
+        internal MaskKeyframeAnimation(List<Mask> masks)
         {
             Masks = masks;
             _maskAnimations = new List<IBaseKeyframeAnimation<Path>>(masks.Count);
@@ -20,7 +20,7 @@ namespace LottieUWP
             }
         }
 
-        internal virtual IList<Mask> Masks { get; }
+        internal virtual List<Mask> Masks { get; }
 
         internal virtual List<IBaseKeyframeAnimation<Path>> MaskAnimations => _maskAnimations;
 

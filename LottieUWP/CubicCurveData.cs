@@ -1,19 +1,21 @@
-﻿namespace LottieUWP
+﻿using System.Numerics;
+
+namespace LottieUWP
 {
     internal class CubicCurveData
     {
-        private readonly PointF _controlPoint1;
-        private readonly PointF _controlPoint2;
-        private readonly PointF _vertex;
+        private Vector2 _controlPoint1;
+        private Vector2 _controlPoint2;
+        private Vector2 _vertex;
 
         internal CubicCurveData()
         {
-            _controlPoint1 = new PointF();
-            _controlPoint2 = new PointF();
-            _vertex = new PointF();
+            _controlPoint1 = new Vector2();
+            _controlPoint2 = new Vector2();
+            _vertex = new Vector2();
         }
 
-        internal CubicCurveData(PointF controlPoint1, PointF controlPoint2, PointF vertex)
+        internal CubicCurveData(Vector2 controlPoint1, Vector2 controlPoint2, Vector2 vertex)
         {
             _controlPoint1 = controlPoint1;
             _controlPoint2 = controlPoint2;
@@ -26,7 +28,7 @@
             _controlPoint1.Y = y;
         }
 
-        internal virtual PointF ControlPoint1 => _controlPoint1;
+        internal virtual Vector2 ControlPoint1 => _controlPoint1;
 
         internal virtual void SetControlPoint2(float x, float y)
         {
@@ -34,7 +36,7 @@
             _controlPoint2.Y = y;
         }
 
-        internal virtual PointF ControlPoint2 => _controlPoint2;
+        internal virtual Vector2 ControlPoint2 => _controlPoint2;
 
         internal virtual void SetVertex(float x, float y)
         {
@@ -42,6 +44,6 @@
             _vertex.Y = y;
         }
 
-        internal virtual PointF Vertex => _vertex;
+        internal virtual Vector2 Vertex => _vertex;
     }
 }

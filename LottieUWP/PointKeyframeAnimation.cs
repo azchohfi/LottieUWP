@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace LottieUWP
 {
-    internal class PointKeyframeAnimation : KeyframeAnimation<PointF>
+    internal class PointKeyframeAnimation : KeyframeAnimation<Vector2?>
     {
-        private readonly PointF _point = new PointF();
+        private Vector2 _point;
 
-        internal PointKeyframeAnimation(IList<IKeyframe<PointF>> keyframes) : base(keyframes)
+        internal PointKeyframeAnimation(List<IKeyframe<Vector2?>> keyframes) : base(keyframes)
         {
         }
 
-        public override PointF GetValue(IKeyframe<PointF> keyframe, float keyframeProgress)
+        public override Vector2? GetValue(IKeyframe<Vector2?> keyframe, float keyframeProgress)
         {
             if (keyframe.StartValue == null || keyframe.EndValue == null)
             {
@@ -20,7 +21,9 @@ namespace LottieUWP
             var startPoint = keyframe.StartValue;
             var endPoint = keyframe.EndValue;
 
-            _point.Set(startPoint.X + keyframeProgress * (endPoint.X - startPoint.X), startPoint.Y + keyframeProgress * (endPoint.Y - startPoint.Y));
+            _point.X = startPoint.Value.X + keyframeProgress * (endPoint.Value.X - startPoint.Value.X);
+            _point.Y = startPoint.Value.Y + keyframeProgress * (endPoint.Value.Y - startPoint.Value.Y);
+
             return _point;
         }
     }

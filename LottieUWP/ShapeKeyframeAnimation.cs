@@ -7,7 +7,7 @@ namespace LottieUWP
         private readonly ShapeData _tempShapeData = new ShapeData();
         private readonly Path _tempPath = new Path();
 
-        internal ShapeKeyframeAnimation(IList<IKeyframe<ShapeData>> keyframes) : base(keyframes)
+        internal ShapeKeyframeAnimation(List<IKeyframe<ShapeData>> keyframes) : base(keyframes)
         {
         }
 

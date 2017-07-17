@@ -22,12 +22,12 @@ namespace LottieUWP
         public virtual event EventHandler ValueChanged;
         private bool _isDiscrete;
 
-        private readonly IList<IKeyframe<TK>> _keyframes;
+        private readonly List<IKeyframe<TK>> _keyframes;
         private float _progress;
 
         private IKeyframe<TK> _cachedKeyframe;
 
-        internal BaseKeyframeAnimation(IList<IKeyframe<TK>> keyframes)
+        internal BaseKeyframeAnimation(List<IKeyframe<TK>> keyframes)
         {
             _keyframes = keyframes;
         }

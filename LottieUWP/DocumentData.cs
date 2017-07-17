@@ -35,12 +35,12 @@ namespace LottieUWP
         {
             internal static DocumentData NewInstance(JsonObject json)
             {
-                string text = json.GetNamedString("t", "");
-                string fontName = json.GetNamedString("f", "");
-                int size = (int)json.GetNamedNumber("s", 0);
-                int justification = (int)json.GetNamedNumber("j", 0);
-                int tracking = (int)json.GetNamedNumber("tr", 0);
-                double lineHeight = json.GetNamedNumber("lh", 0);
+                var text = json.GetNamedString("t", "");
+                var fontName = json.GetNamedString("f", "");
+                var size = (int)json.GetNamedNumber("s", 0);
+                var justification = (int)json.GetNamedNumber("j", 0);
+                var tracking = (int)json.GetNamedNumber("tr", 0);
+                var lineHeight = json.GetNamedNumber("lh", 0);
                 var colorArray = json.GetNamedArray("fc");
                 var color = Color.FromArgb(255, (byte)(colorArray.GetNumberAt(0) * 255), (byte)(colorArray.GetNumberAt(1) * 255), (byte)(colorArray.GetNumberAt(2) * 255));
 
@@ -55,7 +55,7 @@ namespace LottieUWP
                         (byte)(strokeArray.GetNumberAt(2) * 255));
                 }
 
-                int strokeWidth = (int)json.GetNamedNumber("sw", 0);
+                var strokeWidth = (int)json.GetNamedNumber("sw", 0);
                 var strokeOverFill = json.GetNamedBoolean("of", false);
 
                 return new DocumentData(text, fontName, size, justification, tracking, lineHeight, color, strokeColor, strokeWidth, strokeOverFill);

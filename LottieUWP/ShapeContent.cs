@@ -33,7 +33,7 @@ namespace LottieUWP
             _lottieDrawable.InvalidateSelf();
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsBefore.Count; i++)
             {

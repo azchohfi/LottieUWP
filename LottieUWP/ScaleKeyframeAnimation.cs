@@ -5,7 +5,7 @@ namespace LottieUWP
 {
     internal class ScaleKeyframeAnimation : KeyframeAnimation<ScaleXy>
     {
-        internal ScaleKeyframeAnimation(IList<IKeyframe<ScaleXy>> keyframes) : base(keyframes)
+        internal ScaleKeyframeAnimation(List<IKeyframe<ScaleXy>> keyframes) : base(keyframes)
         {
         }
 

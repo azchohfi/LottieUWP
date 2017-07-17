@@ -24,10 +24,10 @@ namespace LottieUWP
         {
             internal static Font NewInstance(JsonObject json)
             {
-                string family = json.GetNamedString("fFamily", "");
-                string name = json.GetNamedString("fName", "");
-                string style = json.GetNamedString("fStyle", "");
-                float ascent = (float)json.GetNamedNumber("ascent", 0);
+                var family = json.GetNamedString("fFamily", "");
+                var name = json.GetNamedString("fName", "");
+                var style = json.GetNamedString("fStyle", "");
+                var ascent = (float)json.GetNamedNumber("ascent", 0);
                 return new Font(family, name, style, ascent);
             }
         }

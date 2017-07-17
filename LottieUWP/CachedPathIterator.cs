@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace LottieUWP
 {
@@ -61,8 +62,8 @@ namespace LottieUWP
                             lastX = _coordinates[i][2], lastY = _coordinates[i][3]);
                         break;
                     case PathIterator.ContourType.Close:
-                        _segmentsLength[i] = PointF.Distance(lastX, lastY, 
-                            lastX = _coordinates[0][0], lastY = _coordinates[0][1]);
+                        _segmentsLength[i] = Vector2.Distance(new Vector2(lastX, lastY), 
+                            new Vector2(lastX = _coordinates[0][0], lastY = _coordinates[0][1]));
                         _coordinates[i] = new float[2];
                         // We convert a CloseContour segment to a LineContour so we do not have to worry
                         // about this special case in the rest of the code.
@@ -76,7 +77,7 @@ namespace LottieUWP
                         lastY = _coordinates[i][1];
                         break;
                     case PathIterator.ContourType.Line:
-                        _segmentsLength[i] = PointF.Distance(lastX, lastY, _coordinates[i][0], _coordinates[i][1]);
+                        _segmentsLength[i] = Vector2.Distance(new Vector2(lastX, lastY), new Vector2(_coordinates[i][0], _coordinates[i][1]));
                         lastX = _coordinates[i][0];
                         lastY = _coordinates[i][1];
                         break;

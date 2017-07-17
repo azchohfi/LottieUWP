@@ -1,14 +1,15 @@
-﻿using Windows.Data.Json;
+﻿using System.Numerics;
+using Windows.Data.Json;
 
 namespace LottieUWP
 {
     internal class RectangleShape : IContentModel
     {
-        private readonly IAnimatableValue<PointF> _position;
+        private readonly IAnimatableValue<Vector2?> _position;
         private readonly AnimatablePointValue _size;
         private readonly AnimatableFloatValue _cornerRadius;
 
-        private RectangleShape(string name, IAnimatableValue<PointF> position, AnimatablePointValue size, AnimatableFloatValue cornerRadius)
+        private RectangleShape(string name, IAnimatableValue<Vector2?> position, AnimatablePointValue size, AnimatableFloatValue cornerRadius)
         {
             Name = name;
             _position = position;
@@ -30,7 +31,7 @@ namespace LottieUWP
 
         internal virtual AnimatablePointValue Size => _size;
 
-        internal virtual IAnimatableValue<PointF> Position => _position;
+        internal virtual IAnimatableValue<Vector2?> Position => _position;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

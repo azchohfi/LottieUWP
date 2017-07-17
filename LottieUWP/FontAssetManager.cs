@@ -10,10 +10,10 @@ namespace LottieUWP
 
         /// <summary>
         /// Pair is (fontName, fontStyle) </summary>
-        private readonly IDictionary<Tuple<string, string>, Typeface> _fontMap = new Dictionary<Tuple<string, string>, Typeface>();
+        private readonly Dictionary<Tuple<string, string>, Typeface> _fontMap = new Dictionary<Tuple<string, string>, Typeface>();
         /// <summary>
         /// Map of font families to their fonts. Necessary to create a font with a different style </summary>
-        private readonly IDictionary<string, Typeface> _fontFamilies = new Dictionary<string, Typeface>();
+        private readonly Dictionary<string, Typeface> _fontFamilies = new Dictionary<string, Typeface>();
         private FontAssetDelegate _delegate;
         private string _defaultFontFileExtension = ".ttf";
 
@@ -67,7 +67,7 @@ namespace LottieUWP
 
             if (_delegate != null && typeface == null)
             {
-                string path = _delegate.GetFontPath(fontFamily);
+                var path = _delegate.GetFontPath(fontFamily);
                 if (!ReferenceEquals(path, null))
                 {
                     typeface = Typeface.CreateFromAsset(path);

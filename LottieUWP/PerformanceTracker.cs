@@ -18,7 +18,7 @@ namespace LottieUWP
 
         private bool _enabled;
         public event EventHandler<FrameRenderedEventArgs> FrameRendered;
-        private readonly IDictionary<string, MeanCalculator> _layerRenderTimes = new Dictionary<string, MeanCalculator>();
+        private readonly Dictionary<string, MeanCalculator> _layerRenderTimes = new Dictionary<string, MeanCalculator>();
         private readonly IComparer<Tuple<string, float?>> _floatComparator = new ComparatorAnonymousInnerClass();
 
         private class ComparatorAnonymousInnerClass : IComparer<Tuple<string, float?>>
@@ -83,7 +83,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual IList<Tuple<string, float?>> SortedRenderTimes
+        public virtual List<Tuple<string, float?>> SortedRenderTimes
         {
             get
             {
@@ -110,7 +110,7 @@ namespace LottieUWP
 
 internal static class HashMapHelperClass
 {
-    internal static HashSet<KeyValuePair<TKey, TValue>> SetOfKeyValuePairs<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+    internal static HashSet<KeyValuePair<TKey, TValue>> SetOfKeyValuePairs<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
     {
         var entries = new HashSet<KeyValuePair<TKey, TValue>>();
         foreach (var keyValuePair in dictionary)

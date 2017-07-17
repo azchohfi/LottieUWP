@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Windows.Foundation;
 using MathNet.Numerics.LinearAlgebra.Single;
 
@@ -18,12 +19,12 @@ namespace LottieUWP
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         //private Rect _boundsRect;
-        private readonly IList<IPathContent> _paths = new List<IPathContent>();
+        private readonly List<IPathContent> _paths = new List<IPathContent>();
         private readonly GradientType _type;
         private readonly KeyframeAnimation<GradientColor> _colorAnimation;
         private readonly KeyframeAnimation<int?> _opacityAnimation;
-        private readonly KeyframeAnimation<PointF> _startPointAnimation;
-        private readonly KeyframeAnimation<PointF> _endPointAnimation;
+        private readonly KeyframeAnimation<Vector2?> _startPointAnimation;
+        private readonly KeyframeAnimation<Vector2?> _endPointAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly int _cacheSteps;
 
@@ -43,11 +44,11 @@ namespace LottieUWP
             _opacityAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_opacityAnimation);
 
-            _startPointAnimation = (KeyframeAnimation<PointF>)fill.StartPoint.CreateAnimation();
+            _startPointAnimation = (KeyframeAnimation<Vector2?>)fill.StartPoint.CreateAnimation();
             _startPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_startPointAnimation);
 
-            _endPointAnimation = (KeyframeAnimation<PointF>)fill.EndPoint.CreateAnimation();
+            _endPointAnimation = (KeyframeAnimation<Vector2?>)fill.EndPoint.CreateAnimation();
             _endPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_endPointAnimation);
         }
@@ -57,7 +58,7 @@ namespace LottieUWP
             _lottieDrawable.InvalidateSelf();
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsAfter.Count; i++)
             {
@@ -133,7 +134,7 @@ namespace LottieUWP
                 var gradientColor = _colorAnimation.Value;
                 var colors = gradientColor.Colors;
                 var positions = gradientColor.Positions;
-                gradient = new LinearGradient(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, colors, positions);
+                gradient = new LinearGradient(startPoint.Value.X, startPoint.Value.Y, endPoint.Value.X, endPoint.Value.Y, colors, positions);
                 _linearGradientCache.Add(gradientHash, gradient);
                 return gradient;
             }
@@ -153,10 +154,10 @@ namespace LottieUWP
                 var gradientColor = _colorAnimation.Value;
                 var colors = gradientColor.Colors;
                 var positions = gradientColor.Positions;
-                var x0 = startPoint.X;
-                var y0 = startPoint.Y;
-                var x1 = endPoint.X;
-                var y1 = endPoint.Y;
+                var x0 = startPoint.Value.X;
+                var y0 = startPoint.Value.Y;
+                var x1 = endPoint.Value.X;
+                var y1 = endPoint.Value.Y;
                 var r = (float)MathExt.Hypot(x1 - x0, y1 - y0);
                 gradient = new RadialGradient(x0, y0, r, colors, positions);
                 _radialGradientCache.Add(gradientHash, gradient);

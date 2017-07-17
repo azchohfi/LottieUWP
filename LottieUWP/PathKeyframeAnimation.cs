@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace LottieUWP
 {
-    internal class PathKeyframeAnimation : KeyframeAnimation<PointF>
+    internal class PathKeyframeAnimation : KeyframeAnimation<Vector2?>
     {
         private PathKeyframe _pathMeasureKeyframe;
         private PathMeasure _pathMeasure;
 
-        internal PathKeyframeAnimation(IList<IKeyframe<PointF>> keyframes)
+        internal PathKeyframeAnimation(List<IKeyframe<Vector2?>> keyframes)
             : base(keyframes)
         {
         }
 
-        public override PointF GetValue(IKeyframe<PointF> keyframe, float keyframeProgress)
+        public override Vector2? GetValue(IKeyframe<Vector2?> keyframe, float keyframeProgress)
         {
             var pathKeyframe = (PathKeyframe) keyframe;
             var path = pathKeyframe.Path;

@@ -5,7 +5,7 @@ namespace LottieUWP
 {
     internal abstract class BaseAnimatableValue<TV, TO> : IAnimatableValue<TO>
     {
-        internal readonly IList<IKeyframe<TV>> Keyframes;
+        internal readonly List<IKeyframe<TV>> Keyframes;
         protected readonly TV _initialValue;
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace LottieUWP
         {
         }
 
-        internal BaseAnimatableValue(IList<IKeyframe<TV>> keyframes, TV initialValue)
+        internal BaseAnimatableValue(List<IKeyframe<TV>> keyframes, TV initialValue)
         {
             Keyframes = keyframes;
             _initialValue = initialValue;

@@ -17,7 +17,7 @@ namespace LottieUWP
             Style = Paint.PaintStyle.Stroke
         };
 
-        private readonly IDictionary<FontCharacter, IList<ContentGroup>> _contentsForCharacter = new Dictionary<FontCharacter, IList<ContentGroup>>();
+        private readonly Dictionary<FontCharacter, List<ContentGroup>> _contentsForCharacter = new Dictionary<FontCharacter, List<ContentGroup>>();
         private readonly IBaseKeyframeAnimation<DocumentData> _textAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly LottieComposition _composition;
@@ -217,7 +217,7 @@ namespace LottieUWP
             return canvas.DrawText(character, paint);
         }
 
-        private IList<ContentGroup> GetContentsForCharacter(FontCharacter character)
+        private List<ContentGroup> GetContentsForCharacter(FontCharacter character)
         {
             if (_contentsForCharacter.ContainsKey(character))
             {
@@ -225,7 +225,7 @@ namespace LottieUWP
             }
             var shapes = character.Shapes;
             var size = shapes.Count;
-            IList<ContentGroup> contents = new List<ContentGroup>(size);
+            var contents = new List<ContentGroup>(size);
             for (var i = 0; i < size; i++)
             {
                 var sg = shapes[i];

@@ -1,24 +1,25 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class AnimatablePointValue : BaseAnimatableValue<PointF, PointF>
+    internal class AnimatablePointValue : BaseAnimatableValue<Vector2?, Vector2?>
     {
-        private AnimatablePointValue(IList<IKeyframe<PointF>> keyframes, PointF initialValue) : base(keyframes, initialValue)
+        private AnimatablePointValue(List<IKeyframe<Vector2?>> keyframes, Vector2? initialValue) : base(keyframes, initialValue)
         {
         }
 
-        protected override PointF ConvertType(PointF value)
+        protected override Vector2? ConvertType(Vector2? value)
         {
-            return new PointF(value.X, value.Y);
+            return value;
         }
 
-        public override IBaseKeyframeAnimation<PointF> CreateAnimation()
+        public override IBaseKeyframeAnimation<Vector2?> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<PointF>(_initialValue);
+                return new StaticKeyframeAnimation<Vector2?>(_initialValue);
             }
             return new PointKeyframeAnimation(Keyframes);
         }
@@ -27,7 +28,7 @@ namespace LottieUWP
         {
             internal static AnimatablePointValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                var result = AnimatableValueParser<PointF>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance).ParseJson();
+                var result = AnimatableValueParser<Vector2?>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance).ParseJson();
                 return new AnimatablePointValue(result.Keyframes, result.InitialValue);
             }
         }

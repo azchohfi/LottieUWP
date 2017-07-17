@@ -4,7 +4,7 @@ namespace LottieUWP
 {
     internal class FloatKeyframeAnimation : KeyframeAnimation<float?>
     {
-        internal FloatKeyframeAnimation(IList<IKeyframe<float?>> keyframes) : base(keyframes)
+        internal FloatKeyframeAnimation(List<IKeyframe<float?>> keyframes) : base(keyframes)
         {
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using Windows.Data.Json;
 
 namespace LottieUWP
@@ -30,7 +31,7 @@ namespace LottieUWP
         /// The json doesn't include end frames. The data can be taken from the start frame of the next
         /// keyframe though.
         /// </summary>
-        internal static void SetEndFrames<TU, TV>(IList<TU> keyframes) where TU : IKeyframe<TV>
+        internal static void SetEndFrames<TU, TV>(List<TU> keyframes) where TU : IKeyframe<TV>
         {
             var size = keyframes.Count;
             for (var i = 0; i < size - 1; i++)
@@ -117,8 +118,8 @@ namespace LottieUWP
         {
             internal static Keyframe<T> NewInstance(JsonObject json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
-                PointF cp1 = null;
-                PointF cp2 = null;
+                Vector2? cp1 = null;
+                Vector2? cp2 = null;
                 float startFrame = 0;
                 var startValue = default(T);
                 var endValue = default(T);
@@ -155,11 +156,11 @@ namespace LottieUWP
                     }
                     else if (cp1 != null)
                     {
-                        cp1 = new PointF(MiscUtils.Clamp(cp1.X, -scale, scale),
-                            MiscUtils.Clamp(cp1.Y, -MaxCpValue, MaxCpValue));
-                        cp2 = new PointF(MiscUtils.Clamp(cp2.X, -scale, scale),
-                            MiscUtils.Clamp(cp2.Y, -MaxCpValue, MaxCpValue));
-                        interpolator = new PathInterpolator(cp1.X / scale, cp1.Y / scale, cp2.X / scale, cp2.Y / scale);
+                        cp1 = new Vector2(MiscUtils.Clamp(cp1.Value.X, -scale, scale),
+                            MiscUtils.Clamp(cp1.Value.Y, -MaxCpValue, MaxCpValue));
+                        cp2 = new Vector2(MiscUtils.Clamp(cp2.Value.X, -scale, scale),
+                            MiscUtils.Clamp(cp2.Value.Y, -MaxCpValue, MaxCpValue));
+                        interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale, cp2.Value.X / scale, cp2.Value.Y / scale);
                     }
                     else
                     {
@@ -174,14 +175,14 @@ namespace LottieUWP
                 return new Keyframe<T>(composition, startValue, endValue, interpolator, startFrame, null);
             }
 
-            internal static IList<IKeyframe<T>> ParseKeyframes(JsonArray json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
+            internal static List<IKeyframe<T>> ParseKeyframes(JsonArray json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
                 var length = json.Count;
                 if (length == 0)
                 {
                     return new List<IKeyframe<T>>();
                 }
-                IList<IKeyframe<T>> keyframes = new List<IKeyframe<T>>();
+                var keyframes = new List<IKeyframe<T>>();
                 for (uint i = 0; i < length; i++)
                 {
                     keyframes.Add(NewInstance(json.GetObjectAt(i), composition, scale, valueFactory));

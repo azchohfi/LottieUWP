@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Windows.Graphics.Display;
 using Windows.UI;
 using MathNet.Numerics.LinearAlgebra.Single;
@@ -13,14 +14,14 @@ namespace LottieUWP
         private static float[] _points = new float[4];
         private static readonly float Sqrt2 = (float)Math.Sqrt(2);
 
-        internal static Path CreatePath(PointF startPoint, PointF endPoint, PointF cp1, PointF cp2)
+        internal static Path CreatePath(Vector2 startPoint, Vector2 endPoint, Vector2? cp1, Vector2? cp2)
         {
             var path = new Path();
             path.MoveTo(startPoint.X, startPoint.Y);
 
-            if (cp1 != null && cp2 != null && (cp1.LengthSquared() != 0 || cp2.LengthSquared() != 0))
+            if (cp1.HasValue && cp2.HasValue && (cp1.Value.LengthSquared() != 0 || cp2.Value.LengthSquared() != 0))
             {
-                path.CubicTo(startPoint.X + cp1.X, startPoint.Y + cp1.Y, endPoint.X + cp2.X, endPoint.Y + cp2.Y, endPoint.X, endPoint.Y);
+                path.CubicTo(startPoint.X + cp1.Value.X, startPoint.Y + cp1.Value.Y, endPoint.X + cp2.Value.X, endPoint.Y + cp2.Value.Y, endPoint.X, endPoint.Y);
             }
             else
             {

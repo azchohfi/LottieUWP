@@ -29,7 +29,7 @@ namespace LottieUWP
         {
             internal static Repeater NewInstance(JsonObject json, LottieComposition composition)
             {
-                string name = json.GetNamedString("nm", "");
+                var name = json.GetNamedString("nm", "");
                 var copies = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("c", null), composition, false);
                 var offset = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o", null), composition, false);
                 var transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("tr", null), composition);

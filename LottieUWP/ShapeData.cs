@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using Windows.Data.Json;
 
 namespace LottieUWP
@@ -6,10 +7,10 @@ namespace LottieUWP
     internal class ShapeData
     {
         private readonly List<CubicCurveData> _curves = new List<CubicCurveData>();
-        private PointF _initialPoint;
+        private Vector2 _initialPoint;
         private bool _closed;
 
-        private ShapeData(PointF initialPoint, bool closed, IList<CubicCurveData> curves)
+        private ShapeData(Vector2 initialPoint, bool closed, List<CubicCurveData> curves)
         {
             _initialPoint = initialPoint;
             _closed = closed;
@@ -24,13 +25,13 @@ namespace LottieUWP
         {
             if (_initialPoint == null)
             {
-                _initialPoint = new PointF();
+                _initialPoint = new Vector2();
             }
             _initialPoint.X = x;
             _initialPoint.Y = y;
         }
 
-        internal virtual PointF InitialPoint => _initialPoint;
+        internal virtual Vector2 InitialPoint => _initialPoint;
 
         internal virtual bool Closed => _closed;
 
@@ -40,7 +41,7 @@ namespace LottieUWP
         {
             if (_initialPoint == null)
             {
-                _initialPoint = new PointF();
+                _initialPoint = new Vector2();
             }
             _closed = shapeData1.Closed || shapeData2.Closed;
 
@@ -122,7 +123,7 @@ namespace LottieUWP
                 }
                 if (pointsArray.Count == 0)
                 {
-                    return new ShapeData(new PointF(), false, new List<CubicCurveData>());
+                    return new ShapeData(new Vector2(), false, new List<CubicCurveData>());
                 }
 
                 var length = pointsArray.Count;
@@ -130,7 +131,7 @@ namespace LottieUWP
                 vertex.X *= scale;
                 vertex.Y *= scale;
                 var initialPoint = vertex;
-                List<CubicCurveData> curves = new List<CubicCurveData>(length);
+                var curves = new List<CubicCurveData>(length);
 
                 for (var i = 1; i < length; i++)
                 {
@@ -138,8 +139,8 @@ namespace LottieUWP
                     var previousVertex = VertexAtIndex(i - 1, pointsArray);
                     var cp1 = VertexAtIndex(i - 1, outTangents);
                     var cp2 = VertexAtIndex(i, inTangents);
-                    var shapeCp1 = MiscUtils.AddPoints(previousVertex, cp1);
-                    var shapeCp2 = MiscUtils.AddPoints(vertex, cp2);
+                    var shapeCp1 = previousVertex + cp1;
+                    var shapeCp2 = vertex + cp2;
 
                     shapeCp1.X *= scale;
                     shapeCp1.Y *= scale;
@@ -158,8 +159,8 @@ namespace LottieUWP
                     var cp1 = VertexAtIndex(length - 1, outTangents);
                     var cp2 = VertexAtIndex(0, inTangents);
 
-                    var shapeCp1 = MiscUtils.AddPoints(previousVertex, cp1);
-                    var shapeCp2 = MiscUtils.AddPoints(vertex, cp2);
+                    var shapeCp1 = previousVertex + cp1;
+                    var shapeCp2 = vertex + cp2;
 
                     if (scale != 1f)
                     {
@@ -176,7 +177,7 @@ namespace LottieUWP
                 return new ShapeData(initialPoint, closed, curves);
             }
 
-            internal static PointF VertexAtIndex(int idx, JsonArray points)
+            internal static Vector2 VertexAtIndex(int idx, JsonArray points)
             {
                 if (idx >= points.Count)
                 {
@@ -186,7 +187,7 @@ namespace LottieUWP
                 var pointArray = points.GetArrayAt((uint)idx);
                 var x = pointArray[0];
                 var y = pointArray[1];
-                return new PointF(x != null ? (float)x.GetNumber() : 0, y != null ? (float)y.GetNumber() : 0);
+                return new Vector2(x != null ? (float)x.GetNumber() : 0, y != null ? (float)y.GetNumber() : 0);
             }
         }
     }

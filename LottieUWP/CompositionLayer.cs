@@ -8,14 +8,14 @@ namespace LottieUWP
     internal class CompositionLayer : BaseLayer
     {
         private readonly IBaseKeyframeAnimation<float?> _timeRemapping;
-        private readonly IList<BaseLayer> _layers = new List<BaseLayer>();
+        private readonly List<BaseLayer> _layers = new List<BaseLayer>();
         private Rect _originalClipRect;
         private Rect _newClipRect;
 
         private bool? _hasMatte;
         private bool? _hasMasks;
 
-        internal CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, IList<Layer> layerModels, LottieComposition composition) : base(lottieDrawable, layerModel)
+        internal CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels, LottieComposition composition) : base(lottieDrawable, layerModel)
         {
             var timeRemapping = layerModel.TimeRemapping;
             if (timeRemapping != null)
@@ -85,7 +85,7 @@ namespace LottieUWP
                 }
                 if (nonEmptyClip)
                 {
-                    BaseLayer layer = _layers[i];
+                    var layer = _layers[i];
                     layer.Draw(canvas, parentMatrix, parentAlpha);
                 }
             }

@@ -1,8 +1,9 @@
-﻿using Windows.Data.Json;
+﻿using System.Numerics;
+using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    internal class PointFFactory : IAnimatableValueFactory<PointF>
+    internal class PointFFactory : IAnimatableValueFactory<Vector2?>
     {
         internal static readonly PointFFactory Instance = new PointFFactory();
 
@@ -10,7 +11,7 @@ namespace LottieUWP
         {
         }
 
-        public PointF ValueFromObject(IJsonValue @object, float scale)
+        public Vector2? ValueFromObject(IJsonValue @object, float scale)
         {
             if (@object.ValueType == JsonValueType.Array)
             {

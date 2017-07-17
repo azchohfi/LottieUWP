@@ -43,7 +43,7 @@ namespace LottieUWP
         private byte _alpha = 255;
         private bool _performanceTrackingEnabled;
         private BitmapCanvas _bitmapCanvas;
-        private CanvasControl _canvasControl;
+        private CanvasAnimatedControl _canvasControl;
         private bool _forceSoftwareRenderer;
 
         public LottieDrawable()
@@ -68,7 +68,7 @@ namespace LottieUWP
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            _canvasControl = new CanvasControl
+            _canvasControl = new CanvasAnimatedControl
             {
                 ForceSoftwareRenderer = _forceSoftwareRenderer
             };
@@ -333,7 +333,7 @@ namespace LottieUWP
         //    }
         //}
 
-        private void CanvasControlOnDraw(CanvasControl canvasControl, CanvasDrawEventArgs args)
+        private void CanvasControlOnDraw(ICanvasAnimatedControl canvasControl, CanvasAnimatedDrawEventArgs args)
         {
             lock (this)
             {

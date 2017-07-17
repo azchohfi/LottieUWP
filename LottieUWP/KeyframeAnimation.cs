@@ -4,7 +4,7 @@ namespace LottieUWP
 {
     public abstract class KeyframeAnimation<T> : BaseKeyframeAnimation<T, T>
     {
-        internal KeyframeAnimation(IList<IKeyframe<T>> keyframes) : base(keyframes)
+        internal KeyframeAnimation(List<IKeyframe<T>> keyframes) : base(keyframes)
         {
         }
     }

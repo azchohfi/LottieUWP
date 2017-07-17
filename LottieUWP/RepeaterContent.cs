@@ -56,7 +56,7 @@ namespace LottieUWP
                 return;
             }
             // Fast forward the iterator until after this content.
-            int index = contentsIter.Count;
+            var index = contentsIter.Count;
             while (index > 0)
             {
                 index--;
@@ -76,7 +76,7 @@ namespace LottieUWP
 
         public string Name { get; }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             _contentGroup.SetContents(contentsBefore, contentsAfter);
         }
@@ -108,7 +108,7 @@ namespace LottieUWP
             {
                 _matrix.Set(parentMatrix);
                 _matrix = MatrixExt.PreConcat(_matrix, _transform.GetMatrixForRepeater(i + offset));
-                float newAlpha = alpha * MiscUtils.Lerp(startOpacity, endOpacity, i / copies);
+                var newAlpha = alpha * MiscUtils.Lerp(startOpacity, endOpacity, i / copies);
                 _contentGroup.Draw(canvas, _matrix, (byte) newAlpha);
             }
         }

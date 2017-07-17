@@ -19,7 +19,7 @@ namespace LottieUWP
             _y0 = y0;
             _r = r;
             _canvasGradientStopCollection = new CanvasGradientStop[colors.Length];
-            for (int i = 0; i < colors.Length; i++)
+            for (var i = 0; i < colors.Length; i++)
             {
                 _canvasGradientStopCollection[i] = new CanvasGradientStop
                 {

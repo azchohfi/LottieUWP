@@ -32,7 +32,7 @@ namespace LottieUWP
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             // Do nothing.
         }

@@ -9,7 +9,7 @@ namespace LottieUWP
     {
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
-        private readonly IList<IPathContent> _paths = new List<IPathContent>();
+        private readonly List<IPathContent> _paths = new List<IPathContent>();
         private readonly IBaseKeyframeAnimation<Color> _colorAnimation;
         private readonly KeyframeAnimation<int?> _opacityAnimation;
         private readonly LottieDrawable _lottieDrawable;
@@ -41,7 +41,7 @@ namespace LottieUWP
             layer.AddAnimation(_opacityAnimation);
         }
 
-        public virtual void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public virtual void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsAfter.Count; i++)
             {

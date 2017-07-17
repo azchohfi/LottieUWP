@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace LottieUWP
 {
@@ -18,7 +19,7 @@ namespace LottieUWP
         private readonly LottieDrawable _lottieDrawable;
         private readonly PolystarShape.Type _type;
         private readonly IBaseKeyframeAnimation<float?> _pointsAnimation;
-        private readonly IBaseKeyframeAnimation<PointF> _positionAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?> _positionAnimation;
         private readonly IBaseKeyframeAnimation<float?> _rotationAnimation;
         private readonly IBaseKeyframeAnimation<float?> _innerRadiusAnimation;
         private readonly IBaseKeyframeAnimation<float?> _outerRadiusAnimation;
@@ -84,7 +85,7 @@ namespace LottieUWP
             _lottieDrawable.InvalidateSelf();
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsBefore.Count; i++)
             {
@@ -245,10 +246,7 @@ namespace LottieUWP
 
 
             var position = _positionAnimation.Value;
-            if (position != null)
-            {
-                _path.Offset(position.X, position.Y);
-            }
+            _path.Offset(position.Value.X, position.Value.Y);
             _path.Close();
         }
 
@@ -305,10 +303,7 @@ namespace LottieUWP
             }
 
             var position = _positionAnimation.Value;
-            if (position != null)
-            {
-                _path.Offset(position.X, position.Y);
-            }
+            _path.Offset(position.Value.X, position.Value.Y);
             _path.Close();
         }
     }

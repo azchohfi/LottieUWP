@@ -10,7 +10,7 @@ namespace LottieUWP
     /// </summary>
     public class TextDelegate
     {
-        private readonly IDictionary<string, string> _stringMap = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _stringMap = new Dictionary<string, string>();
         private readonly LottieAnimationView _animationView;
         private readonly LottieDrawable _drawable;
         private bool _cacheText = true;
@@ -87,7 +87,7 @@ namespace LottieUWP
             {
                 return _stringMap[input];
             }
-            string text = GetText(input);
+            var text = GetText(input);
             if (_cacheText)
             {
                 _stringMap[input] = text;

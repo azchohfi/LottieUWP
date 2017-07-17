@@ -6,7 +6,7 @@ namespace LottieUWP
 {
     internal class AnimatableColorValue : BaseAnimatableValue<Color, Color>
     {
-        private AnimatableColorValue(IList<IKeyframe<Color>> keyframes, Color initialValue) : base(keyframes, initialValue)
+        private AnimatableColorValue(List<IKeyframe<Color>> keyframes, Color initialValue) : base(keyframes, initialValue)
         {
         }
 

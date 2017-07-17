@@ -35,7 +35,7 @@ namespace LottieUWP
         private readonly LayerType _layerType;
         private readonly MatteType _matteType;
 
-        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, IList<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
+        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, List<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
         {
             _shapes = shapes;
             _composition = composition;
@@ -66,7 +66,7 @@ namespace LottieUWP
 
         internal virtual float StartProgress { get; }
 
-        internal virtual IList<IKeyframe<float?>> InOutKeyframes { get; }
+        internal virtual List<IKeyframe<float?>> InOutKeyframes { get; }
 
         internal virtual long Id { get; }
 
@@ -84,7 +84,7 @@ namespace LottieUWP
 
         internal virtual AnimatableFloatValue TimeRemapping { get; }
 
-        internal virtual IList<Mask> Masks { get; }
+        internal virtual List<Mask> Masks { get; }
 
         internal virtual LayerType GetLayerType()
         {

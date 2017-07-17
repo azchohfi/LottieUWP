@@ -1,3 +1,4 @@
+using System.Numerics;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 
@@ -31,7 +32,7 @@ namespace LottieUWP
 
         public float Length { get; private set; }
 
-        public PointF GetPosTan(float distance)
+        public Vector2 GetPosTan(float distance)
         {
             if (distance < 0)
                 distance = 0;
@@ -40,14 +41,12 @@ namespace LottieUWP
             if (distance > length)
                 distance = length;
 
-            var vect = _geometry.ComputePointOnPath(distance);
-
-            return new PointF(vect.X, vect.Y);
+            return _geometry.ComputePointOnPath(distance);
         }
 
         public bool GetSegment(float startD, float stopD, ref Path dst, bool startWithMoveTo)
         {
-            float length = Length;
+            var length = Length;
 
             if (startD < 0)
             {
@@ -64,12 +63,12 @@ namespace LottieUWP
                 return false;
             }
 
-            CachedPathIteratorFactory.CachedPathIterator iterator = _originalPathIterator.Iterator();
+            var iterator = _originalPathIterator.Iterator();
 
-            float accLength = startD;
-            bool isZeroLength = true;
+            var accLength = startD;
+            var isZeroLength = true;
 
-            float[] points = new float[6];
+            var points = new float[6];
 
             iterator.JumpToSegment(accLength);
 
@@ -85,7 +84,7 @@ namespace LottieUWP
 
                         if (type != PathIterator.ContourType.MoveTo == false)
                         {
-                            float[] lastPoint = new float[2];
+                            var lastPoint = new float[2];
                             iterator.GetCurrentSegmentEnd(lastPoint);
                             dst.MoveTo(lastPoint[0], lastPoint[1]);
                         }

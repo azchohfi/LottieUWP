@@ -11,7 +11,7 @@ namespace LottieUWP
         private static List<IContent> ContentsFromModels(LottieDrawable drawable, BaseLayer layer, List<IContentModel> contentModels)
         {
             var contents = new List<IContent>(contentModels.Count);
-            for (int i = 0; i < contentModels.Count; i++)
+            for (var i = 0; i < contentModels.Count; i++)
             {
                 var content = contentModels[i].ToContent(drawable, layer);
                 if (content != null)
@@ -24,7 +24,7 @@ namespace LottieUWP
 
         internal static AnimatableTransform FindTransform(List<IContentModel> contentModels)
         {
-            for (int i = 0; i < contentModels.Count; i++)
+            for (var i = 0; i < contentModels.Count; i++)
             {
                 var contentModel = contentModels[i];
                 if (contentModel is AnimatableTransform animatableTransform)
@@ -40,7 +40,7 @@ namespace LottieUWP
         private Rect _rect;
 
         private readonly List<IContent> _contents;
-        private IList<IPathContent> _pathContents;
+        private List<IPathContent> _pathContents;
         private readonly TransformKeyframeAnimation _transformAnimation;
 
         internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup)
@@ -67,7 +67,7 @@ namespace LottieUWP
             }
 
             var greedyContents = new List<IGreedyContent>();
-            for (int i = contents.Count - 1; i >= 0; i--)
+            for (var i = contents.Count - 1; i >= 0; i--)
             {
                 var content = contents[i];
                 if (content is IGreedyContent greedyContent) {
@@ -75,7 +75,7 @@ namespace LottieUWP
                 }
             }
 
-            for (int i = greedyContents.Count - 1; i >= 0; i--)
+            for (var i = greedyContents.Count - 1; i >= 0; i--)
             {
                 greedyContents[i].AbsorbContent(_contents);
             }
@@ -101,7 +101,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public virtual void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             // Do nothing with contents after.
             var myContentsBefore = new List<IContent>(contentsBefore.Count + _contents.Count);
@@ -115,7 +115,7 @@ namespace LottieUWP
             }
         }
 
-        internal virtual IList<IPathContent> PathList
+        internal virtual List<IPathContent> PathList
         {
             get
             {

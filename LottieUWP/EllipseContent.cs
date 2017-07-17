@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace LottieUWP
 {
@@ -10,8 +11,8 @@ namespace LottieUWP
         private readonly Path _path = new Path();
 
         private readonly LottieDrawable _lottieDrawable;
-        private readonly IBaseKeyframeAnimation<PointF> _sizeAnimation;
-        private readonly IBaseKeyframeAnimation<PointF> _positionAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?> _sizeAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?> _positionAnimation;
 
         private TrimPathContent _trimPath;
         private bool _isPathValid;
@@ -41,7 +42,7 @@ namespace LottieUWP
             _lottieDrawable.InvalidateSelf();
         }
 
-        public void SetContents(IList<IContent> contentsBefore, IList<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsBefore.Count; i++)
             {
@@ -68,8 +69,8 @@ namespace LottieUWP
 
 
                 var size = _sizeAnimation.Value;
-                var halfWidth = size.X / 2f;
-                var halfHeight = size.Y / 2f;
+                var halfWidth = size.Value.X / 2f;
+                var halfHeight = size.Value.Y / 2f;
                 // TODO: handle bounds
 
                 var cpW = halfWidth * EllipseControlPointPercentage;
@@ -83,7 +84,7 @@ namespace LottieUWP
                 _path.CubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
 
                 var position = _positionAnimation.Value;
-                _path.Offset(position.X, position.Y);
+                _path.Offset(position.Value.X, position.Value.Y);
 
                 _path.Close();
 

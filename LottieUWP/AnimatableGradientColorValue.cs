@@ -7,7 +7,7 @@ namespace LottieUWP
 {
     internal class AnimatableGradientColorValue : BaseAnimatableValue<GradientColor, GradientColor>
     {
-        private AnimatableGradientColorValue(IList<IKeyframe<GradientColor>> keyframes, GradientColor initialValue) : base(keyframes, initialValue)
+        private AnimatableGradientColorValue(List<IKeyframe<GradientColor>> keyframes, GradientColor initialValue) : base(keyframes, initialValue)
         {
         }
 
