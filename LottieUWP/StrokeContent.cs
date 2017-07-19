@@ -1,5 +1,4 @@
 ﻿using Windows.UI;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -20,7 +19,7 @@ namespace LottieUWP
             Paint.ColorFilter = colorFilter;
         }
 
-        public override void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public override void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             Paint.Color = _colorAnimation.Value;
             base.Draw(canvas, parentMatrix, parentAlpha);

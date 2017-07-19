@@ -1,12 +1,11 @@
 ﻿using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
     internal interface IDrawingContent : IContent
     {
-        void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte alpha);
-        void GetBounds(out Rect outBounds, DenseMatrix parentMatrix);
+        void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte alpha);
+        void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix);
 
         /// <summary>
         /// Add a color filter to specific content on a specific layer.

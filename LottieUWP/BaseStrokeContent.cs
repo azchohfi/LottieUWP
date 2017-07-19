@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -124,7 +123,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("StrokeContent.Draw");
             var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
@@ -163,7 +162,7 @@ namespace LottieUWP
             LottieLog.EndSection("StrokeContent.Draw");
         }
 
-        private void ApplyTrimPath(BitmapCanvas canvas, PathGroup pathGroup, DenseMatrix parentMatrix)
+        private void ApplyTrimPath(BitmapCanvas canvas, PathGroup pathGroup, Matrix3X3 parentMatrix)
         {
             LottieLog.BeginSection("StrokeContent.ApplyTrimPath");
             if (pathGroup.TrimPath == null)
@@ -245,7 +244,7 @@ namespace LottieUWP
             LottieLog.EndSection("StrokeContent.ApplyTrimPath");
         }
 
-        public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             LottieLog.BeginSection("StrokeContent.GetBounds");
             _path.Reset();
@@ -269,7 +268,7 @@ namespace LottieUWP
 
         public abstract void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter);
 
-        private void ApplyDashPatternIfNeeded(DenseMatrix parentMatrix)
+        private void ApplyDashPatternIfNeeded(Matrix3X3 parentMatrix)
         {
             LottieLog.BeginSection("StrokeContent.ApplyDashPattern");
             if (_dashPatternAnimations.Count == 0)

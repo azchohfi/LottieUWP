@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -69,7 +68,7 @@ namespace LottieUWP
             }
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("CompositionLayer.Draw");
             canvas.GetClipBounds(out _originalClipRect);
@@ -96,7 +95,7 @@ namespace LottieUWP
             LottieLog.EndSection("CompositionLayer.Draw");
         }
 
-        public override void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public override void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             base.GetBounds(out outBounds, parentMatrix);
             RectExt.Set(ref Rect, 0, 0, 0, 0);

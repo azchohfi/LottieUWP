@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Numerics;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
     internal class TransformKeyframeAnimation
     {
-        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
+        private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
 
         private readonly IBaseKeyframeAnimation<Vector2?> _anchorPoint;
         private readonly IBaseKeyframeAnimation<Vector2?> _position;
@@ -88,7 +87,7 @@ namespace LottieUWP
 
         internal virtual IBaseKeyframeAnimation<float?> EndOpacity => _endOpacity;
 
-        internal virtual DenseMatrix Matrix
+        internal virtual Matrix3X3 Matrix
         {
             get
             {
@@ -122,7 +121,7 @@ namespace LottieUWP
         /** 
         * TODO: see if we can use this for the main get_Matrix method. 
         */
-        internal DenseMatrix GetMatrixForRepeater(float amount)
+        internal Matrix3X3 GetMatrixForRepeater(float amount)
         {
             var position = _position.Value;
             var anchorPoint = _anchorPoint.Value;

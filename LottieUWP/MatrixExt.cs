@@ -1,37 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Numerics;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
     public static class MatrixExt
     {
-        public static DenseMatrix PreConcat(DenseMatrix matrix, DenseMatrix transformAnimationMatrix)
+        public static Matrix3X3 PreConcat(Matrix3X3 matrix, Matrix3X3 transformAnimationMatrix)
         {
             return matrix * transformAnimationMatrix;
         }
 
-        public static DenseMatrix PreTranslate(DenseMatrix matrix, float dx, float dy)
+        public static Matrix3X3 PreTranslate(Matrix3X3 matrix, float dx, float dy)
         {
             return matrix * GetTranslate(dx, dy);
         }
 
-        private static DenseMatrix GetTranslate(float dx, float dy)
+        private static Matrix3X3 GetTranslate(float dx, float dy)
         {
-            return new DenseMatrix(3, 3)
+            return new Matrix3X3
             {
-                [0, 0] = 1,
-                [0, 2] = dx,
-                [1, 1] = 1,
-                [1, 2] = dy,
-                [2, 2] = 1
+                M11 = 1,
+                M13 = dx,
+                M22 = 1,
+                M23 = dy,
+                M33 = 1
             };
         }
 
-        public static DenseMatrix PreRotate(DenseMatrix matrix, float rotation)
+        public static Matrix3X3 PreRotate(Matrix3X3 matrix, float rotation)
         {
             var angle = MathExt.ToRadians(rotation);
             var sin = Math.Sin(angle);
@@ -40,7 +39,7 @@ namespace LottieUWP
             return matrix * GetRotate(sin, cos);
         }
 
-        public static DenseMatrix PreRotate(DenseMatrix matrix, float rotation, float px, float py)
+        public static Matrix3X3 PreRotate(Matrix3X3 matrix, float rotation, float px, float py)
         {
             var angle = MathExt.ToRadians(rotation);
             var sin = Math.Sin(angle);
@@ -51,69 +50,56 @@ namespace LottieUWP
             return matrix * tmp;
         }
 
-        private static DenseMatrix GetRotate(double sin, double cos)
+        private static Matrix3X3 GetRotate(double sin, double cos)
         {
-            return new DenseMatrix(3, 3)
+            return new Matrix3X3
             {
-                [0, 0] = (float)cos,
-                [0, 1] = (float)-sin,
-                [1, 0] = (float)sin,
-                [1, 1] = (float)cos,
-                [2, 2] = 1
+                M11 = (float)cos,
+                M12 = (float)-sin,
+                M21 = (float)sin,
+                M22 = (float)cos,
+                M33 = 1
             };
         }
 
-        public static DenseMatrix PreScale(DenseMatrix matrix, float scaleX, float scaleY)
+        public static Matrix3X3 PreScale(Matrix3X3 matrix, float scaleX, float scaleY)
         {
-            var scaleMatrix = new DenseMatrix(3, 3)
+            var scaleMatrix = new Matrix3X3
             {
-                [0, 0] = scaleX,
-                [1, 1] = scaleY,
-                [2, 2] = 1
+                M11 = scaleX,
+                M22 = scaleY,
+                M33 = 1
             };
 
             return matrix * scaleMatrix;
         }
 
-        public static void MapRect(this DenseMatrix matrix, ref Rect rect)
+        public static void MapRect(this Matrix3X3 matrix, ref Rect rect)
         {
-            try
-            {
-                var multiplied = matrix *
-                    DenseMatrix.OfArray(new[,]
-                    {
-                        {(float) rect.Left, (float) rect.Right, (float) rect.Left,   (float) rect.Right},
-                        {(float) rect.Top,  (float) rect.Top,   (float) rect.Bottom, (float) rect.Bottom},
-                        {1,                 1,                  1, 1}
-                    });
+            var p1 = new Vector2((float)rect.Left, (float)rect.Top);
+            var p2 = new Vector2((float)rect.Right, (float)rect.Top);
+            var p3 = new Vector2((float)rect.Left, (float)rect.Bottom);
+            var p4 = new Vector2((float)rect.Right, (float)rect.Bottom);
 
-                var xMin = Math.Min(Math.Min(Math.Min(multiplied[0, 0], multiplied[1, 0]), multiplied[0, 2]), multiplied[0, 3]);
-                var xMax = Math.Max(Math.Max(Math.Max(multiplied[0, 0], multiplied[1, 0]), multiplied[0, 2]), multiplied[0, 3]);
-                var yMax = Math.Max(Math.Max(Math.Max(multiplied[1, 0], multiplied[1, 0]), multiplied[1, 2]), multiplied[1, 3]);
-                var yMin = Math.Min(Math.Min(Math.Min(multiplied[1, 0], multiplied[1, 0]), multiplied[1, 2]), multiplied[1, 3]);
+            p1 = matrix.Transform(p1);
+            p2 = matrix.Transform(p2);
+            p3 = matrix.Transform(p3);
+            p4 = matrix.Transform(p4);
 
-                RectExt.Set(ref rect, new Rect(new Point(xMin, yMax), new Point(xMax, yMin)));
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
+            var xMin = Math.Min(Math.Min(Math.Min(p1.X, p2.X), p3.X), p4.X);
+            var xMax = Math.Max(Math.Max(Math.Max(p1.X, p2.X), p3.X), p4.X);
+            var yMax = Math.Max(Math.Max(Math.Max(p1.Y, p2.Y), p3.Y), p4.Y);
+            var yMin = Math.Min(Math.Min(Math.Min(p1.Y, p2.Y), p3.Y), p4.Y);
+
+            RectExt.Set(ref rect, new Rect(new Point(xMin, yMax), new Point(xMax, yMin)));
         }
 
-        public static void MapPoints(this DenseMatrix matrix, ref float[] points)
+        public static void MapPoints(this Matrix3X3 matrix, ref Vector2[] points)
         {
-            var multiplied = matrix * 
-                DenseMatrix.OfArray(new[,]
-                {
-                    {points[0], points[2]},
-                    {points[1], points[3]},
-                    {1,         1}
-                });
-
-            points[0] = multiplied[0, 0];
-            points[1] = multiplied[1, 0];
-            points[2] = multiplied[0, 1];
-            points[3] = multiplied[1, 1];
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = matrix.Transform(points[i]);
+            }
         }
 
         public static IEnumerable<IEnumerable<T>> Partition<T>
@@ -141,18 +127,6 @@ namespace LottieUWP
                 Array.Resize(ref array, count);
                 yield return new ReadOnlyCollection<T>(array);
             }
-        }
-
-        public static void Set(this DenseMatrix matrix, DenseMatrix newMatrix)
-        {
-            newMatrix.CopyTo(matrix);
-        }
-
-        static readonly DenseMatrix Identity = DenseMatrix.CreateIdentity(3);
-
-        public static void Reset(this DenseMatrix matrix)
-        {
-            Identity.CopyTo(matrix);
         }
     }
 }

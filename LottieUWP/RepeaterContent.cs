@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
     public class RepeaterContent : IDrawingContent, IPathContent, IGreedyContent
     {
-        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
+        private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private readonly Path _path = new Path();
 
         private readonly LottieDrawable _lottieDrawable;
@@ -16,8 +15,7 @@ namespace LottieUWP
         private readonly IBaseKeyframeAnimation<float?> _offset;
         private readonly TransformKeyframeAnimation _transform;
         private ContentGroup _contentGroup;
-
-
+        
         internal RepeaterContent(LottieDrawable lottieDrawable, BaseLayer layer, Repeater repeater)
         {
             _lottieDrawable = lottieDrawable;
@@ -98,7 +96,7 @@ namespace LottieUWP
             }
         }
 
-        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte alpha)
+        public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte alpha)
         {
             var copies = _copies.Value.Value;
             var offset = _offset.Value.Value;
@@ -113,7 +111,7 @@ namespace LottieUWP
             }
         }
 
-        public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             _contentGroup.GetBounds(out outBounds, parentMatrix);
         }

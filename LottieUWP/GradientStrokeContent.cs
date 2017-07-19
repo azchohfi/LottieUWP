@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -42,7 +41,7 @@ namespace LottieUWP
             layer.AddAnimation(_endPointAnimation);
         }
 
-        public override void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public override void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             GetBounds(out _boundsRect, parentMatrix);
             if (_type == GradientType.Linear)

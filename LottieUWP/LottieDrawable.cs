@@ -5,7 +5,6 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
-using MathNet.Numerics.LinearAlgebra.Single;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace LottieUWP
@@ -22,7 +21,7 @@ namespace LottieUWP
     /// </summary>
     public class LottieDrawable : UserControl
     {
-        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
+        private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private LottieComposition _composition;
         private readonly ValueAnimator _animator = ValueAnimator.OfFloat(0f, 1f);
         private float _speed = 1f;

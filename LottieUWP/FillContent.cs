@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -60,7 +59,7 @@ namespace LottieUWP
             _paint.ColorFilter = colorFilter;
         }
 
-        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("FillContent.Draw");
             _paint.Color = _colorAnimation.Value;
@@ -77,7 +76,7 @@ namespace LottieUWP
             LottieLog.EndSection("FillContent.Draw");
         }
 
-        public virtual void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public virtual void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)

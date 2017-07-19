@@ -2,7 +2,6 @@
 using System.Numerics;
 using Windows.Graphics.Display;
 using Windows.UI;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -11,7 +10,7 @@ namespace LottieUWP
         private static readonly PathMeasure PathMeasure = new PathMeasure();
         private static Path _tempPath = new Path();
         private static Path _tempPath2 = new Path();
-        private static float[] _points = new float[4];
+        private static Vector2[] _points = new Vector2[2];
         private static readonly float Sqrt2 = (float)Math.Sqrt(2);
 
         internal static Path CreatePath(Vector2 startPoint, Vector2 endPoint, Vector2? cp1, Vector2? cp2)
@@ -59,16 +58,16 @@ namespace LottieUWP
             return (int)DisplayInformation.GetForCurrentView().ScreenHeightInRawPixels;
         }
 
-        internal static float GetScale(DenseMatrix matrix)
+        internal static float GetScale(Matrix3X3 matrix)
         {
-            _points[0] = 0;
-            _points[1] = 0;
+            _points[0].X = 0;
+            _points[0].Y = 0;
+            _points[1].X = Sqrt2;
+            _points[1].Y = Sqrt2;
             // Use sqrt(2) so that the hypotenuse is of length 1.
-            _points[2] = Sqrt2;
-            _points[3] = Sqrt2;
             matrix.MapPoints(ref _points);
-            var dx = _points[2] - _points[0];
-            var dy = _points[3] - _points[1];
+            var dx = _points[1].X - _points[0].X;
+            var dy = _points[1].Y - _points[0].Y;
 
             // TODO: figure out why the result needs to be divided by 2.
             return (float)MathExt.Hypot(dx, dy) / 2f;

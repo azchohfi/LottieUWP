@@ -1,5 +1,4 @@
 ﻿using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -16,7 +15,7 @@ namespace LottieUWP
             _paint.Color = layerModel.SolidColor;
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             int backgroundAlpha = LayerModel.SolidColor.A;
             if (backgroundAlpha == 0)
@@ -33,14 +32,14 @@ namespace LottieUWP
             }
         }
 
-        public override void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public override void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             base.GetBounds(out outBounds, parentMatrix);
             UpdateRect(BoundsMatrix);
             RectExt.Set(ref outBounds, Rect);
         }
 
-        private void UpdateRect(DenseMatrix matrix)
+        private void UpdateRect(Matrix3X3 matrix)
         {
             RectExt.Set(ref Rect, 0, 0, LayerModel.SolidWidth, LayerModel.SolidHeight);
             matrix.MapRect(ref Rect);

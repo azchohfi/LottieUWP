@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -35,7 +34,7 @@ namespace LottieUWP
             return null;
         }
 
-        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
+        private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private readonly Path _path = new Path();
         private Rect _rect;
 
@@ -134,7 +133,7 @@ namespace LottieUWP
             }
         }
 
-        internal virtual DenseMatrix TransformationMatrix
+        internal virtual Matrix3X3 TransformationMatrix
         {
             get
             {
@@ -169,7 +168,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             _matrix.Set(parentMatrix);
             byte alpha;
@@ -190,7 +189,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public virtual void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             _matrix.Set(parentMatrix);
             if (_transformAnimation != null)

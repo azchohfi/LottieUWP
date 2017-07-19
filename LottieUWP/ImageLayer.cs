@@ -1,7 +1,6 @@
 ﻿using System;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -17,7 +16,7 @@ namespace LottieUWP
             _density = density;
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             var bitmap = Bitmap;
             if (bitmap == null)
@@ -33,7 +32,7 @@ namespace LottieUWP
             canvas.Restore();
         }
 
-        public override void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public override void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             base.GetBounds(out outBounds, parentMatrix);
             var bitmap = Bitmap;

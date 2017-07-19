@@ -2,7 +2,6 @@
 using System.Numerics;
 using Windows.Foundation;
 using Windows.UI;
-using MathNet.Numerics.LinearAlgebra.Single;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
@@ -12,8 +11,8 @@ namespace LottieUWP
 {
     public class BitmapCanvas
     {
-        private DenseMatrix _matrix = DenseMatrix.CreateIdentity(3);
-        private readonly Stack<DenseMatrix> _matrixSaves = new Stack<DenseMatrix>();
+        private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
+        private readonly Stack<Matrix3X3> _matrixSaves = new Stack<Matrix3X3>();
         private readonly Stack<int> _flagSaves = new Stack<int>();
 
         class ClipSave
@@ -133,12 +132,12 @@ namespace LottieUWP
         {
             return new Matrix3x2
             {
-                M11 = _matrix[0, 0],
-                M12 = _matrix[1, 0],
-                M21 = _matrix[0, 1],
-                M22 = _matrix[1, 1],
-                M31 = _matrix[0, 2],
-                M32 = _matrix[1, 2]
+                M11 = _matrix.M11,
+                M12 = _matrix.M12,
+                M21 = _matrix.M21,
+                M22 = _matrix.M22,
+                M31 = _matrix.M31,
+                M32 = _matrix.M32
             };
         }
 
@@ -153,7 +152,7 @@ namespace LottieUWP
             _currentClip = rect;
         }
 
-        public void Concat(DenseMatrix parentMatrix)
+        public void Concat(Matrix3X3 parentMatrix)
         {
             _matrix = MatrixExt.PreConcat(_matrix, parentMatrix);
         }
@@ -203,8 +202,8 @@ namespace LottieUWP
 
         private void SaveMatrix()
         {
-            var copy = new DenseMatrix(3);
-            _matrix.CopyTo(copy);
+            var copy = new Matrix3X3();
+            copy.Set(_matrix);
             _matrixSaves.Push(copy);
         }
 
@@ -279,9 +278,9 @@ namespace LottieUWP
             _matrix = MatrixExt.PreTranslate(_matrix, dx, dy);
         }
 
-        public void SetMatrix(DenseMatrix matrix)
+        public void SetMatrix(Matrix3X3 matrix)
         {
-            matrix.CopyTo(_matrix);
+            _matrix.Set(matrix);
         }
 
         public Rect DrawText(char character, Paint paint)

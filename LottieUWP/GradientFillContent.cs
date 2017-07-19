@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -15,7 +14,7 @@ namespace LottieUWP
 
         private readonly Dictionary<long, LinearGradient> _linearGradientCache = new Dictionary<long, LinearGradient>();
         private readonly Dictionary<long, RadialGradient> _radialGradientCache = new Dictionary<long, RadialGradient>();
-        private readonly DenseMatrix _shaderMatrix = DenseMatrix.CreateIdentity(3);
+        private Matrix3X3 _shaderMatrix = Matrix3X3.CreateIdentity();
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         //private Rect _boundsRect;
@@ -69,7 +68,7 @@ namespace LottieUWP
             }
         }
 
-        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("GradientFillContent.Draw");
             _path.Reset();
@@ -100,7 +99,7 @@ namespace LottieUWP
             LottieLog.EndSection("GradientFillContent.Draw");
         }
 
-        public void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)

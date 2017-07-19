@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Foundation;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -35,7 +34,7 @@ namespace LottieUWP
         }
 
         private readonly Path _path = new Path();
-        internal DenseMatrix Matrix = DenseMatrix.CreateIdentity(3);
+        internal Matrix3X3 Matrix = Matrix3X3.CreateIdentity();
         private readonly Paint _contentPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _maskPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _mattePaint = new Paint(Paint.AntiAliasFlag);
@@ -45,7 +44,7 @@ namespace LottieUWP
         private Rect _matteBoundsRect;
         private Rect _tempMaskBoundsRect;
         private readonly string _drawTraceName;
-        internal DenseMatrix BoundsMatrix = DenseMatrix.CreateIdentity(3);
+        internal Matrix3X3 BoundsMatrix = Matrix3X3.CreateIdentity();
         internal readonly LottieDrawable LottieDrawable;
         internal Layer LayerModel;
         private readonly MaskKeyframeAnimation _mask;
@@ -146,13 +145,13 @@ namespace LottieUWP
             }
         }
 
-        public virtual void GetBounds(out Rect outBounds, DenseMatrix parentMatrix)
+        public virtual void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             BoundsMatrix.Set(parentMatrix);
             BoundsMatrix = MatrixExt.PreConcat(BoundsMatrix, Transform.Matrix);
         }
 
-        public void Draw(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection(_drawTraceName);
             if (!_visible)
@@ -240,7 +239,7 @@ namespace LottieUWP
             LottieLog.EndSection("Layer.ClearLayer");
         }
 
-        private void IntersectBoundsWithMask(Rect rect, DenseMatrix matrix)
+        private void IntersectBoundsWithMask(Rect rect, Matrix3X3 matrix)
         {
             RectExt.Set(ref _maskBoundsRect, 0, 0, 0, 0);
             if (!HasMasksOnThisLayer())
@@ -284,7 +283,7 @@ namespace LottieUWP
             RectExt.Set(ref rect, Math.Max(rect.Left, _maskBoundsRect.Left), Math.Max(rect.Top, _maskBoundsRect.Top), Math.Min(rect.Right, _maskBoundsRect.Right), Math.Min(rect.Bottom, _maskBoundsRect.Bottom));
         }
 
-        private void IntersectBoundsWithMatte(Rect rect, DenseMatrix matrix)
+        private void IntersectBoundsWithMatte(Rect rect, Matrix3X3 matrix)
         {
             if (!HasMatteOnThisLayer())
             {
@@ -300,9 +299,9 @@ namespace LottieUWP
             RectExt.Set(ref rect, Math.Max(rect.Left, _matteBoundsRect.Left), Math.Max(rect.Top, _matteBoundsRect.Top), Math.Min(rect.Right, _matteBoundsRect.Right), Math.Min(rect.Bottom, _matteBoundsRect.Bottom));
         }
 
-        public abstract void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha);
+        public abstract void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha);
 
-        private void ApplyMasks(BitmapCanvas canvas, DenseMatrix matrix)
+        private void ApplyMasks(BitmapCanvas canvas, Matrix3X3 matrix)
         {
             LottieLog.BeginSection("Layer.DrawMask");
             LottieLog.BeginSection("Layer.SaveLayer");

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI;
-using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace LottieUWP
 {
@@ -64,7 +63,7 @@ namespace LottieUWP
             }
         }
 
-        public override void DrawLayer(BitmapCanvas canvas, DenseMatrix parentMatrix, byte parentAlpha)
+        public override void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             canvas.Save();
             if (!_lottieDrawable.UseTextGlyphs())
@@ -102,7 +101,7 @@ namespace LottieUWP
             canvas.Restore();
         }
 
-        private void DrawTextGlyphs(DocumentData documentData, DenseMatrix parentMatrix, Font font, BitmapCanvas canvas)
+        private void DrawTextGlyphs(DocumentData documentData, Matrix3X3 parentMatrix, Font font, BitmapCanvas canvas)
         {
             var fontScale = (float)documentData.Size / 100;
             var parentScale = Utils.GetScale(parentMatrix);
@@ -130,7 +129,7 @@ namespace LottieUWP
             }
         }
 
-        private void DrawTextWithFont(DocumentData documentData, Font font, DenseMatrix parentMatrix, BitmapCanvas canvas)
+        private void DrawTextWithFont(DocumentData documentData, Font font, Matrix3X3 parentMatrix, BitmapCanvas canvas)
         {
             var parentScale = Utils.GetScale(parentMatrix);
             var typeface = _lottieDrawable.GetTypeface(font.Family, font.Style);
@@ -164,7 +163,7 @@ namespace LottieUWP
             }
         }
 
-        private void DrawCharacterAsGlyph(FontCharacter character, DenseMatrix parentMatrix, float fontScale, DocumentData documentData, BitmapCanvas canvas)
+        private void DrawCharacterAsGlyph(FontCharacter character, Matrix3X3 parentMatrix, float fontScale, DocumentData documentData, BitmapCanvas canvas)
         {
             var contentGroups = GetContentsForCharacter(character);
             for (var j = 0; j < contentGroups.Count; j++)

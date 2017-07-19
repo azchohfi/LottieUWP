@@ -4,7 +4,6 @@ using System.Linq;
 using Windows.Foundation;
 using System.Numerics;
 using Microsoft.Graphics.Canvas.Geometry;
-using MathNet.Numerics.LinearAlgebra.Single;
 using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP
@@ -13,7 +12,7 @@ namespace LottieUWP
     {
         public interface IContour
         {
-            void Transform(DenseMatrix matrix);
+            void Transform(Matrix3X3 matrix);
             IContour Copy();
             float[] Points { get; }
             PathIterator.ContourType Type { get; }
@@ -30,11 +29,6 @@ namespace LottieUWP
             private readonly float _sweepAngle;
             private readonly float _a;
             private readonly float _b;
-            private static readonly DenseMatrix Matrix = new DenseMatrix(3, 2)
-            {
-                [2, 0] = 1,
-                [2, 1] = 1
-            };
 
             public ArcContour(Vector2 startPoint, Rect rect, float startAngle, float sweepAngle)
             {
@@ -48,19 +42,10 @@ namespace LottieUWP
                 _endPoint = GetPointAtAngle(startAngle + sweepAngle);
             }
 
-            public void Transform(DenseMatrix matrix)
+            public void Transform(Matrix3X3 matrix)
             {
-                Matrix[0, 0] = _startPoint.X;
-                Matrix[1, 0] = _startPoint.Y;
-                Matrix[0, 1] = _endPoint.X;
-                Matrix[1, 1] = _endPoint.Y;
-                
-                var multiplied = matrix * Matrix;
-
-                _startPoint.X = multiplied[0, 0];
-                _startPoint.Y = multiplied[1, 0];
-                _endPoint.X = multiplied[0, 1];
-                _endPoint.Y = multiplied[1, 1];
+                _startPoint = matrix.Transform(_startPoint);
+                _endPoint = matrix.Transform(_endPoint);
             }
 
             public IContour Copy()
@@ -106,13 +91,6 @@ namespace LottieUWP
             private Vector2 _control2;
             private Vector2 _vertex;
 
-            private static readonly DenseMatrix Matrix = new DenseMatrix(3, 3)
-            {
-                [2, 0] = 1,
-                [2, 1] = 1,
-                [2, 2] = 1
-            };
-
             public BezierContour(Vector2 control1, Vector2 control2, Vector2 vertex)
             {
                 _control1 = control1;
@@ -120,23 +98,11 @@ namespace LottieUWP
                 _vertex = vertex;
             }
 
-            public void Transform(DenseMatrix matrix)
+            public void Transform(Matrix3X3 matrix)
             {
-                Matrix[0, 0] = _control1.X;
-                Matrix[1, 0] = _control1.Y;
-                Matrix[0, 1] = _control2.X;
-                Matrix[1, 1] = _control2.Y;
-                Matrix[0, 2] = _vertex.X;
-                Matrix[1, 2] = _vertex.Y;
-
-                var multiplied = matrix * Matrix;
-
-                _control1.X = multiplied[0, 0];
-                _control1.Y = multiplied[1, 0];
-                _control2.X = multiplied[0, 1];
-                _control2.Y = multiplied[1, 1];
-                _vertex.X = multiplied[0, 2];
-                _vertex.Y = multiplied[1, 2];
+                _control1 = matrix.Transform(_control1);
+                _control2 = matrix.Transform(_control2);
+                _vertex = matrix.Transform(_vertex);
             }
 
             public IContour Copy()
@@ -216,26 +182,20 @@ namespace LottieUWP
         {
             private readonly float[] _points = new float[2];
 
-            private static readonly DenseMatrix Matrix = new DenseMatrix(3, 1)
-            {
-                [2, 0] = 1,
-            };
-
             public LineContour(float x, float y)
             {
                 _points[0] = x;
                 _points[1] = y;
             }
 
-            public void Transform(DenseMatrix matrix)
+            public void Transform(Matrix3X3 matrix)
             {
-                Matrix[0, 0] = _points[0];
-                Matrix[1, 0] = _points[1];
+                var p = new Vector2(_points[0], _points[1]);
 
-                var multiplied = matrix * Matrix;
+                p = matrix.Transform(p);
 
-                _points[0] = multiplied[0, 0];
-                _points[1] = multiplied[1, 0];
+                _points[0] = p.X;
+                _points[1] = p.Y;
             }
 
             public IContour Copy()
@@ -264,11 +224,6 @@ namespace LottieUWP
         class MoveToContour : IContour
         {
             private readonly float[] _points = new float[2];
-
-            private static readonly DenseMatrix Matrix = new DenseMatrix(3, 1)
-            {
-                [2, 0] = 1,
-            };
 
             public MoveToContour(float x, float y)
             {
@@ -304,15 +259,14 @@ namespace LottieUWP
                 _points[1] += dy;
             }
 
-            public void Transform(DenseMatrix matrix)
+            public void Transform(Matrix3X3 matrix)
             {
-                Matrix[0, 0] = _points[0];
-                Matrix[1, 0] = _points[1];
-                
-                var multiplied = matrix * Matrix;
+                var p = new Vector2(_points[0], _points[1]);
 
-                _points[0] = multiplied[0, 0];
-                _points[1] = multiplied[1, 0];
+                p = matrix.Transform(p);
+
+                _points[0] = p.X;
+                _points[1] = p.Y;
             }
         }
 
@@ -340,7 +294,7 @@ namespace LottieUWP
             {
             }
 
-            public void Transform(DenseMatrix matrix)
+            public void Transform(Matrix3X3 matrix)
             {
             }
         }
@@ -362,7 +316,7 @@ namespace LottieUWP
             FillType = path.FillType;
         }
 
-        public void Transform(DenseMatrix matrix)
+        public void Transform(Matrix3X3 matrix)
         {
             for (var j = 0; j < Contours.Count; j++)
             {
@@ -405,7 +359,7 @@ namespace LottieUWP
             rect = geometry.ComputeBounds();
         }
 
-        public void AddPath(Path path, DenseMatrix matrix)
+        public void AddPath(Path path, Matrix3X3 matrix)
         {
             var pathCopy = new Path();
             pathCopy.Set(path);

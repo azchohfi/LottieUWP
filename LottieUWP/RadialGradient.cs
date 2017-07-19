@@ -2,7 +2,6 @@ using System.Numerics;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
-using VectorF = MathNet.Numerics.LinearAlgebra.Vector<float>;
 
 namespace LottieUWP
 {
@@ -31,14 +30,14 @@ namespace LottieUWP
 
         public override ICanvasBrush GetBrush(CanvasDevice device, byte alpha)
         {
-            var startP = VectorF.Build.Dense(3);
-            LocalMatrix.Multiply(VectorF.Build.Dense(new[] { _x0, _y0, 1f }), startP);
+            var center = new Vector2(_x0, _y0);
+            center = LocalMatrix.Transform(center);
 
             var canvasRadialGradientBrush = new CanvasRadialGradientBrush(device,
                 _canvasGradientStopCollection,
                 CanvasEdgeBehavior.Clamp, CanvasAlphaMode.Straight)
             {
-                Center = new Vector2(startP[0], startP[1]),
+                Center = center,
                 Opacity = alpha / 255f,
                 RadiusX = _r,
                 RadiusY = _r
