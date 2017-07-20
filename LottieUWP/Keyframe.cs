@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Windows.Data.Json;
 
@@ -55,7 +56,7 @@ namespace LottieUWP
         public float? StartFrame { get; }
         public float? EndFrame { get; set; }
 
-        private float _startProgress = float.MinValue; 
+        private float _startProgress = float.MinValue;
         private float _endProgress = float.MinValue;
 
         public Keyframe(LottieComposition composition, T startValue, T endValue, IInterpolator interpolator, float? startFrame, float? endFrame)
@@ -116,6 +117,8 @@ namespace LottieUWP
 
         internal static class KeyFrameFactory
         {
+            private static readonly Dictionary<int, WeakReference<IInterpolator>> PathInterpolatorCache = new Dictionary<int, WeakReference<IInterpolator>>();
+
             internal static Keyframe<T> NewInstance(JsonObject json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
                 Vector2? cp1 = null;
@@ -160,7 +163,14 @@ namespace LottieUWP
                             MiscUtils.Clamp(cp1.Value.Y, -MaxCpValue, MaxCpValue));
                         cp2 = new Vector2(MiscUtils.Clamp(cp2.Value.X, -scale, scale),
                             MiscUtils.Clamp(cp2.Value.Y, -MaxCpValue, MaxCpValue));
-                        interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale, cp2.Value.X / scale, cp2.Value.Y / scale);
+
+                        int hash = Utils.HashFor(cp1.Value.X, cp1.Value.Y, cp2.Value.X, cp2.Value.Y);
+                        if (PathInterpolatorCache.TryGetValue(hash, out var interpolatorRef) == false ||
+                            interpolatorRef.TryGetTarget(out interpolator) == false)
+                        {
+                            interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale, cp2.Value.X / scale, cp2.Value.Y / scale);
+                            PathInterpolatorCache[hash] = new WeakReference<IInterpolator>(interpolator);
+                        }
                     }
                     else
                     {
