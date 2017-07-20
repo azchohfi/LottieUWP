@@ -93,7 +93,7 @@ namespace LottieUWP
                 LottieLog.EndSection("applyTrimPathIfNeeded");
                 return;
             }
-            if (length == 0f || Math.Abs(endValue - startValue - 1) < .01)
+            if (length < 1f || Math.Abs(endValue - startValue - 1) < .01)
             {
                 LottieLog.EndSection("applyTrimPathIfNeeded");
                 return;
