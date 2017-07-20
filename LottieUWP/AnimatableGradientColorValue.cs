@@ -29,7 +29,9 @@ namespace LottieUWP
         {
             internal static AnimatableGradientColorValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                var result = AnimatableValueParser<GradientColor>.NewInstance(json, 1, composition, new ValueFactory((int) json.GetNamedNumber("p"))).ParseJson();
+                var kLength = (json.GetNamedArray("k", null)?.Count ?? 0) / 4;
+                var points = (int)json.GetNamedNumber("p", kLength);
+                var result = AnimatableValueParser<GradientColor>.NewInstance(json, 1, composition, new ValueFactory(points)).ParseJson();
                 var initialValue = result.InitialValue;
                 return new AnimatableGradientColorValue(result.Keyframes, initialValue);
             }
