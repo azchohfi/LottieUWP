@@ -133,11 +133,11 @@ namespace LottieUWP
             return new Matrix3x2
             {
                 M11 = _matrix.M11,
-                M12 = _matrix.M12,
-                M21 = _matrix.M21,
+                M12 = _matrix.M21,
+                M21 = _matrix.M12,
                 M22 = _matrix.M22,
-                M31 = _matrix.M31,
-                M32 = _matrix.M32
+                M31 = _matrix.M13,
+                M32 = _matrix.M23
             };
         }
 
@@ -300,13 +300,16 @@ namespace LottieUWP
                 FontFamily = paint.Typeface.FontFamily,
                 FontStyle = paint.Typeface.Style,
                 FontWeight = paint.Typeface.Weight,
-                VerticalAlignment = CanvasVerticalAlignment.Center
+                VerticalAlignment = CanvasVerticalAlignment.Center,
+                HorizontalAlignment = CanvasHorizontalAlignment.Left,
+                LineSpacingBaseline = 0,
+                LineSpacing = 0
             };
             var textLayout = new CanvasTextLayout(_drawingSession, text, textFormat, 0.0f, 0.0f);
             _drawingSession.DrawText(text, 0, 0, brush, textFormat);
 
             _drawingSession.Flush();
-
+            
             return textLayout.LayoutBounds;
         }
     }
