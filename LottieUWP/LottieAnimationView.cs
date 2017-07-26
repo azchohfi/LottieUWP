@@ -514,6 +514,7 @@ namespace LottieUWP
                 //lottieDrawable.Callback = this;
 
                 var isNewComposition = _lottieDrawable.SetComposition(value);
+                EnableOrDisableHardwareLayer();
                 if (!isNewComposition)
                 {
                     // We can avoid re-setting the drawable, and invalidating the view, since the value
