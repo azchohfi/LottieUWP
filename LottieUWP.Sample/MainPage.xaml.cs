@@ -46,5 +46,11 @@ namespace LottieUWP.Sample
             LottieAnimationView.PauseAnimation();
             LottieAnimationView.Progress = (float) (e.NewValue / 1000);
         }
+
+        private void Scale_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (!double.IsNaN(e.NewValue))
+                LottieAnimationView.Scale = (float)e.NewValue;
+        }
     }
 }

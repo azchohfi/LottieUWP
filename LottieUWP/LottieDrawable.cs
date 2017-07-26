@@ -216,8 +216,6 @@ namespace LottieUWP
         private void BuildCompositionLayer()
         {
             _compositionLayer = new CompositionLayer(this, Layer.Factory.NewInstance(_composition), _composition.Layers, _composition);
-
-            _bitmapCanvas = new BitmapCanvas(Width, Height);
         }
 
         private void ApplyColorFilters()
@@ -497,7 +495,12 @@ namespace LottieUWP
             set
             {
                 _scale = value;
-                UpdateBounds();
+                lock (this)
+                {
+                    UpdateBounds();
+                    InvalidateMeasure();
+                    InvalidateSelf();
+                }
             }
             get => _scale;
         }
@@ -529,6 +532,7 @@ namespace LottieUWP
             }
             Width = (int)(_composition.Bounds.Width * _scale);
             Height = (int)(_composition.Bounds.Height * _scale);
+            _bitmapCanvas = new BitmapCanvas(Width, Height);
         }
 
         public virtual void CancelAnimation()

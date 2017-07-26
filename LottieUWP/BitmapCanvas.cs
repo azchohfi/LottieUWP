@@ -74,7 +74,10 @@ namespace LottieUWP
                 _drawingSession.FillRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush);
             }
 
-            _drawingSession.Flush();
+            if (paint.Xfermode.Mode == PorterDuff.Mode.Clear)
+            {
+                _drawingSession.Flush();
+            }
         }
 
         private static CanvasStrokeStyle GetCanvasStrokeStyle(Paint paint)
@@ -104,8 +107,6 @@ namespace LottieUWP
             {
                 _drawingSession.FillRectangle(rect, brush);
             }
-
-            _drawingSession.Flush();
         }
 
         public void DrawPath(Path path, Paint paint)
@@ -124,8 +125,6 @@ namespace LottieUWP
                 _drawingSession.DrawGeometry(geometry, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
             else
                 _drawingSession.FillGeometry(geometry, brush);
-
-            _drawingSession.Flush();
         }
 
         private Matrix3x2 GetCurrentTransform()
@@ -231,6 +230,8 @@ namespace LottieUWP
             {
                 // TODO draw current offlayer 
             }
+
+            _drawingSession.Flush();
         }
 
         public void DrawBitmap(CanvasBitmap bitmap, Rect src, Rect dst, Paint paint)
@@ -244,8 +245,6 @@ namespace LottieUWP
             //    canvasComposite = PorterDuff.ToCanvasComposite(porterDuffColorFilter.Mode);
 
             _drawingSession.DrawImage(bitmap, dst, src, paint.Alpha / 255f, CanvasImageInterpolation.NearestNeighbor, canvasComposite);
-
-            _drawingSession.Flush();
         }
 
         public void GetClipBounds(out Rect bounds)
@@ -266,8 +265,6 @@ namespace LottieUWP
 
         private void UpdateDrawingSessionWithFlags(int flags)
         {
-            _drawingSession.Flush();
-
             _drawingSession.Antialiasing = (flags & Paint.AntiAliasFlag) == Paint.AntiAliasFlag
                 ? CanvasAntialiasing.Antialiased
                 : CanvasAntialiasing.Aliased;
@@ -308,8 +305,6 @@ namespace LottieUWP
             var textLayout = new CanvasTextLayout(_drawingSession, text, textFormat, 0.0f, 0.0f);
             _drawingSession.DrawText(text, 0, 0, brush, textFormat);
 
-            _drawingSession.Flush();
-            
             return textLayout.LayoutBounds;
         }
     }
