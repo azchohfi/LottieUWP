@@ -154,6 +154,11 @@ namespace LottieUWP
                             return true;
                         }
                     }
+                    else if (layer is CompositionLayer compositionLayer && compositionLayer.HasMasks())
+                    {
+                        _hasMasks = true;
+                        return true;
+                    }
                 }
                 _hasMasks = false;
             }

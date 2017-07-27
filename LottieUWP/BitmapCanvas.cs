@@ -32,13 +32,18 @@ namespace LottieUWP
 
         public BitmapCanvas(double width, double height)
         {
+            UpdateClip(width, height);
+        }
+
+        private void UpdateClip(double width, double height)
+        {
             Width = width;
             Height = height;
             _currentClip = new Rect(0, 0, Width, Height);
         }
 
-        public double Width { get; }
-        public double Height { get; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
 
         public static int MatrixSaveFlag = 0b00001;
         public static int ClipSaveFlag = 0b00010;
@@ -51,10 +56,12 @@ namespace LottieUWP
 
         private CanvasDrawingSession _drawingSession;
 
-        internal CanvasActiveLayer CreateSession(CanvasDevice device, CanvasDrawingSession drawingSession)
+        internal CanvasActiveLayer CreateSession(CanvasDevice device, double width, double height, CanvasDrawingSession drawingSession)
         {
             _device = device;
             _drawingSession = drawingSession;
+
+            UpdateClip(width, height);
 
             return _drawingSession.CreateLayer(1f, CanvasGeometry.CreateRectangle(_device, _currentClip));
         }
@@ -273,6 +280,11 @@ namespace LottieUWP
         public void Translate(float dx, float dy)
         {
             _matrix = MatrixExt.PreTranslate(_matrix, dx, dy);
+        }
+
+        public void Scale(float sx, float sy, float px, float py)
+        {
+            _matrix = MatrixExt.PreScale(_matrix, sx, sy, px, py);
         }
 
         public void SetMatrix(Matrix3X3 matrix)

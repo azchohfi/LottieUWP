@@ -64,14 +64,24 @@ namespace LottieUWP
 
         public static Matrix3X3 PreScale(Matrix3X3 matrix, float scaleX, float scaleY)
         {
-            var scaleMatrix = new Matrix3X3
+            return matrix * GetScale(scaleX, scaleY);
+        }
+
+        public static Matrix3X3 PreScale(Matrix3X3 matrix, float scaleX, float scaleY, float px, float py)
+        {
+            var tmp = GetTranslate(-px, -py) * GetScale(scaleX, scaleY) * GetTranslate(px, py);
+
+            return matrix * tmp;
+        }
+
+        private static Matrix3X3 GetScale(float scaleX, float scaleY)
+        {
+            return new Matrix3X3
             {
                 M11 = scaleX,
                 M22 = scaleY,
                 M33 = 1
             };
-
-            return matrix * scaleMatrix;
         }
 
         public static void MapRect(this Matrix3X3 matrix, ref Rect rect)

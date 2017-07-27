@@ -334,7 +334,7 @@ namespace LottieUWP
         {
             lock (this)
             {
-                using (_bitmapCanvas.CreateSession(canvasControl.Device, args.DrawingSession))
+                using (_bitmapCanvas.CreateSession(canvasControl.Device, canvasControl.Size.Width, canvasControl.Size.Height, args.DrawingSession))
                 {
                     _bitmapCanvas.Clear(Colors.Transparent);
                     LottieLog.BeginSection("Drawable.Draw");
@@ -343,14 +343,41 @@ namespace LottieUWP
                         return;
                     }
                     var scale = _scale;
-                    if (_compositionLayer.HasMatte())
+                    float extraScale = 1f;
+                    var hasExtraScale = false;
+                    float maxScale = GetMaxScale(_bitmapCanvas);
+                    if (_compositionLayer.HasMatte() || _compositionLayer.HasMasks())
                     {
-                        scale = Math.Min(_scale, GetMaxScale(_bitmapCanvas));
+                        // Since we can only scale up the animation so much before masks and mattes get clipped, we
+                        // may have to scale the canvas to fake the rest. This isn't a problem for software rendering
+                        // but hardware accelerated scaling is rasterized so it will appear pixelated.
+                        extraScale = scale / maxScale;
+                        scale = Math.Min(scale, maxScale);
+                        // This check fixes some floating point rounding issues.
+                        hasExtraScale = extraScale > 1.001f;
+                    }
+
+                    if (hasExtraScale)
+                    {
+                        _bitmapCanvas.Save();
+                        // This is extraScale ^2 because what happens is when the scale increases, the intrinsic size 
+                        // of the view increases. That causes the drawable to keep growing even though we are only 
+                        // rendering to the size of the view in the top left quarter, leaving the rest blank. 
+                        // The first scale by extraScale scales up the canvas so that we are back at the original 
+                        // size. The second extraScale is what actually has the scaling effect. 
+                        float extraScaleSquared = extraScale * extraScale;
+                        int px = (int)(_composition.Bounds.Width * scale / 2f);
+                        int py = (int)(_composition.Bounds.Height * scale / 2f);
+                        _bitmapCanvas.Scale(extraScaleSquared, extraScaleSquared, px, py);
                     }
 
                     _matrix.Reset();
                     _matrix = MatrixExt.PreScale(_matrix, scale, scale);
                     _compositionLayer.Draw(_bitmapCanvas, _matrix, _alpha);
+                    if (hasExtraScale)
+                    {
+                        _bitmapCanvas.Restore();
+                    }
                     LottieLog.EndSection("Drawable.Draw");
                 }
             }
@@ -614,6 +641,10 @@ namespace LottieUWP
         private FontAssetManager FontAssetManager => _fontAssetManager ??
             (_fontAssetManager = new FontAssetManager(_fontAssetDelegate));
 
+        /**
+        * If there are masks or mattes, we can't scale the animation larger than the canvas or else 
+        * the off screen rendering for masks and mattes after saveLayer calls will get clipped. 
+        */
         private float GetMaxScale(BitmapCanvas canvas)
         {
             var maxScaleX = (float)canvas.Width / (float)_composition.Bounds.Width;

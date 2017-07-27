@@ -522,19 +522,6 @@ namespace LottieUWP
                     return;
                 }
 
-                var screenWidth = Utils.GetScreenWidth();
-                var screenHeight = Utils.GetScreenHeight();
-                var compWidth = (int)value.Bounds.Width;
-                var compHeight = (int)value.Bounds.Height;
-                if (compWidth > screenWidth || compHeight > screenHeight)
-                {
-                    var xScale = screenWidth / (float)compWidth;
-                    var yScale = screenHeight / (float)compHeight;
-                    var maxScaleForScreen = Math.Min(xScale, yScale);
-                    Scale = Math.Min(maxScaleForScreen, _lottieDrawable.Scale);
-                    Debug.WriteLine($"Composition larger than the screen {compWidth:D}x{compHeight:D} vs {screenWidth:D}x{screenHeight:D}. Scaling down.", LottieLog.Tag);
-                }
-
                 ImageDrawable = _lottieDrawable;
 
                 _composition = value;
