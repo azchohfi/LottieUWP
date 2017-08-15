@@ -227,8 +227,9 @@ namespace LottieUWP
         //{
         //    set
         //    {
+        //        RecycleBitmaps();
+        //        CancelLoaderTask();
         //        base.ImageResource = value;
-        //        recycleBitmaps();
         //    }
         //}
 
@@ -245,6 +246,7 @@ namespace LottieUWP
                 {
                     RecycleBitmaps();
                 }
+                CancelLoaderTask();
 
                 if (_viewbox == null)
                 {
