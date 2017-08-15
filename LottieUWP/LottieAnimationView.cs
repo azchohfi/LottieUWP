@@ -384,10 +384,14 @@ namespace LottieUWP
             _lottieDrawable.EnableMergePathsForKitKatAndAbove();
         }
 
-        public virtual void UseExperimentalHardwareAcceleration()
+        public virtual void UseExperimentalHardwareAcceleration(bool use = true)
         {
-            UseExperimentalHardwareAcceleration(true);
+            UseHardwareAcceleration(use);
         }
+
+        /** 
+        * @see #useHardwareAcceleration(boolean) 
+        */
 
         /// <summary>
         /// Enable hardware acceleration for this view.
@@ -401,7 +405,7 @@ namespace LottieUWP
         ///    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
         ///    anything about that.
         /// </summary>
-        public virtual void UseExperimentalHardwareAcceleration(bool use)
+        public virtual void UseHardwareAcceleration(bool use = true)
         {
             _useHardwareLayer = use;
             EnableOrDisableHardwareLayer();
@@ -525,7 +529,7 @@ namespace LottieUWP
                 ImageDrawable = _lottieDrawable;
 
                 _composition = value;
-                
+
                 InvalidateArrange();
                 InvalidateMeasure();
                 _lottieDrawable.InvalidateSelf();
