@@ -57,7 +57,7 @@ namespace LottieUWP
 
         // Using a DependencyProperty as the backing store for DefaultCacheStrategy.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DefaultCacheStrategyProperty =
-            DependencyProperty.Register("DefaultCacheStrategy", typeof(CacheStrategy), typeof(LottieAnimationView), new PropertyMetadata(CacheStrategy.None));
+            DependencyProperty.Register("DefaultCacheStrategy", typeof(CacheStrategy), typeof(LottieAnimationView), new PropertyMetadata(CacheStrategy.Weak));
 
         private string _animationName;
         //private bool wasAnimatingWhenDetached = false;
