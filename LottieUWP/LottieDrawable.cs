@@ -28,14 +28,13 @@ namespace LottieUWP
         private float _scale = 1f;
         private float _progress;
 
-        private readonly ISet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
+        private readonly HashSet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
+        private readonly List<Action<LottieComposition>> _lazyCompositionTasks = new List<Action<LottieComposition>>();
         private ImageAssetManager _imageAssetManager;
         private IImageAssetDelegate _imageAssetDelegate;
         private FontAssetManager _fontAssetManager;
         private FontAssetDelegate _fontAssetDelegate;
         private TextDelegate _textDelegate;
-        private bool _playAnimationWhenCompositionAdded;
-        private bool _reverseAnimationWhenCompositionAdded;
         private bool _systemAnimationsAreDisabled;
         private bool _enableMergePaths;
         private CompositionLayer _compositionLayer;
@@ -183,16 +182,11 @@ namespace LottieUWP
                 ApplyColorFilters();
 
                 Progress = _progress;
-                if (_playAnimationWhenCompositionAdded)
+                foreach (var t in _lazyCompositionTasks)
                 {
-                    _playAnimationWhenCompositionAdded = false;
-                    PlayAnimation();
+                    t.Invoke(composition);
                 }
-                if (_reverseAnimationWhenCompositionAdded)
-                {
-                    _reverseAnimationWhenCompositionAdded = false;
-                    ReverseAnimation();
-                }
+                _lazyCompositionTasks.Clear();
                 composition.PerformanceTrackingEnabled = _performanceTrackingEnabled;
             }
 
@@ -410,8 +404,10 @@ namespace LottieUWP
         {
             if (_compositionLayer == null)
             {
-                _playAnimationWhenCompositionAdded = true;
-                _reverseAnimationWhenCompositionAdded = false;
+                _lazyCompositionTasks.Add(composition =>
+                {
+                    PlayAnimation();
+                });
                 return;
             }
             var playTime = setStartTime ? (long)(_progress * _animator.Duration) : 0;
@@ -436,8 +432,10 @@ namespace LottieUWP
         {
             if (_compositionLayer == null)
             {
-                _playAnimationWhenCompositionAdded = false;
-                _reverseAnimationWhenCompositionAdded = true;
+                _lazyCompositionTasks.Add(composition =>
+                {
+                    ReverseAnimation();
+                });
                 return;
             }
             if (setStartTime)
@@ -564,8 +562,7 @@ namespace LottieUWP
 
         public virtual void CancelAnimation()
         {
-            _playAnimationWhenCompositionAdded = false;
-            _reverseAnimationWhenCompositionAdded = false;
+            _lazyCompositionTasks.Clear();
             _animator.Cancel();
         }
 
