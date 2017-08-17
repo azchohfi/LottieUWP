@@ -4,7 +4,7 @@ namespace LottieUWP
 {
     public class ValueAnimator : Animator
     {
-        private ValueAnimator()
+        protected ValueAnimator()
         {
             Interpolator = new AccelerateDecelerateInterpolator();
         }

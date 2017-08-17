@@ -580,10 +580,50 @@ namespace LottieUWP
             EnableOrDisableHardwareLayer();
         }
 
+        public void PlayAnimation(int startFrame, int endFrame)
+        {
+            _lottieDrawable.PlayAnimation(startFrame, endFrame);
+        }
+
+        public void PlayAnimation(float startProgress, float endProgress)
+        {
+            _lottieDrawable.PlayAnimation(startProgress, endProgress);
+        }
+
         public virtual void ReverseAnimation()
         {
             _lottieDrawable.ReverseAnimation();
             EnableOrDisableHardwareLayer();
+        }
+
+        public int MinFrame
+        {
+            set => _lottieDrawable.MinFrame = value;
+        }
+
+        public float MinProgress
+        {
+            set => _lottieDrawable.MinProgress = value;
+        }
+
+        public int MaxFrame
+        {
+            set => _lottieDrawable.MaxFrame = value;
+        }
+
+        public float MaxProgress
+        {
+            set => _lottieDrawable.MaxProgress = value;
+        }
+
+        public void SetMinAndMaxFrame(int minFrame, int maxFrame)
+        {
+            _lottieDrawable.SetMinAndMaxFrame(minFrame, maxFrame);
+        }
+
+        public void SetMinAndMaxProgress(float minProgress, float maxProgress)
+        {
+            _lottieDrawable.SetMinAndMaxProgress(minProgress, maxProgress);
         }
 
         public virtual void ResumeReverseAnimation()

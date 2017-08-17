@@ -15,7 +15,7 @@ namespace LottieUWP
         private const int TargetFps = 60;
 
         public bool Loop { get; set; }
-        public long Duration { get; set; }
+        public virtual long Duration { get; set; }
 
         public float CurrentPlayTime
         {
@@ -55,6 +55,12 @@ namespace LottieUWP
 
         public void Cancel()
         {
+            PrivateCancel();
+            AnimationCanceled();
+        }
+
+        private void PrivateCancel()
+        {
             if (_timer != null)
             {
                 _timer.Dispose();
@@ -82,9 +88,18 @@ namespace LottieUWP
                 }
                 else
                 {
-                    Cancel();
+                    AnimationEnded();
+                    PrivateCancel();
                 }
             }
+        }
+
+        protected virtual void AnimationEnded()
+        {
+        }
+
+        protected virtual void AnimationCanceled()
+        {
         }
 
         public void Reverse()

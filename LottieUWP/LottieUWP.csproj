@@ -172,6 +172,7 @@
     <Compile Include="Layer.cs" />
     <Compile Include="LinearGradient.cs" />
     <Compile Include="LottieLog.cs" />
+    <Compile Include="LottieValueAnimator.cs" />
     <Compile Include="Matrix3x3.cs" />
     <Compile Include="MeanCalculator.cs" />
     <Compile Include="PathInterpolator.cs" />

@@ -23,7 +23,7 @@ namespace LottieUWP
     {
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private LottieComposition _composition;
-        private readonly ValueAnimator _animator = ValueAnimator.OfFloat(0f, 1f);
+        private readonly LottieValueAnimator _animator = new LottieValueAnimator();
         private float _speed = 1f;
         private float _scale = 1f;
         private float _progress;
@@ -418,6 +418,27 @@ namespace LottieUWP
             }
         }
 
+        public void PlayAnimation(int startFrame, int endFrame)
+        {
+            if (_composition == null)
+            {
+                _lazyCompositionTasks.Add(composition =>
+                    {
+                        PlayAnimation(startFrame / composition.DurationFrames, endFrame / composition.DurationFrames);
+                    });
+                return;
+            }
+            PlayAnimation(startFrame / _composition.DurationFrames, endFrame / _composition.DurationFrames);
+        }
+
+        public void PlayAnimation(float startProgress, float endProgress)
+        {
+            _animator.UpdateValues(startProgress, endProgress);
+            _animator.CurrentPlayTime = 0;
+            Progress = startProgress;
+            PlayAnimation(false);
+        }
+
         public virtual void ResumeReverseAnimation()
         {
             ReverseAnimation(true);
@@ -450,20 +471,67 @@ namespace LottieUWP
             set
             {
                 _speed = value;
-                if (value < 0)
-                {
-                    _animator.SetFloatValues(1f, 0f);
-                }
-                else
-                {
-                    _animator.SetFloatValues(0f, 1f);
-                }
+                _animator.IsReversed = value < 0;
 
                 if (_composition != null)
                 {
                     _animator.Duration = (long)(_composition.Duration / Math.Abs(value));
                 }
             }
+        }
+
+        public int MinFrame
+        {
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(composition =>
+                        {
+                            MinProgress = value / composition.DurationFrames;
+                        });
+                    return;
+                }
+                MinProgress = value / _composition.DurationFrames;
+            }
+        }
+
+        public float MinProgress
+        {
+            set => _animator.StartProgress = value;
+        }
+
+        public int MaxFrame
+        {
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(composition =>
+                        {
+                            MaxProgress = value / composition.DurationFrames;
+                        });
+                    return;
+                }
+                MaxProgress = value / _composition.DurationFrames;
+            }
+        }
+
+        public float MaxProgress
+        {
+            set => _animator.EndProgress = value;
+        }
+
+        public void SetMinAndMaxFrame(int minFrame, int maxFrame)
+        {
+            MinFrame = minFrame;
+            MaxFrame = maxFrame;
+        }
+
+        public void SetMinAndMaxProgress(float minProgress, float maxProgress)
+        {
+            MinProgress = minProgress;
+            MaxProgress = maxProgress;
         }
 
         public virtual float Progress
