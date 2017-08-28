@@ -1,4 +1,5 @@
 ﻿using Windows.Data.Json;
+using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP
 {

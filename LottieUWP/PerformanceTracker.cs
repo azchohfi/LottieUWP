@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using LottieUWP.Utils;
 
 namespace LottieUWP
 {
@@ -106,17 +107,17 @@ namespace LottieUWP
             FrameRendered?.Invoke(this, e);
         }
     }
-}
 
-internal static class HashMapHelperClass
-{
-    internal static HashSet<KeyValuePair<TKey, TValue>> SetOfKeyValuePairs<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
+    internal static class HashMapHelperClass
     {
-        var entries = new HashSet<KeyValuePair<TKey, TValue>>();
-        foreach (var keyValuePair in dictionary)
+        internal static HashSet<KeyValuePair<TKey, TValue>> SetOfKeyValuePairs<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
         {
-            entries.Add(keyValuePair);
+            var entries = new HashSet<KeyValuePair<TKey, TValue>>();
+            foreach (var keyValuePair in dictionary)
+            {
+                entries.Add(keyValuePair);
+            }
+            return entries;
         }
-        return entries;
     }
 }
