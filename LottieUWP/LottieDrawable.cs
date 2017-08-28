@@ -52,7 +52,6 @@ namespace LottieUWP
             {
                 if (_systemAnimationsAreDisabled)
                 {
-                    _animator.Cancel();
                     Progress = 1f;
                 }
                 else
@@ -379,7 +378,7 @@ namespace LottieUWP
 
         internal virtual void SystemAnimationsAreDisabled()
         {
-            _systemAnimationsAreDisabled = true;
+            //_systemAnimationsAreDisabled = true;
         }
 
         public virtual bool Looping
