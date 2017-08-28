@@ -249,10 +249,7 @@ namespace LottieUWP
 
         public ColorFilter ColorFilter
         {
-            set
-            {
-                // Do nothing.
-            }
+            set => throw new NotSupportedException("Use AddColorFilter instead.");
         }
 
         /// <summary>
