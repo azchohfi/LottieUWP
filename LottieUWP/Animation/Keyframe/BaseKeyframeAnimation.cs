@@ -8,7 +8,7 @@ namespace LottieUWP.Animation.Keyframe
         float Progress { get; set; }
         event EventHandler ValueChanged;
     }
-    public interface IBaseKeyframeAnimation<out TA> : IBaseKeyframeAnimation
+    public interface IBaseKeyframeAnimation<out TK, out TA> : IBaseKeyframeAnimation
     {
         TA Value { get; }
     }
@@ -17,7 +17,7 @@ namespace LottieUWP.Animation.Keyframe
     /// </summary>
     /// <typeparam name="TK">Keyframe type</typeparam>
     /// <typeparam name="TA">Animation type</typeparam>
-    public abstract class BaseKeyframeAnimation<TK, TA> : IBaseKeyframeAnimation<TA>
+    public abstract class BaseKeyframeAnimation<TK, TA> : IBaseKeyframeAnimation<TK, TA>
     {
         public virtual event EventHandler ValueChanged;
         private bool _isDiscrete;

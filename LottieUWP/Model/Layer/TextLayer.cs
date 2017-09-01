@@ -19,19 +19,19 @@ namespace LottieUWP.Model.Layer
         };
 
         private readonly Dictionary<FontCharacter, List<ContentGroup>> _contentsForCharacter = new Dictionary<FontCharacter, List<ContentGroup>>();
-        private readonly IBaseKeyframeAnimation<DocumentData> _textAnimation;
+        private readonly TextKeyframeAnimation _textAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly LottieComposition _composition;
-        private readonly IBaseKeyframeAnimation<Color> _colorAnimation;
-        private readonly IBaseKeyframeAnimation<Color> _strokeAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _strokeWidthAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _trackingAnimation;
+        private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<Color, Color> _strokeAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _strokeWidthAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _trackingAnimation;
 
         internal TextLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
             _lottieDrawable = lottieDrawable;
             _composition = layerModel.Composition;
-            _textAnimation = layerModel.Text.CreateAnimation();
+            _textAnimation = (TextKeyframeAnimation)layerModel.Text.CreateAnimation();
             _textAnimation.ValueChanged += OnValueChanged;
             AddAnimation(_textAnimation);
 

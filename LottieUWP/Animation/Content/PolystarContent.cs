@@ -21,13 +21,13 @@ namespace LottieUWP.Animation.Content
 
         private readonly LottieDrawable _lottieDrawable;
         private readonly PolystarShape.Type _type;
-        private readonly IBaseKeyframeAnimation<float?> _pointsAnimation;
-        private readonly IBaseKeyframeAnimation<Vector2?> _positionAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _rotationAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _innerRadiusAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _outerRadiusAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _innerRoundednessAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _outerRoundednessAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _pointsAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _positionAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _rotationAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _innerRadiusAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _outerRadiusAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _innerRoundednessAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _outerRoundednessAnimation;
 
         private TrimPathContent _trimPath;
         private bool _isPathValid;

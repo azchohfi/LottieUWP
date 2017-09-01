@@ -7,12 +7,12 @@ namespace LottieUWP.Animation.Content
 {
     internal class StrokeContent : BaseStrokeContent
     {
-        private readonly KeyframeAnimation<Color> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
 
         internal StrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) : base(lottieDrawable, layer, ShapeStroke.LineCapTypeToPaintCap(stroke.CapType), ShapeStroke.LineJoinTypeToPaintLineJoin(stroke.JoinType), stroke.Opacity, stroke.Width, stroke.LineDashPattern, stroke.DashOffset)
         {
             Name = stroke.Name;
-            _colorAnimation = (KeyframeAnimation<Color>)stroke.Color.CreateAnimation();
+            _colorAnimation = stroke.Color.CreateAnimation();
             _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
         }

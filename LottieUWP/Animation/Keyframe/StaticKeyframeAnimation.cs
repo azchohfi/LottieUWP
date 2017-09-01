@@ -7,11 +7,11 @@ namespace LottieUWP.Animation.Keyframe
     {
     }
 
-    internal class StaticKeyframeAnimation<T> : KeyframeAnimation<T>, IStaticKeyFrameAnimation
+    internal class StaticKeyframeAnimation<TK, TA> : BaseKeyframeAnimation<TK, TA>, IStaticKeyFrameAnimation
     {
-        private readonly T _initialValue;
+        private readonly TA _initialValue;
 
-        internal StaticKeyframeAnimation(T initialValue) : base(new List<IKeyframe<T>>())
+        internal StaticKeyframeAnimation(TA initialValue) : base(new List<IKeyframe<TK>>())
         {
             _initialValue = initialValue;
         }
@@ -37,9 +37,9 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        public override T Value => _initialValue;
+        public override TA Value => _initialValue;
 
-        public override T GetValue(IKeyframe<T> keyframe, float keyframeProgress)
+        public override TA GetValue(IKeyframe<TK> keyframe, float keyframeProgress)
         {
             return _initialValue;
         }

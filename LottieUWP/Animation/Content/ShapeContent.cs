@@ -11,7 +11,7 @@ namespace LottieUWP.Animation.Content
         private readonly Path _path = new Path();
 
         private readonly LottieDrawable _lottieDrawable;
-        private readonly IBaseKeyframeAnimation<Path> _shapeAnimation;
+        private readonly IBaseKeyframeAnimation<ShapeData, Path> _shapeAnimation;
 
         private bool _isPathValid;
         private TrimPathContent _trimPath;

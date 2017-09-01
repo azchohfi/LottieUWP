@@ -1,7 +1,7 @@
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
 
-namespace LottieUWP
+namespace LottieUWP.Animation.Content
 {
     public class Paint
     {

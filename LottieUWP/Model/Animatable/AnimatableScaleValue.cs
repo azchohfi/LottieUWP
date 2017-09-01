@@ -20,11 +20,11 @@ namespace LottieUWP.Model.Animatable
             return value;
         }
 
-        public override IBaseKeyframeAnimation<ScaleXy> CreateAnimation()
+        public override IBaseKeyframeAnimation<ScaleXy, ScaleXy> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<ScaleXy>(_initialValue);
+                return new StaticKeyframeAnimation<ScaleXy, ScaleXy>(_initialValue);
             }
             return new ScaleKeyframeAnimation(Keyframes);
         }

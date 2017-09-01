@@ -9,9 +9,9 @@ namespace LottieUWP.Animation.Content
     internal class TrimPathContent : IContent
     {
         public event EventHandler ValueChanged;
-        private readonly IBaseKeyframeAnimation<float?> _startAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _endAnimation;
-        private readonly IBaseKeyframeAnimation<float?> _offsetAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _startAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _endAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _offsetAnimation;
 
         internal TrimPathContent(BaseLayer layer, ShapeTrimPath trimPath)
         {
@@ -44,10 +44,10 @@ namespace LottieUWP.Animation.Content
 
         internal virtual ShapeTrimPath.Type Type { get; }
 
-        public virtual IBaseKeyframeAnimation<float?> Start => _startAnimation;
+        public virtual IBaseKeyframeAnimation<float?, float?> Start => _startAnimation;
 
-        public virtual IBaseKeyframeAnimation<float?> End => _endAnimation;
+        public virtual IBaseKeyframeAnimation<float?, float?> End => _endAnimation;
 
-        public virtual IBaseKeyframeAnimation<float?> Offset => _offsetAnimation;
+        public virtual IBaseKeyframeAnimation<float?, float?> Offset => _offsetAnimation;
     }
 }

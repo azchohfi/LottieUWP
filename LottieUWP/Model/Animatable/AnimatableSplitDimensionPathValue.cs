@@ -3,7 +3,7 @@ using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableSplitDimensionPathValue : IAnimatableValue<Vector2?>
+    internal class AnimatableSplitDimensionPathValue : IAnimatableValue<Vector2?, Vector2?>
     {
         private readonly AnimatableFloatValue _animatableXDimension;
         private readonly AnimatableFloatValue _animatableYDimension;
@@ -14,9 +14,9 @@ namespace LottieUWP.Model.Animatable
             _animatableYDimension = animatableYDimension;
         }
 
-        public IBaseKeyframeAnimation<Vector2?> CreateAnimation()
+        public IBaseKeyframeAnimation<Vector2?, Vector2?> CreateAnimation()
         {
-            return new SplitDimensionPathKeyframeAnimation((KeyframeAnimation<float?>)_animatableXDimension.CreateAnimation(), (KeyframeAnimation<float?>)_animatableYDimension.CreateAnimation());
+            return new SplitDimensionPathKeyframeAnimation(_animatableXDimension.CreateAnimation(), _animatableYDimension.CreateAnimation());
         }
 
         public bool HasAnimation()

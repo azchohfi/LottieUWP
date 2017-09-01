@@ -16,7 +16,7 @@ namespace LottieUWP.Model.Animatable
             return value;
         }
 
-        public override IBaseKeyframeAnimation<DocumentData> CreateAnimation()
+        public override IBaseKeyframeAnimation<DocumentData, DocumentData> CreateAnimation()
         {
             return new TextKeyframeAnimation(Keyframes);
         }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using LottieUWP.Animation.Content;
 using LottieUWP.Manager;
 using LottieUWP.Model.Layer;
 using LottieUWP.Utils;

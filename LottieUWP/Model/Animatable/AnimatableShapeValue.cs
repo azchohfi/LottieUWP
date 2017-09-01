@@ -15,11 +15,11 @@ namespace LottieUWP.Model.Animatable
         {
         }
 
-        public override IBaseKeyframeAnimation<Path> CreateAnimation()
+        public override IBaseKeyframeAnimation<ShapeData, Path> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<Path>(ConvertType(_initialValue));
+                return new StaticKeyframeAnimation<ShapeData, Path>(ConvertType(_initialValue));
             }
             return new ShapeKeyframeAnimation(Keyframes);
         }

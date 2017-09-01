@@ -20,10 +20,10 @@ namespace LottieUWP.Animation.Content
         private readonly float[] _dashPatternValues;
         internal readonly Paint Paint = new Paint(Paint.AntiAliasFlag);
 
-        private readonly IBaseKeyframeAnimation<float?> _widthAnimation;
-        private readonly IBaseKeyframeAnimation<int?> _opacityAnimation;
-        private readonly List<IBaseKeyframeAnimation<float?>> _dashPatternAnimations;
-        private readonly IBaseKeyframeAnimation<float?> _dashPatternOffsetAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _widthAnimation;
+        private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
+        private readonly List<IBaseKeyframeAnimation<float?, float?>> _dashPatternAnimations;
+        private readonly IBaseKeyframeAnimation<float?, float?> _dashPatternOffsetAnimation;
 
         internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
@@ -44,7 +44,7 @@ namespace LottieUWP.Animation.Content
             {
                 _dashPatternOffsetAnimation = offset.CreateAnimation();
             }
-            _dashPatternAnimations = new List<IBaseKeyframeAnimation<float?>>(dashPattern.Count);
+            _dashPatternAnimations = new List<IBaseKeyframeAnimation<float?, float?>>(dashPattern.Count);
             _dashPatternValues = new float[dashPattern.Count];
 
             for (var i = 0; i < dashPattern.Count; i++)

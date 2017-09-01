@@ -1,7 +1,7 @@
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 
-namespace LottieUWP
+namespace LottieUWP.Animation.Content
 {
     internal abstract class Gradient : Shader
     {

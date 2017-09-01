@@ -12,8 +12,8 @@ namespace LottieUWP.Animation.Content
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         private readonly List<IPathContent> _paths = new List<IPathContent>();
-        private readonly IBaseKeyframeAnimation<Color> _colorAnimation;
-        private readonly KeyframeAnimation<int?> _opacityAnimation;
+        private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
         private readonly LottieDrawable _lottieDrawable;
 
         internal FillContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill)
@@ -35,7 +35,7 @@ namespace LottieUWP.Animation.Content
                 _lottieDrawable.InvalidateSelf();
             };
             layer.AddAnimation(_colorAnimation);
-            _opacityAnimation = (KeyframeAnimation<int?>)fill.Opacity.CreateAnimation();
+            _opacityAnimation = fill.Opacity.CreateAnimation();
             _opacityAnimation.ValueChanged += (sender, args) =>
             {
                 _lottieDrawable.InvalidateSelf();

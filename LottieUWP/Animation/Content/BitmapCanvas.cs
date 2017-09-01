@@ -7,7 +7,7 @@ using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 
-namespace LottieUWP
+namespace LottieUWP.Animation.Content
 {
     public class BitmapCanvas
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Data.Json;
+using LottieUWP.Model.Animatable;
 using LottieUWP.Utils;
 
 namespace LottieUWP.Animation

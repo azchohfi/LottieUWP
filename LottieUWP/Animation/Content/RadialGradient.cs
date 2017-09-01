@@ -3,7 +3,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 
-namespace LottieUWP
+namespace LottieUWP.Animation.Content
 {
     internal class RadialGradient : Gradient
     {

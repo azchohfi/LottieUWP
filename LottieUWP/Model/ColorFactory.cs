@@ -1,5 +1,6 @@
 ﻿using Windows.Data.Json;
 using Windows.UI;
+using LottieUWP.Model.Animatable;
 
 namespace LottieUWP.Model
 {

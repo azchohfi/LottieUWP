@@ -21,9 +21,9 @@ namespace LottieUWP.Animation.Content
 
         private readonly GradientType _type;
         private readonly int _cacheSteps;
-        private readonly KeyframeAnimation<GradientColor> _colorAnimation;
-        private readonly KeyframeAnimation<Vector2?> _startPointAnimation;
-        private readonly KeyframeAnimation<Vector2?> _endPointAnimation;
+        private readonly IBaseKeyframeAnimation<GradientColor, GradientColor> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _startPointAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _endPointAnimation;
 
         internal GradientStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) : base(lottieDrawable, layer, ShapeStroke.LineCapTypeToPaintCap(stroke.CapType), ShapeStroke.LineJoinTypeToPaintLineJoin(stroke.JoinType), stroke.Opacity, stroke.Width, stroke.LineDashPattern, stroke.DashOffset)
         {
@@ -31,15 +31,15 @@ namespace LottieUWP.Animation.Content
             _type = stroke.GradientType;
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
 
-            _colorAnimation = (KeyframeAnimation<GradientColor>)stroke.GradientColor.CreateAnimation();
+            _colorAnimation = stroke.GradientColor.CreateAnimation();
             _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
 
-            _startPointAnimation = (KeyframeAnimation<Vector2?>)stroke.StartPoint.CreateAnimation();
+            _startPointAnimation = stroke.StartPoint.CreateAnimation();
             _startPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_startPointAnimation);
 
-            _endPointAnimation = (KeyframeAnimation<Vector2?>)stroke.EndPoint.CreateAnimation();
+            _endPointAnimation = stroke.EndPoint.CreateAnimation();
             _endPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_endPointAnimation);
         }

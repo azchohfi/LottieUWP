@@ -3,13 +3,13 @@ using System.Numerics;
 
 namespace LottieUWP.Animation.Keyframe
 {
-    internal class SplitDimensionPathKeyframeAnimation : KeyframeAnimation<Vector2?>
+    internal class SplitDimensionPathKeyframeAnimation : BaseKeyframeAnimation<Vector2?, Vector2?>
     {
         private Vector2 _point;
-        private readonly KeyframeAnimation<float?> _xAnimation;
-        private readonly KeyframeAnimation<float?> _yAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _xAnimation;
+        private readonly IBaseKeyframeAnimation<float?, float?> _yAnimation;
 
-        internal SplitDimensionPathKeyframeAnimation(KeyframeAnimation<float?> xAnimation, KeyframeAnimation<float?> yAnimation)
+        internal SplitDimensionPathKeyframeAnimation(IBaseKeyframeAnimation<float?, float?> xAnimation, IBaseKeyframeAnimation<float?, float?> yAnimation)
             : base(new List<IKeyframe<Vector2?>>())
         {
             _xAnimation = xAnimation;

@@ -10,15 +10,15 @@ namespace LottieUWP.Animation.Keyframe
     {
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
 
-        private readonly IBaseKeyframeAnimation<Vector2?> _anchorPoint;
-        private readonly IBaseKeyframeAnimation<Vector2?> _position;
-        private readonly IBaseKeyframeAnimation<ScaleXy> _scale;
-        private readonly IBaseKeyframeAnimation<float?> _rotation;
-        private readonly IBaseKeyframeAnimation<int?> _opacity;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _anchorPoint;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _position;
+        private readonly IBaseKeyframeAnimation<ScaleXy, ScaleXy> _scale;
+        private readonly IBaseKeyframeAnimation<float?, float?> _rotation;
+        private readonly IBaseKeyframeAnimation<int?, int?> _opacity;
 
         // Used for repeaters 
-        private readonly IBaseKeyframeAnimation<float?> _startOpacity;
-        private readonly IBaseKeyframeAnimation<float?> _endOpacity;
+        private readonly IBaseKeyframeAnimation<float?, float?> _startOpacity;
+        private readonly IBaseKeyframeAnimation<float?, float?> _endOpacity;
 
         internal TransformKeyframeAnimation(AnimatableTransform animatableTransform)
         {
@@ -84,11 +84,11 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        internal virtual IBaseKeyframeAnimation<int?> Opacity => _opacity;
+        internal virtual IBaseKeyframeAnimation<int?, int?> Opacity => _opacity;
 
-        internal virtual IBaseKeyframeAnimation<float?> StartOpacity => _startOpacity;
+        internal virtual IBaseKeyframeAnimation<float?, float?> StartOpacity => _startOpacity;
 
-        internal virtual IBaseKeyframeAnimation<float?> EndOpacity => _endOpacity;
+        internal virtual IBaseKeyframeAnimation<float?, float?> EndOpacity => _endOpacity;
 
         internal virtual Matrix3X3 Matrix
         {

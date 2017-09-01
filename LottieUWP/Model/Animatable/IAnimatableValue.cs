@@ -1,11 +1,11 @@
 ﻿using Windows.Data.Json;
 using LottieUWP.Animation.Keyframe;
 
-namespace LottieUWP
+namespace LottieUWP.Model.Animatable
 {
-    internal interface IAnimatableValue<out TO>
+    internal interface IAnimatableValue<out TK, out TA>
     {
-        IBaseKeyframeAnimation<TO> CreateAnimation();
+        IBaseKeyframeAnimation<TK, TA> CreateAnimation();
         bool HasAnimation();
     }
 

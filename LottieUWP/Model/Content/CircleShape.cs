@@ -8,7 +8,7 @@ namespace LottieUWP.Model.Content
 {
     internal class CircleShape : IContentModel
     {
-        private CircleShape(string name, IAnimatableValue<Vector2?> position, AnimatablePointValue size)
+        private CircleShape(string name, IAnimatableValue<Vector2?, Vector2?> position, AnimatablePointValue size)
         {
             Name = name;
             Position = position;
@@ -25,7 +25,7 @@ namespace LottieUWP.Model.Content
 
         internal string Name { get; }
 
-        public IAnimatableValue<Vector2?> Position { get; }
+        public IAnimatableValue<Vector2?, Vector2?> Position { get; }
 
         public AnimatablePointValue Size { get; }
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)

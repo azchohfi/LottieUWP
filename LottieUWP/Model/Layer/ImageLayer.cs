@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Foundation;
+using LottieUWP.Animation.Content;
 using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP.Model.Layer

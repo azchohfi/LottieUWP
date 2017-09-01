@@ -1,4 +1,5 @@
 ﻿using Windows.UI;
+using LottieUWP.Animation.Content;
 using Microsoft.Graphics.Canvas.Brushes;
 
 namespace LottieUWP

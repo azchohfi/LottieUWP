@@ -1,4 +1,5 @@
 ﻿using Windows.Foundation;
+using LottieUWP.Animation.Content;
 
 namespace LottieUWP.Model.Layer
 {

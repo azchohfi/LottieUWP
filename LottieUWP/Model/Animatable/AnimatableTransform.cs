@@ -12,7 +12,7 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableTransform : IModifierContent, IContentModel
     {
-        private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<Vector2?> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity, AnimatableFloatValue startOpacity, AnimatableFloatValue endOpacity)
+        private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<Vector2?, Vector2?> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity, AnimatableFloatValue startOpacity, AnimatableFloatValue endOpacity)
         {
             AnchorPoint = anchorPoint;
             Position = position;
@@ -40,7 +40,7 @@ namespace LottieUWP.Model.Animatable
             internal static AnimatableTransform NewInstance(JsonObject json, LottieComposition composition)
             {
                 AnimatablePathValue anchorPoint;
-                IAnimatableValue<Vector2?> position = null;
+                IAnimatableValue<Vector2?, Vector2?> position = null;
                 AnimatableScaleValue scale;
                 AnimatableFloatValue rotation = null;
                 AnimatableIntegerValue opacity;
@@ -128,7 +128,7 @@ namespace LottieUWP.Model.Animatable
 
         internal virtual AnimatablePathValue AnchorPoint { get; }
 
-        internal virtual IAnimatableValue<Vector2?> Position { get; }
+        internal virtual IAnimatableValue<Vector2?, Vector2?> Position { get; }
 
         internal virtual AnimatableScaleValue Scale { get; }
 

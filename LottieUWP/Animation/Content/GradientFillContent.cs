@@ -17,16 +17,16 @@ namespace LottieUWP.Animation.Content
 
         private readonly Dictionary<long, LinearGradient> _linearGradientCache = new Dictionary<long, LinearGradient>();
         private readonly Dictionary<long, RadialGradient> _radialGradientCache = new Dictionary<long, RadialGradient>();
-        private Matrix3X3 _shaderMatrix = Matrix3X3.CreateIdentity();
+        private readonly Matrix3X3 _shaderMatrix = Matrix3X3.CreateIdentity();
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         //private Rect _boundsRect;
         private readonly List<IPathContent> _paths = new List<IPathContent>();
         private readonly GradientType _type;
-        private readonly KeyframeAnimation<GradientColor> _colorAnimation;
-        private readonly KeyframeAnimation<int?> _opacityAnimation;
-        private readonly KeyframeAnimation<Vector2?> _startPointAnimation;
-        private readonly KeyframeAnimation<Vector2?> _endPointAnimation;
+        private readonly IBaseKeyframeAnimation<GradientColor, GradientColor> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _startPointAnimation;
+        private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _endPointAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly int _cacheSteps;
 
@@ -38,19 +38,19 @@ namespace LottieUWP.Animation.Content
             _path.FillType = fill.FillType;
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
 
-            _colorAnimation = (KeyframeAnimation<GradientColor>)fill.GradientColor.CreateAnimation();
+            _colorAnimation = fill.GradientColor.CreateAnimation();
             _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
 
-            _opacityAnimation = (KeyframeAnimation<int?>)fill.Opacity.CreateAnimation();
+            _opacityAnimation = fill.Opacity.CreateAnimation();
             _opacityAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_opacityAnimation);
 
-            _startPointAnimation = (KeyframeAnimation<Vector2?>)fill.StartPoint.CreateAnimation();
+            _startPointAnimation = fill.StartPoint.CreateAnimation();
             _startPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_startPointAnimation);
 
-            _endPointAnimation = (KeyframeAnimation<Vector2?>)fill.EndPoint.CreateAnimation();
+            _endPointAnimation = fill.EndPoint.CreateAnimation();
             _endPointAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_endPointAnimation);
         }

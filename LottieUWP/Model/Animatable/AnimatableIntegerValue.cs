@@ -22,11 +22,11 @@ namespace LottieUWP.Model.Animatable
             return value;
         }
 
-        public override IBaseKeyframeAnimation<int?> CreateAnimation()
+        public override IBaseKeyframeAnimation<int?, int?> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<int?>(_initialValue);
+                return new StaticKeyframeAnimation<int?, int?>(_initialValue);
             }
 
             return new IntegerKeyframeAnimation(Keyframes);

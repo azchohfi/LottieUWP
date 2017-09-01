@@ -8,9 +8,9 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatablePathValue : IAnimatableValue<Vector2?>
+    internal class AnimatablePathValue : IAnimatableValue<Vector2?, Vector2?>
     {
-        internal static IAnimatableValue<Vector2?> CreateAnimatablePathOrSplitDimensionPath(JsonObject json, LottieComposition composition)
+        internal static IAnimatableValue<Vector2?, Vector2?> CreateAnimatablePathOrSplitDimensionPath(JsonObject json, LottieComposition composition)
         {
             if (json.ContainsKey("k"))
             {
@@ -59,11 +59,11 @@ namespace LottieUWP.Model.Animatable
             return firstObject.ValueType == JsonValueType.Object && firstObject.GetObject().ContainsKey("t");
         }
 
-        public IBaseKeyframeAnimation<Vector2?> CreateAnimation()
+        public IBaseKeyframeAnimation<Vector2?, Vector2?> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<Vector2?>(_initialPoint);
+                return new StaticKeyframeAnimation<Vector2?, Vector2?>(_initialPoint);
             }
 
             return new PathKeyframeAnimation(_keyframes.Cast<IKeyframe<Vector2?>>().ToList());

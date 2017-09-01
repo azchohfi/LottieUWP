@@ -15,8 +15,8 @@ namespace LottieUWP.Animation.Content
 
         private readonly LottieDrawable _lottieDrawable;
         private readonly BaseLayer _layer;
-        private readonly IBaseKeyframeAnimation<float?> _copies;
-        private readonly IBaseKeyframeAnimation<float?> _offset;
+        private readonly IBaseKeyframeAnimation<float?, float?> _copies;
+        private readonly IBaseKeyframeAnimation<float?, float?> _offset;
         private readonly TransformKeyframeAnimation _transform;
         private ContentGroup _contentGroup;
         

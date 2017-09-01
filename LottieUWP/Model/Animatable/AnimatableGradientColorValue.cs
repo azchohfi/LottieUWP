@@ -20,11 +20,11 @@ namespace LottieUWP.Model.Animatable
             return value;
         }
 
-        public override IBaseKeyframeAnimation<GradientColor> CreateAnimation()
+        public override IBaseKeyframeAnimation<GradientColor, GradientColor> CreateAnimation()
         {
             if (!HasAnimation())
             {
-                return new StaticKeyframeAnimation<GradientColor>(_initialValue);
+                return new StaticKeyframeAnimation<GradientColor, GradientColor>(_initialValue);
             }
             return new GradientColorKeyframeAnimation(Keyframes);
         }

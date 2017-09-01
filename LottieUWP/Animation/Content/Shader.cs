@@ -1,4 +1,4 @@
-namespace LottieUWP
+namespace LottieUWP.Animation.Content
 {
     public abstract class Shader
     {

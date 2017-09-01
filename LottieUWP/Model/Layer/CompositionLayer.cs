@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Foundation;
+using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Layer
 {
     internal class CompositionLayer : BaseLayer
     {
-        private readonly IBaseKeyframeAnimation<float?> _timeRemapping;
+        private readonly IBaseKeyframeAnimation<float?, float?> _timeRemapping;
         private readonly List<BaseLayer> _layers = new List<BaseLayer>();
         private Rect _originalClipRect;
         private Rect _newClipRect;

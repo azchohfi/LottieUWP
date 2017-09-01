@@ -5,7 +5,7 @@ using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal abstract class BaseAnimatableValue<TV, TO> : IAnimatableValue<TO>
+    internal abstract class BaseAnimatableValue<TV, TO> : IAnimatableValue<TV, TO>
     {
         internal readonly List<IKeyframe<TV>> Keyframes;
         protected readonly TV _initialValue;
@@ -29,7 +29,7 @@ namespace LottieUWP.Model.Animatable
         /// </summary>
         protected abstract TO ConvertType(TV value);
 
-        public abstract IBaseKeyframeAnimation<TO> CreateAnimation();
+        public abstract IBaseKeyframeAnimation<TV, TO> CreateAnimation();
 
         public virtual bool HasAnimation()
         {

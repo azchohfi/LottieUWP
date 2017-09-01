@@ -1,3 +1,4 @@
+using LottieUWP.Animation.Content;
 using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP
