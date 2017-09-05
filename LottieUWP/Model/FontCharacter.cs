@@ -46,8 +46,10 @@ namespace LottieUWP.Model
                 var width = json.GetNamedNumber("w", 0);
                 var style = json.GetNamedString("style", "");
                 var fontFamily = json.GetNamedString("fFamily", "");
-                var shapesJson = json.GetNamedObject("data", null)?.GetNamedArray("shapes", null);
+                var data = json.GetNamedObject("data", null);
                 var shapes = new List<ShapeGroup>();
+
+                var shapesJson = data?.GetNamedArray("shapes", null);
                 if (shapesJson != null)
                 {
                     shapes = new List<ShapeGroup>(shapesJson.Count);
