@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -185,7 +186,9 @@ namespace LottieUWP
                 ApplyColorFilters();
 
                 Progress = _progress;
-                foreach (var t in _lazyCompositionTasks)
+                // We copy the tasks to a new ArrayList so that if this method is called from multiple threads, 
+                // then there won't be two iterators iterating and removing at the same time. 
+                foreach (var t in _lazyCompositionTasks.ToList())
                 {
                     t.Invoke(composition);
                 }
