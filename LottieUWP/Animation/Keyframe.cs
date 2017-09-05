@@ -171,7 +171,17 @@ namespace LottieUWP.Animation
                             interpolatorRef.TryGetTarget(out interpolator) == false)
                         {
                             interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale, cp2.Value.X / scale, cp2.Value.Y / scale);
-                            PathInterpolatorCache[hash] = new WeakReference<IInterpolator>(interpolator);
+                            try
+                            {
+                                PathInterpolatorCache[hash] = new WeakReference<IInterpolator>(interpolator);
+                            }
+                            catch
+                            {
+                                // It is not clear why but SparseArrayCompat sometimes fails with this: 
+                                //     https://github.com/airbnb/lottie-android/issues/452 
+                                // Because this is not a critical operation, we can safely just ignore it. 
+                                // I was unable to repro this to attempt a proper fix. 
+                            }
                         }
                     }
                     else
