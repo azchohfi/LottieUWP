@@ -80,7 +80,12 @@ namespace LottieUWP.Model.Layer
             }
 
             _fillPaint.Color = _colorAnimation?.Value ?? documentData.Color;
+
             _strokePaint.Color = _strokeAnimation?.Value ?? documentData.StrokeColor;
+            var alpha = (byte)(Transform.Opacity.Value * 255 / 100f);
+            _fillPaint.Alpha = alpha;
+            _strokePaint.Alpha = alpha;
+
             if (_strokeWidthAnimation?.Value != null)
             {
                 _strokePaint.StrokeWidth = _strokeWidthAnimation.Value.Value;
@@ -160,7 +165,7 @@ namespace LottieUWP.Model.Layer
                 {
                     tracking += _trackingAnimation.Value.Value;
                 }
-                var tx = (float)size.Width + tracking * parentScale;
+                var tx = (float)(size?.Width ?? 0) + tracking * parentScale;
                 canvas.Translate(tx, 0);
             }
         }
@@ -201,20 +206,29 @@ namespace LottieUWP.Model.Layer
             canvas.DrawPath(path, paint);
         }
 
-        private Rect DrawCharacterFromFont(char c, DocumentData documentData, BitmapCanvas canvas)
+        private Rect? DrawCharacterFromFont(char c, DocumentData documentData, BitmapCanvas canvas)
         {
+            Rect? ret;
             if (documentData.StrokeOverFill)
             {
-                DrawCharacter(c, _fillPaint, canvas);
-                return DrawCharacter(c, _strokePaint, canvas);
+                ret = DrawCharacter(c, _fillPaint, canvas);
+                return DrawCharacter(c, _strokePaint, canvas) ?? ret;
             }
 
-            DrawCharacter(c, _strokePaint, canvas);
-            return DrawCharacter(c, _fillPaint, canvas);
+            ret = DrawCharacter(c, _strokePaint, canvas);
+            return DrawCharacter(c, _fillPaint, canvas) ?? ret;
         }
 
-        private Rect DrawCharacter(char character, Paint paint, BitmapCanvas canvas)
+        private Rect? DrawCharacter(char character, Paint paint, BitmapCanvas canvas)
         {
+            if (paint.Color == Colors.Transparent)
+            {
+                return null;
+            }
+            if (paint.Style == Paint.PaintStyle.Stroke && paint.StrokeWidth == 0)
+            {
+                return null;
+            }
             return canvas.DrawText(character, paint);
         }
 
