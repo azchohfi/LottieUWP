@@ -88,6 +88,32 @@ namespace LottieUWP.Utils
             }
         }
 
+        /// <summary>
+        /// Forces the animation to update even if the progress hasn't changed.
+        /// </summary>
+        public void ForceUpdate()
+        {
+            SetProgressInternal(Progress);
+        }
+
+        private void SetProgressInternal(float progress)
+        {
+            if (progress < _minProgress)
+            {
+                progress = _minProgress;
+            }
+            else if (progress > _maxProgress)
+            {
+                progress = _maxProgress;
+            }
+            _progress = progress;
+            if (Duration > 0)
+            {
+                float offsetProgress = (progress - _minProgress) / (_maxProgress - _minProgress);
+                CurrentPlayTime = (long)(Duration * offsetProgress);
+            }
+        }
+
         internal virtual bool IsReversed
         {
             set

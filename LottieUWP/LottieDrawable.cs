@@ -192,6 +192,8 @@ namespace LottieUWP
                 }
                 _lazyCompositionTasks.Clear();
                 composition.PerformanceTrackingEnabled = _performanceTrackingEnabled;
+
+                _animator.ForceUpdate();
             }
 
             return true;
