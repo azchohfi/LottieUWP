@@ -8,6 +8,7 @@ namespace LottieUWP.Utils
     /// </summary>
     internal class LottieValueAnimator : ValueAnimator
     {
+        private bool _systemAnimationsAreDisabled;
         private bool _isReversed;
         private float _minProgress;
         private float _maxProgress = 1f;
@@ -45,6 +46,11 @@ namespace LottieUWP.Utils
         {
             if (sender is ValueAnimator animation)
                 _progress = animation.AnimatedValue;
+        }
+
+        public void SystemAnimationsAreDisabled()
+        {
+            _systemAnimationsAreDisabled = true;
         }
 
         public override long Duration
@@ -107,7 +113,7 @@ namespace LottieUWP.Utils
                 progress = _maxProgress;
             }
             _progress = progress;
-            if (Duration > 0)
+            if (Duration > 0 && !_systemAnimationsAreDisabled)
             {
                 float offsetProgress = (progress - _minProgress) / (_maxProgress - _minProgress);
                 CurrentPlayTime = (long)(Duration * offsetProgress);

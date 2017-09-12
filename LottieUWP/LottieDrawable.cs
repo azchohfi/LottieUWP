@@ -383,6 +383,7 @@ namespace LottieUWP
         internal virtual void SystemAnimationsAreDisabled()
         {
             _systemAnimationsAreDisabled = true;
+            _animator.SystemAnimationsAreDisabled();
         }
 
         public virtual bool Looping
