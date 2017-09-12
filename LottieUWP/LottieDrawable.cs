@@ -26,6 +26,7 @@ namespace LottieUWP
     /// </summary>
     public class LottieDrawable : UserControl
     {
+        private bool _systemAnimationsAreDisabled;
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private LottieComposition _composition;
         private readonly LottieValueAnimator _animator = new LottieValueAnimator();
@@ -39,7 +40,6 @@ namespace LottieUWP
         private FontAssetManager _fontAssetManager;
         private FontAssetDelegate _fontAssetDelegate;
         private TextDelegate _textDelegate;
-        private bool _systemAnimationsAreDisabled;
         private bool _enableMergePaths;
         private CompositionLayer _compositionLayer;
         private byte _alpha = 255;
@@ -54,13 +54,17 @@ namespace LottieUWP
             _animator.Interpolator = new LinearInterpolator();
             _animator.Update += (sender, e) =>
             {
-                if (_systemAnimationsAreDisabled)
+                //if (_systemAnimationsAreDisabled)
+                //{
+                //    Progress = 1f;
+                //}
+                //else
+                //{
+                //    Progress = e.Animation.AnimatedValue;
+                //}
+                if (_compositionLayer != null)
                 {
-                    Progress = 1f;
-                }
-                else
-                {
-                    Progress = e.Animation.AnimatedValue;
+                    _compositionLayer.Progress = _animator.Progress;
                 }
             };
             Loaded += UserControl_Loaded;
@@ -401,7 +405,13 @@ namespace LottieUWP
 
         public virtual void ResumeAnimation()
         {
-            PlayAnimation(_animator.AnimatedFraction == 1);
+            // Reset if they try to resume from the end of the animation 
+            // or if system animations are disabled. 
+            // If they are disabled then LottieValueAnimator will have it jump to its 
+            // max progress. 
+            PlayAnimation(
+                _animator.AnimatedFraction == _animator.MaxProgress ||
+                _systemAnimationsAreDisabled);
         }
 
         private void PlayAnimation(bool resetProgress)
@@ -414,15 +424,13 @@ namespace LottieUWP
                 });
                 return;
             }
-            var progress = _animator.Progress;
-            _animator.Start();
-            if (resetProgress || _animator.AnimatedFraction == 1f)
+            if (resetProgress)
             {
-                _animator.Progress = _animator.MinProgress;
+                _animator.Start();
             }
             else
             {
-                _animator.Progress = progress;
+                _animator.Resume();
             }
         }
 

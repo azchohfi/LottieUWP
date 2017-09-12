@@ -44,8 +44,24 @@ namespace LottieUWP.Utils
 
         private void OnAnimationUpdate(object sender, ValueAnimatorUpdateEventArgs valueAnimatorUpdateEventArgs)
         {
-            if (sender is ValueAnimator animation)
+            if (!_systemAnimationsAreDisabled && sender is ValueAnimator animation)
+            {
+                // On older devices, getAnimatedValue and getAnimatedFraction 
+                // will always return 0 if animations are disabled. 
                 _progress = animation.AnimatedValue;
+            }
+        }
+
+        public override void Start()
+        {
+            if (_systemAnimationsAreDisabled)
+            {
+                Progress = MaxProgress;
+            }
+            else
+            {
+                base.Start();
+            }
         }
 
         public void SystemAnimationsAreDisabled()
@@ -77,20 +93,7 @@ namespace LottieUWP.Utils
                 {
                     return;
                 }
-                if (value < _minProgress)
-                {
-                    value = _minProgress;
-                }
-                else if (value > _maxProgress)
-                {
-                    value = _maxProgress;
-                }
-                _progress = value;
-                if (Duration > 0)
-                {
-                    float offsetProgress = (value - _minProgress) / (_maxProgress - _minProgress);
-                    CurrentPlayTime = (long)(Duration * offsetProgress);
-                }
+                SetProgressInternal(value);
             }
         }
 
@@ -141,6 +144,7 @@ namespace LottieUWP.Utils
 
         internal virtual float MaxProgress
         {
+            get => _maxProgress;
             set
             {
                 _maxProgress = value;
