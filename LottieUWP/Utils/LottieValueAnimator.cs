@@ -9,13 +9,17 @@ namespace LottieUWP.Utils
     internal class LottieValueAnimator : ValueAnimator
     {
         private bool _isReversed;
-        private float _startProgress;
-        private float _endProgress = 1f;
-        private long _duration;
+        private float _minProgress;
+        private float _maxProgress = 1f;
+        private long _originalDuration;
+
+        private float _progress;
 
         internal LottieValueAnimator()
         {
             SetFloatValues(0f, 1f);
+
+            Update += OnAnimationUpdate;
         }
 
         /*
@@ -27,23 +31,60 @@ namespace LottieUWP.Utils
         {
             base.AnimationEnded();
 
-            UpdateValues();
+            UpdateValues(_minProgress, _maxProgress);
         }
 
         protected override void AnimationCanceled()
         {
             base.AnimationCanceled();
 
-            UpdateValues();
+            UpdateValues(_minProgress, _maxProgress);
+        }
+
+        private void OnAnimationUpdate(object sender, ValueAnimatorUpdateEventArgs valueAnimatorUpdateEventArgs)
+        {
+            if (sender is ValueAnimator animation)
+                _progress = animation.AnimatedValue;
         }
 
         public override long Duration
         {
-            get => _duration;
             set
             {
-                _duration = value;
-                UpdateValues();
+                _originalDuration = value;
+                UpdateValues(_minProgress, _maxProgress);
+            }
+        }
+
+        /** 
+         * This progress is from 0 to 1 and doesn't take into account setMinProgress or setMaxProgress. 
+         * In other words, if you have set the min and max progress to 0.2 and 0.4, setting this to 
+         * 0.5f will set the progress to 0.5, not 0.3. However, the value will be clamped between 0.2 and 
+         * 0.4 so the resulting progress would be 0.4. 
+         */
+        public new float Progress
+        {
+            get => _progress;
+            set
+            {
+                if (_progress == value)
+                {
+                    return;
+                }
+                if (value < _minProgress)
+                {
+                    value = _minProgress;
+                }
+                else if (value > _maxProgress)
+                {
+                    value = _maxProgress;
+                }
+                _progress = value;
+                if (Duration > 0)
+                {
+                    float offsetProgress = (value - _minProgress) / (_maxProgress - _minProgress);
+                    CurrentPlayTime = (long)(Duration * offsetProgress);
+                }
             }
         }
 
@@ -52,44 +93,48 @@ namespace LottieUWP.Utils
             set
             {
                 _isReversed = value;
-                UpdateValues();
+                UpdateValues(_minProgress, _maxProgress);
             }
         }
 
-        internal virtual float StartProgress
+        public float MinProgress
         {
             set
             {
-                _startProgress = value;
-                UpdateValues();
+                _minProgress = value;
+                UpdateValues(_minProgress, _maxProgress);
             }
+            get => _minProgress;
         }
 
-        internal virtual float EndProgress
+        internal virtual float MaxProgress
         {
             set
             {
-                _endProgress = value;
-                UpdateValues();
+                _maxProgress = value;
+                UpdateValues(_minProgress, _maxProgress);
             }
+        }
+        public void Resume()
+        {
+            float startingProgress = Progress;
+            Start();
+            // This has to call through setCurrentPlayTime for compatibility reasons. 
+            Progress = startingProgress;
         }
 
         /// <summary>
         /// This lets you set the start and end progress for a single play of the animator. After the next
         /// time the animation ends or is cancelled, the values will be reset to those set by
-        /// <seealso cref="StartProgress"/> or <seealso cref="EndProgress"/>.
+        /// <seealso cref="MinProgress"/> or <seealso cref="MaxProgress"/>.
         /// </summary>
         internal virtual void UpdateValues(float startProgress, float endProgress)
         {
             var minValue = Math.Min(startProgress, endProgress);
             var maxValue = Math.Max(startProgress, endProgress);
             SetFloatValues(_isReversed ? maxValue : minValue, _isReversed ? minValue : maxValue);
-            base.Duration = (long)(_duration * (maxValue - minValue));
-        }
-
-        private void UpdateValues()
-        {
-            UpdateValues(_startProgress, _endProgress);
+            base.Duration = (long)(_originalDuration * (maxValue - minValue));
+            Progress = Progress;
         }
     }
 }

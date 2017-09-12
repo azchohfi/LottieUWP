@@ -27,6 +27,8 @@ namespace LottieUWP
 
         public IInterpolator Interpolator { get; set; }
 
+        public float AnimatedFraction { get; private set; }
+
         public float AnimatedValue
         {
             get => _animatedValue;
@@ -39,7 +41,8 @@ namespace LottieUWP
 
         public override void Start()
         {
-            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, Interpolator.GetInterpolation(0));
+            AnimatedFraction = Interpolator.GetInterpolation(0);
+            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
 
             base.Start();
         }
@@ -53,7 +56,8 @@ namespace LottieUWP
         {
             base.TimerCallback(state);
 
-            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, Interpolator.GetInterpolation(Progress));
+            AnimatedFraction = Interpolator.GetInterpolation(Progress);
+            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
         }
 
         public void SetFloatValues(float floatValue1, float floatValue2)
