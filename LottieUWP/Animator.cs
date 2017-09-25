@@ -53,6 +53,12 @@ namespace LottieUWP
             _timer = new Timer(TimerCallback, null, TimeSpan.Zero, _timerInterval);
         }
 
+        public void End()
+        {
+            CurrentPlayTime = Duration;
+            Cancel();
+        }
+
         public void Cancel()
         {
             PrivateCancel();

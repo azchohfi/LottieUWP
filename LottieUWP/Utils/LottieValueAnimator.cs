@@ -57,6 +57,7 @@ namespace LottieUWP.Utils
             if (_systemAnimationsAreDisabled)
             {
                 Progress = MaxProgress;
+                End();
             }
             else
             {
