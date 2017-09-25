@@ -76,6 +76,7 @@ namespace LottieUWP.Model.Layer
             if (!_composition.Fonts.TryGetValue(documentData.FontName, out var font))
             {
                 // Something is wrong. 
+                canvas.Restore();
                 return;
             }
 

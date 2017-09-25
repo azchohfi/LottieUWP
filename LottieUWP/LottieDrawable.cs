@@ -183,7 +183,7 @@ namespace LottieUWP
                 ClearComposition();
                 _composition = composition;
                 Speed = _speed;
-                Scale = 1f;
+                Scale = _scale;
                 UpdateBounds();
                 BuildCompositionLayer();
                 ApplyColorFilters();
@@ -343,43 +343,48 @@ namespace LottieUWP
                     {
                         return;
                     }
+
                     var scale = _scale;
                     float extraScale = 1f;
-                    var hasExtraScale = false;
+                    
                     float maxScale = GetMaxScale(_bitmapCanvas);
-                    if (_compositionLayer.HasMatte() || _compositionLayer.HasMasks())
+                    if (scale > maxScale)
                     {
-                        // Since we can only scale up the animation so much before masks and mattes get clipped, we
-                        // may have to scale the canvas to fake the rest. This isn't a problem for software rendering
-                        // but hardware accelerated scaling is rasterized so it will appear pixelated.
-                        extraScale = scale / maxScale;
-                        scale = Math.Min(scale, maxScale);
-                        // This check fixes some floating point rounding issues.
-                        hasExtraScale = extraScale > 1.001f;
+                        scale = maxScale;
+                        extraScale = _scale / scale;
                     }
 
-                    if (hasExtraScale)
+                    if (extraScale > 1)
                     {
+                        // This is a bit tricky... 
+                        // We can't draw on a canvas larger than ViewConfiguration.get(context).getScaledMaximumDrawingCacheSize() 
+                        // which works out to be roughly the size of the screen because Android can't generate a 
+                        // bitmap large enough to render to. 
+                        // As a result, we cap the scale such that it will never be wider/taller than the screen 
+                        // and then only render in the top left corner of the canvas. We then use extraScale 
+                        // to scale up the rest of the scale. However, since we rendered the animation to the top 
+                        // left corner, we need to scale up and translate the canvas to zoom in on the top left 
+                        // corner. 
                         _bitmapCanvas.Save();
-                        // This is extraScale ^2 because what happens is when the scale increases, the intrinsic size 
-                        // of the view increases. That causes the drawable to keep growing even though we are only 
-                        // rendering to the size of the view in the top left quarter, leaving the rest blank. 
-                        // The first scale by extraScale scales up the canvas so that we are back at the original 
-                        // size. The second extraScale is what actually has the scaling effect. 
-                        float extraScaleSquared = extraScale * extraScale;
-                        int px = (int)(_composition.Bounds.Width * scale / 2f);
-                        int py = (int)(_composition.Bounds.Height * scale / 2f);
-                        _bitmapCanvas.Scale(extraScaleSquared, extraScaleSquared, px, py);
+                        float halfWidth = (float)_composition.Bounds.Width / 2f;
+                        float halfHeight = (float)_composition.Bounds.Height / 2f;
+                        float scaledHalfWidth = halfWidth * scale;
+                        float scaledHalfHeight = halfHeight * scale;
+                        _bitmapCanvas.Translate(
+                            Scale * halfWidth - scaledHalfWidth,
+                            Scale * halfHeight - scaledHalfHeight);
+                        _bitmapCanvas.Scale(extraScale, extraScale, scaledHalfWidth, scaledHalfHeight);
                     }
 
                     _matrix.Reset();
                     _matrix = MatrixExt.PreScale(_matrix, scale, scale);
                     _compositionLayer.Draw(_bitmapCanvas, _matrix, _alpha);
-                    if (hasExtraScale)
+                    LottieLog.EndSection("Drawable.Draw");
+
+                    if (extraScale > 1)
                     {
                         _bitmapCanvas.Restore();
                     }
-                    LottieLog.EndSection("Drawable.Draw");
                 }
             }
         }
