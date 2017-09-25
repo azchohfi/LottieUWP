@@ -119,7 +119,12 @@ namespace LottieUWP.Animation
 
         internal static class KeyFrameFactory
         {
-            private static readonly Dictionary<int, WeakReference<IInterpolator>> PathInterpolatorCache = new Dictionary<int, WeakReference<IInterpolator>>();
+            private static Dictionary<int, WeakReference<IInterpolator>> _pathInterpolatorCache;
+
+            static Dictionary<int, WeakReference<IInterpolator>> PathInterpolatorCache()
+            {
+                return _pathInterpolatorCache ?? (_pathInterpolatorCache = new Dictionary<int, WeakReference<IInterpolator>>());
+            }
 
             internal static Keyframe<T> NewInstance(JsonObject json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
@@ -167,13 +172,13 @@ namespace LottieUWP.Animation
                             MiscUtils.Clamp(cp2.Value.Y, -MaxCpValue, MaxCpValue));
 
                         int hash = Utils.Utils.HashFor(cp1.Value.X, cp1.Value.Y, cp2.Value.X, cp2.Value.Y);
-                        if (PathInterpolatorCache.TryGetValue(hash, out var interpolatorRef) == false ||
+                        if (PathInterpolatorCache().TryGetValue(hash, out var interpolatorRef) == false ||
                             interpolatorRef.TryGetTarget(out interpolator) == false)
                         {
                             interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale, cp2.Value.X / scale, cp2.Value.Y / scale);
                             try
                             {
-                                PathInterpolatorCache[hash] = new WeakReference<IInterpolator>(interpolator);
+                                PathInterpolatorCache()[hash] = new WeakReference<IInterpolator>(interpolator);
                             }
                             catch
                             {
