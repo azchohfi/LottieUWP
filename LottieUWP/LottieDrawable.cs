@@ -430,7 +430,7 @@ namespace LottieUWP
             }
             else
             {
-                _animator.Resume();
+                _animator.ResumeAnimation();
             }
         }
 

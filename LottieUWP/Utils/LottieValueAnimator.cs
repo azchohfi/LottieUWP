@@ -151,7 +151,7 @@ namespace LottieUWP.Utils
                 UpdateValues(_minProgress, _maxProgress);
             }
         }
-        public void Resume()
+        public void ResumeAnimation()
         {
             float startingProgress = Progress;
             Start();
