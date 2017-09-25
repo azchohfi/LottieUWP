@@ -10,7 +10,6 @@ namespace LottieUWP.Model.Layer
     {
         private readonly IBaseKeyframeAnimation<float?, float?> _timeRemapping;
         private readonly List<BaseLayer> _layers = new List<BaseLayer>();
-        private Rect _originalClipRect;
         private Rect _newClipRect;
 
         private bool? _hasMatte;
@@ -73,7 +72,7 @@ namespace LottieUWP.Model.Layer
         public override void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("CompositionLayer.Draw");
-            canvas.GetClipBounds(out _originalClipRect);
+            canvas.Save();
             RectExt.Set(ref _newClipRect, 0, 0, LayerModel.PreCompWidth, LayerModel.PreCompHeight);
             parentMatrix.MapRect(ref _newClipRect);
 
@@ -90,10 +89,7 @@ namespace LottieUWP.Model.Layer
                     layer.Draw(canvas, parentMatrix, parentAlpha);
                 }
             }
-            if (!_originalClipRect.IsEmpty)
-            {
-                canvas.ClipReplaceRect(_originalClipRect);
-            }
+            canvas.Restore();
             LottieLog.EndSection("CompositionLayer.Draw");
         }
 
