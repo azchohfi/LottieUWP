@@ -448,7 +448,6 @@ namespace LottieUWP
                 return;
             }
 
-            _animationName = animationName;
             _lottieDrawable.CancelAnimation();
             CancelLoaderTask();
 
