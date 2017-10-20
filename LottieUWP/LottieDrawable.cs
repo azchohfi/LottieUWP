@@ -176,10 +176,10 @@ namespace LottieUWP
 
             lock (this)
             {
-                Progress = 0;
                 ClearComposition();
                 _composition = composition;
                 _animator.CompositionDuration = composition.Duration;
+                Progress = _animator.MinValue;
                 Scale = _scale;
                 UpdateBounds();
                 BuildCompositionLayer();

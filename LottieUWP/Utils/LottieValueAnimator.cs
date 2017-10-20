@@ -85,6 +85,7 @@ namespace LottieUWP.Utils
                 _minValue = value;
                 UpdateValues();
             }
+            get => _minValue;
         }
 
         public float MaxValue
