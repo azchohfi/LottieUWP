@@ -32,9 +32,7 @@ namespace LottieUWP.Sample
 
         private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listView = sender as ListView;
-
-            if (listView == null)
+            if (!(sender is ListView listView))
                 return;
 
             await LottieAnimationView.SetAnimationAsync((string)listView.SelectedItem);
