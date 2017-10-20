@@ -102,22 +102,6 @@ namespace LottieUWP
                 lottieAnimationView?._lottieDrawable.PlayAnimation();
         }
 
-        public bool Loop
-        {
-            get => (bool)GetValue(LoopProperty);
-            set => SetValue(LoopProperty, value);
-        }
-
-        // Using a DependencyProperty as the backing store for Loop.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty LoopProperty =
-            DependencyProperty.Register("Loop", typeof(bool), typeof(LottieAnimationView), new PropertyMetadata(false, LoopPropertyChangedCallback));
-
-        private static void LoopPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
-        {
-            if (dependencyObject is LottieAnimationView lottieAnimationView)
-                lottieAnimationView._lottieDrawable.Looping = (bool)e.NewValue;
-        }
-
         /// <summary>
         /// If you use image assets, you must explicitly specify the folder in assets/ in which they are
         /// located because bodymovin uses the name filenames across all compositions (img_#).
@@ -549,6 +533,111 @@ namespace LottieUWP
             return _lottieDrawable.HasMatte();
         }
 
+        /// <summary>
+        /// Plays the animation from the beginning.If speed is &lt; 0, it will start at the end
+        /// and play towards the beginning
+        /// </summary>
+        public virtual void PlayAnimation()
+        {
+            _lottieDrawable.PlayAnimation();
+            EnableOrDisableHardwareLayer();
+        }
+
+        /// <summary>
+        /// Continues playing the animation from its current position. If speed &lt; 0, it will play backwards
+        /// from the current position.
+        /// </summary>
+        public virtual void ResumeAnimation()
+        {
+            _lottieDrawable.ResumeAnimation();
+            EnableOrDisableHardwareLayer();
+        }
+
+        /// <summary>
+        /// Sets the minimum frame that the animation will start from when playing or looping.
+        /// </summary>
+        public int MinFrame
+        {
+            set => _lottieDrawable.MinFrame = value;
+        }
+
+        /// <summary>
+        /// Sets the minimum progress that the animation will start from when playing or looping.
+        /// </summary>
+        public float MinProgress
+        {
+            set => _lottieDrawable.MinProgress = value;
+        }
+
+        /// <summary>
+        /// Sets the maximum frame that the animation will end at when playing or looping.
+        /// </summary>
+        public int MaxFrame
+        {
+            set => _lottieDrawable.MaxFrame = value;
+        }
+
+        /// <summary>
+        /// Sets the maximum progress that the animation will end at when playing or looping.
+        /// </summary>
+        public float MaxProgress
+        {
+            set => _lottieDrawable.MaxProgress = value;
+        }
+
+        /// <summary>
+        /// <see cref="MinFrame"/>
+        /// <see cref="MaxFrame"/>
+        /// </summary>
+        /// <param name="minFrame"></param>
+        /// <param name="maxFrame"></param>
+        public void SetMinAndMaxFrame(int minFrame, int maxFrame)
+        {
+            _lottieDrawable.SetMinAndMaxFrame(minFrame, maxFrame);
+        }
+
+        /// <summary>
+        /// <see cref="MinProgress"/>
+        /// <see cref="MaxProgress"/>
+        /// </summary>
+        /// <param name="minProgress"></param>
+        /// <param name="maxProgress"></param>
+        public void SetMinAndMaxProgress(float minProgress, float maxProgress)
+        {
+            if (minProgress < 0)
+                minProgress = 0;
+            if (minProgress > 1)
+                minProgress = 1;
+
+            if (maxProgress < 0)
+                maxProgress = 0;
+            if (maxProgress > 1)
+                maxProgress = 1;
+
+            _lottieDrawable.SetMinAndMaxProgress(minProgress, maxProgress);
+        }
+
+        /// <summary>
+        /// Reverses the current animation speed. This does NOT play the animation. 
+        ///<see cref="Speed"/>
+        ///<see cref="PlayAnimation"/>
+        ///<see cref="ResumeAnimation"/>
+        /// </summary>
+        public void ReverseAnimationSpeed()
+        {
+            _lottieDrawable.ReverseAnimationSpeed();
+        }
+
+        /// <summary>
+        /// Sets the playback speed. If speed &lt; 0, the animation will play backwards. 
+        /// Returns the current playback speed. This will be &lt; 0 if the animation is playing backwards. 
+        /// </summary>
+        public virtual float Speed
+        {
+            set => _lottieDrawable.Speed = value;
+            get => _lottieDrawable.Speed;
+        }
+
         public event EventHandler<ValueAnimator.ValueAnimatorUpdateEventArgs> AnimatorUpdate
         {
             add => _lottieDrawable.AnimatorUpdate += value;
@@ -561,77 +650,23 @@ namespace LottieUWP
             remove => _lottieDrawable.ValueChanged -= value;
         }
 
+        public bool Loop
+        {
+            get => (bool)GetValue(LoopProperty);
+            set => SetValue(LoopProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for Loop.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LoopProperty =
+            DependencyProperty.Register("Loop", typeof(bool), typeof(LottieAnimationView), new PropertyMetadata(false, LoopPropertyChangedCallback));
+
+        private static void LoopPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is LottieAnimationView lottieAnimationView)
+                lottieAnimationView._lottieDrawable.Looping = (bool)e.NewValue;
+        }
+
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
-
-        public virtual void PlayAnimation()
-        {
-            _lottieDrawable.PlayAnimation();
-            EnableOrDisableHardwareLayer();
-        }
-
-        public virtual void ResumeAnimation()
-        {
-            _lottieDrawable.ResumeAnimation();
-            EnableOrDisableHardwareLayer();
-        }
-
-        public void PlayAnimation(int startFrame, int endFrame)
-        {
-            _lottieDrawable.PlayAnimation(startFrame, endFrame);
-        }
-
-        public void PlayAnimation(float startProgress, float endProgress)
-        {
-            _lottieDrawable.PlayAnimation(startProgress, endProgress);
-        }
-
-        public virtual void ReverseAnimation()
-        {
-            _lottieDrawable.ReverseAnimation();
-            EnableOrDisableHardwareLayer();
-        }
-
-        public int MinFrame
-        {
-            set => _lottieDrawable.MinFrame = value;
-        }
-
-        public float MinProgress
-        {
-            set => _lottieDrawable.MinProgress = value;
-        }
-
-        public int MaxFrame
-        {
-            set => _lottieDrawable.MaxFrame = value;
-        }
-
-        public float MaxProgress
-        {
-            set => _lottieDrawable.MaxProgress = value;
-        }
-
-        public void SetMinAndMaxFrame(int minFrame, int maxFrame)
-        {
-            _lottieDrawable.SetMinAndMaxFrame(minFrame, maxFrame);
-        }
-
-        public void SetMinAndMaxProgress(float minProgress, float maxProgress)
-        {
-            _lottieDrawable.SetMinAndMaxProgress(minProgress, maxProgress);
-        }
-
-        public virtual void ResumeReverseAnimation()
-        {
-            _lottieDrawable.ResumeReverseAnimation();
-            EnableOrDisableHardwareLayer();
-        }
-
-        public virtual float Speed
-        {
-            set => _lottieDrawable.Speed = value;
-        }
-
 
         /// <summary>
         /// Allows you to modify or clear a bitmap that was loaded for an image either automatically
@@ -661,9 +696,7 @@ namespace LottieUWP
 
         public virtual void PauseAnimation()
         {
-            var progress = Progress;
-            _lottieDrawable.CancelAnimation();
-            Progress = progress;
+            _lottieDrawable.PauseAnimation();
             EnableOrDisableHardwareLayer();
         }
 

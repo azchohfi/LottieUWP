@@ -24,8 +24,18 @@ namespace LottieUWP
         private float _floatValue1;
         private float _floatValue2;
         private float _animatedValue;
+        private IInterpolator _interpolator;
 
-        public IInterpolator Interpolator { get; set; }
+        public IInterpolator Interpolator
+        {
+            get => _interpolator;
+            set
+            {
+                if(value == null)
+                    value = new LinearInterpolator();
+                _interpolator = value;
+            }
+        }
 
         public float AnimatedFraction { get; private set; }
 

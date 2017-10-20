@@ -26,11 +26,9 @@ namespace LottieUWP
     /// </summary>
     public class LottieDrawable : UserControl
     {
-        private bool _systemAnimationsAreDisabled;
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private LottieComposition _composition;
         private readonly LottieValueAnimator _animator = new LottieValueAnimator();
-        private float _speed = 1f;
         private float _scale = 1f;
 
         private readonly HashSet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
@@ -50,8 +48,6 @@ namespace LottieUWP
 
         public LottieDrawable()
         {
-            _animator.Loop = false;
-            _animator.Interpolator = new LinearInterpolator();
             _animator.Update += (sender, e) =>
             {
                 //if (_systemAnimationsAreDisabled)
@@ -64,7 +60,7 @@ namespace LottieUWP
                 //}
                 if (_compositionLayer != null)
                 {
-                    _compositionLayer.Progress = _animator.Progress;
+                    _compositionLayer.Progress = _animator.Value;
                 }
             };
             Loaded += UserControl_Loaded;
@@ -180,9 +176,10 @@ namespace LottieUWP
 
             lock (this)
             {
+                Progress = 0;
                 ClearComposition();
                 _composition = composition;
-                Speed = _speed;
+                _animator.CompositionDuration = composition.Duration;
                 Scale = _scale;
                 UpdateBounds();
                 BuildCompositionLayer();
@@ -196,8 +193,6 @@ namespace LottieUWP
                 }
                 _lazyCompositionTasks.Clear();
                 composition.PerformanceTrackingEnabled = _performanceTrackingEnabled;
-
-                _animator.ForceUpdate();
             }
 
             return true;
@@ -235,9 +230,14 @@ namespace LottieUWP
             }
         }
 
-        private void ClearComposition()
+        public void ClearComposition()
         {
             RecycleBitmaps();
+            if (_animator.IsRunning)
+            {
+                _animator.Cancel();
+            }
+            _composition = null;
             _compositionLayer = null;
             _imageAssetManager = null;
             InvalidateSelf();
@@ -346,7 +346,7 @@ namespace LottieUWP
 
                     var scale = _scale;
                     float extraScale = 1f;
-                    
+
                     float maxScale = GetMaxScale(_bitmapCanvas);
                     if (scale > maxScale)
                     {
@@ -389,124 +389,43 @@ namespace LottieUWP
             }
         }
 
-        internal virtual void SystemAnimationsAreDisabled()
-        {
-            _systemAnimationsAreDisabled = true;
-            _animator.SystemAnimationsAreDisabled();
-        }
-
-        public virtual bool Looping
-        {
-            get => _animator.Loop;
-            set => _animator.Loop = value;
-        }
-
-        public virtual bool IsAnimating => _animator.IsRunning;
-
+        /// <summary>
+        /// Plays the animation from the beginning. If speed is &lt; 0, it will start at the end
+        /// and play towards the beginning
+        /// </summary>
         public virtual void PlayAnimation()
         {
-            PlayAnimation(true);
+            if (_compositionLayer == null)
+            {
+                _lazyCompositionTasks.Add(composition =>
+                {
+                    PlayAnimation();
+                });
+                return;
+            }
+            _animator.PlayAnimation();
         }
 
+        /// <summary>
+        /// Continues playing the animation from its current position. If speed &lt; 0, it will play backwards 
+        /// from the current position.
+        /// </summary>
         public virtual void ResumeAnimation()
         {
-            // Reset if they try to resume from the end of the animation 
-            // or if system animations are disabled. 
-            // If they are disabled then LottieValueAnimator will have it jump to its 
-            // max progress. 
-            PlayAnimation(
-                _animator.AnimatedFraction == _animator.MaxProgress ||
-                _systemAnimationsAreDisabled);
-        }
-
-        private void PlayAnimation(bool resetProgress)
-        {
             if (_compositionLayer == null)
             {
                 _lazyCompositionTasks.Add(composition =>
                 {
-                    PlayAnimation(resetProgress);
+                    ResumeAnimation();
                 });
                 return;
             }
-            if (resetProgress)
-            {
-                _animator.Start();
-            }
-            else
-            {
-                _animator.ResumeAnimation();
-            }
+            _animator.ResumeAnimation();
         }
 
-        public void PlayAnimation(int startFrame, int endFrame)
-        {
-            if (_composition == null)
-            {
-                _lazyCompositionTasks.Add(composition =>
-                    {
-                        PlayAnimation(startFrame, endFrame);
-                    });
-                return;
-            }
-            PlayAnimation(startFrame / _composition.DurationFrames, endFrame / _composition.DurationFrames);
-        }
-
-        public void PlayAnimation(float startProgress, float endProgress)
-        {
-            _animator.UpdateValues(startProgress, endProgress);
-            _animator.CurrentPlayTime = 0;
-            Progress = startProgress;
-            PlayAnimation(false);
-        }
-
-        public virtual void ResumeReverseAnimation()
-        {
-            ReverseAnimation(false);
-        }
-
-        public virtual void ReverseAnimation()
-        {
-            float progress = Progress;
-            ReverseAnimation(true);
-        }
-
-        private void ReverseAnimation(bool resetProgress)
-        {
-            if (_compositionLayer == null)
-            {
-                _lazyCompositionTasks.Add(composition =>
-                {
-                    ReverseAnimation(resetProgress);
-                });
-                return;
-            }
-            var progress = _animator.Progress;
-            _animator.Reverse();
-            if (resetProgress || Progress == 1f)
-            {
-                _animator.Progress = _animator.MinProgress;
-            }
-            else
-            {
-                _animator.Progress = progress;
-            }
-        }
-
-        public virtual float Speed
-        {
-            set
-            {
-                _speed = value;
-                _animator.IsReversed = value < 0;
-
-                if (_composition != null)
-                {
-                    _animator.Duration = (long)(_composition.Duration / Math.Abs(value));
-                }
-            }
-        }
-
+        /// <summary>
+        /// Sets the minimum frame that the animation will start from when playing or looping.
+        /// </summary>
         public int MinFrame
         {
             set
@@ -523,11 +442,17 @@ namespace LottieUWP
             }
         }
 
+        /// <summary>
+        /// Sets the minimum progress that the animation will start from when playing or looping. 
+        /// </summary>
         public float MinProgress
         {
-            set => _animator.MinProgress = value;
+            set => _animator.MinValue = value;
         }
 
+        /// <summary>
+        /// Sets the maximum frame that the animation will end at when playing or looping.
+        /// </summary>
         public int MaxFrame
         {
             set
@@ -544,34 +469,110 @@ namespace LottieUWP
             }
         }
 
+        /// <summary>
+        /// Sets the maximum progress that the animation will end at when playing or looping.
+        /// </summary>
         public float MaxProgress
         {
-            set => _animator.MaxProgress = value;
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                if (value > 1)
+                    value = 1;
+                _animator.MaxValue = value;
+            }
         }
 
+        /// <summary>
+        /// <see cref="MinFrame"/>
+        /// <see cref="MaxFrame"/>
+        /// </summary>
+        /// <param name="minFrame"></param>
+        /// <param name="maxFrame"></param>
         public void SetMinAndMaxFrame(int minFrame, int maxFrame)
         {
             MinFrame = minFrame;
             MaxFrame = maxFrame;
         }
 
+        /// <summary>
+        /// <see cref="MinProgress"/>
+        /// <see cref="MaxProgress"/>
+        /// </summary>
+        /// <param name="minProgress"></param>
+        /// <param name="maxProgress"></param>
         public void SetMinAndMaxProgress(float minProgress, float maxProgress)
         {
+            if (minProgress < 0)
+                minProgress = 0;
+            if (minProgress > 1)
+                minProgress = 1;
+            if (maxProgress < 0)
+                maxProgress = 0;
+            if (maxProgress > 1)
+                maxProgress = 1;
             MinProgress = minProgress;
             MaxProgress = maxProgress;
         }
 
+        /// <summary>
+        /// Reverses the current animation speed. This does NOT play the animation.
+        /// <see cref="Speed"/>
+        /// <see cref="PlayAnimation"/>
+        /// <see cref="ResumeAnimation"/>
+        /// </summary>
+        public void ReverseAnimationSpeed()
+        {
+            _animator.ReverseAnimationSpeed();
+        }
+
+        /// <summary>
+        /// Sets the playback speed. If speed &lt; 0, the animation will play backwards.
+        /// Returns the current playback speed. This will be &lt; 0 if the animation is playing backwards.
+        /// </summary>
+        public virtual float Speed
+        {
+            set => _animator.Speed = value;
+            get => _animator.Speed;
+        }
+
+        public event EventHandler<ValueAnimator.ValueAnimatorUpdateEventArgs> AnimatorUpdate
+        {
+            add => _animator.Update += value;
+            remove => _animator.Update -= value;
+        }
+
+        public event EventHandler ValueChanged
+        {
+            add => _animator.ValueChanged += value;
+            remove => _animator.ValueChanged -= value;
+        }
+
         public virtual float Progress
         {
-            get => _animator.Progress;
+            get => _animator.Value;
             set
             {
-                _animator.Progress = value;
+                _animator.Value = value;
                 if (_compositionLayer != null)
                 {
                     _compositionLayer.Progress = value;
                 }
             }
+        }
+
+        public virtual bool Looping
+        {
+            get => _animator.Loop;
+            set => _animator.Loop = value;
+        }
+
+        public virtual bool IsAnimating => _animator.IsRunning;
+
+        internal virtual void SystemAnimationsAreDisabled()
+        {
+            _animator.SystemAnimationsAreDisabled();
         }
 
         /// <summary>
@@ -660,16 +661,10 @@ namespace LottieUWP
             _animator.Cancel();
         }
 
-        public event EventHandler<ValueAnimator.ValueAnimatorUpdateEventArgs> AnimatorUpdate
+        public void PauseAnimation()
         {
-            add => _animator.Update += value;
-            remove => _animator.Update -= value;
-        }
-
-        public event EventHandler ValueChanged
-        {
-            add => _animator.ValueChanged += value;
-            remove => _animator.ValueChanged -= value;
+            _lazyCompositionTasks.Clear();
+            _animator.PauseAnimation();
         }
 
         public int IntrinsicWidth => _composition == null ? -1 : (int)(_composition.Bounds.Width * _scale);

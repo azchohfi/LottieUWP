@@ -9,59 +9,27 @@ namespace LottieUWP.Utils
     internal class LottieValueAnimator : ValueAnimator
     {
         private bool _systemAnimationsAreDisabled;
-        private bool _isReversed;
-        private float _minProgress;
-        private float _maxProgress = 1f;
-        private long _originalDuration;
+        private long _compositionDuration;
+        private float _speed = 1f;
 
-        private float _progress;
+        private float _value;
+        private float _minValue;
+        private float _maxValue = 1f;
 
         internal LottieValueAnimator()
         {
-            SetFloatValues(0f, 1f);
-
+            Interpolator = null;
             Update += OnAnimationUpdate;
-        }
-
-        /*
-          This allows us to reset the values if they were temporarily reset by
-          UpdateValues(float, float, long, boolean)
-        */
-
-        protected override void AnimationEnded()
-        {
-            base.AnimationEnded();
-
-            UpdateValues(_minProgress, _maxProgress);
-        }
-
-        protected override void AnimationCanceled()
-        {
-            base.AnimationCanceled();
-
-            UpdateValues(_minProgress, _maxProgress);
+            UpdateValues();
         }
 
         private void OnAnimationUpdate(object sender, ValueAnimatorUpdateEventArgs valueAnimatorUpdateEventArgs)
         {
+            // On older devices, getAnimatedValue and getAnimatedFraction 
+            // will always return 0 if animations are disabled. 
             if (!_systemAnimationsAreDisabled && sender is ValueAnimator animation)
             {
-                // On older devices, getAnimatedValue and getAnimatedFraction 
-                // will always return 0 if animations are disabled. 
-                _progress = animation.AnimatedValue;
-            }
-        }
-
-        public override void Start()
-        {
-            if (_systemAnimationsAreDisabled)
-            {
-                Progress = MaxProgress;
-                End();
-            }
-            else
-            {
-                base.Start();
+                _value = animation.AnimatedValue;
             }
         }
 
@@ -70,108 +38,127 @@ namespace LottieUWP.Utils
             _systemAnimationsAreDisabled = true;
         }
 
-        public override long Duration
+        public long CompositionDuration
         {
             set
             {
-                _originalDuration = value;
-                UpdateValues(_minProgress, _maxProgress);
-            }
-        }
-
-        /** 
-         * This progress is from 0 to 1 and doesn't take into account setMinProgress or setMaxProgress. 
-         * In other words, if you have set the min and max progress to 0.2 and 0.4, setting this to 
-         * 0.5f will set the progress to 0.5, not 0.3. However, the value will be clamped between 0.2 and 
-         * 0.4 so the resulting progress would be 0.4. 
-         */
-        public new float Progress
-        {
-            get => _progress;
-            set
-            {
-                if (_progress == value)
-                {
-                    return;
-                }
-                SetProgressInternal(value);
+                _compositionDuration = value;
+                UpdateValues();
             }
         }
 
         /// <summary>
-        /// Forces the animation to update even if the progress hasn't changed.
+        /// Sets the current animator value. This will update the play time as well. 
+        /// It will also be clamped to the values set with {@link #setMinValue(float)} and 
+        /// <see cref="MaxValue"/>
         /// </summary>
-        public void ForceUpdate()
-        {
-            SetProgressInternal(Progress);
-        }
-
-        private void SetProgressInternal(float progress)
-        {
-            if (progress < _minProgress)
-            {
-                progress = _minProgress;
-            }
-            else if (progress > _maxProgress)
-            {
-                progress = _maxProgress;
-            }
-            _progress = progress;
-            if (Duration > 0 && !_systemAnimationsAreDisabled)
-            {
-                float offsetProgress = (progress - _minProgress) / (_maxProgress - _minProgress);
-                CurrentPlayTime = (long)(Duration * offsetProgress);
-            }
-        }
-
-        internal virtual bool IsReversed
+        public float Value
         {
             set
             {
-                _isReversed = value;
-                UpdateValues(_minProgress, _maxProgress);
+                _value = MiscUtils.Clamp(value, _minValue, _maxValue);
+                _value = value;
+                float distFromStart = IsReversed ? _maxValue - value : value - _minValue;
+                float range = Math.Abs(_maxValue - _minValue);
+                float animatedPercentage = distFromStart / range;
+                if (Duration > 0)
+                {
+                    CurrentPlayTime = (long)(Duration * animatedPercentage);
+                }
             }
+            get => _value;
         }
 
-        public float MinProgress
+        public float MinValue
         {
             set
             {
-                _minProgress = value;
-                UpdateValues(_minProgress, _maxProgress);
+                if (value < 0)
+                    value = 0;
+                if (value > 1)
+                    value = 1;
+                if (value >= _maxValue)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value),
+                        "Min value must be smaller then max value.");
+                }
+                _minValue = value;
+                UpdateValues();
             }
-            get => _minProgress;
         }
 
-        internal virtual float MaxProgress
+        public float MaxValue
         {
-            get => _maxProgress;
             set
             {
-                _maxProgress = value;
-                UpdateValues(_minProgress, _maxProgress);
+                if (value < 0)
+                    value = 0;
+                if (value > 1)
+                    value = 1;
+                if (value <= _minValue)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Max value must be greater than min value.");
+                }
+                _maxValue = value;
+                UpdateValues();
             }
         }
+
+        public void ReverseAnimationSpeed()
+        {
+            Speed = -Speed;
+        }
+
+        public float Speed
+        {
+            set
+            {
+                _speed = value;
+                UpdateValues();
+            }
+            get => _speed;
+        }
+
+        public void PlayAnimation()
+        {
+            Start();
+            Value = IsReversed ? _maxValue : _minValue;
+        }
+
+        public void PauseAnimation()
+        {
+            float value = _value;
+            Cancel();
+            Value = value;
+        }
+
         public void ResumeAnimation()
         {
-            float startingProgress = Progress;
+            float value = _value;
+            if (IsReversed && _value == _minValue)
+            {
+                value = _maxValue;
+            }
+            else if (!IsReversed && _value == _maxValue)
+            {
+                value = _minValue;
+            }
             Start();
-            // This has to call through setCurrentPlayTime for compatibility reasons. 
-            Progress = startingProgress;
+            Value = value;
         }
 
+        private bool IsReversed => _speed < 0;
+
         /// <summary>
-        /// This lets you set the start and end progress for a single play of the animator. After the next
-        /// time the animation ends or is cancelled, the values will be reset to those set by
-        /// <seealso cref="MinProgress"/> or <seealso cref="MaxProgress"/>.
+        /// Update the float values of the animator, scales the duration for the current min/max range
+        /// and updates the play time so that it matches the new min/max range.
         /// </summary>
-        internal virtual void UpdateValues(float startProgress, float endProgress)
+        private void UpdateValues()
         {
-            var minValue = Math.Min(startProgress, endProgress);
-            var maxValue = Math.Max(startProgress, endProgress);
-            SetFloatValues(_isReversed ? maxValue : minValue, _isReversed ? minValue : maxValue);
-            base.Duration = (long)(_originalDuration * (maxValue - minValue));
-            Progress = Progress;
+            Duration = (long)(_compositionDuration * (_maxValue - _minValue) / Math.Abs(_speed));
+            SetFloatValues(_speed < 0 ? _maxValue : _minValue, _speed < 0 ? _minValue : _maxValue);
+            // This will force the play time to be correct for the current value.
+            Value = _value;
         }
     }
 }
