@@ -243,9 +243,15 @@ namespace LottieUWP.Model.Layer
 
                 if (json.ContainsKey("ef"))
                 {
+                    var effects = json.GetNamedArray("ef", null);
+                    var effectNames = new string[effects.Count];
+                    for (uint i = 0; i < effects.Count; i++)
+                    {
+                        effectNames[i] = effects.GetObjectAt(i).GetNamedString("nm", "");
+                    }
                     composition.AddWarning("Lottie doesn't support layer effects. If you are using them for " +
                                             " fills, strokes, trim paths etc. then try adding them directly as contents " +
-                                            " in your shape.");
+                                            " in your shape. Found: [" + string.Join(",", effectNames) + "]");
                 }
 
                 var timeStretch = (float)json.GetNamedNumber("sr", 1.0);
