@@ -44,8 +44,8 @@ namespace LottieUWP
             Strong
         }
 
-        private static readonly Dictionary<string, LottieComposition> StrongRefCache = new Dictionary<string, LottieComposition>();
-        private static readonly Dictionary<string, WeakReference<LottieComposition>> WeakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
+        private static readonly Dictionary<string, LottieComposition> AssetStrongRefCache = new Dictionary<string, LottieComposition>();
+        private static readonly Dictionary<string, WeakReference<LottieComposition>> AssetWeakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
 
         private readonly LottieDrawable _lottieDrawable;
 
@@ -81,8 +81,10 @@ namespace LottieUWP
 
         private static async void FileNamePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            var lottieAnimationView = dependencyObject as LottieAnimationView;
-            await lottieAnimationView?.SetAnimationAsync((string)e.NewValue);
+            if (dependencyObject is LottieAnimationView lottieAnimationView)
+            {
+                await lottieAnimationView.SetAnimationAsync((string)e.NewValue);
+            }
         }
 
         public bool AutoPlay
@@ -417,18 +419,18 @@ namespace LottieUWP
         public virtual async Task SetAnimationAsync(string animationName, CacheStrategy cacheStrategy)
         {
             _animationName = animationName;
-            if (WeakRefCache.ContainsKey(animationName))
+            if (AssetWeakRefCache.ContainsKey(animationName))
             {
-                var compRef = WeakRefCache[animationName];
+                var compRef = AssetWeakRefCache[animationName];
                 if (compRef.TryGetTarget(out LottieComposition lottieComposition))
                 {
                     Composition = lottieComposition;
                     return;
                 }
             }
-            else if (StrongRefCache.ContainsKey(animationName))
+            else if (AssetStrongRefCache.ContainsKey(animationName))
             {
-                Composition = StrongRefCache[animationName];
+                Composition = AssetStrongRefCache[animationName];
                 return;
             }
 
@@ -443,11 +445,11 @@ namespace LottieUWP
 
             if (cacheStrategy == CacheStrategy.Strong)
             {
-                StrongRefCache[animationName] = composition;
+                AssetStrongRefCache[animationName] = composition;
             }
             else if (cacheStrategy == CacheStrategy.Weak)
             {
-                WeakRefCache[animationName] = new WeakReference<LottieComposition>(composition);
+                AssetWeakRefCache[animationName] = new WeakReference<LottieComposition>(composition);
             }
 
             Composition = composition;

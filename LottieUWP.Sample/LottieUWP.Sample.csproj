@@ -187,7 +187,7 @@
     <Content Include="Assets\Tests\TrimPaths.json" />
     <Content Include="Assets\Tests\WeAccept.json" />
     <Content Include="Assets\TwitterHeart.json" />
-    <Content Include="Assets\Walkthrough\Walkthrough.json" />
+    <Content Include="Assets\Walkthrough.json" />
     <Content Include="Assets\WeAccept.json" />
     <Content Include="Assets\Gears.json" />
     <Content Include="Assets\lottiefiles.com - Curly Hair.json" />
@@ -200,7 +200,7 @@
     <Content Include="Assets\lottiefiles.com - VR.json" />
     <Content Include="Assets\lottifiles.com - QR Scan.json" />
     <Content Include="Assets\Hello World.json" />
-    <Content Include="Assets\Walkthrough\FullScreen.json" />
+    <Content Include="Assets\FullScreen.json" />
     <Content Include="Assets\Tests\Repeater.json" />
     <Content Include="Assets\Fonts\ComicNeue.ttf" />
     <Content Include="Assets\Fonts\HelveticaNeue.ttf" />
