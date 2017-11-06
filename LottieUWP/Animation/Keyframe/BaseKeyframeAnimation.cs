@@ -85,19 +85,19 @@ namespace LottieUWP.Animation.Keyframe
                     return _cachedKeyframe;
                 }
 
-                var i = 0;
-                var keyframe = _keyframes[0];
+                var keyframe = _keyframes[_keyframes.Count - 1];
                 if (_progress < keyframe.StartProgress)
                 {
-                    _cachedKeyframe = keyframe;
-                    return keyframe;
+                    for (int i = _keyframes.Count - 1; i >= 0; i--)
+                    {
+                        keyframe = _keyframes[i];
+                        if (keyframe.ContainsProgress(_progress))
+                        {
+                            break;
+                        }
+                    }
                 }
 
-                while (!keyframe.ContainsProgress(_progress) && i < _keyframes.Count)
-                {
-                    keyframe = _keyframes[i];
-                    i++;
-                }
                 _cachedKeyframe = keyframe;
                 return keyframe;
             }

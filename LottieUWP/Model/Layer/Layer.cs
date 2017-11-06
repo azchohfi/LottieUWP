@@ -205,7 +205,6 @@ namespace LottieUWP.Model.Layer
                 var transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("ks"), composition);
                 var matteType = (MatteType)(int)json.GetNamedNumber("tt", 0);
                 var masks = new List<Mask>();
-                var inOutKeyframes = new List<IKeyframe<float?>>();
                 var jsonMasks = json.GetNamedArray("masksProperties", null);
                 if (jsonMasks != null)
                 {
@@ -271,6 +270,7 @@ namespace LottieUWP.Model.Layer
                 var inFrame = (float)json.GetNamedNumber("ip") / timeStretch;
                 var outFrame = (float)json.GetNamedNumber("op") / timeStretch;
 
+                var inOutKeyframes = new List<IKeyframe<float?>>();
                 // Before the in frame
                 if (inFrame > 0)
                 {
@@ -279,7 +279,7 @@ namespace LottieUWP.Model.Layer
                 }
 
                 // The + 1 is because the animation should be visible on the out frame itself.
-                outFrame = outFrame > 0 ? outFrame : composition.EndFrame + 1;
+                outFrame = (outFrame > 0 ? outFrame : composition.EndFrame) + 1;
                 var visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
                 inOutKeyframes.Add(visibleKeyframe);
 

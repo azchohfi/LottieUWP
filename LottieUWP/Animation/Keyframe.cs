@@ -109,7 +109,7 @@ namespace LottieUWP.Animation
 
         public virtual bool ContainsProgress(float progress)
         {
-            return progress >= StartProgress && progress <= EndProgress;
+            return progress >= StartProgress && progress < EndProgress;
         }
 
         public override string ToString()

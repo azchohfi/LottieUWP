@@ -178,11 +178,11 @@ namespace LottieUWP
             {
                 ClearComposition();
                 _composition = composition;
+                BuildCompositionLayer();
                 _animator.CompositionDuration = composition.Duration;
-                Progress = _animator.MinValue;
+                Progress = _animator.Value;
                 Scale = _scale;
                 UpdateBounds();
-                BuildCompositionLayer();
                 ApplyColorFilters();
 
                 // We copy the tasks to a new ArrayList so that if this method is called from multiple threads, 
