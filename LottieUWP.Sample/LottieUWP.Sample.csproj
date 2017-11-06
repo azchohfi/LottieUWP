@@ -211,6 +211,7 @@
     <Content Include="Assets\Name.json" />
     <Content Include="Assets\Tests\TimeStretch.json" />
     <Content Include="Assets\City.json" />
+    <Content Include="Assets\Tests\Frame.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

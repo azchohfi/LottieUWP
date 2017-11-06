@@ -549,6 +549,40 @@ namespace LottieUWP
             remove => _animator.ValueChanged -= value;
         }
 
+        public int Frame
+        {
+            /**
+            * Sets the progress to the specified frame.
+            * If the composition isn't set yet, the progress will be set to the frame when
+            * it is.
+            */
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(composition =>
+                    {
+                        Frame = value;
+                    });
+                    return;
+                }
+
+                Progress = value / _composition.DurationFrames;
+            }
+            /**
+            * Get the currently rendered frame.
+            */
+            get
+            {
+                if (_composition == null)
+                {
+                    return 0;
+                }
+
+                return (int)(Progress * _composition.DurationFrames);
+            }
+        }
+
         public virtual float Progress
         {
             get => _animator.Value;

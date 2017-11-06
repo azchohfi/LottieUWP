@@ -702,6 +702,20 @@ namespace LottieUWP
             EnableOrDisableHardwareLayer();
         }
 
+        public int Frame
+        {
+            /** 
+            * Sets the progress to the specified frame. 
+            * If the composition isn't set yet, the progress will be set to the frame when 
+            * it is. 
+            */
+            set => _lottieDrawable.Frame = value;
+            /** 
+            * Get the currently rendered frame. 
+            */
+            get => _lottieDrawable.Frame;
+        }
+
         public virtual float Progress
         {
             get => _lottieDrawable.Progress;
