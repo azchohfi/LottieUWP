@@ -16,6 +16,7 @@ namespace LottieUWP.Animation.Content
         private readonly LottieDrawable _lottieDrawable;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _sizeAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _positionAnimation;
+        private readonly CircleShape _circleShape;
 
         private TrimPathContent _trimPath;
         private bool _isPathValid;
@@ -26,6 +27,7 @@ namespace LottieUWP.Animation.Content
             _lottieDrawable = lottieDrawable;
             _sizeAnimation = circleShape.Size.CreateAnimation();
             _positionAnimation = circleShape.Position.CreateAnimation();
+            _circleShape = circleShape;
 
             layer.AddAnimation(_sizeAnimation);
             layer.AddAnimation(_positionAnimation);
@@ -80,11 +82,22 @@ namespace LottieUWP.Animation.Content
                 var cpH = halfHeight * EllipseControlPointPercentage;
 
                 _path.Reset();
-                _path.MoveTo(0, -halfHeight);
-                _path.CubicTo(0 + cpW, -halfHeight, halfWidth, 0 - cpH, halfWidth, 0);
-                _path.CubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
-                _path.CubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
-                _path.CubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
+                if (_circleShape.IsReversed)
+                {
+                    _path.MoveTo(0, -halfHeight);
+                    _path.CubicTo(0 - cpW, -halfHeight, -halfWidth, 0 - cpH, -halfWidth, 0);
+                    _path.CubicTo(-halfWidth, 0 + cpH, 0 - cpW, halfHeight, 0, halfHeight);
+                    _path.CubicTo(0 + cpW, halfHeight, halfWidth, 0 + cpH, halfWidth, 0);
+                    _path.CubicTo(halfWidth, 0 - cpH, 0 + cpW, -halfHeight, 0, -halfHeight);
+                }
+                else
+                {
+                    _path.MoveTo(0, -halfHeight);
+                    _path.CubicTo(0 + cpW, -halfHeight, halfWidth, 0 - cpH, halfWidth, 0);
+                    _path.CubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
+                    _path.CubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
+                    _path.CubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
+                }
 
                 var position = _positionAnimation.Value;
                 _path.Offset(position.Value.X, position.Value.Y);
