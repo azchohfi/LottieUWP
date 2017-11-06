@@ -32,11 +32,11 @@ namespace LottieUWP
         // This is stored as a set to avoid duplicates.
         private readonly HashSet<string> _warnings = new HashSet<string>();
         private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
-        private readonly long _startFrame;
-        private readonly long _endFrame;
+        private readonly int _startFrame;
+        private readonly int _endFrame;
         private readonly float _frameRate;
 
-        private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate, float dpScale, int major, int minor, int patch)
+        private LottieComposition(Rect bounds, int startFrame, int endFrame, float frameRate, float dpScale, int major, int minor, int patch)
         {
             Bounds = bounds;
             _startFrame = startFrame;
@@ -84,9 +84,9 @@ namespace LottieUWP
             }
         }
 
-        internal virtual long StartFrame => _startFrame;
+        internal virtual int StartFrame => _startFrame;
 
-        internal virtual long EndFrame => _endFrame;
+        internal virtual int EndFrame => _endFrame;
 
         internal virtual List<Layer> Layers => _layers;
 
@@ -224,8 +224,8 @@ namespace LottieUWP
                     bounds = new Rect(0, 0, scaledWidth, scaledHeight);
                 }
 
-                var startFrame = (long)json.GetNamedNumber("ip", 0);
-                var endFrame = (long)json.GetNamedNumber("op", 0);
+                var startFrame = (int)json.GetNamedNumber("ip", 0);
+                var endFrame = (int)json.GetNamedNumber("op", 0);
                 var frameRate = (float)json.GetNamedNumber("fr", 0);
                 var version = json.GetNamedString("v");
                 var versions = version.Split('.');

@@ -11,8 +11,8 @@ namespace LottieUWP.Animation
     {
         T StartValue { get; }
         T EndValue { get; }
-        float? StartFrame { get; }
-        float? EndFrame { get; set; }
+        int? StartFrame { get; }
+        int? EndFrame { get; set; }
         float StartProgress { get; }
         bool ContainsProgress(float progress);
         bool Static { get; }
@@ -55,13 +55,13 @@ namespace LottieUWP.Animation
         public T StartValue { get; }
         public T EndValue { get; }
         public IInterpolator Interpolator { get; }
-        public float? StartFrame { get; }
-        public float? EndFrame { get; set; }
+        public int? StartFrame { get; }
+        public int? EndFrame { get; set; }
 
         private float _startProgress = float.MinValue;
         private float _endProgress = float.MinValue;
 
-        public Keyframe(LottieComposition composition, T startValue, T endValue, IInterpolator interpolator, float? startFrame, float? endFrame)
+        public Keyframe(LottieComposition composition, T startValue, T endValue, IInterpolator interpolator, int? startFrame, int? endFrame)
         {
             _composition = composition;
             StartValue = startValue;
@@ -152,14 +152,14 @@ namespace LottieUWP.Animation
             {
                 Vector2? cp1 = null;
                 Vector2? cp2 = null;
-                float startFrame = 0;
+                int startFrame = 0;
                 var startValue = default(T);
                 var endValue = default(T);
                 IInterpolator interpolator = null;
 
                 if (json.ContainsKey("t"))
                 {
-                    startFrame = (float)json.GetNamedNumber("t", 0);
+                    startFrame = (int)json.GetNamedNumber("t", 0);
                     if (json.TryGetValue("s", out var startValueJson))
                     {
                         startValue = valueFactory.ValueFromObject(startValueJson, scale);

@@ -267,14 +267,14 @@ namespace LottieUWP.Model.Layer
                 // Bodymovin pre-scales the in frame and out frame by the time stretch. However, that will
                 // cause the stretch to be double counted since the in out animation gets treated the same
                 // as all other animations and will have stretch applied to it again.
-                var inFrame = (float)json.GetNamedNumber("ip") / timeStretch;
-                var outFrame = (float)json.GetNamedNumber("op") / timeStretch;
+                var inFrame = (int)(json.GetNamedNumber("ip") / timeStretch);
+                var outFrame = (int)(json.GetNamedNumber("op") / timeStretch);
 
                 var inOutKeyframes = new List<IKeyframe<float?>>();
                 // Before the in frame
                 if (inFrame > 0)
                 {
-                    var preKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, 0f, inFrame);
+                    var preKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, 0, inFrame);
                     inOutKeyframes.Add(preKeyframe);
                 }
 
@@ -283,7 +283,7 @@ namespace LottieUWP.Model.Layer
                 var visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
                 inOutKeyframes.Add(visibleKeyframe);
 
-                var outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, float.MaxValue);
+                var outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, int.MaxValue);
                 inOutKeyframes.Add(outKeyframe);
 
                 AnimatableFloatValue timeRemapping = null;
