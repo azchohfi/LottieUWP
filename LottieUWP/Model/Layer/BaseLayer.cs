@@ -375,7 +375,9 @@ namespace LottieUWP.Model.Layer
                 }
                 if (_matteLayer != null)
                 {
-                    _matteLayer.Progress = value;
+                    // The matte layer's time stretch is pre-calculated.
+                    float matteTimeStretch = _matteLayer.LayerModel.TimeStretch;
+                    _matteLayer.Progress = value * matteTimeStretch;
                 }
                 for (var i = 0; i < _animations.Count; i++)
                 {
