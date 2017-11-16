@@ -9,7 +9,7 @@ namespace LottieUWP.Animation.Keyframe
     {
         private Path _path;
 
-        private PathKeyframe(LottieComposition composition, Vector2? startValue, Vector2? endValue, IInterpolator interpolator, int? startFrame, int? endFrame) : base(composition, startValue, endValue, interpolator, startFrame, endFrame)
+        private PathKeyframe(LottieComposition composition, Vector2? startValue, Vector2? endValue, IInterpolator interpolator, float? startFrame, float? endFrame) : base(composition, startValue, endValue, interpolator, startFrame, endFrame)
         {
         }
 
