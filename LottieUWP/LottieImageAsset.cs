@@ -7,19 +7,20 @@ namespace LottieUWP
     /// </summary>
     public class LottieImageAsset
     {
-        private LottieImageAsset(int width, int height, string id, string fileName)
+        private LottieImageAsset(int width, int height, string id, string fileName, string dirName)
         {
             Width = width;
             Height = height;
             Id = id;
             FileName = fileName;
+            DirName = dirName;
         }
 
         internal static class Factory
         {
             internal static LottieImageAsset NewInstance(JsonObject imageJson)
             {
-                return new LottieImageAsset((int)imageJson.GetNamedNumber("w"), (int)imageJson.GetNamedNumber("h"), imageJson.GetNamedString("id"), imageJson.GetNamedString("p"));
+                return new LottieImageAsset((int)imageJson.GetNamedNumber("w"), (int)imageJson.GetNamedNumber("h"), imageJson.GetNamedString("id"), imageJson.GetNamedString("p"), imageJson.GetNamedString("u"));
             }
         }
 
@@ -30,5 +31,7 @@ namespace LottieUWP
         public virtual string Id { get; }
 
         public virtual string FileName { get; }
+
+        public virtual string DirName { get; }
     }
 }
