@@ -110,7 +110,7 @@ namespace LottieUWP
 
         internal virtual float DpScale { get; }
 
-        /* Bodymovin version */ 
+        /* Bodymovin version */
         internal int MajorVersion { get; }
         internal int MinorVersion { get; }
         internal int PatchVersion { get; }
@@ -184,13 +184,17 @@ namespace LottieUWP
             {
                 try
                 {
-                    var size = stream.Length;
-                    var buffer = new byte[size];
-
-                    stream.Read(buffer, 0, buffer.Length);
-                    var json = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-                    var jsonObject = JsonObject.Parse(json);
-                    return FromJsonSync(resolutionScale, jsonObject);
+                    using (var bufferedReader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        var total = new StringBuilder();
+                        string line;
+                        while ((line = bufferedReader.ReadLine()) != null)
+                        {
+                            total.Append(line);
+                        }
+                        var jsonObject = JsonObject.Parse(total.ToString());
+                        return FromJsonSync(resolutionScale, jsonObject);
+                    }
                 }
                 catch (IOException e)
                 {
