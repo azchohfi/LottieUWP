@@ -102,7 +102,7 @@ namespace LottieUWP
             return _images.Count > 0;
         }
 
-        internal virtual Dictionary<string, LottieImageAsset> Images => _images;
+        public virtual Dictionary<string, LottieImageAsset> Images => _images;
 
         internal virtual Dictionary<int, FontCharacter> Characters { get; } = new Dictionary<int, FontCharacter>();
 
