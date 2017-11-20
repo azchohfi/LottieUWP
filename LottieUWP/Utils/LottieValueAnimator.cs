@@ -69,6 +69,21 @@ namespace LottieUWP.Utils
             get => _value;
         }
 
+		public void SetMinAndMaxValues(float minValue, float maxValue)
+		{
+			if (minValue < 0)
+                minValue = 0;
+            if (minValue > 1)
+                minValue = 1;
+            if (maxValue < 0)
+                maxValue = 0;
+            if (maxValue > 1)
+                maxValue = 1;
+			_minValue = minValue;
+			_maxValue = maxValue;
+			UpdateValues();
+		}
+
         public float MinValue
         {
             set
