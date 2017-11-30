@@ -39,7 +39,8 @@ namespace LottieUWP.Model.Layer
         private readonly Path _path = new Path();
         internal Matrix3X3 Matrix = Matrix3X3.CreateIdentity();
         private readonly Paint _contentPaint = new Paint(Paint.AntiAliasFlag);
-        private readonly Paint _maskPaint = new Paint(Paint.AntiAliasFlag);
+        private readonly Paint _addMaskPaint = new Paint(Paint.AntiAliasFlag);
+        private readonly Paint _subtractMaskPaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _mattePaint = new Paint(Paint.AntiAliasFlag);
         private readonly Paint _clearPaint = new Paint();
         protected Rect Rect;
@@ -65,7 +66,8 @@ namespace LottieUWP.Model.Layer
             LayerModel = layerModel;
             _drawTraceName = layerModel.Name + ".Draw";
             _clearPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.Clear);
-            _maskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstIn);
+            _addMaskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstIn);
+            _subtractMaskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstOut);
             if (layerModel.GetMatteType() == Layer.MatteType.Invert)
             {
                 _mattePaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstOut);
@@ -311,31 +313,46 @@ namespace LottieUWP.Model.Layer
 
         private void ApplyMasks(BitmapCanvas canvas, Matrix3X3 matrix)
         {
+            ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeAdd);
+            ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
+        } 
+ 
+        private void ApplyMasks(BitmapCanvas canvas, Matrix3X3 matrix, Mask.MaskMode maskMode)
+        {
+            var paint = maskMode == Mask.MaskMode.MaskModeSubtract ? _subtractMaskPaint : _addMaskPaint;
+
+            var size = _mask.Masks.Count;
+
+            var hasMask = false;
+            for (int i = 0; i < size; i++)
+            {
+                if (_mask.Masks[i].GetMaskMode() == maskMode)
+                {
+                    hasMask = true;
+                    break;
+                }
+            }
+            if (!hasMask)
+            {
+                return;
+            }
             LottieLog.BeginSection("Layer.DrawMask");
             LottieLog.BeginSection("Layer.SaveLayer");
-            canvas.SaveLayer(Rect, _maskPaint, SaveFlags);
+            canvas.SaveLayer(Rect, paint, SaveFlags);
             LottieLog.EndSection("Layer.SaveLayer");
             ClearCanvas(canvas);
 
-            var size = _mask.Masks.Count;
             for (var i = 0; i < size; i++)
             {
                 var mask = _mask.Masks[i];
+                if (mask.GetMaskMode() != maskMode)
+                {
+                    continue;
+                }
                 var maskAnimation = _mask.MaskAnimations[i];
                 var maskPath = maskAnimation.Value;
                 _path.Set(maskPath);
                 _path.Transform(matrix);
-
-                switch (mask.GetMaskMode())
-                {
-                    case Mask.MaskMode.MaskModeSubtract:
-                        _path.FillType = PathFillType.InverseWinding;
-                        break;
-                    case Mask.MaskMode.MaskModeAdd:
-                    default:
-                        _path.FillType = PathFillType.Winding;
-                        break;
-                }
                 var opacityAnimation = _mask.OpacityAnimations[i];
                 var alpha = _contentPaint.Alpha;
                 _contentPaint.Alpha = (byte)(opacityAnimation.Value.Value * 2.55f);

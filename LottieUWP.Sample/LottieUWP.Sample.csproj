@@ -216,6 +216,7 @@
     <Content Include="Assets\CircleReversed.json" />
     <Content Include="Assets\Tests\MatteTimeStretchLine.json" />
     <Content Include="Assets\Tests\MatteTimeStretchScan.json" />
+    <Content Include="Assets\Tests\MaskInv.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
