@@ -79,7 +79,6 @@ namespace LottieUWP.Model.Layer
 
             Transform = layerModel.Transform.CreateAnimation();
             Transform.ValueChanged += OnValueChanged;
-            Transform.AddAnimationsToLayer(this);
 
             if (layerModel.Masks != null && layerModel.Masks.Count > 0)
             {
@@ -386,6 +385,8 @@ namespace LottieUWP.Model.Layer
         {
             set
             {
+                // Time stretch should not be applied to the layer transform. 
+                Transform.Progress = value;
                 if (LayerModel.TimeStretch != 0)
                 {
                     value /= LayerModel.TimeStretch;

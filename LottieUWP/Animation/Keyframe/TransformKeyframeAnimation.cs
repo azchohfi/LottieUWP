@@ -84,6 +84,26 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
+        public float Progress
+        {
+            set
+            {
+                _anchorPoint.Progress = value;
+                _position.Progress = value;
+                _scale.Progress = value;
+                _rotation.Progress = value;
+                _opacity.Progress = value;
+                if (_startOpacity != null)
+                {
+                    _startOpacity.Progress = value;
+                }
+                if (_endOpacity != null)
+                {
+                    _endOpacity.Progress = value;
+                }
+            }
+        }
+
         internal virtual IBaseKeyframeAnimation<int?, int?> Opacity => _opacity;
 
         internal virtual IBaseKeyframeAnimation<float?, float?> StartOpacity => _startOpacity;
