@@ -48,11 +48,11 @@ namespace LottieUWP.Animation.Keyframe
 
                 if (value < StartDelayProgress)
                 {
-                    value = 0f;
+                    value = StartDelayProgress;
                 }
                 else if (value > EndProgress)
                 {
-                    value = 1f;
+                    value = EndProgress;
                 }
 
                 if (value == _progress)
