@@ -179,6 +179,7 @@ namespace LottieUWP.Model.Layer
                 var path = contentGroups[j].Path;
                 //path.ComputeBounds(out _rectF);
                 Matrix.Set(parentMatrix);
+                Matrix = MatrixExt.PreTranslate(Matrix, 0, (float)-documentData.BaselineShift * _composition.DpScale);
                 Matrix = MatrixExt.PreScale(Matrix, fontScale, fontScale);
                 path.Transform(Matrix);
                 if (documentData.StrokeOverFill)

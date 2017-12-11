@@ -12,12 +12,13 @@ namespace LottieUWP.Model
         internal readonly int Justification;
         internal readonly int Tracking;
         internal readonly double LineHeight;
+        internal readonly double BaselineShift;
         internal readonly Color Color;
         internal readonly Color StrokeColor;
         internal readonly int StrokeWidth;
         internal readonly bool StrokeOverFill;
 
-        internal DocumentData(string text, string fontName, int size, int justification, int tracking, double lineHeight, Color color, Color strokeColor, int strokeWidth, bool strokeOverFill)
+        internal DocumentData(string text, string fontName, int size, int justification, int tracking, double lineHeight, double baselineShift, Color color, Color strokeColor, int strokeWidth, bool strokeOverFill)
         {
             Text = text;
             FontName = fontName;
@@ -25,6 +26,7 @@ namespace LottieUWP.Model
             Justification = justification;
             Tracking = tracking;
             LineHeight = lineHeight;
+            BaselineShift = baselineShift;
             Color = color;
             StrokeColor = strokeColor;
             StrokeWidth = strokeWidth;
@@ -41,6 +43,7 @@ namespace LottieUWP.Model
                 var justification = (int)json.GetNamedNumber("j", 0);
                 var tracking = (int)json.GetNamedNumber("tr", 0);
                 var lineHeight = json.GetNamedNumber("lh", 0);
+                var baselineShift = json.GetNamedNumber("ls", 0);
                 var colorArray = json.GetNamedArray("fc");
                 var color = Color.FromArgb(255, (byte)(colorArray.GetNumberAt(0) * 255), (byte)(colorArray.GetNumberAt(1) * 255), (byte)(colorArray.GetNumberAt(2) * 255));
 
@@ -58,7 +61,7 @@ namespace LottieUWP.Model
                 var strokeWidth = (int)json.GetNamedNumber("sw", 0);
                 var strokeOverFill = json.GetNamedBoolean("of", false);
 
-                return new DocumentData(text, fontName, size, justification, tracking, lineHeight, color, strokeColor, strokeWidth, strokeOverFill);
+                return new DocumentData(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill);
             }
         }
 
