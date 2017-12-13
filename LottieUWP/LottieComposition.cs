@@ -12,6 +12,7 @@ using Windows.Graphics.Display;
 using LottieUWP.Model;
 using LottieUWP.Model.Layer;
 using LottieUWP.Utils;
+using System.Text.RegularExpressions;
 
 namespace LottieUWP
 {
@@ -232,7 +233,7 @@ namespace LottieUWP
                 var endFrame = (long)json.GetNamedNumber("op", 0);
                 var frameRate = (float)json.GetNamedNumber("fr", 0);
                 var version = json.GetNamedString("v");
-                var versions = version.Split('.');
+                var versions = Regex.Split(version, "\\.");
                 var major = int.Parse(versions[0]);
                 var minor = int.Parse(versions[1]);
                 var patch = int.Parse(versions[2]);
