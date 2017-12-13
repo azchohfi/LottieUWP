@@ -227,6 +227,7 @@
     <Compile Include="PathMeasure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Animation\Content\Shader.cs" />
+    <Compile Include="RepeatMode.cs" />
     <Compile Include="SimpleColorFilter.cs" />
     <Compile Include="TextDelegate.cs" />
     <Compile Include="Typeface.cs" />

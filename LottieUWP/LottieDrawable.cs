@@ -46,6 +46,12 @@ namespace LottieUWP
         private CanvasAnimatedControl _canvasControl;
         private bool _forceSoftwareRenderer;
 
+        /// <summary>
+        /// This value used used with the <see cref="RepeatCount"/> property to repeat
+        /// the animation indefinitely.
+        /// </summary>
+        public const int Infinite = -1;
+
         public LottieDrawable()
         {
             _animator.Update += (sender, e) =>
@@ -602,10 +608,43 @@ namespace LottieUWP
             }
         }
 
+        /// <summary>
+        /// <see cref="RepeatCount"/>
+        /// </summary>
+        [Obsolete]
         public virtual bool Looping
         {
-            get => _animator.Loop;
-            set => _animator.Loop = value;
+            get => _animator.RepeatCount == (int)Infinite;
+            set => _animator.RepeatCount = value ? (int)Infinite : 0;
+        }
+
+        /// <summary>
+        /// Defines what this animation should do when it reaches the end. This
+        /// setting is applied only when the repeat count is either greater than
+        /// 0 or <see cref="RepeatMode.Infinite"/>. Defaults to <see cref="RepeatMode.Restart"/>.
+        /// Return either one of <see cref="RepeatMode.Reverse"/> or <see cref="RepeatMode.Restart"/>
+        /// </summary>
+        /// <param name="mode"><seealso cref="RepeatMode"/></param>
+        public RepeatMode RepeatMode
+        {
+            set => _animator.RepeatMode = value;
+            get => _animator.RepeatMode;
+        }
+
+        /// <summary>
+        /// Sets how many times the animation should be repeated. If the repeat 
+        /// count is 0, the animation is never repeated. If the repeat count is 
+        /// greater than 0 or <see cref="RepeatMode.Infinite"/>, the repeat mode will be taken 
+        /// into account. The repeat count is 0 by default.
+        /// 
+        /// Count the number of times the animation should be repeated
+        /// 
+        /// Return the number of times the animation should repeat, or <see cref="RepeatMode.Infinite"/>
+        /// </summary>
+        public int RepeatCount
+        {
+            set => _animator.RepeatCount = value;
+            get => _animator.RepeatCount;
         }
 
         public virtual bool IsAnimating => _animator.IsRunning;

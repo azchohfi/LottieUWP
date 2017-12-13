@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace LottieUWP
 {
@@ -6,6 +8,7 @@ namespace LottieUWP
     {
         protected ValueAnimator()
         {
+            _timerInterval = TimeSpan.FromMilliseconds(Math.Floor(1000.0 / TargetFps));
             Interpolator = new AccelerateDecelerateInterpolator();
         }
 
@@ -19,19 +22,47 @@ namespace LottieUWP
             }
         }
 
+        public event EventHandler ValueChanged;
         public event EventHandler<ValueAnimatorUpdateEventArgs> Update;
 
         private float _floatValue1;
         private float _floatValue2;
         private float _animatedValue;
         private IInterpolator _interpolator;
+        private DateTime _lastTick;
+        private const int TargetFps = 60;
+        private readonly TimeSpan _timerInterval;
+        private Timer _timer;
+        private float _currentPlayTime;
+        private int _repeatedTimes;
+        private bool _reverse;
+
+        public float CurrentPlayTime
+        {
+            get => _currentPlayTime;
+            set
+            {
+                _currentPlayTime = value;
+                OnValueChanged();
+            }
+        }
+
+        protected virtual void OnValueChanged()
+        {
+            ValueChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public int RepeatCount { get; set; } = LottieDrawable.Infinite;
+        public RepeatMode RepeatMode { get; set; }
+
+        public override bool IsRunning => _timer != null;
 
         public IInterpolator Interpolator
         {
             get => _interpolator;
             set
             {
-                if(value == null)
+                if (value == null)
                     value = new LinearInterpolator();
                 _interpolator = value;
             }
@@ -51,10 +82,26 @@ namespace LottieUWP
 
         public override void Start()
         {
-            AnimatedFraction = Interpolator.GetInterpolation(0);
-            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
+            _repeatedTimes = 0;
+            _reverse = false;
+
+            PrivateStart(true);
 
             base.Start();
+        }
+
+        private void PrivateStart(bool recreateTimer)
+        {
+            _lastTick = DateTime.Now;
+
+            AnimatedFraction = Interpolator.GetInterpolation(_reverse ? 1 : 0);
+            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
+
+            if (recreateTimer || _timer == null)
+            {
+                _timer?.Dispose();
+                _timer = new Timer(TimerCallback, null, TimeSpan.Zero, _timerInterval);
+            }
         }
 
         void OnAnimationUpdate()
@@ -62,12 +109,63 @@ namespace LottieUWP
             Update?.Invoke(this, new ValueAnimatorUpdateEventArgs(this));
         }
 
-        protected override void TimerCallback(object state)
+        private void TimerCallback(object state)
         {
-            base.TimerCallback(state);
+            var tick = (float)(DateTime.Now - _lastTick).TotalMilliseconds;
+            if (tick < _timerInterval.TotalMilliseconds)
+                tick = (float)Math.Floor(1000.0 / TargetFps);
+            _lastTick = DateTime.Now;
 
-            AnimatedFraction = Interpolator.GetInterpolation(Progress);
+            Debug.WriteLine($"Tick milliseconds: {tick}");
+
+            CurrentPlayTime += tick;
+
+            var progress = CurrentPlayTime / Duration;
+
+            if (progress > 1)
+            {
+                if ((RepeatCount > 0 && _repeatedTimes < RepeatCount) || RepeatCount == LottieDrawable.Infinite)
+                {
+                    CurrentPlayTime = 0;
+                    progress = 0;
+                    _repeatedTimes++;
+
+                    if (RepeatMode == RepeatMode.Reverse)
+                    {
+                        _reverse = !_reverse;
+                    }
+
+                    PrivateStart(false);
+                }
+                else
+                {
+                    PrivateCancel();
+                }
+            }
+
+            AnimatedFraction = Interpolator.GetInterpolation((_reverse ? 1 - progress : progress));
             AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
+        }
+
+        public override void End()
+        {
+            CurrentPlayTime = Duration;
+            base.End();
+        }
+
+        public override void Cancel()
+        {
+            PrivateCancel();
+            base.Cancel();
+        }
+
+        private void PrivateCancel()
+        {
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
         }
 
         public void SetFloatValues(float floatValue1, float floatValue2)

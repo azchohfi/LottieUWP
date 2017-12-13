@@ -192,7 +192,6 @@ namespace LottieUWP
             {
                 _lottieDrawable.PlayAnimation();
             }
-            _lottieDrawable.Looping = Loop;
 
             EnableMergePathsForKitKatAndAbove();
             AddColorFilter(new SimpleColorFilter(ColorFilter));
@@ -300,8 +299,9 @@ namespace LottieUWP
         //    ss.animationName = animationName;
         //    ss.progress = lottieDrawable.Progress;
         //    ss.isAnimating = lottieDrawable.Animating;
-        //    ss.isLooping = lottieDrawable.Looping;
         //    ss.imageAssetsFolder = lottieDrawable.ImageAssetsFolder;
+        //    ss.RepeatMode = lottieDrawable.RepeatMode; 
+        //    ss.RepeatCount = lottieDrawable.RepeatCount; 
         //    return ss;
         //}
         //
@@ -321,12 +321,13 @@ namespace LottieUWP
         //        Animation = animationName;
         //    }
         //    Progress = ss.progress;
-        //    loop(ss.isLooping);
         //    if (ss.isAnimating)
         //    {
         //        playAnimation();
         //    }
         //    lottieDrawable.ImagesAssetsFolder = ss.imageAssetsFolder;
+        //    RepeatMode = ss.RepeatMode; 
+        //    RepeatCount = ss.RepeatCount;
         //}
         //
         //protected internal void onAttachedToWindow()
@@ -652,6 +653,10 @@ namespace LottieUWP
             remove => _lottieDrawable.ValueChanged -= value;
         }
 
+        /// <summary>
+        /// <see cref="RepeatCount"/>
+        /// </summary>
+        [Obsolete]
         public bool Loop
         {
             get => (bool)GetValue(LoopProperty);
@@ -659,13 +664,62 @@ namespace LottieUWP
         }
 
         // Using a DependencyProperty as the backing store for Loop.  This enables animation, styling, binding, etc...
+        [Obsolete]
         public static readonly DependencyProperty LoopProperty =
             DependencyProperty.Register("Loop", typeof(bool), typeof(LottieAnimationView), new PropertyMetadata(false, LoopPropertyChangedCallback));
 
         private static void LoopPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
+            if (dependencyObject is LottieAnimationView lottieAnimationView && (bool)e.NewValue)
+                lottieAnimationView._lottieDrawable.RepeatCount = LottieDrawable.Infinite;
+        }
+
+        /// <summary>
+        /// Defines what this animation should do when it reaches the end. This 
+        /// setting is applied only when the repeat count is either greater than 
+        /// 0 or <see cref="RepeatMode.Infinite"/>. Defaults to <see cref="RepeatMode.Restart"/>.
+        /// Return either one of <see cref="RepeatMode.Reverse"/> or <see cref="RepeatMode.Restart"/>
+        /// </summary>
+        public RepeatMode RepeatMode
+        {
+            get { return (RepeatMode)GetValue(RepeatModeProperty); }
+            set { SetValue(RepeatModeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for RepeatMode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty RepeatModeProperty =
+            DependencyProperty.Register("RepeatMode", typeof(RepeatMode), typeof(LottieAnimationView), new PropertyMetadata(RepeatMode.Restart, RepeatModePropertyChangedCallback));
+
+        private static void RepeatModePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
             if (dependencyObject is LottieAnimationView lottieAnimationView)
-                lottieAnimationView._lottieDrawable.Looping = (bool)e.NewValue;
+                lottieAnimationView._lottieDrawable.RepeatMode = (RepeatMode)e.NewValue;
+        }
+
+        /// <summary>
+        /// Sets how many times the animation should be repeated. If the repeat 
+        /// count is 0, the animation is never repeated. If the repeat count is 
+        /// greater than 0 or <see cref="RepeatMode.Infinite"/>, the repeat mode will be taken 
+        /// into account. The repeat count is 0 by default. 
+        /// 
+        /// Count the number of times the animation should be repeated
+        /// 
+        /// Return the number of times the animation should repeat, or <see cref="RepeatMode.Infinite"/>
+        /// </summary>
+        public int RepeatCount
+        {
+            get { return (int)GetValue(RepeatCountProperty); }
+            set { SetValue(RepeatCountProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for RepeatCount.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty RepeatCountProperty =
+            DependencyProperty.Register("RepeatCount", typeof(int), typeof(LottieAnimationView), new PropertyMetadata(LottieDrawable.Infinite, RepeatCountPropertyChangedCallback));
+
+        private static void RepeatCountPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is LottieAnimationView lottieAnimationView)
+                lottieAnimationView._lottieDrawable.RepeatCount = (int)e.NewValue;
         }
 
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
@@ -742,8 +796,9 @@ namespace LottieUWP
         //    internal string animationName;
         //    internal float progress;
         //    internal bool isAnimating;
-        //    internal bool isLooping;
         //    internal string imageAssetsFolder;
+        //    internal int repeatMode; 
+        //    internal int repeatCount;
 
         //    internal SavedState(Parcelable superState) : base(superState)
         //    {
@@ -754,8 +809,9 @@ namespace LottieUWP
         //        animationName = @in.readString();
         //        progress = @in.readFloat();
         //        isAnimating = @in.readInt() == 1;
-        //        isLooping = @in.readInt() == 1;
         //        imageAssetsFolder = @in.readString();
+        //        repeatMode = in.readInt();
+        //        repeatCount = in.readInt();
         //    }
 
         //    public void writeToParcel(Parcel @out, int flags)
@@ -764,8 +820,9 @@ namespace LottieUWP
         //        @out.writeString(animationName);
         //        @out.writeFloat(progress);
         //        @out.writeInt(isAnimating ? 1 : 0);
-        //        @out.writeInt(isLooping ? 1 : 0);
         //        @out.writeString(imageAssetsFolder);
+        //        @out.writeInt(repeatMode);
+        //        @out.writeInt(repeatCount);
         //    }
 
         //    public static readonly Parcelable.Creator<SavedState> CREATOR = new CreatorAnonymousInnerClass();
