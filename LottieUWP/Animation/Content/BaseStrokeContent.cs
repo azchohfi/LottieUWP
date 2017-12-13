@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Windows.Foundation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
@@ -9,7 +10,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP.Animation.Content
 {
-    public abstract class BaseStrokeContent : IDrawingContent
+    public abstract class BaseStrokeContent : IDrawingContent, IKeyPathElement
     {
         private readonly PathMeasure _pm = new PathMeasure();
         private readonly Path _path = new Path();
@@ -308,6 +309,23 @@ namespace LottieUWP.Animation.Content
             var offset = _dashPatternOffsetAnimation?.Value ?? 0f;
             Paint.PathEffect = new DashPathEffect(_dashPatternValues, offset);
             LottieLog.EndSection("StrokeContent.ApplyDashPattern");
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            if (keyPath.FullyResolvesTo(Name, depth))
+            {
+                currentPartialKeyPath = currentPartialKeyPath.AddKey(Name);
+                accumulator.Add(currentPartialKeyPath.Resolve(this));
+            }
+        }
+
+        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        {
+            if (property == Property.Color)
+            {
+                // TODO use the value callback. 
+            }
         }
 
         /// <summary>

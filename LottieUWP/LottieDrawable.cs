@@ -7,6 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using LottieUWP.Animation.Content;
 using LottieUWP.Manager;
+using LottieUWP.Model;
 using LottieUWP.Model.Layer;
 using LottieUWP.Utils;
 using Microsoft.Graphics.Canvas;
@@ -749,6 +750,26 @@ namespace LottieUWP
         public int IntrinsicWidth => _composition == null ? -1 : (int)(_composition.Bounds.Width * _scale);
 
         public int IntrinsicHeight => _composition == null ? -1 : (int)(_composition.Bounds.Height * _scale);
+
+        /// <summary>
+        /// Take a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of 
+        /// zero or more actual { @link KeyPath Keypaths }
+        /// that exist in the current animation.
+        /// 
+        /// This API is not ready for public use yet.
+        /// </summary>
+        /// <param name="keyPath"></param>
+        /// <returns></returns>
+        public List<KeyPath> ResolveKeyPath(KeyPath keyPath)
+        {
+            if (_compositionLayer == null)
+            {
+                return new List<KeyPath>();
+            }
+            var keyPaths = new List<KeyPath>();
+            _compositionLayer.ResolveKeyPath(keyPath, 0, keyPaths, new KeyPath());
+            return keyPaths;
+        }
 
         /// 
         /// <summary>

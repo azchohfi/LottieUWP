@@ -224,5 +224,13 @@ namespace LottieUWP.Model.Layer
                 }
             }
         }
+
+        protected override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            for (int i = 0; i < _layers.Count; i++)
+            {
+                _layers[i].ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
+            }
+        }
     }
 }

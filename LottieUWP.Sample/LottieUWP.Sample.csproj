@@ -380,6 +380,7 @@
     <Content Include="Assets\lottiefiles\xuanwheel_logo.json" />
     <Content Include="Assets\lottiefiles\x_pop.json" />
     <Content Include="Assets\lottiefiles\___.json" />
+    <Content Include="Assets\Tests\Squares.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

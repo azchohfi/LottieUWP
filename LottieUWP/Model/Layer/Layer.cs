@@ -156,7 +156,7 @@ namespace LottieUWP.Model.Layer
             internal static Layer NewInstance(LottieComposition composition)
             {
                 var bounds = composition.Bounds;
-                return new Layer(new List<IContentModel>(), composition, "root", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None, null);
+                return new Layer(new List<IContentModel>(), composition, "__container", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None, null);
             }
 
             internal static Layer NewInstance(JsonObject json, LottieComposition composition)

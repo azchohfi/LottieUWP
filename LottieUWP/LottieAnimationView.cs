@@ -9,6 +9,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
+using LottieUWP.Model;
 
 namespace LottieUWP
 {
@@ -152,6 +153,18 @@ namespace LottieUWP
         public TextDelegate TextDelegate
         {
             set => _lottieDrawable.TextDelegate = value;
+        }
+
+        /// <summary>
+        /// Take a keypath, potentially with wildcards or globstars and resolve it to a list of zero or
+        /// more actual keypaths that exist in the current animation.
+        /// This API is not ready for public use yet.
+        /// </summary>
+        /// <param name="keyPath"></param>
+        /// <returns></returns>
+        public List<KeyPath> ResolveKeyPath(KeyPath keyPath)
+        {
+            return _lottieDrawable.ResolveKeyPath(keyPath);
         }
 
         /// <summary>

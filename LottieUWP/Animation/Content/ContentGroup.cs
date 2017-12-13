@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class ContentGroup : IDrawingContent, IPathContent
+    internal class ContentGroup : IDrawingContent, IPathContent, IKeyPathElement
     {
         private static List<IContent> ContentsFromModels(LottieDrawable drawable, BaseLayer layer, List<IContentModel> contentModels)
         {
@@ -48,7 +49,7 @@ namespace LottieUWP.Animation.Content
 
         internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup)
             : this(lottieDrawable, layer, shapeGroup.Name,
-                ContentsFromModels(lottieDrawable, layer, shapeGroup.Items), 
+                ContentsFromModels(lottieDrawable, layer, shapeGroup.Items),
                 FindTransform(shapeGroup.Items))
         {
         }
@@ -73,7 +74,8 @@ namespace LottieUWP.Animation.Content
             for (var i = contents.Count - 1; i >= 0; i--)
             {
                 var content = contents[i];
-                if (content is IGreedyContent greedyContent) {
+                if (content is IGreedyContent greedyContent)
+                {
                     greedyContents.Add(greedyContent);
                 }
             }
@@ -220,6 +222,43 @@ namespace LottieUWP.Animation.Content
                     }
                 }
             }
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            if (!keyPath.Matches(Name, depth))
+            {
+                return;
+            }
+
+            if (!"__container".Equals(Name))
+            {
+                currentPartialKeyPath = currentPartialKeyPath.AddKey(Name);
+
+                if (keyPath.FullyResolvesTo(Name, depth))
+                {
+                    accumulator.Add(currentPartialKeyPath.Resolve(this));
+                }
+            }
+
+            if (keyPath.PropagateToChildren(Name, depth))
+            {
+                int newDepth = depth + keyPath.IncrementDepthBy(Name, depth);
+                for (int i = 0; i < _contents.Count; i++)
+                {
+                    var content = _contents[i];
+                    // TODO: all contents should implement KeyPathElement 
+                    if (content is IKeyPathElement element)
+                    {
+                        element.ResolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
+                    }
+                }
+            }
+        }
+
+        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        {
+            // TODO (keypath) 
         }
     }
 }

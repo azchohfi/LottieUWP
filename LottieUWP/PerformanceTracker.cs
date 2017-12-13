@@ -58,7 +58,7 @@ namespace LottieUWP
                 _layerRenderTimes[layerName] = meanCalculator;
             }
             meanCalculator.Add(millis);
-            if (layerName.Equals("root"))
+            if (layerName.Equals("__container"))
             {
                 OnFrameRendered(new FrameRenderedEventArgs(millis));
             }

@@ -194,6 +194,8 @@
     <Compile Include="Model\Font.cs" />
     <Compile Include="Model\FontCharacter.cs" />
     <Compile Include="Model\JsonCompositionLoader.cs" />
+    <Compile Include="Model\KeyPath.cs" />
+    <Compile Include="Model\IKeyPathElement.cs" />
     <Compile Include="Model\Layer\BaseLayer.cs" />
     <Compile Include="Model\Layer\CompositionLayer.cs" />
     <Compile Include="Model\Layer\ImageLayer.cs" />
@@ -202,7 +204,9 @@
     <Compile Include="Model\Layer\ShapeLayer.cs" />
     <Compile Include="Model\Layer\SolidLayer.cs" />
     <Compile Include="Model\Layer\TextLayer.cs" />
+    <Compile Include="ILottieValueCallback.cs" />
     <Compile Include="Model\PointFFactory.cs" />
+    <Compile Include="Model\Property.cs" />
     <Compile Include="Model\ScaleXY.cs" />
     <Compile Include="PathInterpolator.cs" />
     <Compile Include="LinearInterpolator.cs" />

@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class FillContent : IDrawingContent
+    internal class FillContent : IDrawingContent, IKeyPathElement
     {
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
@@ -89,6 +91,29 @@ namespace LottieUWP.Animation.Content
             _path.ComputeBounds(out outBounds);
             // Add padding to account for rounding errors.
             RectExt.Set(ref outBounds, outBounds.Left - 1, outBounds.Top - 1, outBounds.Right + 1, outBounds.Bottom + 1);
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            if (!keyPath.Matches(Name, depth))
+            {
+                return;
+            }
+
+            currentPartialKeyPath = currentPartialKeyPath.AddKey(Name);
+
+            if (keyPath.FullyResolvesTo(Name, depth))
+            {
+                accumulator.Add(currentPartialKeyPath.Resolve(this));
+            }
+        }
+
+        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        {
+            if (property == Property.Color)
+            {
+                Debug.WriteLine($"Applying COLOR to {Name}", "Gabe");
+            }
         }
     }
 }

@@ -11,7 +11,8 @@ namespace LottieUWP.Model.Layer
 
         internal ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
-            var shapeGroup = new ShapeGroup(layerModel.Name, layerModel.Shapes);
+            // Naming this __container allows it to be ignored in KeyPath matching. 
+            ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.Shapes);
             _contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup);
             _contentGroup.SetContents(new List<IContent>(), new List<IContent>());
         }
@@ -30,6 +31,11 @@ namespace LottieUWP.Model.Layer
         public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
         {
             _contentGroup.AddColorFilter(layerName, contentName, colorFilter);
+        }
+
+        protected override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            _contentGroup.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
         }
     }
 }

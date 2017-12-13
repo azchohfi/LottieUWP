@@ -8,7 +8,7 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Model.Layer
 {
-    internal abstract class BaseLayer : IDrawingContent
+    internal abstract class BaseLayer : IDrawingContent, IKeyPathElement
     {
         private static readonly int SaveFlags = BitmapCanvas.ClipSaveFlag | BitmapCanvas.ClipToLayerSaveFlag | BitmapCanvas.MatrixSaveFlag;
 
@@ -435,6 +435,39 @@ namespace LottieUWP.Model.Layer
         public virtual void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
         {
             // Do nothing
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            if (!keyPath.Matches(Name, depth))
+            {
+                return;
+            }
+
+            if (!"__container".Equals(Name))
+            {
+                currentPartialKeyPath = currentPartialKeyPath.AddKey(Name);
+
+                if (keyPath.FullyResolvesTo(Name, depth))
+                {
+                    accumulator.Add(currentPartialKeyPath.Resolve(this));
+                }
+            }
+
+            if (keyPath.PropagateToChildren(Name, depth))
+            {
+                int newDepth = depth + keyPath.IncrementDepthBy(Name, depth);
+                ResolveChildKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
+            }
+        }
+
+        protected virtual void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+        }
+
+        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        {
+            // TODO (keypath): apply to transform and subclasses. 
         }
     }
 }
