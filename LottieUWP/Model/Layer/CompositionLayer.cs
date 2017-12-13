@@ -62,10 +62,32 @@ namespace LottieUWP.Model.Layer
             foreach (var layer in layerMap)
             {
                 var layerView = layer.Value;
+                AssertNonNullForGitHubIssue(layerMap, layerView);
                 if (layerMap.TryGetValue(layerView.LayerModel.ParentId, out BaseLayer parentLayer))
                 {
                     layerView.ParentLayer = parentLayer;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Extra logging for https://github.com/airbnb/lottie-android/issues/524 
+        /// </summary>
+        /// <param name="layerMap"></param>
+        /// <param name="layerView"></param>
+        private void AssertNonNullForGitHubIssue(Dictionary<long, BaseLayer> layerMap, BaseLayer layerView)
+        {
+            if (layerMap == null)
+            {
+                throw new NullReferenceException("layerMap is null!");
+            }
+            else if (layerView == null)
+            {
+                throw new NullReferenceException("layerView is null!");
+            }
+            else if (layerView.LayerModel == null)
+            {
+                throw new NullReferenceException("layerModel is null!");
             }
         }
 
