@@ -126,7 +126,7 @@ namespace LottieUWP
                 tick = (float)Math.Floor(1000.0 / TargetFps);
             _lastTick = DateTime.Now;
 
-            Debug.WriteLine($"Tick milliseconds: {tick}");
+            Debug.WriteLineIf(LottieLog.TraceEnabled, $"Tick milliseconds: {tick}", LottieLog.Tag);
 
             CurrentPlayTime += tick;
 
