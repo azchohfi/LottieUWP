@@ -38,7 +38,7 @@ namespace LottieUWP.Model.Layer
         private readonly LayerType _layerType;
         private readonly MatteType _matteType;
 
-        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, List<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<IKeyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
+        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, List<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<Keyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
         {
             _shapes = shapes;
             _composition = composition;
@@ -69,7 +69,7 @@ namespace LottieUWP.Model.Layer
 
         internal virtual float StartProgress { get; }
 
-        internal virtual List<IKeyframe<float?>> InOutKeyframes { get; }
+        internal virtual List<Keyframe<float?>> InOutKeyframes { get; }
 
         internal virtual long Id { get; }
 
@@ -156,7 +156,7 @@ namespace LottieUWP.Model.Layer
             internal static Layer NewInstance(LottieComposition composition)
             {
                 var bounds = composition.Bounds;
-                return new Layer(new List<IContentModel>(), composition, "__container", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<IKeyframe<float?>>(), MatteType.None, null);
+                return new Layer(new List<IContentModel>(), composition, "__container", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<Keyframe<float?>>(), MatteType.None, null);
             }
 
             internal static Layer NewInstance(JsonObject json, LottieComposition composition)
@@ -270,7 +270,7 @@ namespace LottieUWP.Model.Layer
                 var inFrame = (float)json.GetNamedNumber("ip") / timeStretch;
                 var outFrame = (float)json.GetNamedNumber("op") / timeStretch;
 
-                var inOutKeyframes = new List<IKeyframe<float?>>();
+                var inOutKeyframes = new List<Keyframe<float?>>();
                 // Before the in frame
                 if (inFrame > 0)
                 {

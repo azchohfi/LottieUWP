@@ -19,43 +19,26 @@ namespace LottieUWP.Model.Animatable
             _valueFactory = valueFactory;
         }
 
-        internal static AnimatableValueParser<T> NewInstance(JsonObject json, float scale, LottieComposition composition, IAnimatableValueFactory<T> valueFactory)
+        internal static List<Keyframe<T>> NewInstance(JsonObject json, float scale, LottieComposition composition, IAnimatableValueFactory<T> valueFactory)
         {
-            return new AnimatableValueParser<T>(json, scale, composition, valueFactory);
+            var parser = new AnimatableValueParser<T>(json, scale, composition, valueFactory);
+            return parser.ParseKeyframes();
         }
 
-        internal virtual Result ParseJson()
+        private List<Keyframe<T>> ParseKeyframes()
         {
-            var keyframes = ParseKeyframes();
-            var initialValue = ParseInitialValue(keyframes);
-            return new Result(keyframes, initialValue);
-        }
-
-        private List<IKeyframe<T>> ParseKeyframes()
-        {
-            if (_json != null)
+            var k = _json["k"];
+            if (HasKeyframes(k))
             {
-                var k = _json["k"];
-                if (HasKeyframes(k))
-                {
-                    return Keyframe<T>.KeyFrameFactory.ParseKeyframes(k.GetArray(), _composition, _scale, _valueFactory);
-                }
-                return new List<IKeyframe<T>>();
+                return Keyframe<T>.KeyFrameFactory.ParseKeyframes(k.GetArray(), _composition, _scale, _valueFactory);
             }
-            return new List<IKeyframe<T>>();
+            return ParseStaticValue();
         }
 
-        private T ParseInitialValue(List<IKeyframe<T>> keyframes)
+        private List<Keyframe<T>> ParseStaticValue()
         {
-            if (_json != null)
-            {
-                if (keyframes.Count > 0)
-                {
-                    return keyframes[0].StartValue;
-                }
-                return _valueFactory.ValueFromObject(_json["k"], _scale);
-            }
-            return default(T);
+            T initialValue = _valueFactory.ValueFromObject(_json["k"], _scale);
+            return new List<Keyframe<T>> { new Keyframe<T>(initialValue) };
         }
 
         private static bool HasKeyframes(IJsonValue json)
@@ -67,18 +50,6 @@ namespace LottieUWP.Model.Animatable
 
             var firstObject = json.GetArray()[0];
             return firstObject.ValueType == JsonValueType.Object && firstObject.GetObject().ContainsKey("t");
-        }
-
-        internal class Result
-        {
-            internal readonly List<IKeyframe<T>> Keyframes;
-            internal readonly T InitialValue;
-
-            internal Result(List<IKeyframe<T>> keyframes, T initialValue)
-            {
-                Keyframes = keyframes;
-                InitialValue = initialValue;
-            }
         }
     }
 }

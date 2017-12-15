@@ -7,13 +7,8 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableTextFrame : BaseAnimatableValue<DocumentData, DocumentData>
     {
-        internal AnimatableTextFrame(List<IKeyframe<DocumentData>> keyframes, DocumentData initialValue) : base(keyframes, initialValue)
+        internal AnimatableTextFrame(List<Keyframe<DocumentData>> keyframes) : base(keyframes)
         {
-        }
-
-        protected override DocumentData ConvertType(DocumentData value)
-        {
-            return value;
         }
 
         public override IBaseKeyframeAnimation<DocumentData, DocumentData> CreateAnimation()
@@ -29,8 +24,7 @@ namespace LottieUWP.Model.Animatable
                 {
                     composition.AddWarning("Lottie doesn't support expressions.");
                 }
-                var result = AnimatableValueParser<DocumentData>.NewInstance(json, 1, composition, ValueFactory.Instance).ParseJson();
-                return new AnimatableTextFrame(result.Keyframes, result.InitialValue);
+                return new AnimatableTextFrame(AnimatableValueParser<DocumentData>.NewInstance(json, 1, composition, ValueFactory.Instance));
             }
         }
 

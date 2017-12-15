@@ -24,13 +24,13 @@ namespace LottieUWP.Animation.Keyframe
         public virtual event EventHandler ValueChanged;
         private bool _isDiscrete;
 
-        private readonly List<IKeyframe<TK>> _keyframes;
+        private readonly List<Keyframe<TK>> _keyframes;
         private float _progress;
         protected ILottieValueCallback<TA> ValueCallback;
 
-        private IKeyframe<TK> _cachedKeyframe;
+        private Keyframe<TK> _cachedKeyframe;
 
-        internal BaseKeyframeAnimation(List<IKeyframe<TK>> keyframes)
+        internal BaseKeyframeAnimation(List<Keyframe<TK>> keyframes)
         {
             _keyframes = keyframes;
         }
@@ -74,7 +74,7 @@ namespace LottieUWP.Animation.Keyframe
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private IKeyframe<TK> CurrentKeyframe
+        private Keyframe<TK> CurrentKeyframe
         {
             get
             {
@@ -183,6 +183,6 @@ namespace LottieUWP.Animation.Keyframe
         /// keyframeProgress will be [0, 1] unless the interpolator has overshoot in which case, this
         /// should be able to handle values outside of that range.
         /// </summary>
-        public abstract TA GetValue(IKeyframe<TK> keyframe, float keyframeProgress);
+        public abstract TA GetValue(Keyframe<TK> keyframe, float keyframeProgress);
     }
 }

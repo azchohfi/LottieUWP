@@ -129,7 +129,7 @@
     <Compile Include="Animation\Keyframe\ScaleKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\ShapeKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\SplitDimensionPathKeyframeAnimation.cs" />
-    <Compile Include="Animation\Keyframe\StaticKeyframeAnimation.cs" />
+    <Compile Include="Animation\Keyframe\ValueCallbackKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\TextKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\TransformKeyframeAnimation.cs" />
     <Compile Include="CachedPathIterator.cs" />

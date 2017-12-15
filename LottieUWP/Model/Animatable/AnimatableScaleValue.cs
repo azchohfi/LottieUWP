@@ -8,25 +8,20 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableScaleValue : BaseAnimatableValue<ScaleXy, ScaleXy>
     {
-        private AnimatableScaleValue() : base(new ScaleXy())
+        private AnimatableScaleValue() : this(new ScaleXy())
         {
         }
 
-        internal AnimatableScaleValue(List<IKeyframe<ScaleXy>> keyframes, ScaleXy initialValue) : base(keyframes, initialValue)
+        private AnimatableScaleValue(ScaleXy value) : base(value)
         {
         }
 
-        protected override ScaleXy ConvertType(ScaleXy value)
+        internal AnimatableScaleValue(List<Keyframe<ScaleXy>> keyframes) : base(keyframes)
         {
-            return value;
         }
 
         public override IBaseKeyframeAnimation<ScaleXy, ScaleXy> CreateAnimation()
         {
-            if (!HasAnimation())
-            {
-                return new StaticKeyframeAnimation<ScaleXy, ScaleXy>(_initialValue);
-            }
             return new ScaleKeyframeAnimation(Keyframes);
         }
 
@@ -34,8 +29,7 @@ namespace LottieUWP.Model.Animatable
         {
             internal static AnimatableScaleValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                var result = AnimatableValueParser<ScaleXy>.NewInstance(json, 1, composition, ScaleXy.Factory.Instance).ParseJson();
-                return new AnimatableScaleValue(result.Keyframes, result.InitialValue);
+                return new AnimatableScaleValue(AnimatableValueParser<ScaleXy>.NewInstance(json, 1, composition, ScaleXy.Factory.Instance));
             }
 
             internal static AnimatableScaleValue NewInstance()

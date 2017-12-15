@@ -9,7 +9,7 @@ namespace LottieUWP.Utils
     internal class LottieValueAnimator : ValueAnimator
     {
         private bool _systemAnimationsAreDisabled;
-        private long _compositionDuration;
+        private float _compositionDuration;
         private float _speed = 1f;
 
         private float _value;
@@ -38,7 +38,7 @@ namespace LottieUWP.Utils
             _systemAnimationsAreDisabled = true;
         }
 
-        public long CompositionDuration
+        public float CompositionDuration
         {
             set
             {

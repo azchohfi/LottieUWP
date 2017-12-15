@@ -8,21 +8,12 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatablePointValue : BaseAnimatableValue<Vector2?, Vector2?>
     {
-        private AnimatablePointValue(List<IKeyframe<Vector2?>> keyframes, Vector2? initialValue) : base(keyframes, initialValue)
+        private AnimatablePointValue(List<Keyframe<Vector2?>> keyframes) : base(keyframes)
         {
-        }
-
-        protected override Vector2? ConvertType(Vector2? value)
-        {
-            return value;
         }
 
         public override IBaseKeyframeAnimation<Vector2?, Vector2?> CreateAnimation()
         {
-            if (!HasAnimation())
-            {
-                return new StaticKeyframeAnimation<Vector2?, Vector2?>(_initialValue);
-            }
             return new PointKeyframeAnimation(Keyframes);
         }
 
@@ -30,8 +21,7 @@ namespace LottieUWP.Model.Animatable
         {
             internal static AnimatablePointValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                var result = AnimatableValueParser<Vector2?>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance).ParseJson();
-                return new AnimatablePointValue(result.Keyframes, result.InitialValue);
+                return new AnimatablePointValue(AnimatableValueParser<Vector2?>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance));
             }
         }
     }

@@ -10,7 +10,7 @@ namespace LottieUWP.Animation.Keyframe
         private readonly IBaseKeyframeAnimation<float?, float?> _yAnimation;
 
         internal SplitDimensionPathKeyframeAnimation(IBaseKeyframeAnimation<float?, float?> xAnimation, IBaseKeyframeAnimation<float?, float?> yAnimation)
-            : base(new List<IKeyframe<Vector2?>>())
+            : base(new List<Keyframe<Vector2?>>())
         {
             _xAnimation = xAnimation;
             _yAnimation = yAnimation;
@@ -30,7 +30,7 @@ namespace LottieUWP.Animation.Keyframe
 
         public override Vector2? Value => GetValue(null, 0);
 
-        public override Vector2? GetValue(IKeyframe<Vector2?> keyframe, float keyframeProgress)
+        public override Vector2? GetValue(Keyframe<Vector2?> keyframe, float keyframeProgress)
         {
             return _point;
         }

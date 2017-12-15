@@ -4,11 +4,11 @@ namespace LottieUWP.Animation.Keyframe
 {
     internal class IntegerKeyframeAnimation : KeyframeAnimation<int?>
     {
-        internal IntegerKeyframeAnimation(List<IKeyframe<int?>> keyframes) : base(keyframes)
+        internal IntegerKeyframeAnimation(List<Keyframe<int?>> keyframes) : base(keyframes)
         {
         }
 
-        public override int? GetValue(IKeyframe<int?> keyframe, float keyframeProgress)
+        public override int? GetValue(Keyframe<int?> keyframe, float keyframeProgress)
         {
             if (keyframe.StartValue == null || keyframe.EndValue == null)
             {

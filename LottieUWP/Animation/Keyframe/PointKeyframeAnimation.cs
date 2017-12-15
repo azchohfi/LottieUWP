@@ -7,11 +7,11 @@ namespace LottieUWP.Animation.Keyframe
     {
         private Vector2 _point;
 
-        internal PointKeyframeAnimation(List<IKeyframe<Vector2?>> keyframes) : base(keyframes)
+        internal PointKeyframeAnimation(List<Keyframe<Vector2?>> keyframes) : base(keyframes)
         {
         }
 
-        public override Vector2? GetValue(IKeyframe<Vector2?> keyframe, float keyframeProgress)
+        public override Vector2? GetValue(Keyframe<Vector2?> keyframe, float keyframeProgress)
         {
             if (keyframe.StartValue == null || keyframe.EndValue == null)
             {
@@ -20,6 +20,11 @@ namespace LottieUWP.Animation.Keyframe
 
             var startPoint = keyframe.StartValue;
             var endPoint = keyframe.EndValue;
+
+            if (ValueCallback != null)
+            {
+                return ValueCallback.GetValue(keyframe.StartFrame.Value, keyframe.EndFrame.Value, startPoint, endPoint, keyframeProgress, LinearCurrentKeyframeProgress, Progress);
+            }
 
             _point.X = startPoint.Value.X + keyframeProgress * (endPoint.Value.X - startPoint.Value.X);
             _point.Y = startPoint.Value.Y + keyframeProgress * (endPoint.Value.Y - startPoint.Value.Y);

@@ -58,11 +58,14 @@ namespace LottieUWP.Model.Layer
             base.AddValueCallback(property, callback);
             if (property == LottieProperty.ColorFilter)
             {
-                if (_colorFilterAnimation == null)
+                if (callback == null)
                 {
-                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                    _colorFilterAnimation = null;
                 }
-                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
+                else
+                {
+                    _colorFilterAnimation = new ValueCallbackKeyframeAnimation<ColorFilter, ColorFilter>((ILottieValueCallback<ColorFilter>)callback);
+                }
             }
         }
     }

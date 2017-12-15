@@ -33,8 +33,8 @@ namespace LottieUWP
         // This is stored as a set to avoid duplicates.
         private readonly HashSet<string> _warnings = new HashSet<string>();
         private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
-        private readonly long _startFrame;
-        private readonly long _endFrame;
+        private readonly float _startFrame;
+        private readonly float _endFrame;
         private readonly float _frameRate;
 
         private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate, float dpScale, int major, int minor, int patch)
@@ -76,7 +76,7 @@ namespace LottieUWP
 
         public virtual Rect Bounds { get; }
 
-        public virtual long Duration
+        public virtual float Duration
         {
             get
             {
@@ -85,9 +85,9 @@ namespace LottieUWP
             }
         }
 
-        internal virtual long StartFrame => _startFrame;
+        internal virtual float StartFrame => _startFrame;
 
-        internal virtual long EndFrame => _endFrame;
+        internal virtual float EndFrame => _endFrame;
 
         internal virtual List<Layer> Layers => _layers;
 

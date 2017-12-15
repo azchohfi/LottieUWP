@@ -6,11 +6,11 @@ namespace LottieUWP.Animation.Keyframe
 {
     internal class ColorKeyframeAnimation : KeyframeAnimation<Color>
     {
-        internal ColorKeyframeAnimation(List<IKeyframe<Color>> keyframes) : base(keyframes)
+        internal ColorKeyframeAnimation(List<Keyframe<Color>> keyframes) : base(keyframes)
         {
         }
 
-        public override Color GetValue(IKeyframe<Color> keyframe, float keyframeProgress)
+        public override Color GetValue(Keyframe<Color> keyframe, float keyframeProgress)
         {
             if (keyframe.StartValue == null || keyframe.EndValue == null)
             {

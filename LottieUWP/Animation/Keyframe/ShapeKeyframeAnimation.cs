@@ -9,11 +9,11 @@ namespace LottieUWP.Animation.Keyframe
         private readonly ShapeData _tempShapeData = new ShapeData();
         private readonly Path _tempPath = new Path();
 
-        internal ShapeKeyframeAnimation(List<IKeyframe<ShapeData>> keyframes) : base(keyframes)
+        internal ShapeKeyframeAnimation(List<Keyframe<ShapeData>> keyframes) : base(keyframes)
         {
         }
 
-        public override Path GetValue(IKeyframe<ShapeData> keyframe, float keyframeProgress)
+        public override Path GetValue(Keyframe<ShapeData> keyframe, float keyframeProgress)
         {
             var startShapeData = keyframe.StartValue;
             var endShapeData = keyframe.EndValue;

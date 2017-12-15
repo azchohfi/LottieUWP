@@ -11,21 +11,12 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableGradientColorValue : BaseAnimatableValue<GradientColor, GradientColor>
     {
-        private AnimatableGradientColorValue(List<IKeyframe<GradientColor>> keyframes, GradientColor initialValue) : base(keyframes, initialValue)
+        private AnimatableGradientColorValue(List<Keyframe<GradientColor>> keyframes) : base(keyframes)
         {
-        }
-
-        protected override GradientColor ConvertType(GradientColor value)
-        {
-            return value;
         }
 
         public override IBaseKeyframeAnimation<GradientColor, GradientColor> CreateAnimation()
         {
-            if (!HasAnimation())
-            {
-                return new StaticKeyframeAnimation<GradientColor, GradientColor>(_initialValue);
-            }
             return new GradientColorKeyframeAnimation(Keyframes);
         }
 
@@ -35,9 +26,7 @@ namespace LottieUWP.Model.Animatable
             {
                 var kLength = (json.GetNamedArray("k", null)?.Count ?? 0) / 4;
                 var points = (int)json.GetNamedNumber("p", kLength);
-                var result = AnimatableValueParser<GradientColor>.NewInstance(json, 1, composition, new ValueFactory(points)).ParseJson();
-                var initialValue = result.InitialValue;
-                return new AnimatableGradientColorValue(result.Keyframes, initialValue);
+                return new AnimatableGradientColorValue(AnimatableValueParser<GradientColor>.NewInstance(json, 1, composition, new ValueFactory(points)));
             }
         }
 

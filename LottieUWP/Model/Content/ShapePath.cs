@@ -32,7 +32,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "ShapePath{" + "name=" + _name + ", index=" + _index + ", hasAnimation=" + _shapePath.HasAnimation() + '}';
+            return "ShapePath{" + "name=" + _name + ", index=" + _index + '}';
         }
 
         internal static class Factory

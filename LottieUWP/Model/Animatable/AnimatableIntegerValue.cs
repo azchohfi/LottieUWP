@@ -9,30 +9,22 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableIntegerValue : BaseAnimatableValue<int?, int?>
     {
-        private AnimatableIntegerValue() : base(100)
+        private AnimatableIntegerValue() : this(100)
         {
         }
 
-        internal AnimatableIntegerValue(List<IKeyframe<int?>> keyframes, int? initialValue) : base(keyframes, initialValue)
+        private AnimatableIntegerValue(int? value) : base(value)
         {
         }
 
-        protected override int? ConvertType(int? value)
+        internal AnimatableIntegerValue(List<Keyframe<int?>> keyframes) : base(keyframes)
         {
-            return value;
         }
 
         public override IBaseKeyframeAnimation<int?, int?> CreateAnimation()
         {
-            if (!HasAnimation())
-            {
-                return new StaticKeyframeAnimation<int?, int?>(_initialValue);
-            }
-
             return new IntegerKeyframeAnimation(Keyframes);
         }
-
-        public override int? InitialValue => _initialValue;
 
         internal static class Factory
         {
@@ -47,9 +39,7 @@ namespace LottieUWP.Model.Animatable
                 {
                     composition.AddWarning("Lottie doesn't support expressions.");
                 }
-                var result = AnimatableValueParser<int?>.NewInstance(json, 1, composition, ValueFactory.Instance).ParseJson();
-                var initialValue = result.InitialValue;
-                return new AnimatableIntegerValue(result.Keyframes, initialValue);
+                return new AnimatableIntegerValue(AnimatableValueParser<int?>.NewInstance(json, 1, composition, ValueFactory.Instance));
             }
         }
 

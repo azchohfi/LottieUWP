@@ -77,8 +77,8 @@ namespace LottieUWP.Model.Animatable
                 }
                 else
                 {
-                    // Repeaters have start/end opacity instead of opacity 
-                    scale = new AnimatableScaleValue(new List<IKeyframe<ScaleXy>>(), new ScaleXy());
+                    // Somehow some community animations don't have opacity in the transform.
+                    scale = new AnimatableScaleValue(new List<Keyframe<ScaleXy>>());
                 }
 
                 var rotationJson = json.GetNamedObject("r", null);
@@ -102,8 +102,8 @@ namespace LottieUWP.Model.Animatable
                 }
                 else
                 {
-                    // Somehow some community animations don't have opacity in the transform.
-                    opacity = new AnimatableIntegerValue(new List<IKeyframe<int?>>(), 100);
+                    // Repeaters have start/end opacity instead of opacity 
+                    opacity = new AnimatableIntegerValue(new List<Keyframe<int?>>());
                 }
 
                 var startOpacityJson = json.GetNamedObject("so", null);

@@ -7,20 +7,7 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Animation
 {
-    public interface IKeyframe<out T>
-    {
-        T StartValue { get; }
-        T EndValue { get; }
-        float? StartFrame { get; }
-        float? EndFrame { get; set; }
-        float StartProgress { get; }
-        bool ContainsProgress(float progress);
-        bool Static { get; }
-        float EndProgress { get; }
-        IInterpolator Interpolator { get; }
-    }
-
-    public class Keyframe<T> : IKeyframe<T>
+    public class Keyframe<T>
     {
         /// <summary>
         /// Some animations get exported with insane cp values in the tens of thousands.
@@ -34,7 +21,7 @@ namespace LottieUWP.Animation
         /// The json doesn't include end frames. The data can be taken from the start frame of the next
         /// keyframe though.
         /// </summary>
-        internal static void SetEndFrames<TU, TV>(List<TU> keyframes) where TU : IKeyframe<TV>
+        internal static void SetEndFrames<TU, TV>(List<TU> keyframes) where TU : Keyframe<TV>
         {
             var size = keyframes.Count;
             for (var i = 0; i < size - 1; i++)
@@ -71,10 +58,28 @@ namespace LottieUWP.Animation
             EndFrame = endFrame;
         }
 
+        /// <summary>
+        /// Non-animated value.
+        /// </summary>
+        /// <param name="value"></param>
+        public Keyframe(T value)
+        {
+            _composition = null;
+            StartValue = value;
+            EndValue = value;
+            Interpolator = null;
+            StartFrame = float.MinValue;
+            EndFrame = float.MaxValue;
+        }
+
         public virtual float StartProgress
         {
             get
             {
+                if (_composition == null)
+                {
+                    return 0f;
+                }
                 if (_startProgress == float.MinValue)
                 {
                     _startProgress = (StartFrame.Value - _composition.StartFrame) / _composition.DurationFrames;
@@ -87,6 +92,10 @@ namespace LottieUWP.Animation
         {
             get
             {
+                if (_composition == null)
+                {
+                    return 1f;
+                }
                 if (_endProgress == float.MinValue)
                 {
                     if (EndFrame == null)
@@ -224,20 +233,20 @@ namespace LottieUWP.Animation
                 return new Keyframe<T>(composition, startValue, endValue, interpolator, startFrame, null);
             }
 
-            internal static List<IKeyframe<T>> ParseKeyframes(JsonArray json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
+            internal static List<Keyframe<T>> ParseKeyframes(JsonArray json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
             {
                 var length = json.Count;
                 if (length == 0)
                 {
-                    return new List<IKeyframe<T>>();
+                    return new List<Keyframe<T>>();
                 }
-                var keyframes = new List<IKeyframe<T>>();
+                var keyframes = new List<Keyframe<T>>();
                 for (uint i = 0; i < length; i++)
                 {
                     keyframes.Add(NewInstance(json.GetObjectAt(i), composition, scale, valueFactory));
                 }
 
-                SetEndFrames<IKeyframe<T>, T>(keyframes);
+                SetEndFrames<Keyframe<T>, T>(keyframes);
                 return keyframes;
             }
         }

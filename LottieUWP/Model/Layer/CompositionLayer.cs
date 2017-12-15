@@ -145,7 +145,7 @@ namespace LottieUWP.Model.Layer
                 {
                     var duration = LottieDrawable.Composition.Duration;
                     var remappedTime = (long)(_timeRemapping.Value.Value * 1000);
-                    value = remappedTime / (float)duration;
+                    value = remappedTime / duration;
                 }
                 if (LayerModel.TimeStretch != 0)
                 {
@@ -223,12 +223,14 @@ namespace LottieUWP.Model.Layer
 
             if (property == LottieProperty.TimeRemap)
             {
-                if (_timeRemapping == null)
+                if (callback == null)
                 {
-                    _timeRemapping = new StaticKeyframeAnimation<float?, float?>(1f);
-                    AddAnimation(_timeRemapping);
+                    _timeRemapping = null;
                 }
-                _timeRemapping.SetValueCallback((ILottieValueCallback<float?>)callback);
+                else
+                {
+                    _timeRemapping = new ValueCallbackKeyframeAnimation<float?, float?>((ILottieValueCallback<float?>)callback);
+                }
             }
         }
     }

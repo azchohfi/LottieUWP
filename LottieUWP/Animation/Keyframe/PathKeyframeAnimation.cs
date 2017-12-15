@@ -8,12 +8,12 @@ namespace LottieUWP.Animation.Keyframe
         private PathKeyframe _pathMeasureKeyframe;
         private PathMeasure _pathMeasure;
 
-        internal PathKeyframeAnimation(List<IKeyframe<Vector2?>> keyframes)
+        internal PathKeyframeAnimation(List<Keyframe<Vector2?>> keyframes)
             : base(keyframes)
         {
         }
 
-        public override Vector2? GetValue(IKeyframe<Vector2?> keyframe, float keyframeProgress)
+        public override Vector2? GetValue(Keyframe<Vector2?> keyframe, float keyframeProgress)
         {
             var pathKeyframe = (PathKeyframe) keyframe;
             var path = pathKeyframe.Path;

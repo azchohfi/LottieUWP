@@ -3,40 +3,25 @@ using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model.Content;
-using LottieUWP.Utils;
 
 namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableShapeValue : BaseAnimatableValue<ShapeData, Path>
     {
-        private readonly Path _convertTypePath = new Path();
-
-        private AnimatableShapeValue(List<IKeyframe<ShapeData>> keyframes, ShapeData initialValue) : base(keyframes, initialValue)
+        private AnimatableShapeValue(List<Keyframe<ShapeData>> keyframes) : base(keyframes)
         {
         }
 
         public override IBaseKeyframeAnimation<ShapeData, Path> CreateAnimation()
         {
-            if (!HasAnimation())
-            {
-                return new StaticKeyframeAnimation<ShapeData, Path>(ConvertType(_initialValue));
-            }
             return new ShapeKeyframeAnimation(Keyframes);
-        }
-
-        protected override Path ConvertType(ShapeData shapeData)
-        {
-            _convertTypePath.Reset();
-            MiscUtils.GetPathFromData(shapeData, _convertTypePath);
-            return _convertTypePath;
         }
 
         internal static class Factory
         {
             internal static AnimatableShapeValue NewInstance(JsonObject json, LottieComposition composition)
             {
-                var result = AnimatableValueParser<ShapeData>.NewInstance(json, composition.DpScale, composition, ShapeData.Factory.Instance).ParseJson();
-                return new AnimatableShapeValue(result.Keyframes, result.InitialValue);
+                return new AnimatableShapeValue(AnimatableValueParser<ShapeData>.NewInstance(json, composition.DpScale, composition, ShapeData.Factory.Instance));
             }
         }
     }

@@ -772,7 +772,7 @@ namespace LottieUWP
             set => _lottieDrawable.Progress = value;
         }
 
-        public virtual long Duration => _composition?.Duration ?? 0;
+        public virtual long Duration => _composition != null ? (long)_composition.Duration : 0;
 
         public virtual bool PerformanceTrackingEnabled
         {

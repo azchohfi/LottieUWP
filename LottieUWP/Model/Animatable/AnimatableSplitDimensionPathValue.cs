@@ -18,10 +18,5 @@ namespace LottieUWP.Model.Animatable
         {
             return new SplitDimensionPathKeyframeAnimation(_animatableXDimension.CreateAnimation(), _animatableYDimension.CreateAnimation());
         }
-
-        public bool HasAnimation()
-        {
-            return _animatableXDimension.HasAnimation() || _animatableYDimension.HasAnimation();
-        }
     }
 }

@@ -6,11 +6,11 @@ namespace LottieUWP.Animation.Keyframe
 {
     internal class ScaleKeyframeAnimation : KeyframeAnimation<ScaleXy>
     {
-        internal ScaleKeyframeAnimation(List<IKeyframe<ScaleXy>> keyframes) : base(keyframes)
+        internal ScaleKeyframeAnimation(List<Keyframe<ScaleXy>> keyframes) : base(keyframes)
         {
         }
 
-        public override ScaleXy GetValue(IKeyframe<ScaleXy> keyframe, float keyframeProgress)
+        public override ScaleXy GetValue(Keyframe<ScaleXy> keyframe, float keyframeProgress)
         {
             if (keyframe.StartValue == null || keyframe.EndValue == null)
             {
@@ -18,6 +18,14 @@ namespace LottieUWP.Animation.Keyframe
             }
             var startTransform = keyframe.StartValue;
             var endTransform = keyframe.EndValue;
+
+            if (ValueCallback != null)
+            {
+                return ValueCallback.GetValue(keyframe.StartFrame.Value, keyframe.EndFrame.Value,
+                    startTransform, endTransform,
+                    keyframeProgress, LinearCurrentKeyframeProgress, Progress);
+            }
+
             return new ScaleXy(MathExt.Lerp(startTransform.ScaleX, endTransform.ScaleX, keyframeProgress), MathExt.Lerp(startTransform.ScaleY, endTransform.ScaleY, keyframeProgress));
         }
     }

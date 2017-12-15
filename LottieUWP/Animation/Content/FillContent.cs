@@ -80,6 +80,7 @@ namespace LottieUWP.Animation.Content
             }
 
             canvas.DrawPath(_path, _paint);
+
             LottieLog.EndSection("FillContent.Draw");
         }
 
@@ -112,11 +113,14 @@ namespace LottieUWP.Animation.Content
             }
             else if (property == LottieProperty.ColorFilter)
             {
-                if (_colorFilterAnimation == null)
+                if (callback == null)
                 {
-                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                    _colorFilterAnimation = null;
                 }
-                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
+                else
+                {
+                    _colorFilterAnimation = new ValueCallbackKeyframeAnimation<ColorFilter, ColorFilter>((ILottieValueCallback<ColorFilter>)callback);
+                }
             }
         }
     }

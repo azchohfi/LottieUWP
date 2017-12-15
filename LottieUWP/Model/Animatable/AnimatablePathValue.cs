@@ -19,15 +19,14 @@ namespace LottieUWP.Model.Animatable
             return new AnimatableSplitDimensionPathValue(AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("x"), composition), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("y"), composition));
         }
 
-        private readonly List<PathKeyframe> _keyframes = new List<PathKeyframe>();
-        private readonly Vector2 _initialPoint;
+        private readonly List<Keyframe<Vector2?>> _keyframes = new List<Keyframe<Vector2?>>();
 
         /// <summary>
         /// Create a default static animatable path.
         /// </summary>
         internal AnimatablePathValue()
         {
-            _initialPoint = new Vector2(0, 0);
+            _keyframes.Add(new Keyframe<Vector2?>(new Vector2(0, 0)));
         }
 
         internal AnimatablePathValue(IJsonValue json, LottieComposition composition)
@@ -42,11 +41,11 @@ namespace LottieUWP.Model.Animatable
                     var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(jsonKeyframe, composition, ValueFactory.Instance);
                     _keyframes.Add(keyframe);
                 }
-                Keyframe<PathKeyframe>.SetEndFrames<PathKeyframe, Vector2?>(_keyframes);
+                Keyframe<Keyframe<Vector2?>>.SetEndFrames<Keyframe<Vector2?>, Vector2?>(_keyframes);
             }
             else
             {
-                _initialPoint = JsonUtils.PointFromJsonArray(json.GetArray(), composition.DpScale);
+                _keyframes.Add(new Keyframe<Vector2?>(JsonUtils.PointFromJsonArray(json.GetArray(), composition.DpScale)));
             }
         }
 
@@ -61,22 +60,12 @@ namespace LottieUWP.Model.Animatable
 
         public IBaseKeyframeAnimation<Vector2?, Vector2?> CreateAnimation()
         {
-            if (!HasAnimation())
+            if (_keyframes[0].Static)
             {
-                return new StaticKeyframeAnimation<Vector2?, Vector2?>(_initialPoint);
+                return new PointKeyframeAnimation(_keyframes);
             }
 
-            return new PathKeyframeAnimation(_keyframes.Cast<IKeyframe<Vector2?>>().ToList());
-        }
-
-        public bool HasAnimation()
-        {
-            return _keyframes.Count > 0;
-        }
-
-        public override string ToString()
-        {
-            return "initialPoint=" + _initialPoint;
+            return new PathKeyframeAnimation(_keyframes.ToList());
         }
 
         private class ValueFactory : IAnimatableValueFactory<Vector2?>

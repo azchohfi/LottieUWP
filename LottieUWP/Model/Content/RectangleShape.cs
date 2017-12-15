@@ -43,7 +43,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "RectangleShape{" + "cornerRadius=" + _cornerRadius.InitialValue + ", position=" + _position + ", size=" + _size + '}';
+            return "RectangleShape{position=" + _position + ", size=" + _size + '}';
         }
     }
 }

@@ -64,7 +64,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "ShapeFill{" + "color=" + (_color == null ? "null" : string.Format("{0:X}", _color.InitialValue)) + ", fillEnabled=" + _fillEnabled + ", opacity=" + (_opacity == null ? "null" : _opacity.InitialValue.Value.ToString()) + '}';
+            return "ShapeFill{" + "color=" + ", fillEnabled=" + _fillEnabled + '}';
         }
     }
 }

@@ -8,30 +8,22 @@ namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableFloatValue : BaseAnimatableValue<float?, float?>
     {
-        private AnimatableFloatValue() : base(0f)
+        private AnimatableFloatValue() : this(0f)
         {
         }
 
-        private AnimatableFloatValue(List<IKeyframe<float?>> keyframes, float? initialValue) : base(keyframes, initialValue)
+        private AnimatableFloatValue(float? value) : base(value)
         {
         }
 
-        protected override float? ConvertType(float? value)
+        private AnimatableFloatValue(List<Keyframe<float?>> keyframes) : base(keyframes)
         {
-            return value;
         }
 
         public override IBaseKeyframeAnimation<float?, float?> CreateAnimation()
         {
-            if (!HasAnimation())
-            {
-                return new StaticKeyframeAnimation<float?, float?>(_initialValue);
-            }
-
             return new FloatKeyframeAnimation(Keyframes);
         }
-
-        public override float? InitialValue => _initialValue;
 
         private class ValueFactory : IAnimatableValueFactory<float?>
         {
@@ -57,8 +49,7 @@ namespace LottieUWP.Model.Animatable
                 {
                     composition.AddWarning("Lottie doesn't support expressions.");
                 }
-                var result = AnimatableValueParser<float?>.NewInstance(json, scale, composition, ValueFactory.Instance).ParseJson();
-                return new AnimatableFloatValue(result.Keyframes, result.InitialValue);
+                return new AnimatableFloatValue(AnimatableValueParser<float?>.NewInstance(json, scale, composition, ValueFactory.Instance));
             }
         }
     }

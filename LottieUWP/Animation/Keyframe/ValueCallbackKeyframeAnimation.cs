@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Keyframe
 {
-    internal class StaticKeyframeAnimation<TK, TA> : BaseKeyframeAnimation<TK, TA>
+    internal class ValueCallbackKeyframeAnimation<TK, TA> : BaseKeyframeAnimation<TK, TA>
     {
-        private readonly TA _initialValue;
-
-        internal StaticKeyframeAnimation(TA initialValue) : base(new List<IKeyframe<TK>>())
+        internal ValueCallbackKeyframeAnimation(ILottieValueCallback<TA> valueCallback) : base(new List<Keyframe<TK>>())
         {
-            _initialValue = initialValue;
+            SetValueCallback(valueCallback);
         }
 
         public override float Progress
@@ -30,15 +29,11 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        public override TA Value => _initialValue;
+        public override TA Value => ValueCallback.GetValue(0f, 0f, default(TA), default(TA), Progress, Progress, Progress);
 
-        public override TA GetValue(IKeyframe<TK> keyframe, float keyframeProgress)
+        public override TA GetValue(Keyframe<TK> keyframe, float keyframeProgress)
         {
-            if (ValueCallback != null)
-            {
-                return ValueCallback.GetValue(0f, 0f, _initialValue, _initialValue, Progress, Progress, Progress);
-            }
-            return _initialValue;
+            return Value;
         }
     }
 }
