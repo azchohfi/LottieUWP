@@ -37,7 +37,7 @@ namespace LottieUWP.Model.Animatable
 
                 var strokeJson = animatablePropertiesJson.GetNamedObject("sc", null);
                 AnimatableColorValue stroke = null;
-                if (colorJson != null)
+                if (strokeJson != null)
                 {
                     stroke = AnimatableColorValue.Factory.NewInstance(strokeJson, composition);
                 }

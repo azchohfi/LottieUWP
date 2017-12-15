@@ -41,7 +41,7 @@ namespace LottieUWP.Model.Layer
                 {
                     continue;
                 }
-                layerMap.Add(layer.LayerModel.Id, layer);
+                layerMap[layer.LayerModel.Id] = layer;
                 if (mattedLayer != null)
                 {
                     mattedLayer.MatteLayer = layer;

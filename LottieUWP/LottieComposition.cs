@@ -296,7 +296,7 @@ namespace LottieUWP
                     for (var j = 0; j < layersJson.Count; j++)
                     {
                         var layer = Layer.Factory.NewInstance(layersJson[j].GetObject(), composition);
-                        layerMap.Add(layer.Id, layer);
+                        layerMap[layer.Id] = layer;
                         layers.Add(layer);
                     }
                     var id = assetJson.GetNamedString("id");
@@ -354,7 +354,7 @@ namespace LottieUWP
             internal static void AddLayer(List<Layer> layers, Dictionary<long, Layer> layerMap, Layer layer)
             {
                 layers.Add(layer);
-                layerMap.Add(layer.Id, layer);
+                layerMap[layer.Id] = layer;
             }
         }
     }
