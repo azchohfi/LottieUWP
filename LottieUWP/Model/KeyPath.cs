@@ -25,32 +25,35 @@ namespace LottieUWP.Model
     ///
     ///
     /// You could:
-    ///     Match Gabriel left hand fill: new KeyPath("Gabriel", "Body", "Left Hand", "Fill");
+    ///     Match Gabriel left hand fill:
+    ///        new KeyPath("Gabriel", "Body", "Left Hand", "Fill");
     ///     Match Gabriel and Brandon's left hand fill:
     ///        new KeyPath("*", "Body", Left Hand", "Fill");
     ///     Match anything with the name Fill:
     ///        new KeyPath("**", "Fill");
+    /// 
+    /// 
+    /// NOTE: Content that are part of merge paths or repeaters cannot currently be resolved with 
+    /// a <see cref="KeyPath"/>. This may be fixed in the future. 
     /// </summary>
     public class KeyPath
     {
         private readonly List<string> _keys;
-        private readonly IKeyPathElement _resolvedElement;
+        private IKeyPathElement _resolvedElement;
 
         public KeyPath(params string[] keys)
         {
             _keys = keys.ToList();
         }
 
+        /// <summary>
+        /// Copy constructor. Copies keys as well.
+        /// </summary>
+        /// <param name="keyPath"></param>
         private KeyPath(KeyPath keyPath)
         {
             _keys = new List<string>(keyPath._keys);
             _resolvedElement = keyPath._resolvedElement;
-        }
-
-        private KeyPath(List<string> keys, IKeyPathElement resolvedElement)
-        {
-            _keys = keys;
-            _resolvedElement = resolvedElement;
         }
 
         /// <summary>
@@ -62,16 +65,25 @@ namespace LottieUWP.Model
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public KeyPath AddKey(string key)
+        internal KeyPath AddKey(string key)
         {
             KeyPath newKeyPath = new KeyPath(this);
             newKeyPath._keys.Add(key);
             return newKeyPath;
         }
 
-        public KeyPath Resolve(IKeyPathElement element)
+        /// <summary>
+        /// Return a new KeyPath with the element resolved to the specified <see cref="IKeyPathElement"/>.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        internal KeyPath Resolve(IKeyPathElement element)
         {
-            return new KeyPath(new List<string>(_keys), element);
+            KeyPath keyPath = new KeyPath(this)
+            {
+                _resolvedElement = element
+            };
+            return keyPath;
         }
 
         /// <summary>
@@ -79,7 +91,7 @@ namespace LottieUWP.Model
         /// resolveKeyPath on LottieDrawable or LottieAnimationView.
         /// </summary>
         /// <returns></returns>
-        IKeyPathElement GetResolvedElement()
+        internal IKeyPathElement GetResolvedElement()
         {
             return _resolvedElement;
         }
@@ -90,7 +102,7 @@ namespace LottieUWP.Model
         /// <param name="key"></param>
         /// <param name="depth"></param>
         /// <returns></returns>
-        public bool Matches(string key, int depth)
+        internal bool Matches(string key, int depth)
         {
             if (IsContainer(key))
             {
@@ -119,7 +131,7 @@ namespace LottieUWP.Model
         /// <param name="key"></param>
         /// <param name="depth"></param>
         /// <returns></returns>
-        public int IncrementDepthBy(string key, int depth)
+        internal int IncrementDepthBy(string key, int depth)
         {
             if (IsContainer(key))
             {
@@ -151,7 +163,7 @@ namespace LottieUWP.Model
         /// <param name="key"></param>
         /// <param name="depth"></param>
         /// <returns></returns>
-        public bool FullyResolvesTo(string key, int depth)
+        internal bool FullyResolvesTo(string key, int depth)
         {
             if (depth >= _keys.Count)
             {
@@ -196,7 +208,7 @@ namespace LottieUWP.Model
         /// <param name="key"></param>
         /// <param name="depth"></param>
         /// <returns></returns>
-        public bool PropagateToChildren(string key, int depth)
+        internal bool PropagateToChildren(string key, int depth)
         {
             if (key.Equals("__container"))
             {
@@ -229,7 +241,7 @@ namespace LottieUWP.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("KeyPath{");
-            sb.Append("keys=[").Append(_keys).Append("],resolved=").Append(_resolvedElement != null);
+            sb.Append("keys=").Append(_keys).Append(",resolved=").Append(_resolvedElement != null);
             sb.Append('}');
             return sb.ToString();
         }

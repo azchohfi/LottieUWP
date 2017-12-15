@@ -3,6 +3,7 @@ using System.Numerics;
 using LottieUWP.Model;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Keyframe
 {
@@ -159,6 +160,46 @@ namespace LottieUWP.Animation.Keyframe
             _matrix = MatrixExt.PreRotate(_matrix, rotation * amount, anchorPoint.Value.X, anchorPoint.Value.Y);
 
             return _matrix;
+        }
+
+        /// <summary>
+        /// Returns whether the callback was applied. 
+        /// </summary>
+        public bool ApplyValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            if (property == LottieProperty.TransformAnchorPoint)
+            {
+                _anchorPoint.SetValueCallback((ILottieValueCallback<Vector2?>)callback);
+            }
+            else if (property == LottieProperty.TransformPosition)
+            {
+                _position.SetValueCallback((ILottieValueCallback<Vector2?>)callback);
+            }
+            else if (property == LottieProperty.TransformScale)
+            {
+                _scale.SetValueCallback((ILottieValueCallback<ScaleXy>)callback);
+            }
+            else if (property == LottieProperty.TransformRotation)
+            {
+                _rotation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.TransformOpacity)
+            {
+                _opacity.SetValueCallback((ILottieValueCallback<int?>)callback);
+            }
+            else if (property == LottieProperty.TransformStartOpacity && _startOpacity != null)
+            {
+                _startOpacity.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.TransformEndOpacity && _endOpacity != null)
+            {
+                _endOpacity.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

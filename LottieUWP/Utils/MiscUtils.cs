@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 
 namespace LottieUWP.Utils
@@ -79,6 +81,28 @@ namespace LottieUWP.Utils
         internal static double Clamp(double number, double min, double max)
         {
             return Math.Max(min, Math.Min(max, number));
+        }
+
+        /// <summary>
+        /// Helper method for any <see cref="IKeyPathElementContent"/> that will check if the content 
+        /// fully matches the keypath then will add itself as the final key, resolve it, and add 
+        /// it to the accumulator list. 
+        /// 
+        /// Any <see cref="IKeyPathElementContent"/> should call through to this as its implementation of 
+        /// <see cref="IKeyPathElement.ResolveKeyPath"/>.
+        /// </summary>
+        /// <param name="keyPath"></param>
+        /// <param name="depth"></param>
+        /// <param name="accumulator"></param>
+        /// <param name="currentPartialKeyPath"></param>
+        /// <param name="content"></param>
+        public static void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath, IKeyPathElementContent content)
+        {
+            if (keyPath.FullyResolvesTo(content.Name, depth))
+            {
+                currentPartialKeyPath = currentPartialKeyPath.AddKey(content.Name);
+                accumulator.Add(currentPartialKeyPath.Resolve(content));
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using Windows.Foundation;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model.Content;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model.Layer
 {
@@ -143,10 +144,7 @@ namespace LottieUWP.Model.Layer
 
         internal void AddAnimation(IBaseKeyframeAnimation newAnimation)
         {
-            if (!(newAnimation is IStaticKeyFrameAnimation))
-            {
-                _animations.Add(newAnimation);
-            }
+            _animations.Add(newAnimation);
         }
 
         public virtual void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
@@ -465,9 +463,9 @@ namespace LottieUWP.Model.Layer
         {
         }
 
-        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        public virtual void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
         {
-            // TODO (keypath): apply to transform and subclasses. 
+            Transform.ApplyValueCallback(property, callback);
         }
     }
 }

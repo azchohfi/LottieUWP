@@ -19,6 +19,11 @@ namespace LottieUWP.Animation.Keyframe
             var startColor = keyframe.StartValue;
             var endColor = keyframe.EndValue;
 
+            if (ValueCallback != null)
+            {
+                return ValueCallback.GetValue(keyframe.StartFrame.Value, keyframe.EndFrame.Value, startColor, endColor, keyframeProgress, LinearCurrentKeyframeProgress, Progress);
+            }
+
             return GammaEvaluator.Evaluate(keyframeProgress, startColor, endColor);
         }
     }

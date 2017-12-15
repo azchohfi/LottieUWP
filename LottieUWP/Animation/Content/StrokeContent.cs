@@ -1,7 +1,9 @@
 ﻿using Windows.UI;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
@@ -29,5 +31,14 @@ namespace LottieUWP.Animation.Content
         }
 
         public override string Name { get; }
+
+        public override void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            base.AddValueCallback(property, callback);
+            if (property == LottieProperty.StrokeColor)
+            {
+                _colorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+            }
+        }
     }
 }

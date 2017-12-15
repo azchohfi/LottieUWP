@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class FillContent : IDrawingContent, IKeyPathElement
+    internal class FillContent : IDrawingContent, IKeyPathElementContent
     {
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
@@ -95,24 +96,18 @@ namespace LottieUWP.Animation.Content
 
         public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
-            if (!keyPath.Matches(Name, depth))
-            {
-                return;
-            }
-
-            currentPartialKeyPath = currentPartialKeyPath.AddKey(Name);
-
-            if (keyPath.FullyResolvesTo(Name, depth))
-            {
-                accumulator.Add(currentPartialKeyPath.Resolve(this));
-            }
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
         }
 
-        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
         {
-            if (property == Property.Color)
+            if (property == LottieProperty.Color)
             {
-                Debug.WriteLine($"Applying COLOR to {Name}", "Gabe");
+                _colorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+            }
+            else if (property == LottieProperty.Opacity)
+            {
+                _opacityAnimation.SetValueCallback((ILottieValueCallback<int?>)callback);
             }
         }
     }

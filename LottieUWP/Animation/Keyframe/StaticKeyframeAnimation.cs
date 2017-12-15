@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LottieUWP.Animation.Keyframe
 {
-    internal interface IStaticKeyFrameAnimation
-    {
-    }
-
-    internal class StaticKeyframeAnimation<TK, TA> : BaseKeyframeAnimation<TK, TA>, IStaticKeyFrameAnimation
+    internal class StaticKeyframeAnimation<TK, TA> : BaseKeyframeAnimation<TK, TA>
     {
         private readonly TA _initialValue;
 
@@ -18,22 +13,20 @@ namespace LottieUWP.Animation.Keyframe
 
         public override float Progress
         {
-            set
-            {
-                // Do nothing
-            }
+            set => base.Progress = value;
         }
 
+        /// <summary>
+        /// If this doesn't return 1, then <see cref="set_Progress"/> will always clamp the progress 
+        /// to 0.
+        /// </summary>
+        protected override float EndProgress => 1f;
 
-        public override event EventHandler ValueChanged
+        protected override void OnValueChanged()
         {
-            add
+            if (ValueCallback != null)
             {
-                // Do nothing. 
-            }
-            remove
-            {
-                // Do nothing. 
+                base.OnValueChanged();
             }
         }
 
@@ -41,6 +34,10 @@ namespace LottieUWP.Animation.Keyframe
 
         public override TA GetValue(IKeyframe<TK> keyframe, float keyframeProgress)
         {
+            if (ValueCallback != null)
+            {
+                return ValueCallback.GetValue(0f, 0f, _initialValue, _initialValue, Progress, Progress, Progress);
+            }
             return _initialValue;
         }
     }

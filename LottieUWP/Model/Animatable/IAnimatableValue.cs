@@ -3,7 +3,7 @@ using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal interface IAnimatableValue<out TK, out TA>
+    internal interface IAnimatableValue<out TK, TA>
     {
         IBaseKeyframeAnimation<TK, TA> CreateAnimation();
         bool HasAnimation();

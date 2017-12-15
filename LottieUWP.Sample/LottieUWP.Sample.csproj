@@ -212,8 +212,6 @@
     <Content Include="Assets\Tests\TimeStretch.json" />
     <Content Include="Assets\City.json" />
     <Content Include="Assets\Tests\Frame.json" />
-    <Content Include="Assets\CircleForward.json" />
-    <Content Include="Assets\CircleReversed.json" />
     <Content Include="Assets\Tests\MatteTimeStretchLine.json" />
     <Content Include="Assets\Tests\MatteTimeStretchScan.json" />
     <Content Include="Assets\Tests\MaskInv.json" />
@@ -381,6 +379,7 @@
     <Content Include="Assets\lottiefiles\x_pop.json" />
     <Content Include="Assets\lottiefiles\___.json" />
     <Content Include="Assets\Tests\Squares.json" />
+    <Content Include="Assets\Tests\Shapes.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

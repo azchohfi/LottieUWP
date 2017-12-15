@@ -6,11 +6,13 @@ using LottieUWP.Model;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Utils;
+using LottieUWP.Value;
 using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP.Animation.Content
 {
-    public abstract class BaseStrokeContent : IDrawingContent, IKeyPathElement
+    public abstract class BaseStrokeContent : IDrawingContent, IKeyPathElementContent
     {
         private readonly PathMeasure _pm = new PathMeasure();
         private readonly Path _path = new Path();
@@ -313,18 +315,18 @@ namespace LottieUWP.Animation.Content
 
         public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
-            if (keyPath.FullyResolvesTo(Name, depth))
-            {
-                currentPartialKeyPath = currentPartialKeyPath.AddKey(Name);
-                accumulator.Add(currentPartialKeyPath.Resolve(this));
-            }
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
         }
 
-        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        public virtual void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
         {
-            if (property == Property.Color)
+            if (property == LottieProperty.Opacity)
             {
-                // TODO use the value callback. 
+                _opacityAnimation.SetValueCallback((ILottieValueCallback<int?>)callback);
+            }
+            else if (property == LottieProperty.StrokeWidth)
+            {
+                _widthAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
             }
         }
 

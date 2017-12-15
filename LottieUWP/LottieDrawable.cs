@@ -10,6 +10,7 @@ using LottieUWP.Manager;
 using LottieUWP.Model;
 using LottieUWP.Model.Layer;
 using LottieUWP.Utils;
+using LottieUWP.Value;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
@@ -752,11 +753,13 @@ namespace LottieUWP
         public int IntrinsicHeight => _composition == null ? -1 : (int)(_composition.Bounds.Height * _scale);
 
         /// <summary>
-        /// Take a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of 
-        /// zero or more actual { @link KeyPath Keypaths }
+        /// Takes a <see cref="KeyPath"/>, potentially with wildcards or globstars and resolve it to a list of 
+        /// zero or more actual <see cref="KeyPath"/>s
         /// that exist in the current animation.
         /// 
-        /// This API is not ready for public use yet.
+        /// If you want to set value callbacks for any of these values, it is recommend to use the 
+        /// returned <see cref="KeyPath"/> objects because they will be internally resolved to their content 
+        /// and won't trigger a tree walk of the animation contents when applied. 
         /// </summary>
         /// <param name="keyPath"></param>
         /// <returns></returns>
@@ -769,6 +772,48 @@ namespace LottieUWP
             var keyPaths = new List<KeyPath>();
             _compositionLayer.ResolveKeyPath(keyPath, 0, keyPaths, new KeyPath());
             return keyPaths;
+        }
+
+        /// <summary>
+        /// Add an property callback for the specified <see cref="KeyPath"/>. This <see cref="KeyPath"/> can resolve 
+        /// to multiple contents. In that case, the callbacks's value will apply to all of them. 
+        /// 
+        /// Internally, this will check if the <see cref="KeyPath"/> has already been resolved with 
+        /// <see cref="ResolveKeyPath"/> and will resolve it if it hasn't. 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keyPath"></param>
+        /// <param name="property"></param>
+        /// <param name="callback"></param>
+        public void AddValueCallback<T>(KeyPath keyPath, LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            bool invalidate;
+            if (keyPath.GetResolvedElement() != null)
+            {
+                keyPath.GetResolvedElement().AddValueCallback(property, callback);
+                invalidate = true;
+            }
+            else
+            {
+                List<KeyPath> elements = ResolveKeyPath(keyPath);
+
+                for (int i = 0; i < elements.Count; i++)
+                {
+                    elements[i].GetResolvedElement().AddValueCallback(property, callback);
+                }
+                invalidate = elements.Any();
+            }
+            if (invalidate)
+            {
+                InvalidateSelf();
+                if (property == LottieProperty.TimeRemap)
+                {
+                    // Time remapping values are read in setProgress. In order for the new value 
+                    // to apply, we have to re-set the progress with the current progress so that the 
+                    // time remapping can be reapplied. 
+                    Progress = Progress;
+                }
+            }
         }
 
         /// 

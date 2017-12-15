@@ -7,6 +7,7 @@ using LottieUWP.Model;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
@@ -247,7 +248,6 @@ namespace LottieUWP.Animation.Content
                 for (int i = 0; i < _contents.Count; i++)
                 {
                     var content = _contents[i];
-                    // TODO: all contents should implement KeyPathElement 
                     if (content is IKeyPathElement element)
                     {
                         element.ResolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
@@ -256,9 +256,9 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public void ApplyValueCallback(Property property, ILottieValueCallback<object> callback)
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
         {
-            // TODO (keypath) 
+            _transformAnimation?.ApplyValueCallback(property, callback);
         }
     }
 }

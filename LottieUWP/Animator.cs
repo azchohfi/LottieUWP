@@ -1,5 +1,3 @@
-using System;
-
 namespace LottieUWP
 {
     public abstract class Animator

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Keyframe
 {
@@ -8,9 +9,10 @@ namespace LottieUWP.Animation.Keyframe
         float Progress { get; set; }
         event EventHandler ValueChanged;
     }
-    public interface IBaseKeyframeAnimation<out TK, out TA> : IBaseKeyframeAnimation
+    public interface IBaseKeyframeAnimation<out TK, TA> : IBaseKeyframeAnimation
     {
         TA Value { get; }
+        void SetValueCallback(ILottieValueCallback<TA> valueCallback);
     }
 
     /// <summary>
@@ -24,6 +26,7 @@ namespace LottieUWP.Animation.Keyframe
 
         private readonly List<IKeyframe<TK>> _keyframes;
         private float _progress;
+        protected ILottieValueCallback<TA> ValueCallback;
 
         private IKeyframe<TK> _cachedKeyframe;
 
@@ -104,10 +107,10 @@ namespace LottieUWP.Animation.Keyframe
         }
 
         /// <summary>
-        /// This wil be [0, 1] unless the interpolator has overshoot in which case getValue() should be
-        /// able to handle values outside of that range.
+        /// Returns the progress into the current keyframe between 0 and 1. This does not take into account 
+        /// any interpolation that the keyframe may have.
         /// </summary>
-        private float CurrentKeyframeProgress
+        protected float LinearCurrentKeyframeProgress
         {
             get
             {
@@ -123,8 +126,23 @@ namespace LottieUWP.Animation.Keyframe
                 }
                 var progressIntoFrame = _progress - keyframe.StartProgress;
                 var keyframeProgress = keyframe.EndProgress - keyframe.StartProgress;
+                return progressIntoFrame / keyframeProgress;
+            }
+        }
 
-                return keyframe.Interpolator.GetInterpolation(progressIntoFrame / keyframeProgress);
+        /// Takes the value of <see cref="LinearCurrentKeyframeProgress"/> and interpolates it with 
+        /// the current keyframe's interpolator. 
+        private float InterpolatedCurrentKeyframeProgress
+        {
+            get
+            {
+                var keyframe = CurrentKeyframe;
+                if (keyframe.Static)
+                {
+                    return 0f;
+                }
+
+                return keyframe.Interpolator.GetInterpolation(LinearCurrentKeyframeProgress);
             }
         }
 
@@ -141,7 +159,7 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        private float EndProgress
+        protected virtual float EndProgress
         {
             get
             {
@@ -154,7 +172,12 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        public virtual TA Value => GetValue(CurrentKeyframe, CurrentKeyframeProgress);
+        public virtual TA Value => GetValue(CurrentKeyframe, InterpolatedCurrentKeyframeProgress);
+
+        public void SetValueCallback(ILottieValueCallback<TA> valueCallback)
+        {
+            ValueCallback = valueCallback;
+        }
 
         /// <summary>
         /// keyframeProgress will be [0, 1] unless the interpolator has overshoot in which case, this

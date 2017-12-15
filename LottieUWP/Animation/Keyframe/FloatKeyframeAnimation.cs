@@ -14,6 +14,12 @@ namespace LottieUWP.Animation.Keyframe
             {
                 throw new System.InvalidOperationException("Missing values for keyframe.");
             }
+
+            if (ValueCallback != null)
+            {
+                return ValueCallback.GetValue(keyframe.StartFrame.Value, keyframe.EndFrame.Value, keyframe.StartValue, keyframe.EndValue, keyframeProgress, LinearCurrentKeyframeProgress, Progress);
+            }
+
             return MathExt.Lerp(keyframe.StartValue.Value, keyframe.EndValue.Value, keyframeProgress);
         }
     }

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Windows.Foundation;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model.Layer
 {
     internal class CompositionLayer : BaseLayer
     {
-        private readonly IBaseKeyframeAnimation<float?, float?> _timeRemapping;
+        private IBaseKeyframeAnimation<float?, float?> _timeRemapping;
         private readonly List<BaseLayer> _layers = new List<BaseLayer>();
         private Rect _newClipRect;
 
@@ -230,6 +231,21 @@ namespace LottieUWP.Model.Layer
             for (int i = 0; i < _layers.Count; i++)
             {
                 _layers[i].ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
+            }
+        }
+
+        public override void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            base.AddValueCallback(property, callback);
+
+            if (property == LottieProperty.TimeRemap)
+            {
+                if (_timeRemapping == null)
+                {
+                    _timeRemapping = new StaticKeyframeAnimation<float?, float?>(1f);
+                    AddAnimation(_timeRemapping);
+                }
+                _timeRemapping.SetValueCallback((ILottieValueCallback<float?>)callback);
             }
         }
     }

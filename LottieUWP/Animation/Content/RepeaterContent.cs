@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using Windows.Foundation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
 using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
-    public class RepeaterContent : IDrawingContent, IPathContent, IGreedyContent
+    public class RepeaterContent : IDrawingContent, IPathContent, IGreedyContent, IKeyPathElementContent
     {
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private readonly Path _path = new Path();
@@ -19,7 +21,7 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<float?, float?> _offset;
         private readonly TransformKeyframeAnimation _transform;
         private ContentGroup _contentGroup;
-        
+
         internal RepeaterContent(LottieDrawable lottieDrawable, BaseLayer layer, Repeater repeater)
         {
             _lottieDrawable = lottieDrawable;
@@ -111,7 +113,7 @@ namespace LottieUWP.Animation.Content
                 _matrix.Set(parentMatrix);
                 _matrix = MatrixExt.PreConcat(_matrix, _transform.GetMatrixForRepeater(i + offset));
                 var newAlpha = alpha * MiscUtils.Lerp(startOpacity, endOpacity, i / copies);
-                _contentGroup.Draw(canvas, _matrix, (byte) newAlpha);
+                _contentGroup.Draw(canvas, _matrix, (byte)newAlpha);
             }
         }
 
@@ -128,6 +130,28 @@ namespace LottieUWP.Animation.Content
         private void OnValueChanged(object sender, EventArgs e)
         {
             _lottieDrawable.InvalidateSelf();
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+        }
+
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            if (_transform.ApplyValueCallback(property, callback))
+            {
+                return;
+            }
+
+            if (property == LottieProperty.RepeaterCopies)
+            {
+                _copies.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.RepeaterOffset)
+            {
+                _offset.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
         }
     }
 }

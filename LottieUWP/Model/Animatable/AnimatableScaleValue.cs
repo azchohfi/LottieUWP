@@ -2,6 +2,7 @@
 using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model.Animatable
 {

@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
 using LottieUWP.Model;
+using LottieUWP.Value;
 
 namespace LottieUWP
 {
@@ -156,15 +157,28 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Take a keypath, potentially with wildcards or globstars and resolve it to a list of zero or
-        /// more actual keypaths that exist in the current animation.
-        /// This API is not ready for public use yet.
+        /// Takes a <see cref="KeyPath"/>, potentially with wildcards or globstars and resolve it to a list of
+        /// zero or more actual <see cref="KeyPath"/>s that exist in the current animation.
+        /// 
+        /// If you want to set value callbacks for any of these values, it is recommend to use the 
+        /// returned <see cref="KeyPath"/> objects because they will be internally resolved to their content
+        /// and won't trigger a tree walk of the animation contents when applied. 
         /// </summary>
         /// <param name="keyPath"></param>
         /// <returns></returns>
         public List<KeyPath> ResolveKeyPath(KeyPath keyPath)
         {
             return _lottieDrawable.ResolveKeyPath(keyPath);
+        }
+
+        /// Add an property callback for the specified <see cref="KeyPath"/>. This <see cref="KeyPath"/> can resolve 
+        /// to multiple contents. In that case, the callbacks's value will apply to all of them. 
+        /// 
+        /// Internally, this will check if the <see cref="KeyPath"/> has already been resolved with 
+        /// <see cref="ResolveKeyPath"/> and will resolve it if it hasn't. 
+        public void AddValueCallback<T>(KeyPath keyPath, LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            _lottieDrawable.AddValueCallback(keyPath, property, callback);
         }
 
         /// <summary>

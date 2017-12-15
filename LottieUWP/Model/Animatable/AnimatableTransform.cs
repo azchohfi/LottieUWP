@@ -7,6 +7,7 @@ using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model.Animatable
 {

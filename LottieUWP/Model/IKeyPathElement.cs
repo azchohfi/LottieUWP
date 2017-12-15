@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model
 {
@@ -9,6 +10,9 @@ namespace LottieUWP.Model
     {
         /// <summary>
         /// Called recursively during keypath resolution.
+        /// 
+        /// The overridden method should just call:
+        ///     MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
         /// </summary>
         /// <param name="keyPath">The full keypath being resolved.</param>
         /// <param name="depth">The current depth that this element should be checked at in the keypath.</param>
@@ -16,6 +20,13 @@ namespace LottieUWP.Model
         /// <param name="currentPartialKeyPath">A keypath that contains all parent element of this one. This element should create a copy of this and append itself with KeyPath#addKey when it adds itself to the accumulator or propagates resolution to its children.</param>
         void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath);
 
-        void ApplyValueCallback(Property property, ILottieValueCallback<object> callback);
+        /// <summary>
+        /// The overridden method should handle appropriate properties and set value callbacks on their 
+        /// animations.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property"></param>
+        /// <param name="callback"></param>
+        void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback);
     }
 }

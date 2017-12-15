@@ -3,6 +3,7 @@ using Windows.Foundation;
 using Windows.UI;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model.Layer
 {
@@ -23,7 +24,7 @@ namespace LottieUWP.Model.Layer
         private readonly LottieDrawable _lottieDrawable;
         private readonly LottieComposition _composition;
         private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
-        private readonly IBaseKeyframeAnimation<Color, Color> _strokeAnimation;
+        private readonly IBaseKeyframeAnimation<Color, Color> _strokeColorAnimation;
         private readonly IBaseKeyframeAnimation<float?, float?> _strokeWidthAnimation;
         private readonly IBaseKeyframeAnimation<float?, float?> _trackingAnimation;
 
@@ -45,9 +46,9 @@ namespace LottieUWP.Model.Layer
 
             if (textProperties?._stroke != null)
             {
-                _strokeAnimation = textProperties._stroke.CreateAnimation();
-                _strokeAnimation.ValueChanged += OnValueChanged;
-                AddAnimation(_strokeAnimation);
+                _strokeColorAnimation = textProperties._stroke.CreateAnimation();
+                _strokeColorAnimation.ValueChanged += OnValueChanged;
+                AddAnimation(_strokeColorAnimation);
             }
 
             if (textProperties?._strokeWidth != null)
@@ -82,7 +83,7 @@ namespace LottieUWP.Model.Layer
 
             _fillPaint.Color = _colorAnimation?.Value ?? documentData.Color;
 
-            _strokePaint.Color = _strokeAnimation?.Value ?? documentData.StrokeColor;
+            _strokePaint.Color = _strokeColorAnimation?.Value ?? documentData.StrokeColor;
             var alpha = (byte)(Transform.Opacity.Value * 255 / 100f);
             _fillPaint.Alpha = alpha;
             _strokePaint.Alpha = alpha;
@@ -250,6 +251,27 @@ namespace LottieUWP.Model.Layer
             }
             _contentsForCharacter[character] = contents;
             return contents;
+        }
+
+        public override void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            base.AddValueCallback(property, callback);
+            if (property == LottieProperty.Color && _colorAnimation != null)
+            {
+                _colorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+            }
+            else if (property == LottieProperty.StrokeColor && _strokeColorAnimation != null)
+            {
+                _strokeColorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+            }
+            else if (property == LottieProperty.StrokeWidth && _strokeWidthAnimation != null)
+            {
+                _strokeWidthAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.TextTracking)
+            {
+                _trackingAnimation?.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
         }
     }
 }

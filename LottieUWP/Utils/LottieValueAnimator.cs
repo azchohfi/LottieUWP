@@ -49,8 +49,8 @@ namespace LottieUWP.Utils
 
         /// <summary>
         /// Sets the current animator value. This will update the play time as well. 
-        /// It will also be clamped to the values set with {@link #setMinValue(float)} and 
-        /// <see cref="MaxValue"/>
+        /// It will also be clamped to the values set with <see cref="set_MinValue"/> and 
+        /// <see cref="set_MaxValue"/>
         /// </summary>
         public float Value
         {

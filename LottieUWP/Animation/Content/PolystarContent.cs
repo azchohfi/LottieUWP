@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Numerics;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class PolystarContent : IPathContent
+    internal class PolystarContent : IPathContent, IKeyPathElementContent
     {
         /// <summary>
         /// This was empirically derived by creating polystars, converting them to
@@ -308,6 +311,43 @@ namespace LottieUWP.Animation.Content
             var position = _positionAnimation.Value;
             _path.Offset(position.Value.X, position.Value.Y);
             _path.Close();
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+        }
+
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            if (property == LottieProperty.PolystarPoints)
+            {
+                _pointsAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.PolystarRotation)
+            {
+                _rotationAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.Position)
+            {
+                _positionAnimation.SetValueCallback((ILottieValueCallback<Vector2?>)callback);
+            }
+            else if (property == LottieProperty.PolystarInnerRadius && _innerRadiusAnimation != null)
+            {
+                _innerRadiusAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.PolystarOuterRadius)
+            {
+                _outerRadiusAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.PolystarInnerRoundedness && _innerRoundednessAnimation != null)
+            {
+                _innerRoundednessAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.PolystarOuterRoundedness)
+            {
+                _outerRoundednessAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
         }
     }
 }

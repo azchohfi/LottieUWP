@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class RectangleContent : IPathContent
+    internal class RectangleContent : IPathContent, IKeyPathElementContent
     {
         private readonly Path _path = new Path();
         private Rect _rect;
@@ -127,6 +130,16 @@ namespace LottieUWP.Animation.Content
                 _isPathValid = true;
                 return _path;
             }
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+        }
+
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+
         }
     }
 }

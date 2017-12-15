@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Numerics;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class EllipseContent : IPathContent
+    internal class EllipseContent : IPathContent, IKeyPathElementContent
     {
         private const float EllipseControlPointPercentage = 0.55228f;
 
@@ -108,6 +111,23 @@ namespace LottieUWP.Animation.Content
 
                 _isPathValid = true;
                 return _path;
+            }
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+        }
+
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            if (property == LottieProperty.EllipseSize)
+            {
+                _sizeAnimation.SetValueCallback((ILottieValueCallback<Vector2?>)callback);
+            }
+            else if (property == LottieProperty.Position)
+            {
+                _positionAnimation.SetValueCallback((ILottieValueCallback<Vector2?>)callback);
             }
         }
     }
