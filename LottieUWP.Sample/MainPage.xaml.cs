@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace LottieUWP.Sample
@@ -13,7 +16,6 @@ namespace LottieUWP.Sample
         public MainPage()
         {
             Files = new ObservableCollection<string>();
-            LottieLog.TraceEnabled = true;
             InitializeComponent();
         }
 
@@ -49,6 +51,21 @@ namespace LottieUWP.Sample
         {
             if (!double.IsNaN(e.NewValue))
                 LottieAnimationView.Scale = (float)e.NewValue;
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            LottieLog.TraceEnabled = !LottieLog.TraceEnabled;
+            if (LottieLog.TraceEnabled)
+            {
+                DebugButton.Background = new SolidColorBrush(Colors.Red);
+                DebugButton.Content = "Debug On";
+            }
+            else
+            {
+                DebugButton.Background = new SolidColorBrush(Colors.LightGray);
+                DebugButton.Content = "Debug Off";
+            }
         }
     }
 }

@@ -15,6 +15,7 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <lottieUwp:LottieAnimationView x:Name="LottieAnimationView" FileName="Assets/Gears.json" AutoPlay="True" RepeatCount="-1" ImageAssetsFolder="Assets/Images/WeAccept" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="1"/>
+        <Button x:Name="DebugButton" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Background="LightGray" Content="Debug Off" Click="ButtonBase_OnClick" />
         <Slider Grid.Row="1" Maximum="10" Value="1" Minimum="0.1" SmallChange="0.1" LargeChange="0.1" ValueChanged="Scale_OnValueChanged" StepFrequency="0.1" />
         <Slider Grid.Row="2" Minimum="0" Maximum="1000" SmallChange="1" ValueChanged="RangeBase_OnValueChanged" />
         <ListView Grid.Row="3" ItemsSource="{x:Bind Files}" SelectionChanged="Selector_OnSelectionChanged"/>

@@ -37,6 +37,7 @@ namespace LottieUWP
                     _startTimeNs = new long[MaxDepth];
                 }
             }
+            get => _traceEnabled;
         }
 
         internal static void BeginSection(string section)
@@ -84,7 +85,7 @@ namespace LottieUWP
         private static void BatchedDebugWriteLine(string message)
         {
             Msgs.Enqueue($"{new string(' ', _traceDepth)}{message}");
-            if (_traceDepth == 0 && Msgs.Count >= 20)
+            if (_traceDepth == 0 && Msgs.Count >= 100)
             {
                 var sb = new StringBuilder();
                 while (Msgs.Count > 0)
