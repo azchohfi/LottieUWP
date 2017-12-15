@@ -16,11 +16,13 @@
     /// Fill:
     ///    <see cref="Color"/> (non-gradient)
     ///    <see cref="Opacity"/>
+    ///    <see cref="LottieUWP.ColorFilter"/>
     ///
     /// Stroke:
     ///    <see cref="Color"/> (non-gradient)
     ///    <see cref="StrokeWidth"/>
     ///    <see cref="Opacity"/>
+    ///    <see cref="LottieUWP.ColorFilter"/>
     ///
     /// Ellipse:
     ///    <see cref="Position"/>
@@ -92,5 +94,7 @@
         TransformEndOpacity,
         /// The time value in seconds
         TimeRemap,
+
+        ColorFilter
     }
 }

@@ -1,11 +1,14 @@
 ﻿using Windows.Foundation;
 using LottieUWP.Animation.Content;
+using LottieUWP.Animation.Keyframe;
+using LottieUWP.Value;
 
 namespace LottieUWP.Model.Layer
 {
     internal class SolidLayer : BaseLayer
     {
         private readonly Paint _paint = new Paint();
+        private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
         internal SolidLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
@@ -26,6 +29,10 @@ namespace LottieUWP.Model.Layer
 
             var alpha = (byte)(parentAlpha / 255f * (backgroundAlpha / 255f * Transform.Opacity.Value / 100f) * 255);
             _paint.Alpha = alpha;
+            if (_colorFilterAnimation != null)
+            {
+                _paint.ColorFilter = _colorFilterAnimation.Value;
+            }
             if (alpha > 0)
             {
                 UpdateRect(parentMatrix);
@@ -46,9 +53,17 @@ namespace LottieUWP.Model.Layer
             matrix.MapRect(ref Rect);
         }
 
-        public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
+        public override void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
         {
-            _paint.ColorFilter = colorFilter;
+            base.AddValueCallback(property, callback);
+            if (property == LottieProperty.ColorFilter)
+            {
+                if (_colorFilterAnimation == null)
+                {
+                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                }
+                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
+            }
         }
     }
 }

@@ -221,7 +221,11 @@ namespace LottieUWP
             }
 
             EnableMergePathsForKitKatAndAbove();
-            AddColorFilter(new SimpleColorFilter(ColorFilter));
+
+            SimpleColorFilter filter = new SimpleColorFilter(ColorFilter);
+            KeyPath keyPath = new KeyPath("**");
+            LottieStaticValueCallback<ColorFilter> callback = new LottieStaticValueCallback<ColorFilter>(filter);
+            AddValueCallback(keyPath, LottieProperty.ColorFilter, callback);
 
             if (Utils.Utils.GetAnimationScale() == 0f)
             {
@@ -267,41 +271,6 @@ namespace LottieUWP
                 }
                 _viewbox.Child = value;
             }
-        }
-
-        /// <summary>
-        /// Add a color filter to specific content on a specific layer. </summary>
-        /// <param name="layerName"> name of the layer where the supplied content name lives </param>
-        /// <param name="contentName"> name of the specific content that the color filter is to be applied </param>
-        /// <param name="colorFilter"> the color filter, null to clear the color filter </param>
-        public virtual void AddColorFilterToContent(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            _lottieDrawable.AddColorFilterToContent(layerName, contentName, colorFilter);
-        }
-
-        /// <summary>
-        /// Add a color filter to a whole layer </summary>
-        /// <param name="layerName"> name of the layer that the color filter is to be applied </param>
-        /// <param name="colorFilter"> the color filter, null to clear the color filter </param>
-        public virtual void AddColorFilterToLayer(string layerName, ColorFilter colorFilter)
-        {
-            _lottieDrawable.AddColorFilterToLayer(layerName, colorFilter);
-        }
-
-        /// <summary>
-        /// Add a color filter to all layers </summary>
-        /// <param name="colorFilter"> the color filter, null to clear all color filters </param>
-        public virtual void AddColorFilter(ColorFilter colorFilter)
-        {
-            _lottieDrawable.AddColorFilter(colorFilter);
-        }
-
-        /// <summary>
-        /// Clear all color filters on all layers and all content in the layers
-        /// </summary>
-        public virtual void ClearColorFilters()
-        {
-            _lottieDrawable.ClearColorFilters();
         }
 
         //public void invalidateDrawable(Drawable dr)

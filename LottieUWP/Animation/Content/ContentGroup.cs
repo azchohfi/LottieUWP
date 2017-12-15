@@ -89,24 +89,6 @@ namespace LottieUWP.Animation.Content
 
         public virtual string Name { get; }
 
-        public virtual void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            for (var i = 0; i < _contents.Count; i++)
-            {
-                if (_contents[i] is IDrawingContent drawingContent)
-                {
-                    if (contentName == null || contentName.Equals(drawingContent.Name))
-                    {
-                        drawingContent.AddColorFilter(layerName, null, colorFilter);
-                    }
-                    else
-                    {
-                        drawingContent.AddColorFilter(layerName, contentName, colorFilter);
-                    }
-                }
-            }
-        }
-
         public virtual void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             // Do nothing with contents after.

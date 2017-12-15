@@ -122,11 +122,6 @@ namespace LottieUWP.Animation.Content
             _contentGroup.GetBounds(out outBounds, parentMatrix);
         }
 
-        public void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            _contentGroup.AddColorFilter(layerName, contentName, colorFilter);
-        }
-
         private void OnValueChanged(object sender, EventArgs e)
         {
             _lottieDrawable.InvalidateSelf();

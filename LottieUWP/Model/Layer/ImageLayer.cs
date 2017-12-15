@@ -1,6 +1,8 @@
 ﻿using System;
 using Windows.Foundation;
 using LottieUWP.Animation.Content;
+using LottieUWP.Animation.Keyframe;
+using LottieUWP.Value;
 using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP.Model.Layer
@@ -11,6 +13,7 @@ namespace LottieUWP.Model.Layer
         private Rect _src;
         private Rect _dst;
         private readonly float _density;
+        private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
         internal ImageLayer(LottieDrawable lottieDrawable, Layer layerModel, float density) : base(lottieDrawable, layerModel)
         {
@@ -25,6 +28,10 @@ namespace LottieUWP.Model.Layer
                 return;
             }
             _paint.Alpha = parentAlpha;
+            if (_colorFilterAnimation != null)
+            {
+                _paint.ColorFilter = _colorFilterAnimation.Value;
+            }
             canvas.Save();
             canvas.Concat(parentMatrix);
             RectExt.Set(ref _src, 0, 0, PixelWidth, PixelHeight);
@@ -56,9 +63,17 @@ namespace LottieUWP.Model.Layer
             }
         }
 
-        public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
+        public override void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
         {
-            _paint.ColorFilter = colorFilter;
+            base.AddValueCallback(property, callback);
+            if (property == LottieProperty.ColorFilter)
+            {
+                if (_colorFilterAnimation == null)
+                {
+                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                }
+                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
+            }
         }
     }
 }

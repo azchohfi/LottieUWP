@@ -430,11 +430,6 @@ namespace LottieUWP.Model.Layer
             // Do nothing
         }
 
-        public virtual void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            // Do nothing
-        }
-
         public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
             if (!keyPath.Matches(Name, depth))

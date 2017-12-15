@@ -17,6 +17,7 @@ namespace LottieUWP.Animation.Content
         private readonly List<IPathContent> _paths = new List<IPathContent>();
         private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
         private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
+        private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
         private readonly LottieDrawable _lottieDrawable;
 
         internal FillContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill)
@@ -60,17 +61,17 @@ namespace LottieUWP.Animation.Content
 
         public virtual string Name { get; }
 
-        public virtual void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            _paint.ColorFilter = colorFilter;
-        }
-
         public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("FillContent.Draw");
             _paint.Color = _colorAnimation.Value;
             var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
+
+            if (_colorFilterAnimation != null)
+            {
+                _paint.ColorFilter = _colorFilterAnimation.Value;
+            }
 
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)
@@ -108,6 +109,14 @@ namespace LottieUWP.Animation.Content
             else if (property == LottieProperty.Opacity)
             {
                 _opacityAnimation.SetValueCallback((ILottieValueCallback<int?>)callback);
+            }
+            else if (property == LottieProperty.ColorFilter)
+            {
+                if (_colorFilterAnimation == null)
+                {
+                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                }
+                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
             }
         }
     }

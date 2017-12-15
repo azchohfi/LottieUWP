@@ -59,11 +59,6 @@ namespace LottieUWP.Animation.Content
             base.Draw(canvas, parentMatrix, parentAlpha);
         }
 
-        public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            //Do nothing
-        }
-
         public override string Name { get; }
 
         private LinearGradient LinearGradient

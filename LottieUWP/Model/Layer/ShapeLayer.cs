@@ -28,11 +28,6 @@ namespace LottieUWP.Model.Layer
             _contentGroup.GetBounds(out outBounds, BoundsMatrix);
         }
 
-        public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            _contentGroup.AddColorFilter(layerName, contentName, colorFilter);
-        }
-
         protected override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
             _contentGroup.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);

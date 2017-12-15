@@ -33,7 +33,6 @@ namespace LottieUWP
         private readonly LottieValueAnimator _animator = new LottieValueAnimator();
         private float _scale = 1f;
 
-        private readonly HashSet<ColorFilterData> _colorFilterData = new HashSet<ColorFilterData>();
         private readonly List<Action<LottieComposition>> _lazyCompositionTasks = new List<Action<LottieComposition>>();
         private ImageAssetManager _imageAssetManager;
         private IImageAssetDelegate _imageAssetDelegate;
@@ -191,7 +190,6 @@ namespace LottieUWP
                 Progress = _animator.Value;
                 Scale = _scale;
                 UpdateBounds();
-                ApplyColorFilters();
 
                 // We copy the tasks to a new ArrayList so that if this method is called from multiple threads, 
                 // then there won't be two iterators iterating and removing at the same time. 
@@ -225,19 +223,6 @@ namespace LottieUWP
             _compositionLayer = new CompositionLayer(this, Layer.Factory.NewInstance(_composition), _composition.Layers, _composition);
         }
 
-        private void ApplyColorFilters()
-        {
-            if (_compositionLayer == null)
-            {
-                return;
-            }
-
-            foreach (var data in _colorFilterData)
-            {
-                _compositionLayer.AddColorFilter(data.LayerName, data.ContentName, data.ColorFilter);
-            }
-        }
-
         public void ClearComposition()
         {
             RecycleBitmaps();
@@ -264,71 +249,6 @@ namespace LottieUWP
         public int GetAlpha()
         {
             return _alpha;
-        }
-
-        public ColorFilter ColorFilter
-        {
-            set => Debug.WriteLine("Use addColorFilter instead.", LottieLog.Tag);
-        }
-
-        /// <summary>
-        /// Add a color filter to specific content on a specific layer. </summary>
-        /// <param name="layerName"> name of the layer where the supplied content name lives </param>
-        /// <param name="contentName"> name of the specific content that the color filter is to be applied </param>
-        /// <param name="colorFilter"> the color filter, null to clear the color filter </param>
-        public virtual void AddColorFilterToContent(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            AddColorFilterInternal(layerName, contentName, colorFilter);
-        }
-
-        /// <summary>
-        /// Add a color filter to a whole layer </summary>
-        /// <param name="layerName"> name of the layer that the color filter is to be applied </param>
-        /// <param name="colorFilter"> the color filter, null to clear the color filter </param>
-        public virtual void AddColorFilterToLayer(string layerName, ColorFilter colorFilter)
-        {
-            AddColorFilterInternal(layerName, null, colorFilter);
-        }
-
-        /// <summary>
-        /// Add a color filter to all layers </summary>
-        /// <param name="colorFilter"> the color filter, null to clear all color filters </param>
-        public virtual void AddColorFilter(ColorFilter colorFilter)
-        {
-            AddColorFilterInternal(null, null, colorFilter);
-        }
-
-        /// <summary>
-        /// Clear all color filters on all layers and all content in the layers
-        /// </summary>
-        public virtual void ClearColorFilters()
-        {
-            _colorFilterData.Clear();
-            AddColorFilterInternal(null, null, null);
-        }
-
-        /// <summary>
-        /// Private method to capture all color filter additions.
-        /// There are 3 different behaviors here.
-        /// 1. layerName is null. All layers supporting color filters will apply the passed in color filter
-        /// 2. layerName is not null, contentName is null. This will apply the passed in color filter
-        ///    to the whole layer
-        /// 3. layerName is not null, contentName is not null. This will apply the pass in color filter
-        ///    to a specific composition content.
-        /// </summary>
-        private void AddColorFilterInternal(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            var data = new ColorFilterData(layerName, contentName, colorFilter);
-            if (colorFilter == null && _colorFilterData.Contains(data))
-            {
-                _colorFilterData.Remove(data);
-            }
-            else
-            {
-                _colorFilterData.Add(new ColorFilterData(layerName, contentName, colorFilter));
-            }
-
-            _compositionLayer?.AddColorFilter(layerName, contentName, colorFilter);
         }
 
         //public int Opacity
@@ -500,15 +420,15 @@ namespace LottieUWP
         /// <param name="maxFrame"></param>
         public void SetMinAndMaxFrame(int minFrame, int maxFrame)
         {
-			if (_composition == null)
-			{
-				_lazyCompositionTasks.Add(composition =>
-				{
-					SetMinAndMaxFrame(minFrame, maxFrame);
-				});
-				return;
-			}
-			_animator.SetMinAndMaxValues(minFrame / _composition.DurationFrames, maxFrame / _composition.DurationFrames);
+            if (_composition == null)
+            {
+                _lazyCompositionTasks.Add(composition =>
+                {
+                    SetMinAndMaxFrame(minFrame, maxFrame);
+                });
+                return;
+            }
+            _animator.SetMinAndMaxValues(minFrame / _composition.DurationFrames, maxFrame / _composition.DurationFrames);
         }
 
         /// <summary>
@@ -767,6 +687,7 @@ namespace LottieUWP
         {
             if (_compositionLayer == null)
             {
+                Debug.WriteLine("Cannot resolve KeyPath. Composition is not set yet.", LottieLog.Tag);
                 return new List<KeyPath>();
             }
             var keyPaths = new List<KeyPath>();
@@ -787,6 +708,14 @@ namespace LottieUWP
         /// <param name="callback"></param>
         public void AddValueCallback<T>(KeyPath keyPath, LottieProperty property, ILottieValueCallback<T> callback)
         {
+            if (_compositionLayer == null)
+            {
+                _lazyCompositionTasks.Add(composition =>
+                {
+                    AddValueCallback(keyPath, property, callback);
+                });
+                return;
+            }
             bool invalidate;
             if (keyPath.GetResolvedElement() != null)
             {

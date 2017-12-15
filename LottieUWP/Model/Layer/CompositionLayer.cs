@@ -209,23 +209,6 @@ namespace LottieUWP.Model.Layer
             return _hasMatte.Value;
         }
 
-        public override void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            for (var i = 0; i < _layers.Count; ++i)
-            {
-                var layer = _layers[i];
-                var name = layer.LayerModel.Name;
-                if (string.IsNullOrEmpty(layerName))
-                {
-                    layer.AddColorFilter(null, null, colorFilter);
-                }
-                else if (name.Equals(layerName))
-                {
-                    layer.AddColorFilter(layerName, contentName, colorFilter);
-                }
-            }
-        }
-
         protected override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
             for (int i = 0; i < _layers.Count; i++)

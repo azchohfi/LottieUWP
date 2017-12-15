@@ -27,6 +27,7 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
         private readonly List<IBaseKeyframeAnimation<float?, float?>> _dashPatternAnimations;
         private readonly IBaseKeyframeAnimation<float?, float?> _dashPatternOffsetAnimation;
+        private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
         internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
@@ -143,6 +144,11 @@ namespace LottieUWP.Animation.Content
                 return;
             }
             ApplyDashPatternIfNeeded(parentMatrix);
+
+            if (_colorFilterAnimation != null)
+            {
+                Paint.ColorFilter = _colorFilterAnimation.Value;
+            }
 
             for (var i = 0; i < _pathGroups.Count; i++)
             {
@@ -273,8 +279,6 @@ namespace LottieUWP.Animation.Content
             LottieLog.EndSection("StrokeContent.GetBounds");
         }
 
-        public abstract void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter);
-
         private void ApplyDashPatternIfNeeded(Matrix3X3 parentMatrix)
         {
             LottieLog.BeginSection("StrokeContent.ApplyDashPattern");
@@ -327,6 +331,14 @@ namespace LottieUWP.Animation.Content
             else if (property == LottieProperty.StrokeWidth)
             {
                 _widthAnimation.SetValueCallback((ILottieValueCallback<float?>)callback);
+            }
+            else if (property == LottieProperty.ColorFilter)
+            {
+                if (_colorFilterAnimation == null)
+                {
+                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                }
+                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
             }
         }
 

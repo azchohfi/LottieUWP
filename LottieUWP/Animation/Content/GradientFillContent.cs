@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Model;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class GradientFillContent : IDrawingContent
+    internal class GradientFillContent : IDrawingContent, IKeyPathElementContent
     {
         /// <summary>
         /// Cache the gradients such that it runs at 30fps.
@@ -27,6 +30,7 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _startPointAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _endPointAnimation;
+        private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly int _cacheSteps;
 
@@ -95,6 +99,11 @@ namespace LottieUWP.Animation.Content
             shader.LocalMatrix = _shaderMatrix;
             _paint.Shader = shader;
 
+            if (_colorFilterAnimation != null)
+            {
+                _paint.ColorFilter = _colorFilterAnimation.Value;
+            }
+
             var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
 
@@ -113,11 +122,6 @@ namespace LottieUWP.Animation.Content
             _path.ComputeBounds(out outBounds);
             // Add padding to account for rounding errors.
             RectExt.Set(ref outBounds, outBounds.Left - 1, outBounds.Top - 1, outBounds.Right + 1, outBounds.Bottom + 1);
-        }
-
-        public void AddColorFilter(string layerName, string contentName, ColorFilter colorFilter)
-        {
-            // Do nothing
         }
 
         public string Name { get; }
@@ -182,6 +186,23 @@ namespace LottieUWP.Animation.Content
                 if (colorProgress != 0)
                     hash = hash * 31 * colorProgress;
                 return hash;
+            }
+        }
+
+        public void ResolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        {
+            MiscUtils.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+        }
+
+        public void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
+        {
+            if (property == LottieProperty.ColorFilter)
+            {
+                if (_colorFilterAnimation == null)
+                {
+                    _colorFilterAnimation = new StaticKeyframeAnimation<ColorFilter, ColorFilter>(null);
+                }
+                _colorFilterAnimation.SetValueCallback((ILottieValueCallback<ColorFilter>)callback);
             }
         }
     }
