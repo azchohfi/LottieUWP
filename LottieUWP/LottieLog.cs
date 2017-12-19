@@ -8,8 +8,9 @@ namespace LottieUWP
     {
         internal const string Tag = "LOTTIE";
 
-        private const int MaxDepth = 20;
+        private const int MaxDepth = 100;
         private static bool _traceEnabled;
+        private static bool _shouldResetTrace;
         private static string[] _sections;
         private static long[] _startTimeNs;
         private static int _traceDepth;
@@ -30,11 +31,15 @@ namespace LottieUWP
                 {
                     return;
                 }
-                _traceEnabled = value;
-                if (_traceEnabled)
+                if (value)
                 {
-                    _sections = new string[MaxDepth];
-                    _startTimeNs = new long[MaxDepth];
+                    _shouldResetTrace = true;
+                    TryResetTrace();
+                }
+                else
+                {
+                    _traceEnabled = false;
+                    _shouldResetTrace = false;
                 }
             }
             get => _traceEnabled;
@@ -42,19 +47,23 @@ namespace LottieUWP
 
         internal static void BeginSection(string section)
         {
-            if (!_traceEnabled)
-            {
-                return;
-            }
+            TryResetTrace();
+
             if (_traceDepth == MaxDepth)
             {
                 _depthPastMaxDepth++;
                 return;
             }
-            _sections[_traceDepth] = section;
-            _startTimeNs[_traceDepth] = CurrentUnixTime();
-            BatchedDebugWriteLine($"Begin Section: {section}");
             _traceDepth++;
+
+            if (!_traceEnabled)
+            {
+                return;
+            }
+
+            _sections[_traceDepth - 1] = section;
+            _startTimeNs[_traceDepth - 1] = CurrentUnixTime();
+            BatchedDebugWriteLine($"Begin Section: {section}");
         }
 
         internal static float EndSection(string section)
@@ -64,11 +73,13 @@ namespace LottieUWP
                 _depthPastMaxDepth--;
                 return 0;
             }
+            _traceDepth--;
+
             if (!_traceEnabled)
             {
                 return 0;
             }
-            _traceDepth--;
+            
             if (_traceDepth == -1)
             {
                 throw new System.InvalidOperationException("Can't end trace section. There are none.");
@@ -82,21 +93,36 @@ namespace LottieUWP
             return duration;
         }
 
+        private static void TryResetTrace()
+        {
+            if (_shouldResetTrace && _traceDepth == 0)
+            {
+                _traceEnabled = true;
+                _shouldResetTrace = false;
+
+                _sections = new string[MaxDepth];
+                _startTimeNs = new long[MaxDepth];
+
+                _depthPastMaxDepth = 0;
+            }
+        }
+
         private static void BatchedDebugWriteLine(string message)
         {
             Msgs.Enqueue($"{new string(' ', _traceDepth)}{message}");
-            if (_traceDepth == 0 && Msgs.Count >= 100)
+            if (_traceDepth == 0 && Msgs.Count >= MaxDepth)
             {
-                var sb = new StringBuilder();
+                Sb.Clear();
                 while (Msgs.Count > 0)
                 {
-                    sb.AppendLine(Msgs.Dequeue());
+                    Sb.AppendLine(Msgs.Dequeue());
                 }
-                Debug.WriteLine(sb.ToString());
+                Debug.WriteLine(Sb.ToString());
             }
         }
 
         private static readonly System.DateTime Epoc = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+        private static readonly StringBuilder Sb = new StringBuilder();
 
         private static long CurrentUnixTime()
         {
