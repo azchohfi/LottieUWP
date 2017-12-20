@@ -63,6 +63,10 @@ animationView.Loop = true;
 ```
 This method will load the file and parse the animation in the background and asynchronously start rendering once completed.
 
+If your app is crashing at runtime and you are using Visual Studio, make sure the Build Action for each of your .json files is set to 'Content' and not the default 'None.' To change this, click on the file in the Solution Explorer and change the selection in the dropdown next to 'Build Action' under the 'Advance' header in the properties window.
+
+Note: You may have to redo this if you update the .json depending on how you reimport it.
+
 If you want to reuse an animation such as in each item of a list or load it from a network request JsonObject:
 ```c#
 LottieAnimationView.Composition = await LottieComposition.Factory.FromJsonAsync(jsonObject);
