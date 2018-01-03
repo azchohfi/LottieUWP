@@ -150,7 +150,7 @@
     <Compile Include="Animation\Content\GradientStrokeContent.cs" />
     <Compile Include="IImageAssetDelegate.cs" />
     <Compile Include="IInterpolator.cs" />
-    <Compile Include="JSONArrayExt.cs" />
+    <Compile Include="JsonArrayExt.cs" />
     <Compile Include="Animation\Content\LinearGradient.cs" />
     <Compile Include="LottieLog.cs" />
     <Compile Include="Manager\FontAssetManager.cs" />

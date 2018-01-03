@@ -2,7 +2,7 @@ using Windows.Data.Json;
 
 namespace LottieUWP
 {
-    public static class JSONArrayExt
+    public static class JsonArrayExt
     {
         internal static double GetNumberAt(this JsonArray jsonArray, int index, double fallback)
         {

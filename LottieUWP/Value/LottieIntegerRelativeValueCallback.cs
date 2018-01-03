@@ -3,7 +3,7 @@
 namespace LottieUWP.Value
 {
     /// <summary>
-    /// <see cref="LottieUWP.Value.ILottieValueCallback"/> that provides a value offset from the original animation 
+    /// <see cref="LottieUWP.Value.ILottieValueCallback{T}"/> that provides a value offset from the original animation 
     ///  rather than an absolute value.
     /// </summary>
     public abstract class LottieIntegerRelativeValueCallback : ILottieValueCallback<int>

@@ -683,8 +683,8 @@ namespace LottieUWP
         /// <summary>
         /// Defines what this animation should do when it reaches the end. This 
         /// setting is applied only when the repeat count is either greater than 
-        /// 0 or <see cref="RepeatMode.Infinite"/>. Defaults to <see cref="RepeatMode.Restart"/>.
-        /// Return either one of <see cref="RepeatMode.Reverse"/> or <see cref="RepeatMode.Restart"/>
+        /// 0 or <see cref="LottieUWP.RepeatMode.Infinite"/>. Defaults to <see cref="LottieUWP.RepeatMode.Restart"/>.
+        /// Return either one of <see cref="LottieUWP.RepeatMode.Reverse"/> or <see cref="LottieUWP.RepeatMode.Restart"/>
         /// </summary>
         public RepeatMode RepeatMode
         {
@@ -705,12 +705,12 @@ namespace LottieUWP
         /// <summary>
         /// Sets how many times the animation should be repeated. If the repeat 
         /// count is 0, the animation is never repeated. If the repeat count is 
-        /// greater than 0 or <see cref="RepeatMode.Infinite"/>, the repeat mode will be taken 
+        /// greater than 0 or <see cref="LottieUWP.RepeatMode.Infinite"/>, the repeat mode will be taken 
         /// into account. The repeat count is 0 by default. 
         /// 
         /// Count the number of times the animation should be repeated
         /// 
-        /// Return the number of times the animation should repeat, or <see cref="RepeatMode.Infinite"/>
+        /// Return the number of times the animation should repeat, or <see cref="LottieUWP.RepeatMode.Infinite"/>
         /// </summary>
         public int RepeatCount
         {
