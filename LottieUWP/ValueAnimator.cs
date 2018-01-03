@@ -25,6 +25,16 @@ namespace LottieUWP
         public event EventHandler ValueChanged;
         public event EventHandler<ValueAnimatorUpdateEventArgs> Update;
 
+        public void RemoveAllUpdateListeners()
+        {
+            Update = null;
+        }
+
+        public void RemoveAllListeners()
+        {
+            ValueChanged = null;
+        }
+        
         private float _floatValue1;
         private float _floatValue2;
         private float _animatedValue;

@@ -643,10 +643,20 @@ namespace LottieUWP
             remove => _lottieDrawable.AnimatorUpdate -= value;
         }
 
+        public void RemoveAllUpdateListeners()
+        {
+            _lottieDrawable.RemoveAllUpdateListeners();
+        }
+
         public event EventHandler ValueChanged
         {
             add => _lottieDrawable.ValueChanged += value;
             remove => _lottieDrawable.ValueChanged -= value;
+        }
+
+        public void RemoveAllAnimatorListeners()
+        {
+            _lottieDrawable.RemoveAllAnimatorListeners();
         }
 
         /// <summary>

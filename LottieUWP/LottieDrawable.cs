@@ -477,10 +477,20 @@ namespace LottieUWP
             remove => _animator.Update -= value;
         }
 
+        public void RemoveAllUpdateListeners()
+        {
+            _animator.RemoveAllUpdateListeners();
+        }
+
         public event EventHandler ValueChanged
         {
             add => _animator.ValueChanged += value;
             remove => _animator.ValueChanged -= value;
+        }
+
+        public void RemoveAllAnimatorListeners()
+        {
+            _animator.RemoveAllListeners();
         }
 
         public int Frame
