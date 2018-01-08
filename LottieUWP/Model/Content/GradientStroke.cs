@@ -91,7 +91,6 @@ namespace LottieUWP.Model.Content
                 }
                 var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
 
-
                 var capType = (ShapeStroke.LineCapType)(int)(json.GetNamedNumber("lc") - 1);
                 var joinType = (ShapeStroke.LineJoinType)(int)(json.GetNamedNumber("lj") - 1);
 

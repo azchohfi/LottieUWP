@@ -135,6 +135,8 @@
     <Compile Include="CachedPathIterator.cs" />
     <Compile Include="FontAssetDelegate.cs" />
     <Compile Include="Animation\Content\IGreedyContent.cs" />
+    <Compile Include="FullPathIterator.cs" />
+    <Compile Include="HashMapHelperClass.cs" />
     <Compile Include="IAnimatable.cs" />
     <Compile Include="Model\Animatable\IAnimatableValue.cs" />
     <Compile Include="Animator.cs" />
@@ -206,6 +208,7 @@
     <Compile Include="Model\Layer\ShapeLayer.cs" />
     <Compile Include="Model\Layer\SolidLayer.cs" />
     <Compile Include="Model\Layer\TextLayer.cs" />
+    <Compile Include="PathIterator.cs" />
     <Compile Include="Value\ILottieValueCallback.cs" />
     <Compile Include="Model\PointFFactory.cs" />
     <Compile Include="Model\LottieProperty.cs" />

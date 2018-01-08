@@ -29,8 +29,7 @@ namespace LottieUWP.Model.Content
                     return CanvasCapStyle.Square;
             }
         }
-
-
+        
         internal enum LineJoinType
         {
             Miter,

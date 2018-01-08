@@ -61,8 +61,7 @@ namespace LottieUWP.Model.Content
 
             var initialPoint1 = shapeData1.InitialPoint;
             var initialPoint2 = shapeData2.InitialPoint;
-
-
+            
             SetInitialPoint(MiscUtils.Lerp(initialPoint1.X, initialPoint2.X, percentage), MiscUtils.Lerp(initialPoint1.Y, initialPoint2.Y, percentage));
 
             for (var i = _curves.Count - 1; i >= 0; i--)
