@@ -26,7 +26,7 @@ namespace LottieUWP
     /// of compositions.
     /// </para>
     /// </summary>
-    public class LottieDrawable : UserControl
+    public class LottieDrawable : UserControl, IAnimatable
     {
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private LottieComposition _composition;
@@ -317,6 +317,18 @@ namespace LottieUWP
             }
         }
 
+        public void Start()
+        {
+            PlayAnimation();
+        }
+
+        public void Stop()
+        {
+            EndAnimation();
+        }
+
+        public bool IsRunning => IsAnimating;
+
         /// <summary>
         /// Plays the animation from the beginning. If speed is &lt; 0, it will start at the end
         /// and play towards the beginning
@@ -332,6 +344,12 @@ namespace LottieUWP
                 return;
             }
             _animator.PlayAnimation();
+        }
+
+        public void EndAnimation()
+        {
+            _lazyCompositionTasks.Clear();
+            _animator.EndAnimation();
         }
 
         /// <summary>

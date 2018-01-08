@@ -135,6 +135,7 @@
     <Compile Include="CachedPathIterator.cs" />
     <Compile Include="FontAssetDelegate.cs" />
     <Compile Include="Animation\Content\IGreedyContent.cs" />
+    <Compile Include="IAnimatable.cs" />
     <Compile Include="Model\Animatable\IAnimatableValue.cs" />
     <Compile Include="Animator.cs" />
     <Compile Include="Animation\Content\BaseStrokeContent.cs" />

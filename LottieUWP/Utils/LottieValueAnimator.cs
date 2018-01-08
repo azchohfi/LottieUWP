@@ -141,6 +141,11 @@ namespace LottieUWP.Utils
             Value = IsReversed ? _maxValue : _minValue;
         }
 
+        public void EndAnimation()
+        {
+            End();
+        }
+
         public void PauseAnimation()
         {
             float value = _value;
