@@ -48,7 +48,7 @@ The simplest way to use it is with LottieAnimationView:
     />
     <lottieUwp:LottieAnimationView 
         FileName="Assets/Gears.json"
-        Loop="True"
+        RepeatCount="-1"
         AutoPlay="True"
         VerticalAlignment="Center"
         HorizontalAlignment="Center"/>
@@ -59,7 +59,7 @@ Or you can load it programatically in multiple ways.
 From a json asset in app/src/main/assets:
 ```c#
 await animationView.SetAnimationAsync("Assets/hello-world.json");
-animationView.Loop = true;
+animationView.RepeatCount = LottieDrawable.Infinite;
 ```
 This method will load the file and parse the animation in the background and asynchronously start rendering once completed.
 
