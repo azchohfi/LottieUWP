@@ -38,8 +38,20 @@ namespace LottieUWP.Manager
             set => _delegate = value;
         }
 
+        /// <summary>
+        /// Returns the previously set bitmap or null.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="bitmap"></param>
+        /// <returns></returns>
         internal CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
+            if (bitmap == null)
+            {
+                if (_bitmaps.TryGetValue(id, out var removed))
+                    _bitmaps.Remove(id);
+                return removed;
+            }
             _bitmaps.Add(id, bitmap);
             return bitmap;
         }
