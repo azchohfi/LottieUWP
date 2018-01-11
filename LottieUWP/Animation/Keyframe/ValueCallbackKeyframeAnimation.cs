@@ -21,7 +21,7 @@ namespace LottieUWP.Animation.Keyframe
         /// </summary>
         protected override float EndProgress => 1f;
 
-        protected override void OnValueChanged()
+        public override void OnValueChanged()
         {
             if (ValueCallback != null)
             {

@@ -1,13 +1,13 @@
 ﻿namespace LottieUWP.Value
 {
     /// <summary>
-    /// Static value version of <see cref="LottieFloatRelativeValueCallback"/>.
+    /// Static value version of <see cref="LottieRelativeFloatValueCallback"/>.
     /// </summary>
-    public abstract class LottieStaticFloatRelativeValueCallback : LottieFloatRelativeValueCallback
+    public abstract class LottieStaticRelativeFloatValue : LottieRelativeFloatValueCallback
     {
         private readonly float _offset;
 
-        public LottieStaticFloatRelativeValueCallback(float offset)
+        public LottieStaticRelativeFloatValue(float offset)
         {
             _offset = offset;
         }

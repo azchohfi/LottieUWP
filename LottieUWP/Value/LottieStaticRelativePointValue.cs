@@ -2,11 +2,11 @@
 
 namespace LottieUWP.Value
 {
-    public class LottieStaticPointRelativeValueCallback : LottiePointRelativeValueCallback
+    public class LottieStaticRelativePointValue : LottieRelativePointValueCallback
     {
         private readonly Vector2 _offset;
 
-        public LottieStaticPointRelativeValueCallback(Vector2 offset)
+        public LottieStaticRelativePointValue(Vector2 offset)
         {
             _offset = offset;
         }

@@ -1,10 +1,10 @@
 ﻿namespace LottieUWP.Value
 {
-    public class LottieStaticIntegerRelativeValueCallback : LottieIntegerRelativeValueCallback
+    public class LottieStaticRelativeIntegerValue : LottieRelativeIntegerValueCallback
     {
         private readonly int _offset; 
  
-        public LottieStaticIntegerRelativeValueCallback(int offset)
+        public LottieStaticRelativeIntegerValue(int offset)
         {
             _offset = offset;
         }

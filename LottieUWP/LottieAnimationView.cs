@@ -224,7 +224,7 @@ namespace LottieUWP
 
             SimpleColorFilter filter = new SimpleColorFilter(ColorFilter);
             KeyPath keyPath = new KeyPath("**");
-            LottieStaticValueCallback<ColorFilter> callback = new LottieStaticValueCallback<ColorFilter>(filter);
+            LottieStaticValue<ColorFilter> callback = new LottieStaticValue<ColorFilter>(filter);
             AddValueCallback(keyPath, LottieProperty.ColorFilter, callback);
 
             if (Utils.Utils.GetAnimationScale() == 0f)

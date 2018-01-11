@@ -8,6 +8,7 @@ namespace LottieUWP.Animation.Keyframe
     {
         float Progress { get; set; }
         event EventHandler ValueChanged;
+        void OnValueChanged();
     }
     public interface IBaseKeyframeAnimation<out TK, TA> : IBaseKeyframeAnimation
     {
@@ -69,7 +70,7 @@ namespace LottieUWP.Animation.Keyframe
             get => _progress;
         }
 
-        protected virtual void OnValueChanged()
+        public virtual void OnValueChanged()
         {
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -176,7 +177,9 @@ namespace LottieUWP.Animation.Keyframe
 
         public void SetValueCallback(ILottieValueCallback<TA> valueCallback)
         {
+            ValueCallback?.SetAnimation(null);
             ValueCallback = valueCallback;
+            valueCallback?.SetAnimation(this);
         }
 
         /// <summary>
