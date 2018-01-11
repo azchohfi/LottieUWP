@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
-using Windows.Data.Json;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Utils;
+using Newtonsoft.Json;
 
 namespace LottieUWP.Model.Content
 {
@@ -49,7 +50,7 @@ namespace LottieUWP.Model.Content
 
             if (_curves.Count > 0 && _curves.Count != shapeData1.Curves.Count && _curves.Count != shapeData2.Curves.Count)
             {
-                throw new System.InvalidOperationException("Curves must have the same number of control points. This: " + Curves.Count + "\tShape 1: " + shapeData1.Curves.Count + "\tShape 2: " + shapeData2.Curves.Count);
+                throw new InvalidOperationException("Curves must have the same number of control points. This: " + Curves.Count + "\tShape 1: " + shapeData1.Curves.Count + "\tShape 2: " + shapeData2.Curves.Count);
             }
             if (_curves.Count == 0)
             {
@@ -92,35 +93,50 @@ namespace LottieUWP.Model.Content
         {
             internal static readonly Factory Instance = new Factory();
 
-            public ShapeData ValueFromObject(IJsonValue @object, float scale)
+            public ShapeData ValueFromObject(JsonReader reader, float scale)
             {
-                JsonObject pointsData = null;
-                if (@object.ValueType == JsonValueType.Array)
+                // Sometimes the points data is in a array of length 1. Sometimes the data is at the top
+                // level.
+                if (reader.Peek() == JsonToken.StartArray)
                 {
-                    var firstObject = @object.GetArray()[0];
-                    if (firstObject.ValueType == JsonValueType.Object && firstObject.GetObject().ContainsKey("v"))
+                    reader.BeginArray();
+                }
+
+                bool closed = false;
+                List<Vector2> pointsArray = null;
+                List<Vector2> inTangents = null;
+                List<Vector2> outTangents = null;
+                reader.BeginObject();
+
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
                     {
-                        pointsData = firstObject.GetObject();
+                        case "c":
+                            closed = reader.NextBoolean();
+                            break;
+                        case "v":
+                            pointsArray = JsonUtils.JsonToPoints(reader, scale);
+                            break;
+                        case "i":
+                            inTangents = JsonUtils.JsonToPoints(reader, scale);
+                            break;
+                        case "o":
+                            outTangents = JsonUtils.JsonToPoints(reader, scale);
+                            break;
                     }
                 }
-                else if (@object.ValueType == JsonValueType.Object && @object.GetObject().ContainsKey("v"))
+
+                reader.EndObject();
+
+                if (reader.Peek() == JsonToken.EndArray)
                 {
-                    pointsData = @object.GetObject();
+                    reader.EndArray();
                 }
 
-                if (pointsData == null)
+                if (pointsArray == null || inTangents == null || outTangents == null)
                 {
-                    return null;
-                }
-
-                var pointsArray = pointsData.GetNamedArray("v", null);
-                var inTangents = pointsData.GetNamedArray("i", null);
-                var outTangents = pointsData.GetNamedArray("o", null);
-                var closed = pointsData.GetNamedBoolean("c", false);
-
-                if (pointsArray == null || inTangents == null || outTangents == null || pointsArray.Count != inTangents.Count || pointsArray.Count != outTangents.Count)
-                {
-                    throw new System.InvalidOperationException("Unable to process points array or tangents. " + pointsData);
+                    throw new ArgumentException("Shape data was missing information.");
                 }
                 if (pointsArray.Count == 0)
                 {
@@ -128,67 +144,35 @@ namespace LottieUWP.Model.Content
                 }
 
                 var length = pointsArray.Count;
-                var vertex = VertexAtIndex(0, pointsArray);
-                vertex.X *= scale;
-                vertex.Y *= scale;
+                var vertex = pointsArray[0];
                 var initialPoint = vertex;
                 var curves = new List<CubicCurveData>(length);
 
                 for (var i = 1; i < length; i++)
                 {
-                    vertex = VertexAtIndex(i, pointsArray);
-                    var previousVertex = VertexAtIndex(i - 1, pointsArray);
-                    var cp1 = VertexAtIndex(i - 1, outTangents);
-                    var cp2 = VertexAtIndex(i, inTangents);
+                    vertex = pointsArray[i];
+                    var previousVertex = pointsArray[i - 1];
+                    var cp1 = outTangents[i - 1];
+                    var cp2 = inTangents[i];
                     var shapeCp1 = previousVertex + cp1;
                     var shapeCp2 = vertex + cp2;
-
-                    shapeCp1.X *= scale;
-                    shapeCp1.Y *= scale;
-                    shapeCp2.X *= scale;
-                    shapeCp2.Y *= scale;
-                    vertex.X *= scale;
-                    vertex.Y *= scale;
 
                     curves.Add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
                 }
 
                 if (closed)
                 {
-                    vertex = VertexAtIndex(0, pointsArray);
-                    var previousVertex = VertexAtIndex(length - 1, pointsArray);
-                    var cp1 = VertexAtIndex(length - 1, outTangents);
-                    var cp2 = VertexAtIndex(0, inTangents);
+                    vertex = pointsArray[0];
+                    var previousVertex = pointsArray[length - 1];
+                    var cp1 = outTangents[length - 1];
+                    var cp2 = inTangents[0];
 
                     var shapeCp1 = previousVertex + cp1;
                     var shapeCp2 = vertex + cp2;
 
-                    if (scale != 1f)
-                    {
-                        shapeCp1.X *= scale;
-                        shapeCp1.Y *= scale;
-                        shapeCp2.X *= scale;
-                        shapeCp2.Y *= scale;
-                        vertex.X *= scale;
-                        vertex.Y *= scale;
-                    }
-
                     curves.Add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
                 }
                 return new ShapeData(initialPoint, closed, curves);
-            }
-
-            internal static Vector2 VertexAtIndex(int idx, JsonArray points)
-            {
-                if (idx >= points.Count)
-                {
-                    throw new System.ArgumentException("Invalid index " + idx + ". There are only " + points.Count + " points.");
-                }
-
-                var pointArray = points.GetArrayAt((uint)idx);
-                var x = pointArray[0];
-                var y = pointArray[1];
-                return new Vector2(x != null ? (float)x.GetNumber() : 0, y != null ? (float)y.GetNumber() : 0);
             }
         }
     }

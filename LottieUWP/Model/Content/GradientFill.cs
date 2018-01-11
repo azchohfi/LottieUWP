@@ -1,6 +1,4 @@
-﻿using System;
-using Windows.Data.Json;
-using LottieUWP.Animation.Content;
+﻿using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
 
@@ -8,7 +6,9 @@ namespace LottieUWP.Model.Content
 {
     internal class GradientFill : IContentModel
     {
-        private GradientFill(string name, GradientType gradientType, PathFillType fillType, AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint, AnimatablePointValue endPoint, AnimatableFloatValue highlightLength, AnimatableFloatValue highlightAngle)
+        private GradientFill(string name, GradientType gradientType, PathFillType fillType,
+            AnimatableGradientColorValue gradientColor, AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
+            AnimatablePointValue endPoint, AnimatableFloatValue highlightLength, AnimatableFloatValue highlightAngle)
         {
             GradientType = gradientType;
             FillType = fillType;
@@ -46,60 +46,68 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static GradientFill NewInstance(JsonObject json, LottieComposition composition)
+            internal static GradientFill NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var name = json.GetNamedString("nm");
-
-                var jsonColor = json.GetNamedObject("g", null);
-                if (jsonColor != null && jsonColor.ContainsKey("k"))
-                {
-                    // This is a hack because the "p" value which contains the number of color points is outside
-                    // of "k" which contains the useful data.
-                    var points = (int) jsonColor.GetNamedNumber("p");
-                    jsonColor = jsonColor.GetNamedObject("k");
-                    try
-                    {
-                        jsonColor["p"] = JsonValue.CreateNumberValue(points);
-                    }
-                    catch (Exception)
-                    {
-                        // Do nothing. This shouldn't fail.
-                    }
-                }
+                string name = null;
                 AnimatableGradientColorValue color = null;
-                if (jsonColor != null)
-                {
-                    color = AnimatableGradientColorValue.Factory.NewInstance(jsonColor, composition);
-                }
-
-                var jsonOpacity = json.GetNamedObject("o", null);
                 AnimatableIntegerValue opacity = null;
-                if (jsonOpacity != null)
-                {
-                    opacity = AnimatableIntegerValue.Factory.NewInstance(jsonOpacity, composition);
-                }
-
-                var fillTypeInt = (int) json.GetNamedNumber("r", 1);
-                var fillType = fillTypeInt == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
-
-                var gradientTypeInt = (int) json.GetNamedNumber("t", 1);
-                var gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
-
-                var jsonStartPoint = json.GetNamedObject("s", null);
+                GradientType gradientType = GradientType.Linear;
                 AnimatablePointValue startPoint = null;
-                if (jsonStartPoint != null)
-                {
-                    startPoint = AnimatablePointValue.Factory.NewInstance(jsonStartPoint, composition);
-                }
-
-                var jsonEndPoint = json.GetNamedObject("e", null);
                 AnimatablePointValue endPoint = null;
-                if (jsonEndPoint != null)
+                PathFillType fillType = PathFillType.EvenOdd;
+
+                while (reader.HasNext())
                 {
-                    endPoint = AnimatablePointValue.Factory.NewInstance(jsonEndPoint, composition);
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "g":
+                            int points = -1;
+                            reader.BeginObject();
+                            while (reader.HasNext())
+                            {
+                                switch (reader.NextName())
+                                {
+                                    case "p":
+                                        points = reader.NextInt();
+                                        break;
+                                    case "k":
+                                        color = AnimatableGradientColorValue.Factory.NewInstance(reader, composition,
+                                            points);
+                                        break;
+                                    default:
+                                        reader.SkipValue();
+                                        break;
+                                }
+                            }
+
+                            reader.EndObject();
+                            break;
+                        case "o":
+                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "t":
+                            gradientType = reader.NextInt() == 1 ? GradientType.Linear : GradientType.Radial;
+                            break;
+                        case "s":
+                            startPoint = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "e":
+                            endPoint = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "r":
+                            fillType = reader.NextInt() == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
 
-                return new GradientFill(name, gradientType, fillType, color, opacity, startPoint, endPoint, null, null);
+                return new GradientFill(name, gradientType, fillType, color, opacity, startPoint, endPoint, null,
+                        null);
             }
         }
     }

@@ -1,35 +1,130 @@
-﻿using System.Numerics;
-using Windows.Data.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+using Windows.UI;
+using Newtonsoft.Json;
 
 namespace LottieUWP.Utils
 {
     internal static class JsonUtils
     {
-        internal static Vector2 PointFromJsonObject(JsonObject values, float scale)
+        /// <summary>
+        /// [r,g,b]
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public static Color JsonToColor(JsonReader reader)
         {
-            return new Vector2(ValueFromObject(values["x"]) * scale, ValueFromObject(values["y"]) * scale);
+            reader.BeginArray();
+            var r = (byte)(reader.NextDouble() * 255);
+            var g = (byte)(reader.NextDouble() * 255);
+            var b = (byte)(reader.NextDouble() * 255);
+            while (reader.HasNext())
+            {
+                reader.SkipValue();
+            }
+            reader.EndArray();
+            return Color.FromArgb(255, r, g, b);
         }
 
-        internal static Vector2 PointFromJsonArray(JsonArray values, float scale)
+        public static List<Vector2> JsonToPoints(JsonReader reader, float scale)
         {
-            if (values.Count < 2)
+            List<Vector2> points = new List<Vector2>();
+
+            reader.BeginArray();
+            while (reader.Peek() == JsonToken.StartArray)
             {
-                throw new System.ArgumentException("Unable to parse point for " + values);
+                reader.BeginArray();
+                points.Add(JsonToPoint(reader, scale));
+                reader.EndArray();
             }
-            return new Vector2((float)values.GetNumberAt(0, 1) * scale, (float)values.GetNumberAt(1, 1) * scale);
+            reader.EndArray();
+            return points;
         }
 
-        internal static float ValueFromObject(IJsonValue @object)
+        public static Vector2 JsonToPoint(JsonReader reader, float scale)
         {
-            if (@object.ValueType == JsonValueType.Number)
+            switch (reader.Peek())
             {
-                return (float)@object.GetNumber();
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    return JsonNumbersToPoint(reader, scale);
+                case JsonToken.StartArray: return JsonArrayToPoint(reader, scale);
+                case JsonToken.StartObject: return JsonObjectToPoint(reader, scale);
+                default: throw new ArgumentException("Unknown point starts with " + reader.Peek());
             }
-            if (@object.ValueType == JsonValueType.Array)
+        }
+
+        private static Vector2 JsonNumbersToPoint(JsonReader reader, float scale)
+        {
+            float x = reader.NextDouble();
+            float y = reader.NextDouble();
+            while (reader.HasNext())
             {
-                return (float)@object.GetArray()[0].GetNumber();
+                reader.SkipValue();
             }
-            return 0;
+            return new Vector2(x * scale, y * scale);
+        }
+
+        private static Vector2 JsonArrayToPoint(JsonReader reader, float scale)
+        {
+            float x;
+            float y;
+            reader.BeginArray();
+            x = reader.NextDouble();
+            y = reader.NextDouble();
+            while (reader.Peek() != JsonToken.EndArray)
+            {
+                reader.SkipValue();
+            }
+            reader.EndArray();
+            return new Vector2(x * scale, y * scale);
+        }
+
+        private static Vector2 JsonObjectToPoint(JsonReader reader, float scale)
+        {
+            float x = 0f;
+            float y = 0f;
+            reader.BeginObject();
+            while (reader.HasNext())
+            {
+                switch (reader.NextName())
+                {
+                    case "x":
+                        x = ValueFromObject(reader);
+                        break;
+                    case "y":
+                        y = ValueFromObject(reader);
+                        break;
+                    default:
+                        reader.SkipValue();
+                        break;
+                }
+            }
+            reader.EndObject();
+            return new Vector2(x * scale, y * scale);
+        }
+
+        internal static float ValueFromObject(JsonReader reader)
+        {
+            JsonToken token = reader.Peek();
+            switch (token)
+            {
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    return reader.NextDouble();
+                case JsonToken.StartArray:
+                    reader.BeginArray();
+                    float val = reader.NextDouble();
+                    while (reader.HasNext())
+                    {
+                        reader.SkipValue();
+                    }
+                    reader.EndArray();
+                    return val;
+                default:
+                    throw new ArgumentException("Unknown value for token of type " + token);
+            }
         }
     }
 }

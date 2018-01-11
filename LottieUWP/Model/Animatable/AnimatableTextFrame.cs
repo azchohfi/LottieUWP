@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 
@@ -18,13 +17,9 @@ namespace LottieUWP.Model.Animatable
 
         internal static class Factory
         {
-            internal static AnimatableTextFrame NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableTextFrame NewInstance(JsonReader reader, LottieComposition composition)
             {
-                if (json != null && json.ContainsKey("x"))
-                {
-                    composition.AddWarning("Lottie doesn't support expressions.");
-                }
-                return new AnimatableTextFrame(AnimatableValueParser<DocumentData>.NewInstance(json, 1, composition, ValueFactory.Instance));
+                return new AnimatableTextFrame(AnimatableValueParser<DocumentData>.NewInstance(reader, 1, composition, ValueFactory.Instance));
             }
         }
 
@@ -32,9 +27,9 @@ namespace LottieUWP.Model.Animatable
         {
             internal static readonly ValueFactory Instance = new ValueFactory();
 
-            public DocumentData ValueFromObject(IJsonValue @object, float scale)
+            public DocumentData ValueFromObject(JsonReader reader, float scale)
             {
-                return DocumentData.Factory.NewInstance(@object.GetObject());
+                return DocumentData.Factory.NewInstance(reader);
             }
         }
     }

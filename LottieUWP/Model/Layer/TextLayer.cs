@@ -95,7 +95,7 @@ namespace LottieUWP.Model.Layer
             else
             {
                 var parentScale = Utils.Utils.GetScale(parentMatrix);
-                _strokePaint.StrokeWidth = documentData.StrokeWidth * _composition.DpScale * parentScale;
+                _strokePaint.StrokeWidth = documentData.StrokeWidth * Utils.Utils.DpScale() * parentScale;
             }
 
             if (_lottieDrawable.UseTextGlyphs())
@@ -126,7 +126,7 @@ namespace LottieUWP.Model.Layer
                     continue;
                 }
                 DrawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas);
-                var tx = (float)character.Width * fontScale * _composition.DpScale * parentScale;
+                var tx = (float)character.Width * fontScale * Utils.Utils.DpScale() * parentScale;
                 // Add tracking 
                 var tracking = documentData.Tracking / 10f;
                 if (_trackingAnimation?.Value != null)
@@ -153,7 +153,7 @@ namespace LottieUWP.Model.Layer
                 text = textDelegate.GetTextInternal(text);
             }
             _fillPaint.Typeface = typeface;
-            _fillPaint.TextSize = documentData.Size * _composition.DpScale;
+            _fillPaint.TextSize = (float)documentData.Size * Utils.Utils.DpScale();
             _strokePaint.Typeface = _fillPaint.Typeface;
             _strokePaint.TextSize = _fillPaint.TextSize;
             for (var i = 0; i < text.Length; i++)
@@ -180,7 +180,7 @@ namespace LottieUWP.Model.Layer
                 var path = contentGroups[j].Path;
                 //path.ComputeBounds(out _rectF);
                 Matrix.Set(parentMatrix);
-                Matrix = MatrixExt.PreTranslate(Matrix, 0, (float)-documentData.BaselineShift * _composition.DpScale);
+                Matrix = MatrixExt.PreTranslate(Matrix, 0, (float)-documentData.BaselineShift * Utils.Utils.DpScale());
                 Matrix = MatrixExt.PreScale(Matrix, fontScale, fontScale);
                 path.Transform(Matrix);
                 if (documentData.StrokeOverFill)

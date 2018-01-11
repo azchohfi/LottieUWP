@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Windows.Data.Json;
 using LottieUWP.Animation.Content;
 using LottieUWP.Model.Layer;
 
@@ -45,9 +44,28 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static MergePaths NewInstance(JsonObject json)
+            internal static MergePaths NewInstance(JsonReader reader)
             {
-                return new MergePaths(json.GetNamedString("nm"), (MergePathsMode)(int)json.GetNamedNumber("mm", 1));
+                string name = null;
+                MergePathsMode mode = MergePathsMode.Add;
+
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "mm":
+                            mode = (MergePathsMode)reader.NextInt();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+
+                return new MergePaths(name, mode);
             }
         }
     }

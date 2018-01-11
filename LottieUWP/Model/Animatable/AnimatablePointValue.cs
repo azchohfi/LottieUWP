@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 
@@ -19,9 +18,9 @@ namespace LottieUWP.Model.Animatable
 
         internal static class Factory
         {
-            internal static AnimatablePointValue NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatablePointValue NewInstance(JsonReader reader, LottieComposition composition)
             {
-                return new AnimatablePointValue(AnimatableValueParser<Vector2?>.NewInstance(json, composition.DpScale, composition, PointFFactory.Instance));
+                return new AnimatablePointValue(AnimatableValueParser<Vector2?>.NewInstance(reader, Utils.Utils.DpScale(), composition, PointFFactory.Instance));
             }
         }
     }

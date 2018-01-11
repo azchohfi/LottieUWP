@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Windows.Data.Json;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Utils;
+using Newtonsoft.Json;
 
 namespace LottieUWP.Animation
 {
@@ -47,6 +47,11 @@ namespace LottieUWP.Animation
 
         private float _startProgress = float.MinValue;
         private float _endProgress = float.MinValue;
+
+        // Used by PathKeyframe but it has to be parsed by KeyFrame because we use a JsonReader to 
+        // deserialzie the data so we have to parse everything in order 
+        public Vector2? PathCp1 { get; set; }
+        public Vector2? PathCp2 { get; set; }
 
         public Keyframe(LottieComposition composition, T startValue, T endValue, IInterpolator interpolator, float? startFrame, float? endFrame)
         {
@@ -157,94 +162,170 @@ namespace LottieUWP.Animation
                 }
             }
 
-            internal static Keyframe<T> NewInstance(JsonObject json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
+            internal static Keyframe<T> NewInstance(JsonReader reader, LottieComposition composition, float scale,
+                IAnimatableValueFactory<T> valueFactory, bool animated)
+            {
+                if (animated)
+                    return ParseKeyframe(composition, reader, scale, valueFactory);
+                return ParseStaticValue(reader, scale, valueFactory);
+            }
+
+            /// <summary>
+            /// beginObject will already be called on the keyframe so it can be differentiated with 
+            /// a non animated value. 
+            /// </summary>
+            /// <param name="composition"></param>
+            /// <param name="reader"></param>
+            /// <param name="scale"></param>
+            /// <param name="valueFactory"></param>
+            /// <returns></returns>
+            private static Keyframe<T> ParseKeyframe(LottieComposition composition, JsonReader reader, float scale, IAnimatableValueFactory<T> valueFactory)
             {
                 Vector2? cp1 = null;
                 Vector2? cp2 = null;
                 float startFrame = 0;
                 var startValue = default(T);
                 var endValue = default(T);
-                IInterpolator interpolator = null;
+                var hold = false;
+                IInterpolator interpolator;
 
-                if (json.ContainsKey("t"))
+                // Only used by PathKeyframe 
+                Vector2? pathCp1 = null;
+                Vector2? pathCp2 = null;
+
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
-                    startFrame = (float)json.GetNamedNumber("t", 0);
-                    if (json.TryGetValue("s", out var startValueJson))
+                    switch (reader.NextName())
                     {
-                        startValue = valueFactory.ValueFromObject(startValueJson, scale);
+                        case "t":
+                            startFrame = reader.NextDouble();
+                            break;
+                        case "s":
+                            startValue = valueFactory.ValueFromObject(reader, scale);
+                            break;
+                        case "e":
+                            endValue = valueFactory.ValueFromObject(reader, scale);
+                            break;
+                        case "o":
+                            cp1 = JsonUtils.JsonToPoint(reader, scale);
+                            break;
+                        case "i":
+                            cp2 = JsonUtils.JsonToPoint(reader, scale);
+                            break;
+                        case "h":
+                            hold = reader.NextInt() == 1;
+                            break;
+                        case "to":
+                            pathCp1 = JsonUtils.JsonToPoint(reader, scale);
+                            break;
+                        case "ti":
+                            pathCp2 = JsonUtils.JsonToPoint(reader, scale);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
                     }
+                }
 
-                    if (json.TryGetValue("e", out var endValueJson))
+                reader.EndObject();
+
+                if (hold)
+                {
+                    endValue = startValue;
+                    // TODO: create a HoldInterpolator so progress changes don't invalidate.
+                    interpolator = LinearInterpolator;
+                }
+                else if (cp1 != null && cp2 != null)
+                {
+                    cp1 = new Vector2(MiscUtils.Clamp(cp1.Value.X, -scale, scale),
+                        MiscUtils.Clamp(cp1.Value.Y, -MaxCpValue, MaxCpValue));
+                    cp2 = new Vector2(MiscUtils.Clamp(cp2.Value.X, -scale, scale),
+                        MiscUtils.Clamp(cp2.Value.Y, -MaxCpValue, MaxCpValue));
+
+                    int hash = Utils.Utils.HashFor(cp1.Value.X, cp1.Value.Y, cp2.Value.X, cp2.Value.Y);
+                    if (GetInterpolator(hash, out var interpolatorRef) == false ||
+                        interpolatorRef.TryGetTarget(out interpolator) == false)
                     {
-                        endValue = valueFactory.ValueFromObject(endValueJson, scale);
-                    }
-
-                    var cp1Json = json.GetNamedObject("o", null);
-                    var cp2Json = json.GetNamedObject("i", null);
-                    if (cp1Json != null && cp2Json != null)
-                    {
-                        cp1 = JsonUtils.PointFromJsonObject(cp1Json, scale);
-                        cp2 = JsonUtils.PointFromJsonObject(cp2Json, scale);
-                    }
-
-                    var hold = (int)json.GetNamedNumber("h", 0) == 1;
-
-                    if (hold)
-                    {
-                        endValue = startValue;
-                        // TODO: create a HoldInterpolator so progress changes don't invalidate.
-                        interpolator = LinearInterpolator;
-                    }
-                    else if (cp1 != null)
-                    {
-                        cp1 = new Vector2(MiscUtils.Clamp(cp1.Value.X, -scale, scale),
-                            MiscUtils.Clamp(cp1.Value.Y, -MaxCpValue, MaxCpValue));
-                        cp2 = new Vector2(MiscUtils.Clamp(cp2.Value.X, -scale, scale),
-                            MiscUtils.Clamp(cp2.Value.Y, -MaxCpValue, MaxCpValue));
-
-                        int hash = Utils.Utils.HashFor(cp1.Value.X, cp1.Value.Y, cp2.Value.X, cp2.Value.Y);
-                        if (GetInterpolator(hash, out var interpolatorRef) == false ||
-                            interpolatorRef.TryGetTarget(out interpolator) == false)
+                        interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale,
+                            cp2.Value.X / scale, cp2.Value.Y / scale);
+                        try
                         {
-                            interpolator = new PathInterpolator(cp1.Value.X / scale, cp1.Value.Y / scale, cp2.Value.X / scale, cp2.Value.Y / scale);
-                            try
-                            {
-                                PutInterpolator(hash, new WeakReference<IInterpolator>(interpolator));
-                            }
-                            catch
-                            {
-                                // It is not clear why but SparseArrayCompat sometimes fails with this: 
-                                //     https://github.com/airbnb/lottie-android/issues/452 
-                                // Because this is not a critical operation, we can safely just ignore it. 
-                                // I was unable to repro this to attempt a proper fix. 
-                            }
+                            PutInterpolator(hash, new WeakReference<IInterpolator>(interpolator));
                         }
-                    }
-                    else
-                    {
-                        interpolator = LinearInterpolator;
+                        catch
+                        {
+                            // It is not clear why but SparseArrayCompat sometimes fails with this: 
+                            //     https://github.com/airbnb/lottie-android/issues/452 
+                            // Because this is not a critical operation, we can safely just ignore it. 
+                            // I was unable to repro this to attempt a proper fix. 
+                        }
                     }
                 }
                 else
                 {
-                    startValue = valueFactory.ValueFromObject(json, scale);
-                    endValue = startValue;
+                    interpolator = LinearInterpolator;
                 }
-                return new Keyframe<T>(composition, startValue, endValue, interpolator, startFrame, null);
+
+                var keyframe = new Keyframe<T>(composition, startValue, endValue, interpolator, startFrame, null)
+                {
+                    PathCp1 = pathCp1,
+                    PathCp2 = pathCp2
+                };
+                return keyframe;
             }
 
-            internal static List<Keyframe<T>> ParseKeyframes(JsonArray json, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
+            private static Keyframe<T> ParseStaticValue(JsonReader reader, float scale, IAnimatableValueFactory<T> valueFactory)
             {
-                var length = json.Count;
-                if (length == 0)
-                {
-                    return new List<Keyframe<T>>();
-                }
+                T value = valueFactory.ValueFromObject(reader, scale);
+                return new Keyframe<T>(value);
+            }
+
+            internal static List<Keyframe<T>> ParseKeyframes(JsonReader reader, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
+            {
                 var keyframes = new List<Keyframe<T>>();
-                for (uint i = 0; i < length; i++)
+
+                if (reader.Peek() == JsonToken.String)
                 {
-                    keyframes.Add(NewInstance(json.GetObjectAt(i), composition, scale, valueFactory));
+                    composition.AddWarning("Lottie doesn't support expressions.");
+                    return keyframes;
                 }
+
+                reader.BeginObject();
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "k":
+                            if (reader.Peek() == JsonToken.StartArray)
+                            {
+                                reader.BeginArray();
+
+                                if (reader.Peek() == JsonToken.Integer || reader.Peek() == JsonToken.Float)
+                                {
+                                    // For properties in which the static value is an array of numbers. 
+                                    keyframes.Add(NewInstance(reader, composition, scale, valueFactory, false));
+                                }
+                                else
+                                {
+                                    while (reader.HasNext())
+                                    {
+                                        keyframes.Add(NewInstance(reader, composition, scale, valueFactory, true));
+                                    }
+                                }
+                                reader.EndArray();
+                            }
+                            else
+                            {
+                                keyframes.Add(NewInstance(reader, composition, scale, valueFactory, false));
+                            }
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+                reader.EndObject();
 
                 SetEndFrames<Keyframe<T>, T>(keyframes);
                 return keyframes;

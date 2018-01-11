@@ -12,12 +12,10 @@ namespace LottieUWP.Model.Layer
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag | Paint.FilterBitmapFlag);
         private Rect _src;
         private Rect _dst;
-        private readonly float _density;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
-        internal ImageLayer(LottieDrawable lottieDrawable, Layer layerModel, float density) : base(lottieDrawable, layerModel)
+        internal ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
-            _density = density;
         }
 
         public override void DrawLayer(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
@@ -27,6 +25,8 @@ namespace LottieUWP.Model.Layer
             {
                 return;
             }
+            var density = Utils.Utils.DpScale();
+
             _paint.Alpha = parentAlpha;
             if (_colorFilterAnimation != null)
             {
@@ -35,7 +35,7 @@ namespace LottieUWP.Model.Layer
             canvas.Save();
             canvas.Concat(parentMatrix);
             RectExt.Set(ref _src, 0, 0, PixelWidth, PixelHeight);
-            RectExt.Set(ref _dst, 0, 0, (int)(PixelWidth * _density), (int)(PixelHeight * _density));
+            RectExt.Set(ref _dst, 0, 0, (int)(PixelWidth * density), (int)(PixelHeight * density));
             canvas.DrawBitmap(bitmap, _src, _dst, _paint);
             canvas.Restore();
         }

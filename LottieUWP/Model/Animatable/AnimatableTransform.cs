@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
-using Windows.Data.Json;
-using LottieUWP.Animation;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
 using LottieUWP.Value;
+using Newtonsoft.Json;
 
 namespace LottieUWP.Model.Animatable
 {
@@ -38,21 +36,76 @@ namespace LottieUWP.Model.Animatable
                 return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
             }
 
-            internal static AnimatableTransform NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableTransform NewInstance(JsonReader reader, LottieComposition composition)
             {
-                AnimatablePathValue anchorPoint;
+                AnimatablePathValue anchorPoint = null;
                 IAnimatableValue<Vector2?, Vector2?> position = null;
-                AnimatableScaleValue scale;
+                AnimatableScaleValue scale = null;
                 AnimatableFloatValue rotation = null;
-                AnimatableIntegerValue opacity;
+                AnimatableIntegerValue opacity = null;
                 AnimatableFloatValue startOpacity = null;
                 AnimatableFloatValue endOpacity = null;
-                var anchorJson = json.GetNamedObject("a", null);
-                if (anchorJson != null)
+
+                bool isObject = reader.Peek() == JsonToken.StartObject;
+                if (isObject)
                 {
-                    anchorPoint = new AnimatablePathValue(anchorJson["k"], composition);
+                    reader.BeginObject();
                 }
-                else
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "a":
+                            reader.BeginObject();
+                            while (reader.HasNext())
+                            {
+                                if (reader.NextString().Equals("k"))
+                                {
+                                    anchorPoint = new AnimatablePathValue(reader, composition);
+                                }
+                                else
+                                {
+                                    reader.SkipValue();
+                                }
+                            }
+                            reader.EndObject();
+                            break;
+                        case "p":
+                            position =
+                                AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
+                            break;
+                        case "s":
+                            scale = AnimatableScaleValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "rz":
+                            composition.AddWarning("Lottie doesn't support 3D layers.");
+                            rotation = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "r":
+                            rotation = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "o":
+                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "so":
+                            startOpacity =
+                                AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "eo":
+                            endOpacity =
+                                AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+                if (isObject)
+                {
+                    reader.EndObject();
+                }
+
+                if (anchorPoint == null)
                 {
                     // Cameras don't have an anchor point property. Although we don't support them, at least
                     // we won't crash.
@@ -60,70 +113,19 @@ namespace LottieUWP.Model.Animatable
                     anchorPoint = new AnimatablePathValue();
                 }
 
-                var positionJson = json.GetNamedObject("p", null);
-                if (positionJson != null)
-                {
-                    position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(positionJson, composition);
-                }
-                else
-                {
-                    ThrowMissingTransform("position");
-                }
-
-                var scaleJson = json.GetNamedObject("s", null);
-                if (scaleJson != null)
-                {
-                    scale = AnimatableScaleValue.Factory.NewInstance(scaleJson, composition);
-                }
-                else
+                if (scale == null)
                 {
                     // Somehow some community animations don't have opacity in the transform.
-                    scale = new AnimatableScaleValue(new List<Keyframe<ScaleXy>>());
+                    scale = new AnimatableScaleValue(new ScaleXy(1f, 1f));
                 }
 
-                var rotationJson = json.GetNamedObject("r", null);
-                if (rotationJson == null)
-                {
-                    rotationJson = json.GetNamedObject("rz", null);
-                }
-                if (rotationJson != null)
-                {
-                    rotation = AnimatableFloatValue.Factory.NewInstance(rotationJson, composition, false);
-                }
-                else
-                {
-                    ThrowMissingTransform("rotation");
-                }
-
-                var opacityJson = json.GetNamedObject("o", null);
-                if (opacityJson != null)
-                {
-                    opacity = AnimatableIntegerValue.Factory.NewInstance(opacityJson, composition);
-                }
-                else
+                if (opacity == null)
                 {
                     // Repeaters have start/end opacity instead of opacity 
-                    opacity = new AnimatableIntegerValue(new List<Keyframe<int?>>());
-                }
-
-                var startOpacityJson = json.GetNamedObject("so", null);
-                if (startOpacityJson != null)
-                {
-                    startOpacity = AnimatableFloatValue.Factory.NewInstance(startOpacityJson, composition, false);
-                }
-                
-                var endOpacityJson = json.GetNamedObject("eo", null);
-                if (endOpacityJson != null)
-                {
-                    endOpacity = AnimatableFloatValue.Factory.NewInstance(endOpacityJson, composition, false);
+                    opacity = new AnimatableIntegerValue(100);
                 }
 
                 return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
-            }
-
-            private static void ThrowMissingTransform(string missingProperty)
-            {
-                throw new System.ArgumentException("Missing transform for " + missingProperty);
             }
         }
 

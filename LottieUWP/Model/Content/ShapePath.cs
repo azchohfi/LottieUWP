@@ -1,5 +1,4 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Animation.Content;
+﻿using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
 
@@ -37,10 +36,32 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static ShapePath NewInstance(JsonObject json, LottieComposition composition)
+            internal static ShapePath NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var animatableShapeValue = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("ks"), composition);
-                return new ShapePath(json.GetNamedString("nm"), (int)json.GetNamedNumber("ind"), animatableShapeValue);
+                string name = null;
+                int ind = 0;
+                AnimatableShapeValue shape = null;
+
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "ind":
+                            ind = reader.NextInt();
+                            break;
+                        case "ks":
+                            shape = AnimatableShapeValue.Factory.NewInstance(reader, composition);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+
+                return new ShapePath(name, ind, shape);
             }
         }
     }

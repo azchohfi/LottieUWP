@@ -564,8 +564,8 @@ namespace LottieUWP
         [Obsolete]
         public virtual bool Looping
         {
-            get => _animator.RepeatCount == (int)Infinite;
-            set => _animator.RepeatCount = value ? (int)Infinite : 0;
+            get => _animator.RepeatCount == Infinite;
+            set => _animator.RepeatCount = value ? Infinite : 0;
         }
 
         /// <summary>

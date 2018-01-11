@@ -24,7 +24,7 @@ namespace LottieUWP.Model.Layer
                 case Layer.LayerType.Solid:
                     return new SolidLayer(drawable, layerModel);
                 case Layer.LayerType.Image:
-                    return new ImageLayer(drawable, layerModel, composition.DpScale);
+                    return new ImageLayer(drawable, layerModel);
                 case Layer.LayerType.Null:
                     return new NullLayer(drawable, layerModel);
                 case Layer.LayerType.Text:

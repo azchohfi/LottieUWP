@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Utils;
@@ -13,7 +12,7 @@ namespace LottieUWP.Model.Animatable
         {
         }
 
-        private AnimatableIntegerValue(int? value) : base(value)
+        internal AnimatableIntegerValue(int? value) : base(value)
         {
         }
 
@@ -33,13 +32,9 @@ namespace LottieUWP.Model.Animatable
                 return new AnimatableIntegerValue();
             }
 
-            internal static AnimatableIntegerValue NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableIntegerValue NewInstance(JsonReader reader, LottieComposition composition)
             {
-                if (json != null && json.ContainsKey("x"))
-                {
-                    composition.AddWarning("Lottie doesn't support expressions.");
-                }
-                return new AnimatableIntegerValue(AnimatableValueParser<int?>.NewInstance(json, 1, composition, ValueFactory.Instance));
+                return new AnimatableIntegerValue(AnimatableValueParser<int?>.NewInstance(reader, 1, composition, ValueFactory.Instance));
             }
         }
 
@@ -47,9 +42,9 @@ namespace LottieUWP.Model.Animatable
         {
             internal static readonly ValueFactory Instance = new ValueFactory();
 
-            public int? ValueFromObject(IJsonValue @object, float scale)
+            public int? ValueFromObject(JsonReader reader, float scale)
             {
-                return (int?) Math.Round(JsonUtils.ValueFromObject(@object) * scale);
+                return (int?) Math.Round(JsonUtils.ValueFromObject(reader) * scale);
             }
         }
     }

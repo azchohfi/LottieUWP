@@ -1,5 +1,4 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Animation.Content;
+﻿using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
 
@@ -22,29 +21,40 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static ShapeFill NewInstance(JsonObject json, LottieComposition composition)
+            internal static ShapeFill NewInstance(JsonReader reader, LottieComposition composition)
             {
                 AnimatableColorValue color = null;
-                bool fillEnabled;
+                bool fillEnabled = false;
                 AnimatableIntegerValue opacity = null;
-                var name = json.GetNamedString("nm");
+                string name = null;
+                int fillTypeInt = 1;
 
-                var jsonColor = json.GetNamedObject("c", null);
-                if (jsonColor != null)
+                while (reader.HasNext())
                 {
-                    color = AnimatableColorValue.Factory.NewInstance(jsonColor, composition);
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "c":
+                            color = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "o":
+                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "fillEnabled":
+                            fillEnabled = reader.NextBoolean();
+                            break;
+                        case "r":
+                            fillTypeInt = reader.NextInt();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
 
-                var jsonOpacity = json.GetNamedObject("o", null);
-                if (jsonOpacity != null)
-                {
-                    opacity = AnimatableIntegerValue.Factory.NewInstance(jsonOpacity, composition);
-                }
-                fillEnabled = json.GetNamedBoolean("fillEnabled", false);
-
-                var fillTypeInt = (int)json.GetNamedNumber("r", 1);
                 var fillType = fillTypeInt == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
-
                 return new ShapeFill(name, fillEnabled, fillType, color, opacity);
             }
         }

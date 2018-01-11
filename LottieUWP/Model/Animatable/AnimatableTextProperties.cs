@@ -1,6 +1,4 @@
-﻿using Windows.Data.Json;
-
-namespace LottieUWP.Model.Animatable
+﻿namespace LottieUWP.Model.Animatable
 {
     internal class AnimatableTextProperties
     {
@@ -19,42 +17,62 @@ namespace LottieUWP.Model.Animatable
 
         internal static class Factory
         {
-            internal static AnimatableTextProperties NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableTextProperties NewInstance(JsonReader reader, LottieComposition composition)
             {
-                if (json == null || !json.ContainsKey("a"))
+                AnimatableTextProperties anim = null;
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
+                    switch (reader.NextName())
+                    {
+                        case "a":
+                            anim = ParseAnimatableTextProperties(reader, composition);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+                reader.EndObject();
+                if (anim == null)
+                {
+                    // Not sure if this is possible.
                     return new AnimatableTextProperties(null, null, null, null);
                 }
 
-                var animatablePropertiesJson = json.GetNamedObject("a");
-                
-                var colorJson = animatablePropertiesJson.GetNamedObject("fc", null);
+                return anim;
+            }
+
+            private static AnimatableTextProperties ParseAnimatableTextProperties(JsonReader reader, LottieComposition composition)
+            {
                 AnimatableColorValue color = null;
-                if (colorJson != null)
-                {
-                    color = AnimatableColorValue.Factory.NewInstance(colorJson, composition);
-                }
-
-                var strokeJson = animatablePropertiesJson.GetNamedObject("sc", null);
                 AnimatableColorValue stroke = null;
-                if (strokeJson != null)
-                {
-                    stroke = AnimatableColorValue.Factory.NewInstance(strokeJson, composition);
-                }
-
-                var strokeWidthJson = animatablePropertiesJson.GetNamedObject("sw", null);
                 AnimatableFloatValue strokeWidth = null;
-                if (strokeWidthJson != null)
-                {
-                    strokeWidth = AnimatableFloatValue.Factory.NewInstance(strokeWidthJson, composition);
-                }
-
-                var trackingJson = animatablePropertiesJson.GetNamedObject("t", null);
                 AnimatableFloatValue tracking = null;
-                if (trackingJson != null)
+
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
-                    tracking = AnimatableFloatValue.Factory.NewInstance(trackingJson, composition);
+                    switch (reader.NextName())
+                    {
+                        case "fc":
+                            color = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "sc":
+                            stroke = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "sw":
+                            strokeWidth = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "t":
+                            tracking = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
+                reader.EndObject();
 
                 return new AnimatableTextProperties(color, stroke, strokeWidth, tracking);
             }

@@ -1,5 +1,4 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Animation.Content;
+﻿using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
 
@@ -30,12 +29,34 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static Repeater NewInstance(JsonObject json, LottieComposition composition)
+            internal static Repeater NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var name = json.GetNamedString("nm", "");
-                var copies = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("c", null), composition, false);
-                var offset = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o", null), composition, false);
-                var transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("tr", null), composition);
+                string name = null;
+                AnimatableFloatValue copies = null;
+                AnimatableFloatValue offset = null;
+                AnimatableTransform transform = null;
+
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "c":
+                            copies = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "o":
+                            offset = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "tr":
+                            transform = AnimatableTransform.Factory.NewInstance(reader, composition);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
 
                 return new Repeater(name, copies, offset, transform);
             }

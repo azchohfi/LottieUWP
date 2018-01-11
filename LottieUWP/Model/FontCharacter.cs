@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Windows.Data.Json;
 using LottieUWP.Model.Content;
 
 namespace LottieUWP.Model
@@ -39,25 +37,62 @@ namespace LottieUWP.Model
 
         internal static class Factory
         {
-            internal static FontCharacter NewInstance(JsonObject json, LottieComposition composition)
+            internal static FontCharacter NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var character = json.GetNamedString("ch").ElementAt(0);
-                var size = (int)json.GetNamedNumber("size", 0);
-                var width = json.GetNamedNumber("w", 0);
-                var style = json.GetNamedString("style", "");
-                var fontFamily = json.GetNamedString("fFamily", "");
-                var data = json.GetNamedObject("data", null);
-                var shapes = new List<ShapeGroup>();
+                char character = '\0';
+                int size = 0;
+                double width = 0;
+                string style = null;
+                string fontFamily = null;
+                List<ShapeGroup> shapes = new List<ShapeGroup>();
 
-                var shapesJson = data?.GetNamedArray("shapes", null);
-                if (shapesJson != null)
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
-                    shapes = new List<ShapeGroup>(shapesJson.Count);
-                    for (uint i = 0; i < shapesJson.Count; i++)
+                    switch (reader.NextName())
                     {
-                        shapes.Add((ShapeGroup)ShapeGroup.ShapeItemWithJson(shapesJson.GetObjectAt(i), composition));
+                        case "ch":
+                            character = reader.NextString()[0];
+                            break;
+                        case "size":
+                            size = reader.NextInt();
+                            break;
+                        case "w":
+                            width = reader.NextDouble();
+                            break;
+                        case "style":
+                            style = reader.NextString();
+                            break;
+                        case "fFamily":
+                            fontFamily = reader.NextString();
+                            break;
+                        case "data":
+                            reader.BeginObject();
+                            while (reader.HasNext())
+                            {
+                                if ("shapes".Equals(reader.NextString()))
+                                {
+                                    reader.BeginArray();
+                                    while (reader.HasNext())
+                                    {
+                                        shapes.Add((ShapeGroup)ShapeGroup.ShapeItemWithJson(reader, composition));
+                                    }
+                                    reader.EndArray();
+                                }
+                                else
+                                {
+                                    reader.SkipValue();
+                                }
+                            }
+                            reader.EndObject();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
                     }
                 }
+                reader.EndObject();
+
                 return new FontCharacter(shapes, character, size, width, style, fontFamily);
             }
         }

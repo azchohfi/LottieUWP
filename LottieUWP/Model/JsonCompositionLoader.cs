@@ -1,7 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Windows.Graphics.Display;
 
 namespace LottieUWP.Model
 {
@@ -17,10 +18,18 @@ namespace LottieUWP.Model
         internal async Task<LottieComposition> Execute(params JsonObject[] @params)
         {
             var tcs = new TaskCompletionSource<LottieComposition>();
-            var resolutionScale = DisplayInformation.GetForCurrentView().ResolutionScale;
+            Utils.Utils.DpScale();
             await Task.Run(() =>
             {
-                tcs.SetResult(LottieComposition.Factory.FromJsonSync(resolutionScale, @params[0]));
+                try
+                {
+                    var reader = new JsonReader(new StringReader(@params[0].ToString()));
+                    tcs.SetResult(LottieComposition.Factory.FromJsonSync(reader));
+                }
+                catch (IOException e)
+                {
+                    throw new InvalidOperationException(e.Message);
+                }
             }, _cancellationToken);
             return await tcs.Task;
         }

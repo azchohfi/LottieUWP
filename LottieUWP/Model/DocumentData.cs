@@ -1,6 +1,6 @@
 ﻿using System;
-using Windows.Data.Json;
 using Windows.UI;
+using LottieUWP.Utils;
 
 namespace LottieUWP.Model
 {
@@ -8,7 +8,7 @@ namespace LottieUWP.Model
     {
         internal readonly string Text;
         internal readonly string FontName;
-        internal readonly int Size;
+        internal readonly double Size;
         internal readonly int Justification;
         internal readonly int Tracking;
         internal readonly double LineHeight;
@@ -18,7 +18,7 @@ namespace LottieUWP.Model
         internal readonly int StrokeWidth;
         internal readonly bool StrokeOverFill;
 
-        internal DocumentData(string text, string fontName, int size, int justification, int tracking, double lineHeight, double baselineShift, Color color, Color strokeColor, int strokeWidth, bool strokeOverFill)
+        internal DocumentData(string text, string fontName, double size, int justification, int tracking, double lineHeight, double baselineShift, Color color, Color strokeColor, int strokeWidth, bool strokeOverFill)
         {
             Text = text;
             FontName = fontName;
@@ -35,33 +35,66 @@ namespace LottieUWP.Model
 
         internal static class Factory
         {
-            internal static DocumentData NewInstance(JsonObject json)
+            internal static DocumentData NewInstance(JsonReader reader)
             {
-                var text = json.GetNamedString("t", "");
-                var fontName = json.GetNamedString("f", "");
-                var size = (int)json.GetNamedNumber("s", 0);
-                var justification = (int)json.GetNamedNumber("j", 0);
-                var tracking = (int)json.GetNamedNumber("tr", 0);
-                var lineHeight = json.GetNamedNumber("lh", 0);
-                var baselineShift = json.GetNamedNumber("ls", 0);
-                var colorArray = json.GetNamedArray("fc");
-                var color = Color.FromArgb(255, (byte)(colorArray.GetNumberAt(0) * 255), (byte)(colorArray.GetNumberAt(1) * 255), (byte)(colorArray.GetNumberAt(2) * 255));
-
-                var strokeArray = json.GetNamedArray("sc", null);
+                string text = null;
+                string fontName = null;
+                double size = 0;
+                int justification = 0;
+                int tracking = 0;
+                double lineHeight = 0;
+                double baselineShift = 0;
+                Color fillColor;
                 Color strokeColor;
-                if (strokeArray != null)
+                int strokeWidth = 0;
+                bool strokeOverFill = true;
+
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
-                    strokeColor = Color.FromArgb(
-                        255,
-                        (byte)(strokeArray.GetNumberAt(0) * 255),
-                        (byte)(strokeArray.GetNumberAt(1) * 255),
-                        (byte)(strokeArray.GetNumberAt(2) * 255));
+                    switch (reader.NextName())
+                    {
+                        case "t":
+                            text = reader.NextString();
+                            break;
+                        case "f":
+                            fontName = reader.NextString();
+                            break;
+                        case "s":
+                            size = reader.NextDouble();
+                            break;
+                        case "j":
+                            justification = reader.NextInt();
+                            break;
+                        case "tr":
+                            tracking = reader.NextInt();
+                            break;
+                        case "lh":
+                            lineHeight = reader.NextDouble();
+                            break;
+                        case "ls":
+                            baselineShift = reader.NextDouble();
+                            break;
+                        case "fc":
+                            fillColor = JsonUtils.JsonToColor(reader);
+                            break;
+                        case "sc":
+                            strokeColor = JsonUtils.JsonToColor(reader);
+                            break;
+                        case "sw":
+                            strokeWidth = reader.NextInt();
+                            break;
+                        case "of":
+                            strokeOverFill = reader.NextBoolean();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
+                reader.EndObject();
 
-                var strokeWidth = (int)json.GetNamedNumber("sw", 0);
-                var strokeOverFill = json.GetNamedBoolean("of", false);
-
-                return new DocumentData(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill);
+                return new DocumentData(text, fontName, size, justification, tracking, lineHeight, baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill);
             }
         }
 
@@ -71,7 +104,7 @@ namespace LottieUWP.Model
             long temp;
             result = Text.GetHashCode();
             result = 31 * result + FontName.GetHashCode();
-            result = 31 * result + Size;
+            result = (int)(31 * result + Size);
             result = 31 * result + Justification;
             result = 31 * result + Tracking;
             temp = BitConverter.DoubleToInt64Bits(LineHeight);

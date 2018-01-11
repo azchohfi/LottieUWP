@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using Windows.Data.Json;
 using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
@@ -9,43 +8,76 @@ namespace LottieUWP.Model.Content
 {
     internal class ShapeGroup : IContentModel
     {
-        internal static IContentModel ShapeItemWithJson(JsonObject json, LottieComposition composition)
+        internal static IContentModel ShapeItemWithJson(JsonReader reader, LottieComposition composition)
         {
-            var type = json.GetNamedString("ty");
+            string type = null;
 
+            reader.BeginObject();
+            while (reader.HasNext())
+            {
+                if (reader.NextString().Equals("ty"))
+                {
+                    type = reader.NextString();
+                    break;
+                }
+
+                reader.SkipValue();
+            }
+
+            IContentModel model = null;
             switch (type)
             {
                 case "gr":
-                    return Factory.NewInstance(json, composition);
+                    model = Factory.NewInstance(reader, composition);
+                    break;
                 case "st":
-                    return ShapeStroke.Factory.NewInstance(json, composition);
+                    model = ShapeStroke.Factory.NewInstance(reader, composition);
+                    break;
                 case "gs":
-                    return GradientStroke.Factory.NewInstance(json, composition);
+                    model = GradientStroke.Factory.NewInstance(reader, composition);
+                    break;
                 case "fl":
-                    return ShapeFill.Factory.NewInstance(json, composition);
+                    model = ShapeFill.Factory.NewInstance(reader, composition);
+                    break;
                 case "gf":
-                    return GradientFill.Factory.NewInstance(json, composition);
+                    model = GradientFill.Factory.NewInstance(reader, composition);
+                    break;
                 case "tr":
-                    return AnimatableTransform.Factory.NewInstance(json, composition);
+                    model = AnimatableTransform.Factory.NewInstance(reader, composition);
+                    break;
                 case "sh":
-                    return ShapePath.Factory.NewInstance(json, composition);
+                    model = ShapePath.Factory.NewInstance(reader, composition);
+                    break;
                 case "el":
-                    return CircleShape.Factory.NewInstance(json, composition);
+                    model = CircleShape.Factory.NewInstance(reader, composition);
+                    break;
                 case "rc":
-                    return RectangleShape.Factory.NewInstance(json, composition);
+                    model = RectangleShape.Factory.NewInstance(reader, composition);
+                    break;
                 case "tm":
-                    return ShapeTrimPath.Factory.NewInstance(json, composition);
+                    model = ShapeTrimPath.Factory.NewInstance(reader, composition);
+                    break;
                 case "sr":
-                    return PolystarShape.Factory.NewInstance(json, composition);
+                    model = PolystarShape.Factory.NewInstance(reader, composition);
+                    break;
                 case "mm":
-                    return MergePaths.Factory.NewInstance(json);
+                    model = MergePaths.Factory.NewInstance(reader);
+                    break;
                 case "rp":
-                    return Repeater.Factory.NewInstance(json, composition);
+                    model = Repeater.Factory.NewInstance(reader, composition);
+                    break;
                 default:
                     Debug.WriteLine("Unknown shape type " + type, LottieLog.Tag);
                     break;
             }
-            return null;
+
+            while (reader.HasNext())
+            {
+                reader.SkipValue();
+            }
+            reader.EndObject();
+
+            return model;
         }
 
         private readonly string _name;
@@ -59,20 +91,37 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static ShapeGroup NewInstance(JsonObject json, LottieComposition composition)
+            internal static ShapeGroup NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var jsonItems = json.GetNamedArray("it");
-                var name = json.GetNamedString("nm");
+                string name = null;
                 var items = new List<IContentModel>();
 
-                for (uint i = 0; i < jsonItems.Count; i++)
+                while (reader.HasNext())
                 {
-                    var newItem = ShapeItemWithJson(jsonItems.GetObjectAt(i), composition);
-                    if (newItem != null)
+                    switch (reader.NextName())
                     {
-                        items.Add(newItem);
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "it":
+                            reader.BeginArray();
+                            while (reader.HasNext())
+                            {
+                                var newItem = ShapeItemWithJson(reader, composition);
+                                if (newItem != null)
+                                {
+                                    items.Add(newItem);
+                                }
+                            }
+
+                            reader.EndArray();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
                     }
                 }
+
                 return new ShapeGroup(name, items);
             }
         }

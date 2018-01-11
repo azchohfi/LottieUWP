@@ -13,6 +13,7 @@ namespace LottieUWP.Utils
         private static Path _tempPath2 = new Path();
         private static Vector2[] _points = new Vector2[2];
         private static readonly float Sqrt2 = (float)Math.Sqrt(2);
+        private static float _dpScale = -1;
 
         internal static Path CreatePath(Vector2 startPoint, Vector2 endPoint, Vector2? cp1, Vector2? cp2)
         {
@@ -230,12 +231,20 @@ namespace LottieUWP.Utils
             //}
             //else
             //{
-            //    //noinspection deprecation 
             //    return Settings.System.getFloat(context.getContentResolver(),
             //        Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
             //}
             float systemAnimationScale = 1;
             return systemAnimationScale;
+        }
+
+        public static float DpScale()
+        {
+            if (_dpScale == -1)
+            {
+                _dpScale = (int)DisplayInformation.GetForCurrentView().ResolutionScale / 100f;
+            }
+            return _dpScale;
         }
     }
 }

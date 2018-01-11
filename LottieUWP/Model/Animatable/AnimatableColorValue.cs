@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.Data.Json;
 using Windows.UI;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
@@ -19,9 +18,9 @@ namespace LottieUWP.Model.Animatable
 
         internal static class Factory
         {
-            internal static AnimatableColorValue NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableColorValue NewInstance(JsonReader reader, LottieComposition composition)
             {
-                return new AnimatableColorValue(AnimatableValueParser<Color>.NewInstance(json, 1f, composition, ColorFactory.Instance));
+                return new AnimatableColorValue(AnimatableValueParser<Color>.NewInstance(reader, 1f, composition, ColorFactory.Instance));
             }
         }
     }

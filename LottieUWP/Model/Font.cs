@@ -1,6 +1,4 @@
-﻿using Windows.Data.Json;
-
-namespace LottieUWP.Model
+﻿namespace LottieUWP.Model
 {
     internal class Font
     {
@@ -22,12 +20,37 @@ namespace LottieUWP.Model
 
         internal static class Factory
         {
-            internal static Font NewInstance(JsonObject json)
+            internal static Font NewInstance(JsonReader reader)
             {
-                var family = json.GetNamedString("fFamily", "");
-                var name = json.GetNamedString("fName", "");
-                var style = json.GetNamedString("fStyle", "");
-                var ascent = (float)json.GetNamedNumber("ascent", 0);
+                string family = null;
+                string name = null;
+                string style = null;
+                float ascent = 0;
+
+                reader.BeginObject();
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "fFamily":
+                            family = reader.NextString();
+                            break;
+                        case "fName":
+                            name = reader.NextString();
+                            break;
+                        case "fStyle":
+                            style = reader.NextString();
+                            break;
+                        case "ascent":
+                            ascent = reader.NextDouble();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+                reader.EndObject();
+
                 return new Font(family, name, style, ascent);
             }
         }

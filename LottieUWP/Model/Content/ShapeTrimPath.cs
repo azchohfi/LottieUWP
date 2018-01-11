@@ -1,5 +1,4 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Animation.Content;
+﻿using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
 
@@ -52,9 +51,40 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static ShapeTrimPath NewInstance(JsonObject json, LottieComposition composition)
+            internal static ShapeTrimPath NewInstance(JsonReader reader, LottieComposition composition)
             {
-                return new ShapeTrimPath(json.GetNamedString("nm"), (Type)(int)json.GetNamedNumber("m", 1), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("s"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("e"), composition, false), AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("o"), composition, false));
+                string name = null;
+                Type type = Type.Simultaneously;
+                AnimatableFloatValue start = null;
+                AnimatableFloatValue end = null;
+                AnimatableFloatValue offset = null;
+
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "s":
+                            start = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "e":
+                            end = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "o":
+                            offset = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "m":
+                            type = (Type)reader.NextInt();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+
+                return new ShapeTrimPath(name, type, start, end, offset);
             }
         }
     }

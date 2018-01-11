@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Windows.Data.Json;
 using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
@@ -57,28 +56,55 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static PolystarShape NewInstance(JsonObject json, LottieComposition composition)
+            internal static PolystarShape NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var name = json.GetNamedString("nm");
-                var type = (Type)(int)json.GetNamedNumber("sy");
-                var points = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("pt"), composition, false);
-                var position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(json.GetNamedObject("p"), composition);
-                var rotation = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("r"), composition, false);
-                var outerRadius = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("or"), composition);
-                var outerRoundedness = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("os"), composition, false);
-                AnimatableFloatValue innerRadius;
-                AnimatableFloatValue innerRoundedness;
+                string name = null;
+                Type type = Type.Polygon;
+                AnimatableFloatValue points = null;
+                IAnimatableValue<Vector2?, Vector2?> position = null;
+                AnimatableFloatValue rotation = null;
+                AnimatableFloatValue outerRadius = null;
+                AnimatableFloatValue outerRoundedness = null;
+                AnimatableFloatValue innerRadius = null;
+                AnimatableFloatValue innerRoundedness = null;
 
-                if (type == Type.Star)
+                while (reader.HasNext())
                 {
-                    innerRadius = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("ir"), composition);
-                    innerRoundedness = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("is"), composition, false);
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "sy":
+                            type = (Type)reader.NextInt();
+                            break;
+                        case "pt":
+                            points = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "p":
+                            position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
+                            break;
+                        case "r":
+                            rotation = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "or":
+                            outerRadius = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "os":
+                            outerRoundedness = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "ir":
+                            innerRadius = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "is":
+                            innerRoundedness = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
-                else
-                {
-                    innerRadius = null;
-                    innerRoundedness = null;
-                }
+
                 return new PolystarShape(name, type, points, position, rotation, innerRadius, outerRadius, innerRoundedness, outerRoundedness);
             }
         }

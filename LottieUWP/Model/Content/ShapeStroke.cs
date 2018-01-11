@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.Data.Json;
 using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
@@ -70,39 +69,87 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static ShapeStroke NewInstance(JsonObject json, LottieComposition composition)
+            internal static ShapeStroke NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var name = json.GetNamedString("nm");
-                var lineDashPattern = new List<AnimatableFloatValue>();
-                var color = AnimatableColorValue.Factory.NewInstance(json.GetNamedObject("c"), composition);
-                var width = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("w"), composition);
-                var opacity = AnimatableIntegerValue.Factory.NewInstance(json.GetNamedObject("o"), composition);
-                var capType = (LineCapType)(int)(json.GetNamedNumber("lc") - 1);
-                var joinType = (LineJoinType)(int)(json.GetNamedNumber("lj") - 1);
+                string name = null;
+                AnimatableColorValue color = null;
+                AnimatableFloatValue width = null;
+                AnimatableIntegerValue opacity = null;
+                LineCapType capType = LineCapType.Unknown;
+                LineJoinType joinType = LineJoinType.Round;
                 AnimatableFloatValue offset = null;
 
-                if (json.ContainsKey("d"))
+                List<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
+
+                while (reader.HasNext())
                 {
-                    var dashesJson = json.GetNamedArray("d");
-                    for (uint i = 0; i < dashesJson.Count; i++)
+                    switch (reader.NextName())
                     {
-                        var dashJson = dashesJson.GetObjectAt(i);
-                        var n = dashJson.GetNamedString("n");
-                        if (n.Equals("o"))
-                        {
-                            var value = dashJson.GetNamedObject("v");
-                            offset = AnimatableFloatValue.Factory.NewInstance(value, composition);
-                        }
-                        else if (n.Equals("d") || n.Equals("g"))
-                        {
-                            var value = dashJson.GetNamedObject("v");
-                            lineDashPattern.Add(AnimatableFloatValue.Factory.NewInstance(value, composition));
-                        }
-                    }
-                    if (lineDashPattern.Count == 1)
-                    {
-                        // If there is only 1 value then it is assumed to be equal parts on and off.
-                        lineDashPattern.Add(lineDashPattern[0]);
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "c":
+                            color = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "w":
+                            width = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "o":
+                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "lc":
+                            capType = (LineCapType)(reader.NextInt() - 1);
+                            break;
+                        case "lj":
+                            joinType = (LineJoinType)(reader.NextInt() - 1);
+                            break;
+                        case "d":
+                            reader.BeginArray();
+                            while (reader.HasNext())
+                            {
+                                string n = null;
+                                AnimatableFloatValue val = null;
+
+                                reader.BeginObject();
+                                while (reader.HasNext())
+                                {
+                                    switch (reader.NextName())
+                                    {
+                                        case "n":
+                                            n = reader.NextString();
+                                            break;
+                                        case "v":
+                                            val = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                                            break;
+                                        default:
+                                            reader.SkipValue();
+                                            break;
+                                    }
+                                }
+                                reader.EndObject();
+
+                                switch (n)
+                                {
+                                    case "o":
+                                        offset = val;
+                                        break;
+                                    case "d":
+                                    case "g":
+                                        lineDashPattern.Add(val);
+                                        break;
+                                }
+                            }
+                            reader.EndArray();
+
+                            if (lineDashPattern.Count == 1)
+                            {
+                                // If there is only 1 value then it is assumed to be equal parts on and off. 
+                                lineDashPattern.Add(lineDashPattern[0]);
+                            }
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
                     }
                 }
                 return new ShapeStroke(name, offset, lineDashPattern, color, opacity, width, capType, joinType);

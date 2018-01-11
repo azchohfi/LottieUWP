@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Value;
@@ -12,7 +11,7 @@ namespace LottieUWP.Model.Animatable
         {
         }
 
-        private AnimatableScaleValue(ScaleXy value) : base(value)
+        internal AnimatableScaleValue(ScaleXy value) : base(value)
         {
         }
 
@@ -27,9 +26,9 @@ namespace LottieUWP.Model.Animatable
 
         internal static class Factory
         {
-            internal static AnimatableScaleValue NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableScaleValue NewInstance(JsonReader reader, LottieComposition composition)
             {
-                return new AnimatableScaleValue(AnimatableValueParser<ScaleXy>.NewInstance(json, 1, composition, ScaleXy.Factory.Instance));
+                return new AnimatableScaleValue(AnimatableValueParser<ScaleXy>.NewInstance(reader, 1, composition, ScaleXy.Factory.Instance));
             }
 
             internal static AnimatableScaleValue NewInstance()

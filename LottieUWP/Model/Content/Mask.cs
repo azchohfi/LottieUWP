@@ -1,5 +1,4 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Model.Animatable;
+﻿using LottieUWP.Model.Animatable;
 
 namespace LottieUWP.Model.Content
 {
@@ -24,28 +23,50 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static Mask NewMask(JsonObject json, LottieComposition composition)
+            internal static Mask NewMask(JsonReader reader, LottieComposition composition)
             {
-                MaskMode maskMode;
-                switch (json.GetNamedString("mode"))
+                MaskMode maskMode = MaskMode.MaskModeUnknown;
+                AnimatableShapeValue maskPath = null;
+                AnimatableIntegerValue opacity = null;
+
+
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
-                    case "a":
-                        maskMode = MaskMode.MaskModeAdd;
-                        break;
-                    case "s":
-                        maskMode = MaskMode.MaskModeSubtract;
-                        break;
-                    case "i":
-                        maskMode = MaskMode.MaskModeIntersect;
-                        break;
-                    default:
-                        maskMode = MaskMode.MaskModeUnknown;
-                        break;
+                    switch (reader.NextName())
+                    {
+                        case "mode":
+                            switch (reader.NextString())
+                            {
+                                case "a":
+                                    maskMode = MaskMode.MaskModeAdd;
+                                    break;
+                                case "s":
+                                    maskMode = MaskMode.MaskModeSubtract;
+                                    break;
+                                case "i":
+                                    maskMode = MaskMode.MaskModeIntersect;
+                                    break;
+                                default:
+                                    maskMode = MaskMode.MaskModeUnknown;
+                                    break;
+                            }
+
+                            break;
+                        case "pt":
+                            maskPath = AnimatableShapeValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "o":
+                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
 
-                var maskPath = AnimatableShapeValue.Factory.NewInstance(json.GetNamedObject("pt"), composition);
-                var opacityJson = json.GetNamedObject("o", null);
-                var opacity = AnimatableIntegerValue.Factory.NewInstance(opacityJson, composition);
+                reader.EndObject();
+
                 return new Mask(maskMode, maskPath, opacity);
             }
         }

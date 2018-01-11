@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Windows.Data.Json;
 using LottieUWP.Animation.Content;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Layer;
@@ -18,11 +17,37 @@ namespace LottieUWP.Model.Content
 
         internal static class Factory
         {
-            internal static CircleShape NewInstance(JsonObject json, LottieComposition composition)
+            internal static CircleShape NewInstance(JsonReader reader, LottieComposition composition)
             {
-                return new CircleShape(json.GetNamedString("nm"), AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(json.GetNamedObject("p"), composition), AnimatablePointValue.Factory.NewInstance(json.GetNamedObject("s"), composition),
-                    // "d" is 2 for normal and 3 for reversed.
-                    (int)json.GetNamedNumber("d", 2) == 3);
+                string name = null;
+                IAnimatableValue<Vector2?, Vector2?> position = null;
+                AnimatablePointValue size = null;
+                bool reversed = false;
+
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "nm":
+                            name = reader.NextString();
+                            break;
+                        case "p":
+                            position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
+                            break;
+                        case "s":
+                            size = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                            break;
+                        case "d":
+                            // "d" is 2 for normal and 3 for reversed. 
+                            reversed = reader.NextInt() == 3;
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+
+                return new CircleShape(name, position, size, reversed);
             }
         }
 

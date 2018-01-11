@@ -138,6 +138,7 @@
     <Compile Include="FullPathIterator.cs" />
     <Compile Include="HashMapHelperClass.cs" />
     <Compile Include="IAnimatable.cs" />
+    <Compile Include="JsonReader.cs" />
     <Compile Include="Model\Animatable\IAnimatableValue.cs" />
     <Compile Include="Animator.cs" />
     <Compile Include="Animation\Content\BaseStrokeContent.cs" />
@@ -153,7 +154,6 @@
     <Compile Include="Animation\Content\GradientStrokeContent.cs" />
     <Compile Include="IImageAssetDelegate.cs" />
     <Compile Include="IInterpolator.cs" />
-    <Compile Include="JsonArrayExt.cs" />
     <Compile Include="Animation\Content\LinearGradient.cs" />
     <Compile Include="LottieLog.cs" />
     <Compile Include="Manager\FontAssetManager.cs" />
@@ -258,7 +258,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.5</Version>
+      <Version>6.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Win2D.uwp">
       <Version>1.21.0</Version>

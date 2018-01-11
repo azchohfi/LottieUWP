@@ -1,6 +1,6 @@
-﻿using Windows.Data.Json;
-using Windows.UI;
+﻿using Windows.UI;
 using LottieUWP.Model.Animatable;
+using Newtonsoft.Json;
 
 namespace LottieUWP.Model
 {
@@ -8,25 +8,30 @@ namespace LottieUWP.Model
     {
         internal static readonly ColorFactory Instance = new ColorFactory();
 
-        public Color ValueFromObject(IJsonValue @object, float scale)
+        public Color ValueFromObject(JsonReader reader, float scale)
         {
-            var colorArray = @object.GetArray();
-            if (colorArray.Count == 4)
+            bool isArray = reader.Peek() == JsonToken.StartArray;
+            if (isArray)
             {
-                var shouldUse255 = true;
-                for (var i = 0; i < colorArray.Count; i++)
-                {
-                    var colorChannel = colorArray[i].GetNumber();
-                    if (colorChannel > 1f)
-                    {
-                        shouldUse255 = false;
-                    }
-                }
-
-                var multiplier = shouldUse255 ? 255f : 1f;
-                return Color.FromArgb((byte)(colorArray[3].GetNumber() * multiplier), (byte)(colorArray[0].GetNumber() * multiplier), (byte)(colorArray[1].GetNumber() * multiplier), (byte)(colorArray[2].GetNumber() * multiplier));
+                reader.BeginArray();
             }
-            return Colors.Black;
+            var r = reader.NextDouble();
+            var g = reader.NextDouble();
+            var b = reader.NextDouble();
+            var a = reader.NextDouble();
+            if (isArray)
+            {
+                reader.EndArray();
+            }
+
+            if (r <= 1 && g <= 1 && b <= 1 && a <= 1)
+            {
+                r *= 255;
+                g *= 255;
+                b *= 255;
+                a *= 255;
+            }
+            return Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model.Content;
@@ -19,9 +18,9 @@ namespace LottieUWP.Model.Animatable
 
         internal static class Factory
         {
-            internal static AnimatableShapeValue NewInstance(JsonObject json, LottieComposition composition)
+            internal static AnimatableShapeValue NewInstance(JsonReader reader, LottieComposition composition)
             {
-                return new AnimatableShapeValue(AnimatableValueParser<ShapeData>.NewInstance(json, composition.DpScale, composition, ShapeData.Factory.Instance));
+                return new AnimatableShapeValue(AnimatableValueParser<ShapeData>.NewInstance(reader, Utils.Utils.DpScale(), composition, ShapeData.Factory.Instance));
             }
         }
     }

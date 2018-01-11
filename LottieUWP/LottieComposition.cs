@@ -33,25 +33,9 @@ namespace LottieUWP
         // This is stored as a set to avoid duplicates.
         private readonly HashSet<string> _warnings = new HashSet<string>();
         private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
-        private readonly float _startFrame;
-        private readonly float _endFrame;
-        private readonly float _frameRate;
-
-        private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate, float dpScale, int major, int minor, int patch)
-        {
-            Bounds = bounds;
-            _startFrame = startFrame;
-            _endFrame = endFrame;
-            _frameRate = frameRate;
-            DpScale = dpScale;
-            MajorVersion = major;
-            MinorVersion = minor;
-            PatchVersion = patch;
-            if (!Utils.Utils.IsAtLeastVersion(this, 4, 5, 0))
-            {
-                AddWarning("Lottie only supports bodymovin >= 4.5.0");
-            }
-        }
+        private float _startFrame;
+        private float _endFrame;
+        private float _frameRate;
 
         internal void AddWarning(string warning)
         {
@@ -74,7 +58,7 @@ namespace LottieUWP
             return layer;
         }
 
-        public virtual Rect Bounds { get; }
+        public virtual Rect Bounds { get; private set; }
 
         public virtual float Duration
         {
@@ -109,12 +93,10 @@ namespace LottieUWP
 
         internal virtual float DurationFrames => Duration * _frameRate / 1000f;
 
-        internal virtual float DpScale { get; }
-
         /* Bodymovin version */
-        internal int MajorVersion { get; }
-        internal int MinorVersion { get; }
-        internal int PatchVersion { get; }
+        internal int MajorVersion { get; private set; }
+        internal int MinorVersion { get; private set; }
+        internal int PatchVersion { get; private set; }
 
         public override string ToString()
         {
@@ -157,7 +139,13 @@ namespace LottieUWP
                 return await loader.Execute(stream);
             }
 
+            [Obsolete]
             public static LottieComposition FromFileSync(ResolutionScale resolutionScale, string fileName)
+            {
+                return FromFileSync(fileName);
+            }
+
+            public static LottieComposition FromFileSync(string fileName)
             {
                 Stream stream;
                 try
@@ -168,7 +156,7 @@ namespace LottieUWP
                 {
                     throw new InvalidOperationException("Unable to find file " + fileName, e);
                 }
-                return FromInputStream(resolutionScale, stream);
+                return FromInputStream(stream);
             }
 
             /// <summary>
@@ -181,30 +169,15 @@ namespace LottieUWP
                 return await loader.Execute(json);
             }
 
-            internal static LottieComposition FromInputStream(ResolutionScale resolutionScale, Stream stream)
+            internal static LottieComposition FromInputStream(Stream stream)
             {
                 try
                 {
-                    using (var bufferedReader = new StreamReader(stream, Encoding.UTF8))
-                    {
-                        var total = new StringBuilder();
-                        string line;
-                        while ((line = bufferedReader.ReadLine()) != null)
-                        {
-                            total.Append(line);
-                        }
-                        var jsonObject = JsonObject.Parse(total.ToString());
-                        return FromJsonSync(resolutionScale, jsonObject);
-                    }
+                    return FromJsonSync(new JsonReader(new StreamReader(stream, Encoding.UTF8)));
                 }
                 catch (IOException e)
                 {
                     Debug.WriteLine(new InvalidOperationException("Unable to find file.", e), LottieLog.Tag);
-                    Debug.WriteLine("Failed to load composition.", LottieLog.Tag);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(new InvalidOperationException("Unable to load JSON.", e), LottieLog.Tag);
                     Debug.WriteLine("Failed to load composition.", LottieLog.Tag);
                 }
                 finally
@@ -215,140 +188,209 @@ namespace LottieUWP
                 return null;
             }
 
+            [Obsolete]
             internal static LottieComposition FromJsonSync(ResolutionScale resolutionScale, JsonObject json)
             {
-                Rect bounds;
-                var scale = (float)resolutionScale / 100.0f;
-                var width = (int)json.GetNamedNumber("w", -1);
-                var height = (int)json.GetNamedNumber("h", -1);
-
-                if (width != -1 && height != -1)
+                try
                 {
-                    var scaledWidth = (int)(width * scale);
-                    var scaledHeight = (int)(height * scale);
-                    bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+                    return FromJsonSync(resolutionScale, new JsonReader(new StringReader(json.ToString())));
+                }
+                catch (IOException e)
+                {
+                    throw new InvalidOperationException("Unable to parse json", e);
+                }
+            }
+
+            [Obsolete]
+            internal static LottieComposition FromJsonSync(ResolutionScale resolutionScale, JsonReader reader)
+            {
+                return FromJsonSync(reader);
+            }
+
+            public static LottieComposition FromJsonSync(JsonReader reader)
+            {
+                float scale = Utils.Utils.DpScale();
+                int width = -1;
+                LottieComposition composition = new LottieComposition();
+
+                reader.BeginObject();
+                while (reader.HasNext())
+                {
+                    switch (reader.NextName())
+                    {
+                        case "w":
+                            width = reader.NextInt();
+                            break;
+                        case "h":
+                            int height = reader.NextInt();
+                            int scaledWidth = (int)(width * scale);
+                            int scaledHeight = (int)(height * scale);
+                            composition.Bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+                            break;
+                        case "ip":
+                            composition._startFrame = reader.NextDouble();
+                            break;
+                        case "op":
+                            composition._endFrame = reader.NextDouble();
+                            break;
+                        case "fr":
+                            composition._frameRate = reader.NextDouble();
+                            break;
+                        case "v":
+                            var version = reader.NextString();
+                            var versions = Regex.Split(version, "\\.");
+                            composition.MajorVersion = int.Parse(versions[0]);
+                            composition.MinorVersion = int.Parse(versions[1]);
+                            composition.PatchVersion = int.Parse(versions[2]);
+                            if (!Utils.Utils.IsAtLeastVersion(composition, 4, 5, 0))
+                            {
+                                composition.AddWarning("Lottie only supports bodymovin >= 4.5.0");
+                            }
+
+                            break;
+                        case "layers":
+                            ParseLayers(reader, composition);
+                            break;
+                        case "assets":
+                            ParseAssets(reader, composition);
+                            break;
+                        case "fonts":
+                            ParseFonts(reader, composition);
+                            break;
+                        case "chars":
+                            ParseChars(reader, composition);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
 
-                var startFrame = (long)json.GetNamedNumber("ip", 0);
-                var endFrame = (long)json.GetNamedNumber("op", 0);
-                var frameRate = (float)json.GetNamedNumber("fr", 0);
-                var version = json.GetNamedString("v");
-                var versions = Regex.Split(version, "\\.");
-                var major = int.Parse(versions[0]);
-                var minor = int.Parse(versions[1]);
-                var patch = int.Parse(versions[2]);
-                var composition = new LottieComposition(bounds, startFrame, endFrame, frameRate, scale, major, minor, patch);
-                var assetsJson = json.GetNamedArray("assets", null);
-                ParseImages(assetsJson, composition);
-                ParsePrecomps(assetsJson, composition);
-                ParseFonts(json.GetNamedObject("fonts", null), composition);
-                ParseChars(json.GetNamedArray("chars", null), composition);
-                ParseLayers(json, composition);
+                reader.EndObject();
                 return composition;
             }
 
-            internal static void ParseLayers(JsonObject json, LottieComposition composition)
+            internal static void ParseLayers(JsonReader reader, LottieComposition composition)
             {
-                var jsonLayers = json.GetNamedArray("layers", null);
-                // This should never be null. Bodymovin always exports at least an empty array.
-                // However, it seems as if the unmarshalling from the React Native library sometimes
-                // causes this to be null. The proper fix should be done there but this will prevent a crash.
-                // https://github.com/airbnb/lottie-android/issues/279
-                if (jsonLayers == null)
-                {
-                    return;
-                }
-                var length = jsonLayers.Count;
                 var imageCount = 0;
-                for (var i = 0; i < length; i++)
+                reader.BeginArray();
+
+                while (reader.HasNext())
                 {
-                    var layer = Layer.Factory.NewInstance(jsonLayers[i].GetObject(), composition);
+                    var layer = Layer.Factory.NewInstance(reader, composition);
                     if (layer.GetLayerType() == Layer.LayerType.Image)
                     {
                         imageCount++;
                     }
+
                     AddLayer(composition._layers, composition._layerMap, layer);
+
+                    if (imageCount > 4)
+                    {
+                        composition.AddWarning($"You have {imageCount} images. Lottie should primarily be used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers to shape layers.");
+                    }
                 }
 
-                if (imageCount > 4)
-                {
-                    composition.AddWarning($"You have {imageCount} images. Lottie should primarily be used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers to shape layers.");
-                }
+                reader.EndArray();
             }
 
-            internal static void ParsePrecomps(JsonArray assetsJson, LottieComposition composition)
+            internal static void ParseAssets(JsonReader reader, LottieComposition composition)
             {
-                if (assetsJson == null)
+                reader.BeginArray();
+                while (reader.HasNext())
                 {
-                    return;
-                }
-                var length = assetsJson.Count;
-                for (var i = 0; i < length; i++)
-                {
-                    var assetJson = assetsJson[i].GetObject();
-                    var layersJson = assetJson.GetNamedArray("layers", null);
-                    if (layersJson == null)
-                    {
-                        continue;
-                    }
-                    var layers = new List<Layer>(layersJson.Count);
+                    string id = null;
+                    // For precomps 
+                    var layers = new List<Layer>();
                     var layerMap = new Dictionary<long, Layer>();
-                    for (var j = 0; j < layersJson.Count; j++)
+                    // For images 
+                    int width = 0;
+                    int height = 0;
+                    string imageFileName = null;
+                    string relativeFolder = null;
+                    reader.BeginObject();
+                    while (reader.HasNext())
                     {
-                        var layer = Layer.Factory.NewInstance(layersJson[j].GetObject(), composition);
-                        layerMap[layer.Id] = layer;
-                        layers.Add(layer);
-                    }
-                    var id = assetJson.GetNamedString("id");
-                    composition._precomps[id] = layers;
-                }
-            }
+                        switch (reader.NextName())
+                        {
+                            case "id":
+                                id = reader.NextString();
+                                break;
+                            case "layers":
+                                reader.BeginArray();
+                                while (reader.HasNext())
+                                {
+                                    Layer layer = Layer.Factory.NewInstance(reader, composition);
+                                    layerMap.Add(layer.Id, layer);
+                                    layers.Add(layer);
+                                }
 
-            internal static void ParseImages(JsonArray assetsJson, LottieComposition composition)
-            {
-                if (assetsJson == null)
-                {
-                    return;
-                }
-                var length = assetsJson.Count;
-                for (var i = 0; i < length; i++)
-                {
-                    var assetJson = assetsJson[i].GetObject();
-                    if (!assetJson.ContainsKey("p"))
+                                reader.EndArray();
+                                break;
+                            case "w":
+                                width = reader.NextInt();
+                                break;
+                            case "h":
+                                height = reader.NextInt();
+                                break;
+                            case "p":
+                                imageFileName = reader.NextString();
+                                break;
+                            case "u":
+                                relativeFolder = reader.NextString();
+                                break;
+                            default:
+                                reader.SkipValue();
+                                break;
+                        }
+                    }
+                    reader.EndObject();
+                    if (layers.Any())
                     {
-                        continue;
+                        composition._precomps.Add(id, layers);
                     }
-                    var image = LottieImageAsset.Factory.NewInstance(assetJson);
-                    composition._images[image.Id] = image;
+                    else if (imageFileName != null)
+                    {
+                        LottieImageAsset image = new LottieImageAsset(width, height, id, imageFileName, relativeFolder);
+                        composition._images[image.Id] = image;
+                    }
                 }
+                reader.EndArray();
             }
 
-            private static void ParseFonts(JsonObject fonts, LottieComposition composition)
+            private static void ParseFonts(JsonReader reader, LottieComposition composition)
             {
-                var fontsList = fonts?.GetNamedArray("list", null);
-                if (fontsList == null)
+                reader.BeginObject();
+                while (reader.HasNext())
                 {
-                    return;
+                    switch (reader.NextName())
+                    {
+                        case "list":
+                            reader.BeginArray();
+                            while (reader.HasNext())
+                            {
+                                Font font = Font.Factory.NewInstance(reader);
+                                composition.Fonts.Add(font.Name, font);
+                            }
+                            reader.EndArray();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
                 }
-                var length = fontsList.Count;
-                for (uint i = 0; i < length; i++)
-                {
-                    var font = Font.Factory.NewInstance(fontsList.GetObjectAt(i));
-                    composition.Fonts.Add(font.Name, font);
-                }
+                reader.EndObject();
             }
 
-            private static void ParseChars(JsonArray charsJson, LottieComposition composition)
+            private static void ParseChars(JsonReader reader, LottieComposition composition)
             {
-                if (charsJson == null)
-                    return;
-
-                var length = charsJson.Count;
-                for (uint i = 0; i < length; i++)
+                reader.BeginArray();
+                while (reader.HasNext())
                 {
-                    var character = FontCharacter.Factory.NewInstance(charsJson.GetObjectAt(i), composition);
+                    var character = FontCharacter.Factory.NewInstance(reader, composition);
                     composition.Characters.Add(character.GetHashCode(), character);
                 }
+                reader.EndArray();
             }
 
             internal static void AddLayer(List<Layer> layers, Dictionary<long, Layer> layerMap, Layer layer)

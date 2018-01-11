@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Windows.Data.Json;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Utils;
@@ -29,9 +28,9 @@ namespace LottieUWP.Model.Animatable
         {
             internal static readonly ValueFactory Instance = new ValueFactory();
 
-            public virtual float? ValueFromObject(IJsonValue @object, float scale)
+            public virtual float? ValueFromObject(JsonReader reader, float scale)
             {
-                return JsonUtils.ValueFromObject(@object) * scale;
+                return JsonUtils.ValueFromObject(reader) * scale;
             }
         }
 
@@ -42,14 +41,10 @@ namespace LottieUWP.Model.Animatable
                 return new AnimatableFloatValue();
             }
 
-            internal static AnimatableFloatValue NewInstance(JsonObject json, LottieComposition composition, bool isDp = true)
+            internal static AnimatableFloatValue NewInstance(JsonReader reader, LottieComposition composition, bool isDp = true)
             {
-                var scale = isDp ? composition.DpScale : 1f;
-                if (json != null && json.ContainsKey("x"))
-                {
-                    composition.AddWarning("Lottie doesn't support expressions.");
-                }
-                return new AnimatableFloatValue(AnimatableValueParser<float?>.NewInstance(json, scale, composition, ValueFactory.Instance));
+                var scale = isDp ? Utils.Utils.DpScale() : 1f;
+                return new AnimatableFloatValue(AnimatableValueParser<float?>.NewInstance(reader, scale, composition, ValueFactory.Instance));
             }
         }
     }

@@ -1,5 +1,5 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Model.Animatable;
+﻿using LottieUWP.Model.Animatable;
+using Newtonsoft.Json;
 
 namespace LottieUWP.Value
 {
@@ -28,10 +28,24 @@ namespace LottieUWP.Value
         {
             internal static readonly Factory Instance = new Factory();
 
-            public ScaleXy ValueFromObject(IJsonValue @object, float scale)
+            public ScaleXy ValueFromObject(JsonReader reader, float scale)
             {
-                var array = @object.GetArray();
-                return new ScaleXy((float)array.GetNumberAt(0, 1) / 100f * scale, (float)array.GetNumberAt(1, 1) / 100f * scale);
+                var isArray = reader.Peek() == JsonToken.StartArray;
+                if (isArray)
+                {
+                    reader.BeginArray();
+                }
+                var sx = reader.NextDouble();
+                var sy = reader.NextDouble();
+                while (reader.HasNext())
+                {
+                    reader.SkipValue();
+                }
+                if (isArray)
+                {
+                    reader.EndArray();
+                }
+                return new ScaleXy(sx / 100f * scale, sy / 100f * scale);
             }
         }
     }

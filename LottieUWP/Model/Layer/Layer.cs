@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using Windows.Data.Json;
 using Windows.UI;
 using LottieUWP.Animation;
 using LottieUWP.Model.Animatable;
@@ -12,8 +10,6 @@ namespace LottieUWP.Model.Layer
 {
     internal class Layer
     {
-        private static readonly string Tag = typeof(Layer).Name;
-
         internal enum LayerType
         {
             PreComp,
@@ -38,7 +34,7 @@ namespace LottieUWP.Model.Layer
         private readonly LayerType _layerType;
         private readonly MatteType _matteType;
 
-        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, List<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startProgress, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<Keyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
+        private Layer(List<IContentModel> shapes, LottieComposition composition, string layerName, long layerId, LayerType layerType, long parentId, string refId, List<Mask> masks, AnimatableTransform transform, int solidWidth, int solidHeight, Color solidColor, float timeStretch, float startFrame, int preCompWidth, int preCompHeight, AnimatableTextFrame text, AnimatableTextProperties textProperties, List<Keyframe<float?>> inOutKeyframes, MatteType matteType, AnimatableFloatValue timeRemapping)
         {
             _shapes = shapes;
             _composition = composition;
@@ -53,7 +49,7 @@ namespace LottieUWP.Model.Layer
             SolidHeight = solidHeight;
             SolidColor = solidColor;
             TimeStretch = timeStretch;
-            StartProgress = startProgress;
+            StartFrame = startFrame;
             PreCompWidth = preCompWidth;
             PreCompHeight = preCompHeight;
             Text = text;
@@ -67,7 +63,9 @@ namespace LottieUWP.Model.Layer
 
         internal virtual float TimeStretch { get; }
 
-        internal virtual float StartProgress { get; }
+        internal virtual float StartFrame { get; }
+
+        internal virtual float StartProgress => StartFrame / _composition.DurationFrames;
 
         internal virtual List<Keyframe<float?>> InOutKeyframes { get; }
 
@@ -159,140 +157,218 @@ namespace LottieUWP.Model.Layer
                 return new Layer(new List<IContentModel>(), composition, "__container", -1, LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<Keyframe<float?>>(), MatteType.None, null);
             }
 
-            internal static Layer NewInstance(JsonObject json, LottieComposition composition)
+            internal static Layer NewInstance(JsonReader reader, LottieComposition composition)
             {
-                var layerName = json.GetNamedString("nm");
-                var refId = json.GetNamedString("refId", string.Empty);
-
-                if (layerName.EndsWith(".ai") || json.GetNamedString("cl", "").Equals("ai"))
-                {
-                    composition.AddWarning("Convert your Illustrator layers to shape layers.");
-                }
-
-                var layerId = (long)json.GetNamedNumber("ind");
-                var solidWidth = 0;
-                var solidHeight = 0;
+                string layerName = null;
+                LayerType layerType = LayerType.Unknown;
+                string refId = null;
+                long layerId = 0;
+                int solidWidth = 0;
+                int solidHeight = 0;
                 Color solidColor;
-                var preCompWidth = 0;
-                var preCompHeight = 0;
-                LayerType layerType;
-                var layerTypeInt = (int)json.GetNamedNumber("ty", -1);
-                if (layerTypeInt < (int)LayerType.Unknown)
-                {
-                    layerType = (LayerType)layerTypeInt;
-                }
-                else
-                {
-                    layerType = LayerType.Unknown;
-                }
+                int preCompWidth = 0;
+                int preCompHeight = 0;
+                long parentId = -1;
+                float timeStretch = 1f;
+                float startFrame = 0f;
+                float inFrame = 0f;
+                float outFrame = 0f;
+                string cl = null;
 
-                if (layerType == LayerType.Text && !Utils.Utils.IsAtLeastVersion(composition, 4, 8, 0))
-                {
-                    layerType = LayerType.Unknown;
-                    composition.AddWarning("Text is only supported on bodymovin >= 4.8.0");
-                }
-
-                var parentId = (long)json.GetNamedNumber("parent", -1);
-
-                if (layerType == LayerType.Solid)
-                {
-                    solidWidth = (int)(json.GetNamedNumber("sw") * composition.DpScale);
-                    solidHeight = (int)(json.GetNamedNumber("sh") * composition.DpScale);
-                    solidColor = Utils.Utils.GetSolidColorBrush(json.GetNamedString("sc"));
-                    Debug.WriteLine("\tSolid=" + string.Format("{0:X}", solidColor) + " " + solidWidth + "x" + solidHeight + " " + composition.Bounds, Tag);
-                }
-
-                var transform = AnimatableTransform.Factory.NewInstance(json.GetNamedObject("ks"), composition);
-                var matteType = (MatteType)(int)json.GetNamedNumber("tt", 0);
-                var masks = new List<Mask>();
-                var jsonMasks = json.GetNamedArray("masksProperties", null);
-                if (jsonMasks != null)
-                {
-                    for (var i = 0; i < jsonMasks.Count; i++)
-                    {
-                        var mask = Mask.Factory.NewMask(jsonMasks[i].GetObject(), composition);
-                        masks.Add(mask);
-                    }
-                }
-
-                var shapes = new List<IContentModel>();
-                var shapesJson = json.GetNamedArray("shapes", null);
-                if (shapesJson != null)
-                {
-                    for (var i = 0; i < shapesJson.Count; i++)
-                    {
-                        var shape = ShapeGroup.ShapeItemWithJson(shapesJson[i].GetObject(), composition);
-                        if (shape != null)
-                        {
-                            shapes.Add(shape);
-                        }
-                    }
-                }
-
+                MatteType matteType = MatteType.None;
+                AnimatableTransform transform = null;
                 AnimatableTextFrame text = null;
                 AnimatableTextProperties textProperties = null;
-                var textJson = json.GetNamedObject("t", null);
-                if (textJson != null)
-                {
-                    text = AnimatableTextFrame.Factory.NewInstance(textJson.GetNamedObject("d", null), composition);
-                    var namedArray = textJson.GetNamedArray("a", null);
-                    var propertiesJson = namedArray?.Count > 0 ? namedArray.GetObjectAt(0) : null;
-                    textProperties = AnimatableTextProperties.Factory.NewInstance(propertiesJson, composition);
-                }
+                AnimatableFloatValue timeRemapping = null;
 
-                if (json.ContainsKey("ef"))
+                List<Mask> masks = new List<Mask>();
+                List<IContentModel> shapes = new List<IContentModel>();
+
+                reader.BeginObject();
+
+                while (reader.HasNext())
                 {
-                    var effects = json.GetNamedArray("ef", null);
-                    var effectNames = new string[effects.Count];
-                    for (uint i = 0; i < effects.Count; i++)
+                    switch (reader.NextName())
                     {
-                        effectNames[i] = effects.GetObjectAt(i).GetNamedString("nm", "");
+                        case "nm":
+                            layerName = reader.NextString();
+                            break;
+                        case "ind":
+                            layerId = reader.NextInt();
+                            break;
+                        case "refId":
+                            refId = reader.NextString();
+                            break;
+                        case "ty":
+                            int layerTypeInt = reader.NextInt();
+                            if (layerTypeInt < (int)LayerType.Unknown)
+                            {
+                                layerType = (LayerType)layerTypeInt;
+                            }
+                            else
+                            {
+                                layerType = LayerType.Unknown;
+                            }
+
+                            break;
+                        case "parent":
+                            parentId = reader.NextInt();
+                            break;
+                        case "sw":
+                            solidWidth = (int)(reader.NextInt() * Utils.Utils.DpScale());
+                            break;
+                        case "sh":
+                            solidHeight = (int)(reader.NextInt() * Utils.Utils.DpScale());
+                            break;
+                        case "sc":
+                            solidColor = Utils.Utils.GetSolidColorBrush(reader.NextString());
+                            break;
+                        case "ks":
+                            transform = AnimatableTransform.Factory.NewInstance(reader, composition);
+                            break;
+                        case "tt":
+                            matteType = (MatteType)reader.NextInt();
+                            break;
+                        case "masksProperties":
+                            reader.BeginArray();
+                            while (reader.HasNext())
+                            {
+                                masks.Add(Mask.Factory.NewMask(reader, composition));
+                            }
+
+                            reader.EndArray();
+                            break;
+                        case "shapes":
+                            reader.BeginArray();
+                            while (reader.HasNext())
+                            {
+                                var shape = ShapeGroup.ShapeItemWithJson(reader, composition);
+                                if (shape != null)
+                                {
+                                    shapes.Add(shape);
+                                }
+                            }
+
+                            reader.EndArray();
+                            break;
+                        case "t":
+                            reader.BeginObject();
+                            while (reader.HasNext())
+                            {
+                                switch (reader.NextName())
+                                {
+                                    case "d":
+                                        text = AnimatableTextFrame.Factory.NewInstance(reader, composition);
+                                        break;
+                                    case "a":
+                                        reader.BeginArray();
+                                        if (reader.HasNext())
+                                        {
+                                            textProperties = AnimatableTextProperties.Factory.NewInstance(reader, composition);
+                                        }
+
+                                        while (reader.HasNext())
+                                        {
+                                            reader.SkipValue();
+                                        }
+
+                                        reader.EndArray();
+                                        break;
+                                    default:
+                                        reader.SkipValue();
+                                        break;
+                                }
+                            }
+
+                            reader.EndObject();
+                            break;
+                        case "ef":
+                            reader.BeginArray();
+                            List<string> effectNames = new List<string>();
+                            while (reader.HasNext())
+                            {
+                                reader.BeginObject();
+                                while (reader.HasNext())
+                                {
+                                    switch (reader.NextName())
+                                    {
+                                        case "nm":
+                                            effectNames.Add(reader.NextString());
+                                            break;
+                                        default:
+                                            reader.SkipValue();
+                                            break;
+                                    }
+                                }
+
+                                reader.EndObject();
+                            }
+
+                            reader.EndArray();
+                            composition.AddWarning("Lottie doesn't support layer effects. If you are using them for " +
+                                                   " fills, strokes, trim paths etc. then try adding them directly as contents " +
+                                                   " in your shape. Found: " + effectNames);
+                            break;
+                        case "sr":
+                            timeStretch = reader.NextDouble();
+                            break;
+                        case "st":
+                            startFrame = reader.NextDouble();
+                            break;
+                        case "w":
+                            preCompWidth = (int)(reader.NextInt() * Utils.Utils.DpScale());
+                            break;
+                        case "h":
+                            preCompHeight = (int)(reader.NextInt() * Utils.Utils.DpScale());
+                            break;
+                        case "ip":
+                            inFrame = reader.NextDouble();
+                            break;
+                        case "op":
+                            outFrame = reader.NextDouble();
+                            break;
+                        case "tm":
+                            timeRemapping = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            break;
+                        case "cl":
+                            cl = reader.NextString();
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
                     }
-                    composition.AddWarning("Lottie doesn't support layer effects. If you are using them for " +
-                                            " fills, strokes, trim paths etc. then try adding them directly as contents " +
-                                            " in your shape. Found: [" + string.Join(",", effectNames) + "]");
                 }
 
-                var timeStretch = (float)json.GetNamedNumber("sr", 1.0);
-                var startFrame = (float)json.GetNamedNumber("st");
-                var frames = composition.DurationFrames;
-                var startProgress = startFrame / frames;
-
-                if (layerType == LayerType.PreComp)
-                {
-                    preCompWidth = (int)(json.GetNamedNumber("w") * composition.DpScale);
-                    preCompHeight = (int)(json.GetNamedNumber("h") * composition.DpScale);
-                }
+                reader.EndObject();
 
                 // Bodymovin pre-scales the in frame and out frame by the time stretch. However, that will
                 // cause the stretch to be double counted since the in out animation gets treated the same
                 // as all other animations and will have stretch applied to it again.
-                var inFrame = (float)json.GetNamedNumber("ip") / timeStretch;
-                var outFrame = (float)json.GetNamedNumber("op") / timeStretch;
+                inFrame /= timeStretch;
+                outFrame /= timeStretch;
 
-                var inOutKeyframes = new List<Keyframe<float?>>();
+                List<Keyframe<float?>> inOutKeyframes = new List<Keyframe<float?>>();
                 // Before the in frame
                 if (inFrame > 0)
                 {
-                    var preKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, 0f, inFrame);
+                    Keyframe<float?> preKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, 0f, inFrame);
                     inOutKeyframes.Add(preKeyframe);
                 }
 
                 // The + 1 is because the animation should be visible on the out frame itself.
                 outFrame = (outFrame > 0 ? outFrame : composition.EndFrame) + 1;
-                var visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
+                Keyframe<float?> visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
                 inOutKeyframes.Add(visibleKeyframe);
 
-                var outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, float.MaxValue);
+                Keyframe<float?> outKeyframe = new Keyframe<float?>(composition, 0f, 0f, null, outFrame, float.MaxValue);
                 inOutKeyframes.Add(outKeyframe);
 
-                AnimatableFloatValue timeRemapping = null;
-                if (json.ContainsKey("tm"))
+                if (layerName.EndsWith(".ai") || "ai".Equals(cl))
                 {
-                    timeRemapping = AnimatableFloatValue.Factory.NewInstance(json.GetNamedObject("tm", null), composition, false);
+                    composition.AddWarning("Convert your Illustrator layers to shape layers.");
                 }
 
-                return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId, masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress, preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType, timeRemapping);
+                return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId, masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame, preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType, timeRemapping);
             }
         }
     }

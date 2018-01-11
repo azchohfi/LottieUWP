@@ -1,5 +1,4 @@
-﻿using Windows.Data.Json;
-using LottieUWP.Animation.Keyframe;
+﻿using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
@@ -10,6 +9,6 @@ namespace LottieUWP.Model.Animatable
 
     internal interface IAnimatableValueFactory<out TV>
     {
-        TV ValueFromObject(IJsonValue @object, float scale);
+        TV ValueFromObject(JsonReader reader, float scale);
     }
 }
