@@ -3,7 +3,6 @@ using LottieUWP.Model;
 
 namespace LottieUWP.Animation.Keyframe
 {
-
     internal class TextKeyframeAnimation : KeyframeAnimation<DocumentData>
     {
         internal TextKeyframeAnimation(List<Keyframe<DocumentData>> keyframes) : base(keyframes)

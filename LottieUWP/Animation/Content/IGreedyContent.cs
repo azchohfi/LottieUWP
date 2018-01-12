@@ -2,7 +2,6 @@
 
 namespace LottieUWP.Animation.Content
 {
-
     /// <summary>
     /// Content that may want to absorb and take ownership of the content around it.
     /// For example, merge paths will absorb the shapes above it and repeaters will absorb the content

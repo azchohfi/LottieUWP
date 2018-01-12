@@ -29,7 +29,6 @@ namespace LottieUWP.Model.Content
                 AnimatableShapeValue maskPath = null;
                 AnimatableIntegerValue opacity = null;
 
-
                 reader.BeginObject();
                 while (reader.HasNext())
                 {
