@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 
 namespace LottieUWP.Model
 {
@@ -12,19 +11,18 @@ namespace LottieUWP.Model
 
         internal JsonCompositionLoader(CancellationToken cancellationToken)
         {
+            Utils.Utils.DpScale();
             _cancellationToken = cancellationToken;
         }
 
-        internal async Task<LottieComposition> Execute(params JsonObject[] @params)
+        internal async Task<LottieComposition> Execute(params JsonReader[] @params)
         {
             var tcs = new TaskCompletionSource<LottieComposition>();
-            Utils.Utils.DpScale();
             await Task.Run(() =>
             {
                 try
                 {
-                    var reader = new JsonReader(new StringReader(@params[0].ToString()));
-                    tcs.SetResult(LottieComposition.Factory.FromJsonSync(reader));
+                    tcs.SetResult(LottieComposition.Factory.FromJsonSync(@params[0]));
                 }
                 catch (IOException e)
                 {

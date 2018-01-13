@@ -3,7 +3,7 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Model
 {
-    internal class FontCharacter
+    public class FontCharacter
     {
         internal static int HashFor(char character, string fontFamily, string style)
         {
@@ -27,17 +27,17 @@ namespace LottieUWP.Model
             _fontFamily = fontFamily;
         }
 
-        internal List<ShapeGroup> Shapes { get; }
+        public List<ShapeGroup> Shapes { get; }
 
         private int _size;
 
-        internal double Width { get; }
+        public double Width { get; }
 
         private readonly string _style;
 
-        internal static class Factory
+        public static class Factory
         {
-            internal static FontCharacter NewInstance(JsonReader reader, LottieComposition composition)
+            public static FontCharacter NewInstance(JsonReader reader, LottieComposition composition)
             {
                 char character = '\0';
                 int size = 0;

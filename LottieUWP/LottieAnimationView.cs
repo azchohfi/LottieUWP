@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
@@ -21,7 +22,7 @@ namespace LottieUWP
     /// You may set the animation in one of two ways:
     /// 1) Attrs: <seealso cref="LottieAnimationView.FileNameProperty"/>
     /// 2) Programatically: <seealso cref="SetAnimationAsync(string)"/>, <seealso cref="Composition"/>,
-    /// or <seealso cref="SetAnimationAsync(JsonObject)"/>.
+    /// or <seealso cref="SetAnimationAsync(JsonReader)"/>.
     /// </para>
     /// <para>
     /// You can set a default cache strategy with <seealso cref="CacheStrategy.None"/>.
@@ -453,21 +454,43 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Sets the animation from a JSONObject.
+        /// <see cref="SetAnimationAsync(JsonReader)"/> which is more efficient than using a JSONObject.
+        /// For animations loaded from the network, use <see cref="SetAnimationAsync(string)"/>
+        /// </summary>
+        /// <param name="json"></param>
+        [Obsolete]
+        public async Task SetAnimationAsync(JsonObject json)
+        {
+            await SetAnimationAsync(new JsonReader(new StringReader(json.ToString())));
+        }
+
+        /// <summary>
+        /// Sets the animation from json string. This is the ideal API to use when loading an animation 
+        /// over the network because you can use the raw response body here and a converstion to a
+        /// JsonObject never has to be done.
+        /// </summary>
+        /// <param name="jsonString"></param>
+        public async Task SetAnimationFromJsonAsync(string jsonString)
+        {
+            await SetAnimationAsync(new JsonReader(new StringReader(jsonString)));
+        }
+
+        /// <summary>
+        /// Sets the animation from a JSONReader.
         /// This will load and deserialize the file asynchronously.
         /// <para>
         /// This is particularly useful for animations loaded from the network. You can fetch the
         /// bodymovin json from the network and pass it directly here.
         /// </para>
         /// </summary>
-        public virtual async Task SetAnimationAsync(JsonObject value)
+        public virtual async Task SetAnimationAsync(JsonReader reader)
         {
             CancelLoaderTask();
             var cancellationTokenSource = new CancellationTokenSource();
 
             _compositionLoader = cancellationTokenSource;
 
-            var composition = await LottieComposition.Factory.FromJsonAsync(value, cancellationTokenSource.Token);
+            var composition = await LottieComposition.Factory.FromJsonReaderAsync(reader, cancellationTokenSource.Token);
 
             if (composition != null)
             {

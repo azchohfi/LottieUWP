@@ -6,9 +6,9 @@ using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Model.Content
 {
-    internal class ShapeGroup : IContentModel
+    public class ShapeGroup : IContentModel
     {
-        internal static IContentModel ShapeItemWithJson(JsonReader reader, LottieComposition composition)
+        public static IContentModel ShapeItemWithJson(JsonReader reader, LottieComposition composition)
         {
             string type = null;
 
@@ -83,7 +83,7 @@ namespace LottieUWP.Model.Content
         private readonly string _name;
         private readonly List<IContentModel> _items;
 
-        internal ShapeGroup(string name, List<IContentModel> items)
+        public ShapeGroup(string name, List<IContentModel> items)
         {
             _name = name;
             _items = items;
@@ -128,7 +128,7 @@ namespace LottieUWP.Model.Content
 
         public virtual string Name => _name;
 
-        internal virtual List<IContentModel> Items => _items;
+        public virtual List<IContentModel> Items => _items;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

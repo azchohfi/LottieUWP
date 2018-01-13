@@ -139,6 +139,7 @@
     <Compile Include="HashMapHelperClass.cs" />
     <Compile Include="IAnimatable.cs" />
     <Compile Include="JsonReader.cs" />
+    <Compile Include="LottieCompositionParser.cs" />
     <Compile Include="Model\Animatable\IAnimatableValue.cs" />
     <Compile Include="Animator.cs" />
     <Compile Include="Animation\Content\BaseStrokeContent.cs" />
@@ -193,7 +194,6 @@
     <Compile Include="Model\Content\ShapeTrimPath.cs" />
     <Compile Include="Model\CubicCurveData.cs" />
     <Compile Include="Model\DocumentData.cs" />
-    <Compile Include="Model\FileCompositionLoader.cs" />
     <Compile Include="Model\Font.cs" />
     <Compile Include="Model\FontCharacter.cs" />
     <Compile Include="Model\IKeyPathElementContent.cs" />

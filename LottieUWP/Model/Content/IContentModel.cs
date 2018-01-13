@@ -3,7 +3,7 @@ using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Model.Content
 {
-    internal interface IContentModel
+    public interface IContentModel
     {
         IContent ToContent(LottieDrawable drawable, BaseLayer layer);
     }

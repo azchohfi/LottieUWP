@@ -9,7 +9,7 @@ using LottieUWP.Value;
 
 namespace LottieUWP.Model.Layer
 {
-    internal abstract class BaseLayer : IDrawingContent, IKeyPathElement
+    public abstract class BaseLayer : IDrawingContent, IKeyPathElement
     {
         private static readonly int SaveFlags = BitmapCanvas.ClipSaveFlag | BitmapCanvas.ClipToLayerSaveFlag | BitmapCanvas.MatrixSaveFlag;
 

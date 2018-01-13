@@ -1,6 +1,6 @@
 ﻿namespace LottieUWP.Model
 {
-    internal class Font
+    public class Font
     {
         private Font(string family, string name, string style, float ascent)
         {
@@ -10,17 +10,17 @@
             Ascent = ascent;
         }
 
-        internal readonly string Family;
+        public string Family { get; }
 
-        internal readonly string Name;
+        public string Name { get; }
 
-        internal readonly string Style;
+        public string Style { get; }
 
         internal readonly float Ascent;
 
-        internal static class Factory
+        public static class Factory
         {
-            internal static Font NewInstance(JsonReader reader)
+            public static Font NewInstance(JsonReader reader)
             {
                 string family = null;
                 string name = null;

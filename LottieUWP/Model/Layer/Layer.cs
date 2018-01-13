@@ -8,7 +8,7 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Model.Layer
 {
-    internal class Layer
+    public class Layer
     {
         internal enum LayerType
         {
