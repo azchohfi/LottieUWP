@@ -455,7 +455,10 @@ namespace LottieUWP
 
         /// <summary>
         /// <see cref="SetAnimationAsync(JsonReader)"/> which is more efficient than using a JSONObject.
-        /// For animations loaded from the network, use <see cref="SetAnimationAsync(string)"/>
+        /// For animations loaded from the network, use <see cref="SetAnimationFromJsonAsync(string)"/>
+        /// 
+        /// If you must use a JsonObject, you can convert it to a StreamReader with:
+        /// <code>new JsonReader(new StringReader(json.ToString()));</code>
         /// </summary>
         /// <param name="json"></param>
         [Obsolete]
