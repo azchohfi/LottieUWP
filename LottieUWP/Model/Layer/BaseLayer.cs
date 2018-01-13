@@ -267,8 +267,6 @@ namespace LottieUWP.Model.Layer
                     case Mask.MaskMode.MaskModeIntersect:
                         // TODO 
                         return;
-                    case Mask.MaskMode.MaskModeUnknown:
-                        return;
                     case Mask.MaskMode.MaskModeAdd:
                     default:
                         _path.ComputeBounds(out _tempMaskBoundsRect);

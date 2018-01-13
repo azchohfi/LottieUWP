@@ -1,4 +1,5 @@
-﻿using LottieUWP.Model.Animatable;
+﻿using System.Diagnostics;
+using LottieUWP.Model.Animatable;
 
 namespace LottieUWP.Model.Content
 {
@@ -8,8 +9,7 @@ namespace LottieUWP.Model.Content
         {
             MaskModeAdd,
             MaskModeSubtract,
-            MaskModeIntersect,
-            MaskModeUnknown
+            MaskModeIntersect
         }
 
         private readonly MaskMode _maskMode;
@@ -25,14 +25,15 @@ namespace LottieUWP.Model.Content
         {
             internal static Mask NewMask(JsonReader reader, LottieComposition composition)
             {
-                MaskMode maskMode = MaskMode.MaskModeUnknown;
+                MaskMode maskMode = MaskMode.MaskModeAdd;
                 AnimatableShapeValue maskPath = null;
                 AnimatableIntegerValue opacity = null;
 
                 reader.BeginObject();
                 while (reader.HasNext())
                 {
-                    switch (reader.NextName())
+                    string mode = reader.NextName();
+                    switch (mode)
                     {
                         case "mode":
                             switch (reader.NextString())
@@ -47,7 +48,8 @@ namespace LottieUWP.Model.Content
                                     maskMode = MaskMode.MaskModeIntersect;
                                     break;
                                 default:
-                                    maskMode = MaskMode.MaskModeUnknown;
+                                    Debug.WriteLine($"Unknown mask mode {mode}. Defaulting to Add.", LottieLog.Tag);
+                                    maskMode = MaskMode.MaskModeAdd;
                                     break;
                             }
 
