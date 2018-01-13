@@ -541,7 +541,7 @@ namespace LottieUWP
                     return 0;
                 }
 
-                return (int)(Progress * _composition.DurationFrames);
+                return (int)Math.Round(Progress * _composition.DurationFrames);
             }
         }
 

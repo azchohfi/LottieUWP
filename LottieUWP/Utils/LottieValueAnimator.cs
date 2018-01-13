@@ -63,15 +63,15 @@ namespace LottieUWP.Utils
                 float animatedPercentage = distFromStart / range;
                 if (Duration > 0)
                 {
-                    CurrentPlayTime = (long)(Duration * animatedPercentage);
+                    CurrentPlayTime = (long)Math.Round(Duration * animatedPercentage);
                 }
             }
             get => _value;
         }
 
-		public void SetMinAndMaxValues(float minValue, float maxValue)
-		{
-			if (minValue < 0)
+        public void SetMinAndMaxValues(float minValue, float maxValue)
+        {
+            if (minValue < 0)
                 minValue = 0;
             if (minValue > 1)
                 minValue = 1;
@@ -79,10 +79,10 @@ namespace LottieUWP.Utils
                 maxValue = 0;
             if (maxValue > 1)
                 maxValue = 1;
-			_minValue = minValue;
-			_maxValue = maxValue;
-			UpdateValues();
-		}
+            _minValue = minValue;
+            _maxValue = maxValue;
+            UpdateValues();
+        }
 
         public float MinValue
         {
