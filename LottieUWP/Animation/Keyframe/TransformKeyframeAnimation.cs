@@ -7,7 +7,7 @@ using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Keyframe
 {
-    internal class TransformKeyframeAnimation
+    public class TransformKeyframeAnimation
     {
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
 

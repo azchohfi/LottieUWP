@@ -1,6 +1,6 @@
 ﻿namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableTextProperties
+    public class AnimatableTextProperties
     {
         internal readonly AnimatableColorValue _color;
         internal readonly AnimatableColorValue _stroke;

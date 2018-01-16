@@ -3,9 +3,9 @@ using LottieUWP.Model.Animatable;
 
 namespace LottieUWP.Model.Content
 {
-    internal class Mask
+    public class Mask
     {
-        internal enum MaskMode
+        public enum MaskMode
         {
             MaskModeAdd,
             MaskModeSubtract,

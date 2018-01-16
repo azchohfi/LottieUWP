@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableTransform : IModifierContent, IContentModel
+    public class AnimatableTransform : IModifierContent, IContentModel
     {
         private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatableValue<Vector2?, Vector2?> position, AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity, AnimatableFloatValue startOpacity, AnimatableFloatValue endOpacity)
         {

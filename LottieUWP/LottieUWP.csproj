@@ -139,6 +139,7 @@
     <Compile Include="HashMapHelperClass.cs" />
     <Compile Include="IAnimatable.cs" />
     <Compile Include="JsonReader.cs" />
+    <Compile Include="Parser\LayerParser.cs" />
     <Compile Include="Parser\LottieCompositionParser.cs" />
     <Compile Include="Model\Animatable\IAnimatableValue.cs" />
     <Compile Include="Animator.cs" />

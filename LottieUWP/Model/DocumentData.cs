@@ -4,7 +4,7 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Model
 {
-    internal class DocumentData
+    public class DocumentData
     {
         internal readonly string Text;
         internal readonly string FontName;
