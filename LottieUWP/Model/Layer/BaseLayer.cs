@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Windows.Foundation;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
@@ -32,7 +31,7 @@ namespace LottieUWP.Model.Layer
                 case Layer.LayerType.Unknown:
                 default:
                     // Do nothing
-                    Debug.WriteLine("Unknown layer type " + layerModel.GetLayerType(), LottieLog.Tag);
+                    LottieLog.Warn("Unknown layer type " + layerModel.GetLayerType());
                     return null;
             }
         }

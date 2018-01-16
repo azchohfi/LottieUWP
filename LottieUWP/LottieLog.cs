@@ -15,6 +15,11 @@ namespace LottieUWP
         private static int _traceDepth;
         private static int _depthPastMaxDepth;
 
+        public static void Warn(string msg)
+        {
+            Debug.WriteLine(msg, Tag);
+        }
+
         private static readonly Queue<string> Msgs = new Queue<string>();
 
         public static bool TraceEnabled
