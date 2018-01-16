@@ -216,11 +216,6 @@ namespace LottieUWP.Model
             return depth < _keys.Count - 1 || _keys[depth].Equals("**");
         }
 
-        public int Size()
-        {
-            return _keys.Count;
-        }
-
         /// <summary>
         /// We artificially create some container groups (like a root ContentGroup for the entire animation
         /// and for the contents of a ShapeLayer).

@@ -50,16 +50,6 @@ namespace LottieUWP.Utils
             }
         }
 
-        internal static int GetScreenWidth()
-        {
-            return (int)DisplayInformation.GetForCurrentView().ScreenWidthInRawPixels;
-        }
-
-        internal static int GetScreenHeight()
-        {
-            return (int)DisplayInformation.GetForCurrentView().ScreenHeightInRawPixels;
-        }
-
         internal static float GetScale(Matrix3X3 matrix)
         {
             _points[0].X = 0;
