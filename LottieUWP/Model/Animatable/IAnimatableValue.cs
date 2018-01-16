@@ -2,7 +2,7 @@
 
 namespace LottieUWP.Model.Animatable
 {
-    internal interface IAnimatableValue<out TK, TA>
+    public interface IAnimatableValue<out TK, TA>
     {
         IBaseKeyframeAnimation<TK, TA> CreateAnimation();
     }

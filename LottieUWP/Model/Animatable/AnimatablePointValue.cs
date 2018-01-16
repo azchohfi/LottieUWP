@@ -5,7 +5,7 @@ using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatablePointValue : BaseAnimatableValue<Vector2?, Vector2?>
+    public class AnimatablePointValue : BaseAnimatableValue<Vector2?, Vector2?>
     {
         private AnimatablePointValue(List<Keyframe<Vector2?>> keyframes) : base(keyframes)
         {

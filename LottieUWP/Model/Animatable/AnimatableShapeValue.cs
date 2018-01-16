@@ -5,7 +5,7 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableShapeValue : BaseAnimatableValue<ShapeData, Path>
+    public class AnimatableShapeValue : BaseAnimatableValue<ShapeData, Path>
     {
         private AnimatableShapeValue(List<Keyframe<ShapeData>> keyframes) : base(keyframes)
         {

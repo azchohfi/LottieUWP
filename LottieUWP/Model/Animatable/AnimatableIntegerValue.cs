@@ -6,7 +6,7 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableIntegerValue : BaseAnimatableValue<int?, int?>
+    public class AnimatableIntegerValue : BaseAnimatableValue<int?, int?>
     {
         private AnimatableIntegerValue() : this(100)
         {
