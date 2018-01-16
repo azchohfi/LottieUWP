@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatablePathValue : IAnimatableValue<Vector2?, Vector2?>
+    public class AnimatablePathValue : IAnimatableValue<Vector2?, Vector2?>
     {
         internal static IAnimatableValue<Vector2?, Vector2?> CreateAnimatablePathOrSplitDimensionPath(JsonReader reader, LottieComposition composition)
         {
@@ -73,20 +73,19 @@ namespace LottieUWP.Model.Animatable
         /// <summary>
         /// Create a default static animatable path.
         /// </summary>
-        internal AnimatablePathValue()
+        public AnimatablePathValue()
         {
             _keyframes.Add(new Keyframe<Vector2?>(new Vector2(0, 0)));
         }
 
-        internal AnimatablePathValue(JsonReader reader, LottieComposition composition)
+        public AnimatablePathValue(JsonReader reader, LottieComposition composition)
         {
             if (reader.Peek() == JsonToken.StartArray)
             {
                 reader.BeginArray();
                 while (reader.HasNext())
                 {
-                    var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(reader, composition, PathParser.Instance);
-                    _keyframes.Add(keyframe);
+                    _keyframes.Add(PathKeyframeParser.Parse(reader, composition, PathParser.Instance));
                 }
                 reader.EndArray();
                 KeyframesParser.SetEndFrames<Keyframe<Vector2?>, Vector2?>(_keyframes);

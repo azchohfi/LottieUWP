@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace LottieUWP.Model
 {
-    internal sealed class JsonCompositionLoader
+    public sealed class AsyncCompositionLoader
     {
         private readonly CancellationToken _cancellationToken;
+        private TaskCompletionSource<LottieComposition> _tcs;
 
-        internal JsonCompositionLoader(CancellationToken cancellationToken)
+        internal AsyncCompositionLoader(CancellationToken cancellationToken)
         {
             Utils.Utils.DpScale();
             _cancellationToken = cancellationToken;
@@ -17,19 +18,24 @@ namespace LottieUWP.Model
 
         internal async Task<LottieComposition> Execute(params JsonReader[] @params)
         {
-            var tcs = new TaskCompletionSource<LottieComposition>();
+            _tcs = new TaskCompletionSource<LottieComposition>();
             await Task.Run(() =>
             {
                 try
                 {
-                    tcs.SetResult(LottieComposition.Factory.FromJsonSync(@params[0]));
+                    _tcs.SetResult(LottieComposition.Factory.FromJsonSync(@params[0]));
                 }
                 catch (IOException e)
                 {
                     throw new InvalidOperationException(e.Message);
                 }
             }, _cancellationToken);
-            return await tcs.Task;
+            return await _tcs.Task;
+        }
+
+        public void Cancel()
+        {
+            _tcs.SetCanceled();
         }
     }
 }

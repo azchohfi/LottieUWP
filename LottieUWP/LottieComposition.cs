@@ -174,7 +174,7 @@ namespace LottieUWP
             /// <returns></returns>
             public static async Task<LottieComposition> FromJsonReaderAsync(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var loader = new JsonCompositionLoader(cancellationToken);
+                var loader = new AsyncCompositionLoader(cancellationToken);
                 return await loader.Execute(reader);
             }
 

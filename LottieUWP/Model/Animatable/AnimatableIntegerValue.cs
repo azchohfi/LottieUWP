@@ -10,7 +10,7 @@ namespace LottieUWP.Model.Animatable
         {
         }
 
-        internal AnimatableIntegerValue(int? value) : base(value)
+        public AnimatableIntegerValue(int? value) : base(value)
         {
         }
 

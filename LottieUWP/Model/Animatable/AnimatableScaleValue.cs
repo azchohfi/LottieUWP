@@ -11,7 +11,7 @@ namespace LottieUWP.Model.Animatable
         {
         }
 
-        internal AnimatableScaleValue(ScaleXy value) : base(value)
+        public AnimatableScaleValue(ScaleXy value) : base(value)
         {
         }
 

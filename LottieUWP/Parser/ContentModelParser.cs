@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
@@ -48,7 +47,7 @@ namespace LottieUWP.Parser
                     model = GradientFillParser.Parse(reader, composition);
                     break;
                 case "tr":
-                    model = AnimatableTransform.Factory.NewInstance(reader, composition);
+                    model = AnimatableTransformParser.Parse(reader, composition);
                     break;
                 case "sh":
                     model = ShapePathParser.Parse(reader, composition);
