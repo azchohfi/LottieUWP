@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using LottieUWP.Model;
 using LottieUWP.Model.Layer;
+using LottieUWP.Parser;
 using LottieUWP.Utils;
 
 namespace LottieUWP
@@ -22,19 +23,20 @@ namespace LottieUWP
     public class LottieComposition
     {
         private readonly PerformanceTracker _performanceTracker = new PerformanceTracker();
-        internal readonly Dictionary<string, List<Layer>> Precomps = new Dictionary<string, List<Layer>>();
-        internal readonly Dictionary<string, LottieImageAsset> _images = new Dictionary<string, LottieImageAsset>();
-        /** Map of font names to fonts */
-        public virtual Dictionary<string, Font> Fonts { get; } = new Dictionary<string, Font>();
-        public virtual Dictionary<int, FontCharacter> Characters { get; } = new Dictionary<int, FontCharacter>();
-        internal readonly Dictionary<long, Layer> _layerMap = new Dictionary<long, Layer>();
-        internal readonly List<Layer> _layers = new List<Layer>();
-        // This is stored as a set to avoid duplicates.
         private readonly HashSet<string> _warnings = new HashSet<string>();
-        public virtual Rect Bounds { get; internal set; }
-        public float StartFrame { get; internal set; }
-        public float EndFrame { get; internal set; }
-        public float FrameRate { get; internal set; }
+        private Dictionary<string, List<Layer>> _precomps;
+        private Dictionary<string, LottieImageAsset> _images;
+        /** Map of font names to fonts */
+        public virtual Dictionary<string, Font> Fonts { get; private set; }
+        public virtual Dictionary<int, FontCharacter> Characters { get; private set; }
+        private Dictionary<long, Layer> _layerMap;
+        public List<Layer> Layers { get; private set; }
+
+        // This is stored as a set to avoid duplicates.
+        public virtual Rect Bounds { get; private set; }
+        public float StartFrame { get; private set; }
+        public float EndFrame { get; private set; }
+        public float FrameRate { get; private set; }
 
         internal void AddWarning(string warning)
         {
@@ -71,11 +73,29 @@ namespace LottieUWP
         public int MinorVersion { get; internal set; }
         public int PatchVersion { get; internal set; }
 
-        public List<Layer> Layers => _layers;
+        public void Init(Rect bounds, float startFrame, float endFrame, float frameRate, int majorVersion,
+            int minorVersion, int patchVersion, List<Layer> layers, Dictionary<long, Layer> layerMap,
+            Dictionary<string, List<Layer>> precomps, Dictionary<string, LottieImageAsset> images,
+            Dictionary<int, FontCharacter> characters, Dictionary<string, Font> fonts)
+        {
+            Bounds = bounds;
+            StartFrame = startFrame;
+            EndFrame = endFrame;
+            FrameRate = frameRate;
+            MajorVersion = majorVersion;
+            MinorVersion = minorVersion;
+            PatchVersion = patchVersion;
+            Layers = layers;
+            _layerMap = layerMap;
+            _precomps = precomps;
+            _images = images;
+            Characters = characters;
+            Fonts = fonts;
+        }
 
         internal virtual List<Layer> GetPrecomps(string id)
         {
-            return Precomps[id];
+            return _precomps[id];
         }
 
         public virtual bool HasImages => _images.Count > 0;
@@ -87,7 +107,7 @@ namespace LottieUWP
         public override string ToString()
         {
             var sb = new StringBuilder("LottieComposition:\n");
-            foreach (var layer in _layers)
+            foreach (var layer in Layers)
             {
                 sb.Append(layer.ToString("\t"));
             }

@@ -5,14 +5,27 @@ using Windows.Foundation;
 using LottieUWP.Model;
 using LottieUWP.Model.Layer;
 
-namespace LottieUWP
+namespace LottieUWP.Parser
 {
     public static class LottieCompositionParser
     {
         public static LottieComposition Parse(JsonReader reader)
         {
             var scale = Utils.Utils.DpScale();
-            var width = -1;
+            float startFrame = 0f;
+            float endFrame = 0f;
+            float frameRate = 0f;
+            int majorVersion = 0;
+            int minorVersion = 0;
+            int patchVersion = 0;
+            Dictionary<long, Layer> layerMap = new Dictionary<long, Layer>();
+            List<Layer> layers = new List<Layer>();
+            int width = 0;
+            int height = 0;
+            Dictionary<string, List<Layer>> precomps = new Dictionary<string, List<Layer>>();
+            Dictionary<string, LottieImageAsset> images = new Dictionary<string, LottieImageAsset>();
+            Dictionary<string, Font> fonts = new Dictionary<string, Font>();
+            Dictionary<int, FontCharacter> characters = new Dictionary<int, FontCharacter>();
             var composition = new LottieComposition();
 
             reader.BeginObject();
@@ -24,42 +37,39 @@ namespace LottieUWP
                         width = reader.NextInt();
                         break;
                     case "h":
-                        var height = reader.NextInt();
-                        var scaledWidth = (int)(width * scale);
-                        var scaledHeight = (int)(height * scale);
-                        composition.Bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+                        height = reader.NextInt();
                         break;
                     case "ip":
-                        composition.StartFrame = reader.NextDouble();
+                        startFrame = reader.NextDouble();
                         break;
                     case "op":
-                        composition.EndFrame = reader.NextDouble();
+                        endFrame = reader.NextDouble();
                         break;
                     case "fr":
-                        composition.FrameRate = reader.NextDouble();
+                        frameRate = reader.NextDouble();
                         break;
                     case "v":
                         var version = reader.NextString();
                         var versions = Regex.Split(version, "\\.");
-                        composition.MajorVersion = int.Parse(versions[0]);
-                        composition.MinorVersion = int.Parse(versions[1]);
-                        composition.PatchVersion = int.Parse(versions[2]);
+                        majorVersion = int.Parse(versions[0]);
+                        minorVersion = int.Parse(versions[1]);
+                        patchVersion = int.Parse(versions[2]);
                         if (!Utils.Utils.IsAtLeastVersion(composition, 4, 5, 0))
                         {
                             composition.AddWarning("Lottie only supports bodymovin >= 4.5.0");
                         }
                         break;
                     case "layers":
-                        ParseLayers(reader, composition);
+                        ParseLayers(reader, composition, layers, layerMap);
                         break;
                     case "assets":
-                        ParseAssets(reader, composition);
+                        ParseAssets(reader, composition, precomps, images);
                         break;
                     case "fonts":
-                        ParseFonts(reader, composition);
+                        ParseFonts(reader, fonts);
                         break;
                     case "chars":
-                        ParseChars(reader, composition);
+                        ParseChars(reader, composition, characters);
                         break;
                     default:
                         reader.SkipValue();
@@ -67,10 +77,18 @@ namespace LottieUWP
                 }
             }
             reader.EndObject();
+
+            int scaledWidth = (int)(width * scale);
+            int scaledHeight = (int)(height * scale);
+            Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+
+            composition.Init(bounds, startFrame, endFrame, frameRate, majorVersion, minorVersion,
+                patchVersion, layers, layerMap, precomps, images, characters, fonts);
+
             return composition;
         }
 
-        private static void ParseLayers(JsonReader reader, LottieComposition composition)
+        private static void ParseLayers(JsonReader reader, LottieComposition composition, List<Layer> layers, Dictionary<long, Layer> layerMap)
         {
             var imageCount = 0;
             reader.BeginArray();
@@ -81,17 +99,18 @@ namespace LottieUWP
                 {
                     imageCount++;
                 }
-                AddLayer(composition._layers, composition._layerMap, layer);
+                layers.Add(layer);
+                layerMap[layer.Id] = layer;
 
                 if (imageCount > 4)
                 {
-                    composition.AddWarning($"You have {imageCount} images. Lottie should primarily be used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers to shape layers.");
+                    LottieLog.Warn($"You have {imageCount} images. Lottie should primarily be used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers to shape layers.");
                 }
             }
             reader.EndArray();
         }
 
-        private static void ParseAssets(JsonReader reader, LottieComposition composition)
+        private static void ParseAssets(JsonReader reader, LottieComposition composition, Dictionary<string, List<Layer>> precomps, Dictionary<string, LottieImageAsset> images)
         {
             reader.BeginArray();
             while (reader.HasNext())
@@ -143,19 +162,19 @@ namespace LottieUWP
                 reader.EndObject();
                 if (layers.Any())
                 {
-                    composition.Precomps.Add(id, layers);
+                    precomps.Add(id, layers);
                 }
                 else if (imageFileName != null)
                 {
                     var image =
                         new LottieImageAsset(width, height, id, imageFileName, relativeFolder);
-                    composition._images[image.Id] = image;
+                    images[image.Id] = image;
                 }
             }
             reader.EndArray();
         }
 
-        private static void ParseFonts(JsonReader reader, LottieComposition composition)
+        private static void ParseFonts(JsonReader reader, Dictionary<string, Font> fonts)
         {
 
             reader.BeginObject();
@@ -168,7 +187,7 @@ namespace LottieUWP
                         while (reader.HasNext())
                         {
                             var font = Font.Factory.NewInstance(reader);
-                            composition.Fonts.Add(font.Name, font);
+                            fonts.Add(font.Name, font);
                         }
                         reader.EndArray();
                         break;
@@ -180,22 +199,15 @@ namespace LottieUWP
             reader.EndObject();
         }
 
-        private static void ParseChars(JsonReader reader, LottieComposition composition)
+        private static void ParseChars(JsonReader reader, LottieComposition composition, Dictionary<int, FontCharacter> characters)
         {
             reader.BeginArray();
             while (reader.HasNext())
             {
-                var character =
-                    FontCharacter.Factory.NewInstance(reader, composition);
-                composition.Characters.Add(character.GetHashCode(), character);
+                var character = FontCharacter.Factory.NewInstance(reader, composition);
+                characters.Add(character.GetHashCode(), character);
             }
             reader.EndArray();
-        }
-
-        private static void AddLayer(List<Layer> layers, Dictionary<long, Layer> layerMap, Layer layer)
-        {
-            layers.Add(layer);
-            layerMap[layer.Id] = layer;
         }
     }
 }
