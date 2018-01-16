@@ -4,9 +4,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class PolystarShapeParser
+    static class PolystarShapeParser
     {
-        public static PolystarShape Parse(JsonReader reader, LottieComposition composition)
+        internal static PolystarShape Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             PolystarShape.Type type = PolystarShape.Type.Polygon;

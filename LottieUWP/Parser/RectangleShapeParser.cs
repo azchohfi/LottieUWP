@@ -4,9 +4,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class RectangleShapeParser
+    static class RectangleShapeParser
     {
-        public static RectangleShape Parse(JsonReader reader, LottieComposition composition)
+        internal static RectangleShape Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             IAnimatableValue<Vector2?, Vector2?> position = null;

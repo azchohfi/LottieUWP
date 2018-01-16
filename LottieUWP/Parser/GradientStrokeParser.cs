@@ -5,9 +5,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class GradientStrokeParser
+    static class GradientStrokeParser
     {
-        public static GradientStroke Parse(JsonReader reader, LottieComposition composition)
+        internal static GradientStroke Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             AnimatableGradientColorValue color = null;

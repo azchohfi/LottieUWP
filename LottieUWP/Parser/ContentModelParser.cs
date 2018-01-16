@@ -3,9 +3,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class ContentModelParser
+    static class ContentModelParser
     {
-        public static IContentModel Parse(JsonReader reader, LottieComposition composition)
+        internal static IContentModel Parse(JsonReader reader, LottieComposition composition)
         {
             string type = null;
 

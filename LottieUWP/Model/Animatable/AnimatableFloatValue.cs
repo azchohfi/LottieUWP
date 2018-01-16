@@ -6,11 +6,7 @@ namespace LottieUWP.Model.Animatable
 {
     public class AnimatableFloatValue : BaseAnimatableValue<float?, float?>
     {
-        internal AnimatableFloatValue() : this(0f)
-        {
-        }
-
-        private AnimatableFloatValue(float? value) : base(value)
+        internal AnimatableFloatValue() : base(0f)
         {
         }
 

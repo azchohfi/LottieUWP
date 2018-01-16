@@ -3,9 +3,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class ShapePathParser
+    static class ShapePathParser
     {
-        public static ShapePath Parse(JsonReader reader, LottieComposition composition)
+        internal static ShapePath Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             int ind = 0;

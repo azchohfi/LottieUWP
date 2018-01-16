@@ -28,7 +28,7 @@ namespace LottieUWP.Model.Layer
             _contentGroup.GetBounds(out outBounds, BoundsMatrix);
         }
 
-        protected override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        internal override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
             _contentGroup.ResolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
         }

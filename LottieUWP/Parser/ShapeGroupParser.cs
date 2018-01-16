@@ -3,9 +3,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class ShapeGroupParser
+    static class ShapeGroupParser
     {
-        public static ShapeGroup Parse(JsonReader reader, LottieComposition composition)
+        internal static ShapeGroup Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             List<IContentModel> items = new List<IContentModel>();

@@ -3,9 +3,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class RepeaterParser
+    static class RepeaterParser
     {
-        public static Repeater Parse(JsonReader reader, LottieComposition composition)
+        internal static Repeater Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             AnimatableFloatValue copies = null;

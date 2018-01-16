@@ -5,9 +5,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class ShapeStrokeParser
+    static class ShapeStrokeParser
     {
-        public static ShapeStroke Parse(JsonReader reader, LottieComposition composition)
+        internal static ShapeStroke Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             AnimatableColorValue color = null;

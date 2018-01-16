@@ -57,7 +57,7 @@ namespace LottieUWP.Utils
             return FloorMod((int)x, (int)y);
         }
 
-        internal static int FloorMod(int x, int y)
+        private static int FloorMod(int x, int y)
         {
             return x - FloorDiv(x, y) * y;
         }

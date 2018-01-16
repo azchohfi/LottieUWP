@@ -209,7 +209,7 @@ namespace LottieUWP.Model.Layer
             return _hasMatte.Value;
         }
 
-        protected override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        internal override void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
             for (int i = 0; i < _layers.Count; i++)
             {

@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Parser
 {
-    public static class PathKeyframeParser
+    static class PathKeyframeParser
     {
-        public static PathKeyframe Parse(JsonReader reader, LottieComposition composition, IValueParser<Vector2?> valueParser)
+        internal static PathKeyframe Parse(JsonReader reader, LottieComposition composition)
         {
             bool animated = reader.Peek() == JsonToken.StartObject;
-            Keyframe<Vector2?> keyframe = KeyframeParser.Parse(reader, composition, Utils.Utils.DpScale(), valueParser, animated);
+            Keyframe<Vector2?> keyframe = KeyframeParser.Parse(reader, composition, Utils.Utils.DpScale(), PathParser.Instance, animated);
 
             return new PathKeyframe(composition, keyframe);
         }
