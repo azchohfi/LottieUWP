@@ -3,9 +3,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class ShapeTrimPathParser
+    static class ShapeTrimPathParser
     {
-        public static ShapeTrimPath Parse(JsonReader reader, LottieComposition composition)
+        internal static ShapeTrimPath Parse(JsonReader reader, LottieComposition composition)
         {
             string name = null;
             ShapeTrimPath.Type type = ShapeTrimPath.Type.Simultaneously;

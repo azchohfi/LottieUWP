@@ -2,9 +2,9 @@
 
 namespace LottieUWP.Parser
 {
-    public static class FontParser
+    static class FontParser
     {
-        public static Font Parse(JsonReader reader)
+        internal static Font Parse(JsonReader reader)
         {
             string family = null;
             string name = null;

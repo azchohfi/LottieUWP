@@ -6,7 +6,7 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Parser
 {
-    public static class KeyframeParser
+    static class KeyframeParser
     {
         /// <summary>
         /// Some animations get exported with insane cp values in the tens of thousands. 
@@ -45,7 +45,7 @@ namespace LottieUWP.Parser
             }
         }
 
-        public static Keyframe<T> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IValueParser<T> valueParser, bool animated)
+        internal static Keyframe<T> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IValueParser<T> valueParser, bool animated)
         {
             if (animated)
             {

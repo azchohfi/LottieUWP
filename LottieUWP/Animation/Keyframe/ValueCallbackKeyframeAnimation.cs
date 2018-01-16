@@ -10,11 +10,6 @@ namespace LottieUWP.Animation.Keyframe
             SetValueCallback(valueCallback);
         }
 
-        public override float Progress
-        {
-            set => base.Progress = value;
-        }
-
         /// <summary>
         /// If this doesn't return 1, then <see cref="set_Progress"/> will always clamp the progress 
         /// to 0.

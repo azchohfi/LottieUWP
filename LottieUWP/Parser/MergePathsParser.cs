@@ -2,9 +2,9 @@
 
 namespace LottieUWP.Parser
 {
-    public static class MergePathsParser
+    static class MergePathsParser
     {
-        public static MergePaths Parse(JsonReader reader)
+        internal static MergePaths Parse(JsonReader reader)
         {
             string name = null;
             MergePaths.MergePathsMode mode = MergePaths.MergePathsMode.Add;

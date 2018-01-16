@@ -6,11 +6,7 @@ namespace LottieUWP.Model.Animatable
 {
     public class AnimatableIntegerValue : BaseAnimatableValue<int?, int?>
     {
-        public AnimatableIntegerValue() : this(100)
-        {
-        }
-
-        public AnimatableIntegerValue(int? value) : base(value)
+        public AnimatableIntegerValue() : base(100)
         {
         }
 

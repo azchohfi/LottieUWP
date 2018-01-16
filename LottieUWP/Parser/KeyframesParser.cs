@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Parser
 {
-    public static class KeyframesParser
+    static class KeyframesParser
     {
-        public static List<Keyframe<T>> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IValueParser<T> valueParser)
+        internal static List<Keyframe<T>> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IValueParser<T> valueParser)
         {
             List<Keyframe<T>> keyframes = new List<Keyframe<T>>();
 

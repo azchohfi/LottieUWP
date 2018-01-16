@@ -5,9 +5,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class FontCharacterParser
+    static class FontCharacterParser
     {
-        public static FontCharacter Parse(JsonReader reader, LottieComposition composition)
+        internal static FontCharacter Parse(JsonReader reader, LottieComposition composition)
         {
             char character = '\0';
             int size = 0;

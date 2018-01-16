@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace LottieUWP.Model
 {
@@ -240,10 +239,7 @@ namespace LottieUWP.Model
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("KeyPath{");
-            sb.Append("keys=").Append(_keys).Append(",resolved=").Append(_resolvedElement != null);
-            sb.Append('}');
-            return sb.ToString();
+            return $"KeyPath{{keys={_keys},resolved={_resolvedElement != null}}}";
         }
     }
 }

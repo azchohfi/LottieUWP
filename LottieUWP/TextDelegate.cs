@@ -40,7 +40,7 @@ namespace LottieUWP
         /// Override this to replace the animation text with something dynamic. This can be used for
         /// translations or custom data.
         /// </summary>
-        public virtual string GetText(string input)
+        private string GetText(string input)
         {
             return input;
         }

@@ -451,7 +451,7 @@ namespace LottieUWP.Model.Layer
             }
         }
 
-        protected virtual void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
+        internal virtual void ResolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath)
         {
         }
 

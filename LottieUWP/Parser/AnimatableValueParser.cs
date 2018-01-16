@@ -16,37 +16,37 @@ namespace LottieUWP.Parser
             return new AnimatableFloatValue(Parse(reader, isDp ? Utils.Utils.DpScale() : 1f, composition, FloatParser.Instance));
         }
 
-        public static AnimatableIntegerValue ParseInteger(JsonReader reader, LottieComposition composition)
+        internal static AnimatableIntegerValue ParseInteger(JsonReader reader, LottieComposition composition)
         {
             return new AnimatableIntegerValue(Parse(reader, composition, IntegerParser.Instance));
         }
 
-        public static AnimatablePointValue ParsePoint(JsonReader reader, LottieComposition composition)
+        internal static AnimatablePointValue ParsePoint(JsonReader reader, LottieComposition composition)
         {
             return new AnimatablePointValue(Parse(reader, Utils.Utils.DpScale(), composition, PointFParser.Instance));
         }
 
-        public static AnimatableScaleValue ParseScale(JsonReader reader, LottieComposition composition)
+        internal static AnimatableScaleValue ParseScale(JsonReader reader, LottieComposition composition)
         {
             return new AnimatableScaleValue(Parse(reader, composition, ScaleXyParser.Instance));
         }
 
-        public static AnimatableShapeValue ParseShapeData(JsonReader reader, LottieComposition composition)
+        internal static AnimatableShapeValue ParseShapeData(JsonReader reader, LottieComposition composition)
         {
             return new AnimatableShapeValue(Parse(reader, Utils.Utils.DpScale(), composition, ShapeDataParser.Instance));
         }
 
-        public static AnimatableTextFrame ParseDocumentData(JsonReader reader, LottieComposition composition)
+        internal static AnimatableTextFrame ParseDocumentData(JsonReader reader, LottieComposition composition)
         {
             return new AnimatableTextFrame(Parse(reader, composition, DocumentDataParser.Instance));
         }
 
-        public static AnimatableColorValue ParseColor(JsonReader reader, LottieComposition composition)
+        internal static AnimatableColorValue ParseColor(JsonReader reader, LottieComposition composition)
         {
             return new AnimatableColorValue(Parse(reader, composition, ColorParser.Instance));
         }
 
-        public static AnimatableGradientColorValue ParseGradientColor(JsonReader reader, LottieComposition composition, int points)
+        internal static AnimatableGradientColorValue ParseGradientColor(JsonReader reader, LottieComposition composition, int points)
         {
             return new AnimatableGradientColorValue(Parse(reader, composition, new GradientColorParser(points)));
         }

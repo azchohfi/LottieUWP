@@ -3,9 +3,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class ShapeFillParser
+    static class ShapeFillParser
     {
-        public static ShapeFill Parse(JsonReader reader, LottieComposition composition)
+        internal static ShapeFill Parse(JsonReader reader, LottieComposition composition)
         {
             AnimatableColorValue color = null;
             bool fillEnabled = false;

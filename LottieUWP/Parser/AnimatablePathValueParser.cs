@@ -16,7 +16,7 @@ namespace LottieUWP.Parser
                 reader.BeginArray();
                 while (reader.HasNext())
                 {
-                    keyframes.Add(PathKeyframeParser.Parse(reader, composition, PathParser.Instance));
+                    keyframes.Add(PathKeyframeParser.Parse(reader, composition));
                 }
                 reader.EndArray();
                 KeyframesParser.SetEndFrames<Keyframe<Vector2?>, Vector2?>(keyframes);
@@ -34,7 +34,7 @@ namespace LottieUWP.Parser
         /// <param name="reader"></param>
         /// <param name="composition"></param>
         /// <returns></returns>
-        public static IAnimatableValue<Vector2?, Vector2?> ParseSplitPath(JsonReader reader, LottieComposition composition)
+        internal static IAnimatableValue<Vector2?, Vector2?> ParseSplitPath(JsonReader reader, LottieComposition composition)
         {
             AnimatablePathValue pathAnimation = null;
             AnimatableFloatValue xAnimation = null;

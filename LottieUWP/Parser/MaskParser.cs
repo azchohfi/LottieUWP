@@ -4,9 +4,9 @@ using LottieUWP.Model.Content;
 
 namespace LottieUWP.Parser
 {
-    public static class MaskParser
+    static class MaskParser
     {
-        public static Mask Parse(JsonReader reader, LottieComposition composition)
+        internal static Mask Parse(JsonReader reader, LottieComposition composition)
         {
             Mask.MaskMode maskMode = Mask.MaskMode.MaskModeAdd;
             AnimatableShapeValue maskPath = null;
