@@ -32,7 +32,7 @@ namespace LottieUWP.Parser
                         points = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "p":
-                        position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
+                        position = AnimatablePathValueParser.ParseSplitPath(reader, composition);
                         break;
                     case "r":
                         rotation = AnimatableValueParser.ParseFloat(reader, composition, false);

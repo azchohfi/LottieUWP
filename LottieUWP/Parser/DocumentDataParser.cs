@@ -1,6 +1,5 @@
 ﻿using Windows.UI;
 using LottieUWP.Model;
-using LottieUWP.Utils;
 
 namespace LottieUWP.Parser
 {
