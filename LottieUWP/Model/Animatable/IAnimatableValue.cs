@@ -7,7 +7,7 @@ namespace LottieUWP.Model.Animatable
         IBaseKeyframeAnimation<TK, TA> CreateAnimation();
     }
 
-    internal interface IAnimatableValueFactory<out TV>
+    public interface IAnimatableValueFactory<out TV>
     {
         TV ValueFromObject(JsonReader reader, float scale);
     }

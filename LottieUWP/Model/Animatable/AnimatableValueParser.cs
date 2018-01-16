@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using LottieUWP.Animation;
+using LottieUWP.Parser;
 
 namespace LottieUWP.Model.Animatable
 {
@@ -38,7 +39,7 @@ namespace LottieUWP.Model.Animatable
         /// <returns></returns>
         private List<Keyframe<T>> ParseKeyframes()
         {
-            return Keyframe<T>.KeyFrameFactory.ParseKeyframes(_reader, _composition, _scale, _valueFactory);
+            return KeyframesParser.Parse(_reader, _composition, _scale, _valueFactory);
         }
     }
 }
