@@ -35,7 +35,7 @@ namespace LottieUWP.Model.Animatable
                         }
                         else
                         {
-                            xAnimation = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            xAnimation = AnimatableValueParser.ParseFloat(reader, composition);
                         }
                         break;
                     case "y":
@@ -46,7 +46,7 @@ namespace LottieUWP.Model.Animatable
                         }
                         else
                         {
-                            yAnimation = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            yAnimation = AnimatableValueParser.ParseFloat(reader, composition);
                         }
                         break;
                     default:
@@ -85,7 +85,7 @@ namespace LottieUWP.Model.Animatable
                 reader.BeginArray();
                 while (reader.HasNext())
                 {
-                    var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(reader, composition, ValueFactory.Instance);
+                    var keyframe = PathKeyframe.PathKeyframeFactory.NewInstance(reader, composition, PathParser.Instance);
                     _keyframes.Add(keyframe);
                 }
                 reader.EndArray();
@@ -105,16 +105,6 @@ namespace LottieUWP.Model.Animatable
             }
 
             return new PathKeyframeAnimation(_keyframes.ToList());
-        }
-
-        private class ValueFactory : IAnimatableValueFactory<Vector2?>
-        {
-            internal static readonly IAnimatableValueFactory<Vector2?> Instance = new ValueFactory();
-
-            public Vector2? ValueFromObject(JsonReader reader, float scale)
-            {
-                return JsonUtils.JsonToPoint(reader, scale);
-            }
         }
     }
 }

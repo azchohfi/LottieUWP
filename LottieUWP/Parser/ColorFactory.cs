@@ -1,14 +1,13 @@
 ﻿using Windows.UI;
-using LottieUWP.Model.Animatable;
 using Newtonsoft.Json;
 
-namespace LottieUWP.Model
+namespace LottieUWP.Parser
 {
-    internal class ColorFactory : IAnimatableValueFactory<Color>
+    internal class ColorParser : IValueParser<Color>
     {
-        internal static readonly ColorFactory Instance = new ColorFactory();
+        internal static readonly ColorParser Instance = new ColorParser();
 
-        public Color ValueFromObject(JsonReader reader, float scale)
+        public Color Parse(JsonReader reader, float scale)
         {
             bool isArray = reader.Peek() == JsonToken.StartArray;
             if (isArray)

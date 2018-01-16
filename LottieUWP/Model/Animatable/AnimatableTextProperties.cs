@@ -1,4 +1,6 @@
-﻿namespace LottieUWP.Model.Animatable
+﻿using LottieUWP.Parser;
+
+namespace LottieUWP.Model.Animatable
 {
     public class AnimatableTextProperties
     {
@@ -56,16 +58,16 @@
                     switch (reader.NextName())
                     {
                         case "fc":
-                            color = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                            color = AnimatableValueParser.ParseColor(reader, composition);
                             break;
                         case "sc":
-                            stroke = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                            stroke = AnimatableValueParser.ParseColor(reader, composition);
                             break;
                         case "sw":
-                            strokeWidth = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            strokeWidth = AnimatableValueParser.ParseFloat(reader, composition);
                             break;
                         case "t":
-                            tracking = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                            tracking = AnimatableValueParser.ParseFloat(reader, composition);
                             break;
                         default:
                             reader.SkipValue();

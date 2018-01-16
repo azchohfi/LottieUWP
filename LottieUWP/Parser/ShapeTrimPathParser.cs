@@ -18,13 +18,13 @@ namespace LottieUWP.Parser
                 switch (reader.NextName())
                 {
                     case "s":
-                        start = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        start = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "e":
-                        end = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        end = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "o":
-                        offset = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        offset = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "nm":
                         name = reader.NextString();

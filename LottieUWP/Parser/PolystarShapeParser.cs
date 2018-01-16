@@ -29,25 +29,25 @@ namespace LottieUWP.Parser
                         type = (PolystarShape.Type)reader.NextInt();
                         break;
                     case "pt":
-                        points = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        points = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "p":
                         position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
                         break;
                     case "r":
-                        rotation = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        rotation = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "or":
-                        outerRadius = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                        outerRadius = AnimatableValueParser.ParseFloat(reader, composition);
                         break;
                     case "os":
-                        outerRoundedness = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        outerRoundedness = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "ir":
-                        innerRadius = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                        innerRadius = AnimatableValueParser.ParseFloat(reader, composition);
                         break;
                     case "is":
-                        innerRoundedness = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        innerRoundedness = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     default:
                         reader.SkipValue();

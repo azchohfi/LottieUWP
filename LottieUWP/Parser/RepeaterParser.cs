@@ -20,10 +20,10 @@ namespace LottieUWP.Parser
                         name = reader.NextString();
                         break;
                     case "c":
-                        copies = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        copies = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "o":
-                        offset = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        offset = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "tr":
                         transform = AnimatableTransform.Factory.NewInstance(reader, composition);

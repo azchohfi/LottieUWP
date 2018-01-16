@@ -4,9 +4,16 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Parser
 {
-    public static class DocumentDataParser
+    public class DocumentDataParser : IValueParser<DocumentData>
     {
+        public static readonly DocumentDataParser Instance = new DocumentDataParser();
+
         public static DocumentData Parse(JsonReader reader)
+        {
+            return Instance.Parse(reader, 1f);
+
+        }
+        public DocumentData Parse(JsonReader reader, float scale)
         {
             string text = null;
             string fontName = null;

@@ -22,7 +22,7 @@ namespace LottieUWP.Parser
                         ind = reader.NextInt();
                         break;
                     case "ks":
-                        shape = AnimatableShapeValue.Factory.NewInstance(reader, composition);
+                        shape = AnimatableValueParser.ParseShapeData(reader, composition);
                         break;
                     default:
                         reader.SkipValue();

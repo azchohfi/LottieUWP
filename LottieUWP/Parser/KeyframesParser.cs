@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using LottieUWP.Animation;
-using LottieUWP.Model.Animatable;
 using Newtonsoft.Json;
 
 namespace LottieUWP.Parser
 {
     public static class KeyframesParser
     {
-        public static List<Keyframe<T>> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory)
+        public static List<Keyframe<T>> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IValueParser<T> valueParser)
         {
             List<Keyframe<T>> keyframes = new List<Keyframe<T>>();
 
@@ -30,20 +29,20 @@ namespace LottieUWP.Parser
                             if (reader.Peek() == JsonToken.Integer || reader.Peek() == JsonToken.Float)
                             {
                                 // For properties in which the static value is an array of numbers. 
-                                keyframes.Add(KeyframeParser.Parse(reader, composition, scale, valueFactory, false));
+                                keyframes.Add(KeyframeParser.Parse(reader, composition, scale, valueParser, false));
                             }
                             else
                             {
                                 while (reader.HasNext())
                                 {
-                                    keyframes.Add(KeyframeParser.Parse(reader, composition, scale, valueFactory, true));
+                                    keyframes.Add(KeyframeParser.Parse(reader, composition, scale, valueParser, true));
                                 }
                             }
                             reader.EndArray();
                         }
                         else
                         {
-                            keyframes.Add(KeyframeParser.Parse(reader, composition, scale, valueFactory, false));
+                            keyframes.Add(KeyframeParser.Parse(reader, composition, scale, valueParser, false));
                         }
                         break;
                     default:

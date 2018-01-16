@@ -4,6 +4,7 @@ using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Model.Content;
 using LottieUWP.Model.Layer;
+using LottieUWP.Parser;
 using LottieUWP.Value;
 using Newtonsoft.Json;
 
@@ -28,11 +29,11 @@ namespace LottieUWP.Model.Animatable
             {
                 var anchorPoint = new AnimatablePathValue();
                 var position = new AnimatablePathValue();
-                var scale = AnimatableScaleValue.Factory.NewInstance();
-                var rotation = AnimatableFloatValue.Factory.NewInstance();
-                var opacity = AnimatableIntegerValue.Factory.NewInstance();
-                var startOpacity = AnimatableFloatValue.Factory.NewInstance();
-                var endOpacity = AnimatableFloatValue.Factory.NewInstance();
+                var scale = new AnimatableScaleValue();
+                var rotation = new AnimatableFloatValue();
+                var opacity = new AnimatableIntegerValue();
+                var startOpacity = new AnimatableFloatValue();
+                var endOpacity = new AnimatableFloatValue();
                 return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
             }
 
@@ -75,25 +76,23 @@ namespace LottieUWP.Model.Animatable
                                 AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
                             break;
                         case "s":
-                            scale = AnimatableScaleValue.Factory.NewInstance(reader, composition);
+                            scale = AnimatableValueParser.ParseScale(reader, composition);
                             break;
                         case "rz":
                             composition.AddWarning("Lottie doesn't support 3D layers.");
-                            rotation = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            rotation = AnimatableValueParser.ParseFloat(reader, composition, false);
                             break;
                         case "r":
-                            rotation = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            rotation = AnimatableValueParser.ParseFloat(reader, composition, false);
                             break;
                         case "o":
-                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            opacity = AnimatableValueParser.ParseInteger(reader, composition);
                             break;
                         case "so":
-                            startOpacity =
-                                AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            startOpacity = AnimatableValueParser.ParseFloat(reader, composition, false);
                             break;
                         case "eo":
-                            endOpacity =
-                                AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                            endOpacity = AnimatableValueParser.ParseFloat(reader, composition, false);
                             break;
                         default:
                             reader.SkipValue();

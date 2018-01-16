@@ -2,7 +2,7 @@
 
 namespace LottieUWP.Model
 {
-    internal class CubicCurveData
+    public class CubicCurveData
     {
         private Vector2 _controlPoint1;
         private Vector2 _controlPoint2;
