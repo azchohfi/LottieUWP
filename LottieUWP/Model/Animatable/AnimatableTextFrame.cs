@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Parser;
 
 namespace LottieUWP.Model.Animatable
 {
@@ -29,7 +30,7 @@ namespace LottieUWP.Model.Animatable
 
             public DocumentData ValueFromObject(JsonReader reader, float scale)
             {
-                return DocumentData.Factory.NewInstance(reader);
+                return DocumentDataParser.Parse(reader);
             }
         }
     }

@@ -4,9 +4,9 @@ using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Model.Content
 {
-    internal class ShapeTrimPath : IContentModel
+    public class ShapeTrimPath : IContentModel
     {
-        internal enum Type
+        public enum Type
         {
             Simultaneously = 1,
             Individually = 2
@@ -17,7 +17,7 @@ namespace LottieUWP.Model.Content
         private readonly AnimatableFloatValue _end;
         private readonly AnimatableFloatValue _offset;
 
-        private ShapeTrimPath(string name, Type type, AnimatableFloatValue start, AnimatableFloatValue end, AnimatableFloatValue offset)
+        public ShapeTrimPath(string name, Type type, AnimatableFloatValue start, AnimatableFloatValue end, AnimatableFloatValue offset)
         {
             Name = name;
             _type = type;
@@ -47,45 +47,6 @@ namespace LottieUWP.Model.Content
         public override string ToString()
         {
             return "Trim Path: {start: " + _start + ", end: " + _end + ", offset: " + _offset + "}";
-        }
-
-        internal static class Factory
-        {
-            internal static ShapeTrimPath NewInstance(JsonReader reader, LottieComposition composition)
-            {
-                string name = null;
-                Type type = Type.Simultaneously;
-                AnimatableFloatValue start = null;
-                AnimatableFloatValue end = null;
-                AnimatableFloatValue offset = null;
-
-                while (reader.HasNext())
-                {
-                    switch (reader.NextName())
-                    {
-                        case "s":
-                            start = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
-                            break;
-                        case "e":
-                            end = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
-                            break;
-                        case "o":
-                            offset = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
-                            break;
-                        case "nm":
-                            name = reader.NextString();
-                            break;
-                        case "m":
-                            type = (Type)reader.NextInt();
-                            break;
-                        default:
-                            reader.SkipValue();
-                            break;
-                    }
-                }
-
-                return new ShapeTrimPath(name, type, start, end, offset);
-            }
         }
     }
 }

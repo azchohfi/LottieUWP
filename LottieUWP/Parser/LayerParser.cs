@@ -7,7 +7,7 @@ using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Parser
 {
-    public class LayerParser
+    public static class LayerParser
     {
         public static Layer Parse(LottieComposition composition)
         {
@@ -97,7 +97,7 @@ namespace LottieUWP.Parser
                         reader.BeginArray();
                         while (reader.HasNext())
                         {
-                            var shape = ShapeGroup.ShapeItemWithJson(reader, composition);
+                            var shape = ContentModelParser.Parse(reader, composition);
                             if (shape != null)
                             {
                                 shapes.Add(shape);

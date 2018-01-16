@@ -3,7 +3,7 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Model.Content
 {
-    internal class GradientColor
+    public class GradientColor
     {
         private readonly float[] _positions;
         private readonly Color[] _colors;

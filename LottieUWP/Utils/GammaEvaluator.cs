@@ -11,7 +11,7 @@ namespace LottieUWP.Utils
     /// https://androidstudygroup.slack.com/archives/animation/p1476461064000335
     /// </para>
     /// </summary>
-    internal class GammaEvaluator
+    internal static class GammaEvaluator
     {
         // Opto-electronic conversion function for the sRGB color space
         // Takes a gamma-encoded sRGB value and converts it to a linear sRGB value

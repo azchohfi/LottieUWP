@@ -176,7 +176,6 @@ namespace LottieUWP.Parser
 
         private static void ParseFonts(JsonReader reader, Dictionary<string, Font> fonts)
         {
-
             reader.BeginObject();
             while (reader.HasNext())
             {
@@ -186,7 +185,7 @@ namespace LottieUWP.Parser
                         reader.BeginArray();
                         while (reader.HasNext())
                         {
-                            var font = Font.Factory.NewInstance(reader);
+                            var font = FontParser.Parse(reader);
                             fonts.Add(font.Name, font);
                         }
                         reader.EndArray();
@@ -204,7 +203,7 @@ namespace LottieUWP.Parser
             reader.BeginArray();
             while (reader.HasNext())
             {
-                var character = FontCharacter.Factory.NewInstance(reader, composition);
+                var character = FontCharacterParser.Parse(reader, composition);
                 characters.Add(character.GetHashCode(), character);
             }
             reader.EndArray();

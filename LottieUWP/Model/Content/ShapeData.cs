@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Model.Content
 {
-    internal class ShapeData
+    public class ShapeData
     {
         private readonly List<CubicCurveData> _curves = new List<CubicCurveData>();
         private Vector2 _initialPoint;

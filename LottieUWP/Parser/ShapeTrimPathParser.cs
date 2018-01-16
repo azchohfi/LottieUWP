@@ -1,0 +1,44 @@
+﻿using LottieUWP.Model.Animatable;
+using LottieUWP.Model.Content;
+
+namespace LottieUWP.Parser
+{
+    public static class ShapeTrimPathParser
+    {
+        public static ShapeTrimPath Parse(JsonReader reader, LottieComposition composition)
+        {
+            string name = null;
+            ShapeTrimPath.Type type = ShapeTrimPath.Type.Simultaneously;
+            AnimatableFloatValue start = null;
+            AnimatableFloatValue end = null;
+            AnimatableFloatValue offset = null;
+
+            while (reader.HasNext())
+            {
+                switch (reader.NextName())
+                {
+                    case "s":
+                        start = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        break;
+                    case "e":
+                        end = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        break;
+                    case "o":
+                        offset = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        break;
+                    case "nm":
+                        name = reader.NextString();
+                        break;
+                    case "m":
+                        type = (ShapeTrimPath.Type)reader.NextInt();
+                        break;
+                    default:
+                        reader.SkipValue();
+                        break;
+                }
+            }
+
+            return new ShapeTrimPath(name, type, start, end, offset);
+        }
+    }
+}

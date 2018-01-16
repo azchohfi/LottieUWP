@@ -1,6 +1,6 @@
 ﻿namespace LottieUWP.Model.Content
 {
-	internal enum GradientType
+	public enum GradientType
 	{
 	  Linear,
 	  Radial

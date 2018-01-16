@@ -4,9 +4,9 @@ using LottieUWP.Model.Layer;
 
 namespace LottieUWP.Model.Content
 {
-    internal class MergePaths : IContentModel
+    public class MergePaths : IContentModel
     {
-        internal enum MergePathsMode
+        public enum MergePathsMode
         {
             Merge = 1,
             Add = 2,
@@ -17,7 +17,7 @@ namespace LottieUWP.Model.Content
 
         private readonly MergePathsMode _mode;
 
-        private MergePaths(string name, MergePathsMode mode)
+        public MergePaths(string name, MergePathsMode mode)
         {
             Name = name;
             _mode = mode;
@@ -40,33 +40,6 @@ namespace LottieUWP.Model.Content
         public override string ToString()
         {
             return "MergePaths{" + "mode=" + _mode + '}';
-        }
-
-        internal static class Factory
-        {
-            internal static MergePaths NewInstance(JsonReader reader)
-            {
-                string name = null;
-                MergePathsMode mode = MergePathsMode.Add;
-
-                while (reader.HasNext())
-                {
-                    switch (reader.NextName())
-                    {
-                        case "nm":
-                            name = reader.NextString();
-                            break;
-                        case "mm":
-                            mode = (MergePathsMode)reader.NextInt();
-                            break;
-                        default:
-                            reader.SkipValue();
-                            break;
-                    }
-                }
-
-                return new MergePaths(name, mode);
-            }
         }
     }
 }

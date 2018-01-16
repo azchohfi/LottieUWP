@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableGradientColorValue : BaseAnimatableValue<GradientColor, GradientColor>
+    public class AnimatableGradientColorValue : BaseAnimatableValue<GradientColor, GradientColor>
     {
         private AnimatableGradientColorValue(List<Keyframe<GradientColor>> keyframes) : base(keyframes)
         {

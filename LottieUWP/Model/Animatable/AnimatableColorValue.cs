@@ -5,7 +5,7 @@ using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableColorValue : BaseAnimatableValue<Color, Color>
+    public class AnimatableColorValue : BaseAnimatableValue<Color, Color>
     {
         private AnimatableColorValue(List<Keyframe<Color>> keyframes) : base(keyframes)
         {
