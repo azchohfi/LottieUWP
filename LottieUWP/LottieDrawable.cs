@@ -9,6 +9,7 @@ using LottieUWP.Animation.Content;
 using LottieUWP.Manager;
 using LottieUWP.Model;
 using LottieUWP.Model.Layer;
+using LottieUWP.Parser;
 using LottieUWP.Utils;
 using LottieUWP.Value;
 using Microsoft.Graphics.Canvas;
@@ -220,7 +221,7 @@ namespace LottieUWP
 
         private void BuildCompositionLayer()
         {
-            _compositionLayer = new CompositionLayer(this, Layer.Factory.NewInstance(_composition), _composition.Layers, _composition);
+            _compositionLayer = new CompositionLayer(this, LayerParser.Parse(_composition), _composition.Layers, _composition);
         }
 
         public void ClearComposition()

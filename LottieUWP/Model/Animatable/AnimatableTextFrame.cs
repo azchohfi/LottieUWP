@@ -4,7 +4,7 @@ using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable
 {
-    internal class AnimatableTextFrame : BaseAnimatableValue<DocumentData, DocumentData>
+    public class AnimatableTextFrame : BaseAnimatableValue<DocumentData, DocumentData>
     {
         internal AnimatableTextFrame(List<Keyframe<DocumentData>> keyframes) : base(keyframes)
         {

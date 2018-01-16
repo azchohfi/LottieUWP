@@ -94,7 +94,7 @@ namespace LottieUWP.Parser
             reader.BeginArray();
             while (reader.HasNext())
             {
-                var layer = Layer.Factory.NewInstance(reader, composition);
+                var layer = LayerParser.Parse(reader, composition);
                 if (layer.GetLayerType() == Layer.LayerType.Image)
                 {
                     imageCount++;
@@ -136,7 +136,7 @@ namespace LottieUWP.Parser
                             reader.BeginArray();
                             while (reader.HasNext())
                             {
-                                var layer = Layer.Factory.NewInstance(reader, composition);
+                                var layer = LayerParser.Parse(reader, composition);
                                 layerMap.Add(layer.Id, layer);
                                 layers.Add(layer);
                             }
