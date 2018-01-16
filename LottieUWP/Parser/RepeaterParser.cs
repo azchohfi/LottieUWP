@@ -26,7 +26,7 @@ namespace LottieUWP.Parser
                         offset = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "tr":
-                        transform = AnimatableTransform.Factory.NewInstance(reader, composition);
+                        transform = AnimatableTransformParser.Parse(reader, composition);
                         break;
                     default:
                         reader.SkipValue();

@@ -12,7 +12,7 @@ namespace LottieUWP.Parser
         public static Layer Parse(LottieComposition composition)
         {
             var bounds = composition.Bounds;
-            return new Layer(new List<IContentModel>(), composition, "__container", -1, Layer.LayerType.PreComp, -1, null, new List<Mask>(), AnimatableTransform.Factory.NewInstance(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<Keyframe<float?>>(), Layer.MatteType.None, null);
+            return new Layer(new List<IContentModel>(), composition, "__container", -1, Layer.LayerType.PreComp, -1, null, new List<Mask>(), new AnimatableTransform(), 0, 0, default(Color), 0, 0, (int)bounds.Width, (int)bounds.Height, null, null, new List<Keyframe<float?>>(), Layer.MatteType.None, null);
         }
 
         public static Layer Parse(JsonReader reader, LottieComposition composition)
@@ -80,7 +80,7 @@ namespace LottieUWP.Parser
                         solidColor = Utils.Utils.GetSolidColorBrush(reader.NextString());
                         break;
                     case "ks":
-                        transform = AnimatableTransform.Factory.NewInstance(reader, composition);
+                        transform = AnimatableTransformParser.Parse(reader, composition);
                         break;
                     case "tt":
                         matteType = (Layer.MatteType)reader.NextInt();
@@ -89,7 +89,7 @@ namespace LottieUWP.Parser
                         reader.BeginArray();
                         while (reader.HasNext())
                         {
-                            masks.Add(Mask.Factory.NewMask(reader, composition));
+                            masks.Add(MaskParser.Parse(reader, composition));
                         }
                         reader.EndArray();
                         break;
@@ -118,7 +118,7 @@ namespace LottieUWP.Parser
                                     reader.BeginArray();
                                     if (reader.HasNext())
                                     {
-                                        textProperties = AnimatableTextProperties.Factory.NewInstance(reader, composition);
+                                        textProperties = AnimatableTextPropertiesParser.Parse(reader, composition);
                                     }
                                     while (reader.HasNext())
                                     {
