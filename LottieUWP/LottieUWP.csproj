@@ -146,6 +146,8 @@
     <Compile Include="Parser\FontParser.cs" />
     <Compile Include="Parser\GradientFillParser.cs" />
     <Compile Include="Parser\GradientStrokeParser.cs" />
+    <Compile Include="Parser\KeyframeParser.cs" />
+    <Compile Include="Parser\KeyframesParser.cs" />
     <Compile Include="Parser\LayerParser.cs" />
     <Compile Include="Parser\LottieCompositionParser.cs" />
     <Compile Include="Model\Animatable\IAnimatableValue.cs" />

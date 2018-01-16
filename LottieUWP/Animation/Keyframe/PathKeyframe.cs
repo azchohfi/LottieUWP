@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using LottieUWP.Model.Animatable;
+using LottieUWP.Parser;
 using Newtonsoft.Json;
 
 namespace LottieUWP.Animation.Keyframe
@@ -21,7 +22,7 @@ namespace LottieUWP.Animation.Keyframe
             internal static PathKeyframe NewInstance(JsonReader reader, LottieComposition composition, IAnimatableValueFactory<Vector2?> valueFactory)
             {
                 bool animated = reader.Peek() == JsonToken.StartObject;
-                var keyframe = KeyFrameFactory.NewInstance(reader, composition, Utils.Utils.DpScale(), valueFactory, animated);
+                var keyframe = KeyframeParser.Parse(reader, composition, Utils.Utils.DpScale(), valueFactory, animated);
                 return new PathKeyframe(composition, keyframe);
             }
         }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
+using LottieUWP.Parser;
 using LottieUWP.Utils;
 using Newtonsoft.Json;
 
@@ -88,7 +89,7 @@ namespace LottieUWP.Model.Animatable
                     _keyframes.Add(keyframe);
                 }
                 reader.EndArray();
-                Keyframe<Keyframe<Vector2?>>.SetEndFrames<Keyframe<Vector2?>, Vector2?>(_keyframes);
+                KeyframesParser.SetEndFrames<Keyframe<Vector2?>, Vector2?>(_keyframes);
             }
             else
             {
