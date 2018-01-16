@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using LottieUWP.Model;
 using LottieUWP.Model.Content;
-using LottieUWP.Utils;
 using Newtonsoft.Json;
 
 namespace LottieUWP.Parser

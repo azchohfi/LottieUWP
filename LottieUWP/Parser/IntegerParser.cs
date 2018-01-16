@@ -1,5 +1,4 @@
 ﻿using System;
-using LottieUWP.Utils;
 
 namespace LottieUWP.Parser
 {

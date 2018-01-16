@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using LottieUWP.Utils;
 using Newtonsoft.Json;
 
 namespace LottieUWP.Parser

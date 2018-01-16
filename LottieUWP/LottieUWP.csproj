@@ -139,6 +139,7 @@
     <Compile Include="HashMapHelperClass.cs" />
     <Compile Include="IAnimatable.cs" />
     <Compile Include="JsonReader.cs" />
+    <Compile Include="Parser\AnimatablePathValueParser.cs" />
     <Compile Include="Parser\AnimatableTextPropertiesParser.cs" />
     <Compile Include="Parser\AnimatableTransformParser.cs" />
     <Compile Include="Parser\CircleShapeParser.cs" />
@@ -283,7 +284,7 @@
     <Compile Include="TextDelegate.cs" />
     <Compile Include="Typeface.cs" />
     <Compile Include="Utils\GammaEvaluator.cs" />
-    <Compile Include="Utils\JsonUtils.cs" />
+    <Compile Include="Parser\JsonUtils.cs" />
     <Compile Include="Utils\LottieValueAnimator.cs" />
     <Compile Include="Utils\MeanCalculator.cs" />
     <Compile Include="Utils\MiscUtils.cs" />

@@ -8,7 +8,7 @@ namespace LottieUWP.Model.Animatable
         private readonly AnimatableFloatValue _animatableXDimension;
         private readonly AnimatableFloatValue _animatableYDimension;
 
-        internal AnimatableSplitDimensionPathValue(AnimatableFloatValue animatableXDimension, AnimatableFloatValue animatableYDimension)
+        public AnimatableSplitDimensionPathValue(AnimatableFloatValue animatableXDimension, AnimatableFloatValue animatableYDimension)
         {
             _animatableXDimension = animatableXDimension;
             _animatableYDimension = animatableYDimension;

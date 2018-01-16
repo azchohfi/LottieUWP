@@ -4,7 +4,7 @@ using System.Numerics;
 using Windows.UI;
 using Newtonsoft.Json;
 
-namespace LottieUWP.Utils
+namespace LottieUWP.Parser
 {
     internal static class JsonUtils
     {
@@ -13,7 +13,7 @@ namespace LottieUWP.Utils
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static Color JsonToColor(JsonReader reader)
+        internal static Color JsonToColor(JsonReader reader)
         {
             reader.BeginArray();
             var r = (byte)(reader.NextDouble() * 255);
@@ -27,7 +27,7 @@ namespace LottieUWP.Utils
             return Color.FromArgb(255, r, g, b);
         }
 
-        public static List<Vector2> JsonToPoints(JsonReader reader, float scale)
+        internal static List<Vector2> JsonToPoints(JsonReader reader, float scale)
         {
             List<Vector2> points = new List<Vector2>();
 
@@ -42,7 +42,7 @@ namespace LottieUWP.Utils
             return points;
         }
 
-        public static Vector2 JsonToPoint(JsonReader reader, float scale)
+        internal static Vector2 JsonToPoint(JsonReader reader, float scale)
         {
             switch (reader.Peek())
             {

@@ -33,7 +33,7 @@ namespace LottieUWP.Parser
                         {
                             if (reader.NextName().Equals("k"))
                             {
-                                anchorPoint = new AnimatablePathValue(reader, composition);
+                                anchorPoint = AnimatablePathValueParser.Parse(reader, composition);
                             }
                             else
                             {
@@ -43,7 +43,7 @@ namespace LottieUWP.Parser
                         reader.EndObject();
                         break;
                     case "p":
-                        position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
+                        position = AnimatablePathValueParser.ParseSplitPath(reader, composition);
                         break;
                     case "s":
                         scale = AnimatableValueParser.ParseScale(reader, composition);

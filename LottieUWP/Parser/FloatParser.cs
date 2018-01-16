@@ -1,6 +1,4 @@
-﻿using LottieUWP.Utils;
-
-namespace LottieUWP.Parser
+﻿namespace LottieUWP.Parser
 {
     public class FloatParser : IValueParser<float?>
     {
