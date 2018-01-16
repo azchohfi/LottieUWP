@@ -27,13 +27,13 @@ namespace LottieUWP.Parser
                         name = reader.NextString();
                         break;
                     case "c":
-                        color = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                        color = AnimatableValueParser.ParseColor(reader, composition);
                         break;
                     case "w":
-                        width = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                        width = AnimatableValueParser.ParseFloat(reader, composition);
                         break;
                     case "o":
-                        opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                        opacity = AnimatableValueParser.ParseInteger(reader, composition);
                         break;
                     case "lc":
                         capType = (ShapeStroke.LineCapType)(reader.NextInt() - 1);
@@ -57,7 +57,7 @@ namespace LottieUWP.Parser
                                         n = reader.NextString();
                                         break;
                                     case "v":
-                                        val = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                                        val = AnimatableValueParser.ParseFloat(reader, composition);
                                         break;
                                     default:
                                         reader.SkipValue();

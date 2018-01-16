@@ -112,7 +112,7 @@ namespace LottieUWP.Parser
                             switch (reader.NextName())
                             {
                                 case "d":
-                                    text = AnimatableTextFrame.Factory.NewInstance(reader, composition);
+                                    text = AnimatableValueParser.ParseDocumentData(reader, composition);
                                     break;
                                 case "a":
                                     reader.BeginArray();
@@ -177,7 +177,7 @@ namespace LottieUWP.Parser
                         outFrame = reader.NextDouble();
                         break;
                     case "tm":
-                        timeRemapping = AnimatableFloatValue.Factory.NewInstance(reader, composition, false);
+                        timeRemapping = AnimatableValueParser.ParseFloat(reader, composition, false);
                         break;
                     case "cl":
                         cl = reader.NextString();

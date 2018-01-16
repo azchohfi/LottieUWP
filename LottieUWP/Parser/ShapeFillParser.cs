@@ -21,10 +21,10 @@ namespace LottieUWP.Parser
                         name = reader.NextString();
                         break;
                     case "c":
-                        color = AnimatableColorValue.Factory.NewInstance(reader, composition);
+                        color = AnimatableValueParser.ParseColor(reader, composition);
                         break;
                     case "o":
-                        opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                        opacity = AnimatableValueParser.ParseInteger(reader, composition);
                         break;
                     case "fillEnabled":
                         fillEnabled = reader.NextBoolean();

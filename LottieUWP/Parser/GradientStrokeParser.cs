@@ -40,7 +40,7 @@ namespace LottieUWP.Parser
                                     points = reader.NextInt();
                                     break;
                                 case "k":
-                                    color = AnimatableGradientColorValue.Factory.NewInstance(reader, composition, points);
+                                    color = AnimatableValueParser.ParseGradientColor(reader, composition, points);
                                     break;
                                 default:
                                     reader.SkipValue();
@@ -50,19 +50,19 @@ namespace LottieUWP.Parser
                         reader.EndObject();
                         break;
                     case "o":
-                        opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                        opacity = AnimatableValueParser.ParseInteger(reader, composition);
                         break;
                     case "t":
                         gradientType = reader.NextInt() == 1 ? GradientType.Linear : GradientType.Radial;
                         break;
                     case "s":
-                        startPoint = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                        startPoint = AnimatableValueParser.ParsePoint(reader, composition);
                         break;
                     case "e":
-                        endPoint = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                        endPoint = AnimatableValueParser.ParsePoint(reader, composition);
                         break;
                     case "w":
-                        width = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                        width = AnimatableValueParser.ParseFloat(reader, composition);
                         break;
                     case "lc":
                         capType = (ShapeStroke.LineCapType)(reader.NextInt() - 1);
@@ -85,7 +85,7 @@ namespace LottieUWP.Parser
                                         n = reader.NextString();
                                         break;
                                     case "v":
-                                        val = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                                        val = AnimatableValueParser.ParseFloat(reader, composition);
                                         break;
                                     default:
                                         reader.SkipValue();

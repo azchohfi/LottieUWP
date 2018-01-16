@@ -24,7 +24,7 @@ namespace LottieUWP.Parser
                         position = AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
                         break;
                     case "s":
-                        size = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                        size = AnimatableValueParser.ParsePoint(reader, composition);
                         break;
                     case "d":
                         // "d" is 2 for normal and 3 for reversed. 

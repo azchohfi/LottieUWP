@@ -25,10 +25,10 @@ namespace LottieUWP.Parser
                             AnimatablePathValue.CreateAnimatablePathOrSplitDimensionPath(reader, composition);
                         break;
                     case "s":
-                        size = AnimatablePointValue.Factory.NewInstance(reader, composition);
+                        size = AnimatableValueParser.ParsePoint(reader, composition);
                         break;
                     case "r":
-                        roundedness = AnimatableFloatValue.Factory.NewInstance(reader, composition);
+                        roundedness = AnimatableValueParser.ParseFloat(reader, composition);
                         break;
                     default:
                         reader.SkipValue();

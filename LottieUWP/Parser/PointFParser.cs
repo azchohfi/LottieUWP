@@ -1,19 +1,18 @@
 ﻿using System.Numerics;
-using LottieUWP.Model.Animatable;
 using LottieUWP.Utils;
 using Newtonsoft.Json;
 
-namespace LottieUWP.Model
+namespace LottieUWP.Parser
 {
-    internal class PointFFactory : IAnimatableValueFactory<Vector2?>
+    internal class PointFParser : IValueParser<Vector2?>
     {
-        internal static readonly PointFFactory Instance = new PointFFactory();
+        internal static readonly PointFParser Instance = new PointFParser();
 
-        private PointFFactory()
+        private PointFParser()
         {
         }
 
-        public Vector2? ValueFromObject(JsonReader reader, float scale)
+        public Vector2? Parse(JsonReader reader, float scale)
         {
             JsonToken token = reader.Peek();
             if (token == JsonToken.StartArray)

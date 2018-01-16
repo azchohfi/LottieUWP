@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using LottieUWP.Model.Animatable;
+using LottieUWP.Parser;
 
 namespace LottieUWP.Model.Content
 {
@@ -55,10 +56,10 @@ namespace LottieUWP.Model.Content
 
                             break;
                         case "pt":
-                            maskPath = AnimatableShapeValue.Factory.NewInstance(reader, composition);
+                            maskPath = AnimatableValueParser.ParseShapeData(reader, composition);
                             break;
                         case "o":
-                            opacity = AnimatableIntegerValue.Factory.NewInstance(reader, composition);
+                            opacity = AnimatableValueParser.ParseInteger(reader, composition);
                             break;
                         default:
                             reader.SkipValue();

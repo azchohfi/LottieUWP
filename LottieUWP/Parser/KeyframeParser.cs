@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using LottieUWP.Animation;
-using LottieUWP.Model.Animatable;
 using LottieUWP.Utils;
 
 namespace LottieUWP.Parser
@@ -46,13 +45,13 @@ namespace LottieUWP.Parser
             }
         }
 
-        public static Keyframe<T> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IAnimatableValueFactory<T> valueFactory, bool animated)
+        public static Keyframe<T> Parse<T>(JsonReader reader, LottieComposition composition, float scale, IValueParser<T> valueParser, bool animated)
         {
             if (animated)
             {
-                return ParseKeyframe(composition, reader, scale, valueFactory);
+                return ParseKeyframe(composition, reader, scale, valueParser);
             }
-            return ParseStaticValue(reader, scale, valueFactory);
+            return ParseStaticValue(reader, scale, valueParser);
         }
 
         /// <summary>
@@ -63,9 +62,9 @@ namespace LottieUWP.Parser
         /// <param name="composition"></param>
         /// <param name="reader"></param>
         /// <param name="scale"></param>
-        /// <param name="valueFactory"></param>
+        /// <param name="valueParser"></param>
         /// <returns></returns>
-        private static Keyframe<T> ParseKeyframe<T>(LottieComposition composition, JsonReader reader, float scale, IAnimatableValueFactory<T> valueFactory)
+        private static Keyframe<T> ParseKeyframe<T>(LottieComposition composition, JsonReader reader, float scale, IValueParser<T> valueParser)
         {
             Vector2? cp1 = null;
             Vector2? cp2 = null;
@@ -88,10 +87,10 @@ namespace LottieUWP.Parser
                         startFrame = reader.NextDouble();
                         break;
                     case "s":
-                        startValue = valueFactory.ValueFromObject(reader, scale);
+                        startValue = valueParser.Parse(reader, scale);
                         break;
                     case "e":
-                        endValue = valueFactory.ValueFromObject(reader, scale);
+                        endValue = valueParser.Parse(reader, scale);
                         break;
                     case "o":
                         cp1 = JsonUtils.JsonToPoint(reader, scale);
@@ -159,9 +158,9 @@ namespace LottieUWP.Parser
             return keyframe;
         }
 
-        private static Keyframe<T> ParseStaticValue<T>(JsonReader reader, float scale, IAnimatableValueFactory<T> valueFactory)
+        private static Keyframe<T> ParseStaticValue<T>(JsonReader reader, float scale, IValueParser<T> valueParser)
         {
-            T value = valueFactory.ValueFromObject(reader, scale);
+            T value = valueParser.Parse(reader, scale);
             return new Keyframe<T>(value);
         }
     }
