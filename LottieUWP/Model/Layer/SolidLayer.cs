@@ -1,4 +1,5 @@
-﻿using Windows.Foundation;
+﻿using System.Numerics;
+using Windows.Foundation;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Value;
@@ -8,6 +9,8 @@ namespace LottieUWP.Model.Layer
     internal class SolidLayer : BaseLayer
     {
         private readonly Paint _paint = new Paint();
+        private Vector2[] _points = new Vector2[4];
+        private readonly Path _path = new Path();
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
         internal SolidLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
@@ -35,22 +38,31 @@ namespace LottieUWP.Model.Layer
             }
             if (alpha > 0)
             {
-                UpdateRect(parentMatrix);
-                canvas.DrawRect(Rect, _paint);
+                _points[0] = new Vector2(0, 0);
+                _points[1] = new Vector2(LayerModel.SolidWidth, 0);
+                _points[2] = new Vector2(LayerModel.SolidWidth, LayerModel.SolidHeight);
+                _points[3] = new Vector2(0, LayerModel.SolidHeight);
+
+                // We can't map rect here because if there is rotation on the transform then we aren't 
+                // actually drawing a rect. 
+                parentMatrix.MapPoints(ref _points);
+                _path.Reset();
+                _path.MoveTo(_points[0].X, _points[0].Y);
+                _path.LineTo(_points[1].X, _points[1].Y);
+                _path.LineTo(_points[2].X, _points[2].Y);
+                _path.LineTo(_points[3].X, _points[3].Y);
+                _path.LineTo(_points[0].X, _points[0].Y);
+                _path.Close();
+                canvas.DrawPath(_path, _paint);
             }
         }
 
         public override void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             base.GetBounds(out outBounds, parentMatrix);
-            UpdateRect(BoundsMatrix);
-            RectExt.Set(ref outBounds, Rect);
-        }
-
-        private void UpdateRect(Matrix3X3 matrix)
-        {
             RectExt.Set(ref Rect, 0, 0, LayerModel.SolidWidth, LayerModel.SolidHeight);
-            matrix.MapRect(ref Rect);
+            BoundsMatrix.MapRect(ref Rect);
+            RectExt.Set(ref outBounds, Rect);
         }
 
         public override void AddValueCallback<T>(LottieProperty property, ILottieValueCallback<T> callback)
