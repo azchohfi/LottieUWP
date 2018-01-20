@@ -66,6 +66,7 @@ namespace LottieUWP.Model.Layer
             LottieDrawable = lottieDrawable;
             LayerModel = layerModel;
             _drawTraceName = layerModel.Name + ".Draw";
+            _contentPaint.Alpha = 255;
             _clearPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.Clear);
             _addMaskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstIn);
             _subtractMaskPaint.Xfermode = new PorterDuffXfermode(PorterDuff.Mode.DstOut);
@@ -184,10 +185,10 @@ namespace LottieUWP.Model.Layer
             LottieLog.BeginSection("Layer.ComputeBounds");
             RectExt.Set(ref Rect, 0, 0, 0, 0);
             GetBounds(out Rect, Matrix);
-            IntersectBoundsWithMatte(Rect, Matrix);
+            IntersectBoundsWithMatte(ref Rect, Matrix);
 
             Matrix = MatrixExt.PreConcat(Matrix, Transform.Matrix);
-            IntersectBoundsWithMask(Rect, Matrix);
+            IntersectBoundsWithMask(ref Rect, Matrix);
 
             RectExt.Set(ref Rect, 0, 0, canvas.Width, canvas.Height);
             LottieLog.EndSection("Layer.ComputeBounds");
@@ -241,7 +242,7 @@ namespace LottieUWP.Model.Layer
             LottieLog.EndSection("Layer.ClearLayer");
         }
 
-        private void IntersectBoundsWithMask(Rect rect, Matrix3X3 matrix)
+        private void IntersectBoundsWithMask(ref Rect rect, Matrix3X3 matrix)
         {
             RectExt.Set(ref _maskBoundsRect, 0, 0, 0, 0);
             if (!HasMasksOnThisLayer())
@@ -288,7 +289,7 @@ namespace LottieUWP.Model.Layer
             RectExt.Set(ref rect, Math.Max(rect.Left, _maskBoundsRect.Left), Math.Max(rect.Top, _maskBoundsRect.Top), Math.Min(rect.Right, _maskBoundsRect.Right), Math.Min(rect.Bottom, _maskBoundsRect.Bottom));
         }
 
-        private void IntersectBoundsWithMatte(Rect rect, Matrix3X3 matrix)
+        private void IntersectBoundsWithMatte(ref Rect rect, Matrix3X3 matrix)
         {
             if (!HasMatteOnThisLayer())
             {

@@ -14,6 +14,13 @@ namespace LottieUWP.Utils
         private static Vector2[] _points = new Vector2[2];
         private static readonly float Sqrt2 = (float)Math.Sqrt(2);
         private static float _dpScale = -1;
+        private static float _dpi = -1;
+
+        static Utils()
+        {
+            DpScale();
+            Dpi();
+        }
 
         internal static Path CreatePath(Vector2 startPoint, Vector2 endPoint, Vector2? cp1, Vector2? cp2)
         {
@@ -218,6 +225,15 @@ namespace LottieUWP.Utils
                 _dpScale = (int)DisplayInformation.GetForCurrentView().ResolutionScale / 100f;
             }
             return _dpScale;
+        }
+
+        public static float Dpi()
+        {
+            if (_dpi == -1)
+            {
+                _dpi = (int)DisplayInformation.GetForCurrentView().LogicalDpi;
+            }
+            return _dpi;
         }
     }
 }

@@ -95,6 +95,12 @@ namespace LottieUWP
                 _canvasControl.RemoveFromVisualTree();
                 _canvasControl = null;
             }
+
+            if (_bitmapCanvas != null)
+            {
+                _bitmapCanvas.Dispose();
+                _bitmapCanvas = null;
+            }
         }
 
         public void ForceSoftwareRenderer(bool force)
@@ -684,6 +690,7 @@ namespace LottieUWP
             }
             Width = (int)(_composition.Bounds.Width * _scale);
             Height = (int)(_composition.Bounds.Height * _scale);
+            _bitmapCanvas?.Dispose();
             _bitmapCanvas = new BitmapCanvas(Width, Height);
         }
 

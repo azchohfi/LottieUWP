@@ -37,7 +37,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public Color Color { get; set; }
+        public Color Color { get; set; } = Colors.Transparent;
         public PaintStyle Style { get; set; }
         public ColorFilter ColorFilter { get; set; }
         public CanvasCapStyle StrokeCap { get; set; }
