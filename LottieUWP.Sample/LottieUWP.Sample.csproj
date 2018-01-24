@@ -367,6 +367,7 @@
     <Content Include="Assets\lottiefiles\wallet recharge.json" />
     <Content Include="Assets\lottiefiles\youtube_icon_reveal.json" />
     <Content Include="Assets\Tests\SolidLayerTransform.json" />
+    <Content Include="Assets\AndroidWave.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
