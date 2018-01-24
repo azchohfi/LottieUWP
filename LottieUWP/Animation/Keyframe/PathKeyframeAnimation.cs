@@ -22,6 +22,13 @@ namespace LottieUWP.Animation.Keyframe
                 return keyframe.StartValue;
             }
 
+            if (ValueCallback != null)
+            {
+                return ValueCallback.GetValue(pathKeyframe.StartFrame.Value, pathKeyframe.EndFrame.Value,
+                pathKeyframe.StartValue, pathKeyframe.EndValue, LinearCurrentKeyframeProgress,
+                keyframeProgress, Progress);
+            }
+
             if (_pathMeasureKeyframe != pathKeyframe)
             {
                 _pathMeasure = new PathMeasure(path);
