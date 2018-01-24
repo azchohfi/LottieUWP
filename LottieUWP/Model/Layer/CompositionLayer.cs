@@ -230,6 +230,7 @@ namespace LottieUWP.Model.Layer
                 else
                 {
                     _timeRemapping = new ValueCallbackKeyframeAnimation<float?, float?>((ILottieValueCallback<float?>)callback);
+                    AddAnimation(_timeRemapping);
                 }
             }
         }
