@@ -3,12 +3,12 @@
     /// <summary>
     /// Class to calculate the average in a stream of numbers on a continuous basis.
     /// </summary>
-    internal class MeanCalculator
+    public class MeanCalculator
     {
         private float _sum;
         private int _n;
 
-        internal virtual void Add(float number)
+        public virtual void Add(float number)
         {
             _sum += number;
             _n++;
@@ -19,7 +19,7 @@
             }
         }
 
-        internal virtual float Mean
+        public virtual float Mean
         {
             get
             {

@@ -6,7 +6,7 @@ using LottieUWP.Animation.Content;
 
 namespace LottieUWP.Utils
 {
-    internal static class Utils
+    public static class Utils
     {
         private static readonly PathMeasure PathMeasure = new PathMeasure();
         private static Path _tempPath = new Path();
