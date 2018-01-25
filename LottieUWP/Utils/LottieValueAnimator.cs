@@ -6,7 +6,7 @@ namespace LottieUWP.Utils
     /// This is a slightly modified <seealso cref="ValueAnimator"/> that allows us to update start and end values
     /// easily optimizing for the fact that we know that it's a value animator with 2 floats.
     /// </summary>
-    internal class LottieValueAnimator : ValueAnimator
+    public class LottieValueAnimator : ValueAnimator
     {
         private bool _systemAnimationsAreDisabled;
         private float _compositionDuration;
@@ -16,7 +16,7 @@ namespace LottieUWP.Utils
         private float _minValue;
         private float _maxValue = 1f;
 
-        internal LottieValueAnimator()
+        public LottieValueAnimator()
         {
             Interpolator = null;
             Update += OnAnimationUpdate;

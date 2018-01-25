@@ -40,19 +40,18 @@ namespace LottieUWP
             }
         }
 
-        internal virtual bool Enabled
+        public virtual bool Enabled
         {
             set => _enabled = value;
         }
 
-        internal virtual void RecordRenderTime(string layerName, float millis)
+        public virtual void RecordRenderTime(string layerName, float millis)
         {
             if (!_enabled)
             {
                 return;
             }
-            var meanCalculator = _layerRenderTimes[layerName];
-            if (meanCalculator == null)
+            if (!_layerRenderTimes.TryGetValue(layerName, out var meanCalculator))
             {
                 meanCalculator = new MeanCalculator();
                 _layerRenderTimes[layerName] = meanCalculator;

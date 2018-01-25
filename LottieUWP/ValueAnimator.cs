@@ -53,6 +53,7 @@ namespace LottieUWP
             set
             {
                 _currentPlayTime = value;
+                UpdateAnimatedValues(CurrentPlayTime / Duration, false);
                 OnValueChanged();
             }
         }
@@ -104,8 +105,7 @@ namespace LottieUWP
         {
             _lastTick = DateTime.Now;
 
-            AnimatedFraction = Interpolator.GetInterpolation(_reverse ? 1 : 0);
-            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
+            UpdateAnimatedValues(0);
 
             if (recreateTimer || _timer == null)
             {
@@ -153,8 +153,17 @@ namespace LottieUWP
                 }
             }
 
-            AnimatedFraction = Interpolator.GetInterpolation((_reverse ? 1 - progress : progress));
-            AnimatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
+            UpdateAnimatedValues(progress);
+        }
+
+        private void UpdateAnimatedValues(float progress, bool notify = true)
+        {
+            AnimatedFraction = Interpolator.GetInterpolation(_reverse ? 1 - progress : progress);
+            var animatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
+            if (notify)
+                AnimatedValue = animatedValue;
+            else
+                _animatedValue = animatedValue;
         }
 
         public override void End()
