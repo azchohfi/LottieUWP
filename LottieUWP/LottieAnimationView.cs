@@ -221,7 +221,7 @@ namespace LottieUWP
                 _lottieDrawable.PlayAnimation();
             }
 
-            EnableMergePathsForKitKatAndAbove();
+            EnableMergePathsForKitKatAndAbove(true);
 
             SimpleColorFilter filter = new SimpleColorFilter(ColorFilter);
             KeyPath keyPath = new KeyPath("**");
@@ -361,9 +361,9 @@ namespace LottieUWP
         /// first shape. If you need to cut out one shape from another shape, use an even-odd fill type
         /// instead of using merge paths.
         /// </summary>
-        public virtual void EnableMergePathsForKitKatAndAbove()
+        public void EnableMergePathsForKitKatAndAbove(bool enable)
         {
-            _lottieDrawable.EnableMergePathsForKitKatAndAbove();
+            _lottieDrawable.EnableMergePathsForKitKatAndAbove(enable);
         }
 
         public virtual void UseExperimentalHardwareAcceleration(bool use = true)
