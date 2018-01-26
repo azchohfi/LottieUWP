@@ -15,9 +15,6 @@ namespace LottieUWP.Parser
             float startFrame = 0f;
             float endFrame = 0f;
             float frameRate = 0f;
-            int majorVersion = 0;
-            int minorVersion = 0;
-            int patchVersion = 0;
             Dictionary<long, Layer> layerMap = new Dictionary<long, Layer>();
             List<Layer> layers = new List<Layer>();
             int width = 0;
@@ -51,10 +48,10 @@ namespace LottieUWP.Parser
                     case "v":
                         var version = reader.NextString();
                         var versions = Regex.Split(version, "\\.");
-                        majorVersion = int.Parse(versions[0]);
-                        minorVersion = int.Parse(versions[1]);
-                        patchVersion = int.Parse(versions[2]);
-                        if (!Utils.Utils.IsAtLeastVersion(composition, 4, 5, 0))
+                        var majorVersion = int.Parse(versions[0]);
+                        var minorVersion = int.Parse(versions[1]);
+                        var patchVersion = int.Parse(versions[2]);
+                        if (!Utils.Utils.IsAtLeastVersion(majorVersion, minorVersion, patchVersion, 4, 5, 0))
                         {
                             composition.AddWarning("Lottie only supports bodymovin >= 4.5.0");
                         }
@@ -82,8 +79,7 @@ namespace LottieUWP.Parser
             int scaledHeight = (int)(height * scale);
             Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
 
-            composition.Init(bounds, startFrame, endFrame, frameRate, majorVersion, minorVersion,
-                patchVersion, layers, layerMap, precomps, images, characters, fonts);
+            composition.Init(bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps, images, characters, fonts);
 
             return composition;
         }

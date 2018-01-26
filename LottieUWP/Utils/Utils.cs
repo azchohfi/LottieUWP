@@ -165,27 +165,27 @@ namespace LottieUWP.Utils
             return Color.FromArgb(a, r, g, b);
         }
 
-        public static bool IsAtLeastVersion(LottieComposition composition, int major, int minor, int patch)
+        public static bool IsAtLeastVersion(int major, int minor, int patch, int minMajor, int minMinor, int minPatch)
         {
-            if (composition.MajorVersion < major)
+            if (major < minMajor)
             {
                 return false;
             }
-            if (composition.MajorVersion > major)
+            if (major > minMajor)
             {
                 return true;
             }
 
-            if (composition.MinorVersion < minor)
+            if (minor < minMinor)
             {
                 return false;
             }
-            if (composition.MinorVersion > minor)
+            if (minor > minMinor)
             {
                 return true;
             }
 
-            return composition.PatchVersion >= patch;
+            return patch >= minPatch;
         }
 
         internal static int HashFor(float a, float b, float c, float d)

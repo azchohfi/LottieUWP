@@ -68,23 +68,12 @@ namespace LottieUWP
             }
         }
 
-        /* Bodymovin version */
-        public int MajorVersion { get; internal set; }
-        public int MinorVersion { get; internal set; }
-        public int PatchVersion { get; internal set; }
-
-        public void Init(Rect bounds, float startFrame, float endFrame, float frameRate, int majorVersion,
-            int minorVersion, int patchVersion, List<Layer> layers, Dictionary<long, Layer> layerMap,
-            Dictionary<string, List<Layer>> precomps, Dictionary<string, LottieImageAsset> images,
-            Dictionary<int, FontCharacter> characters, Dictionary<string, Font> fonts)
+        public void Init(Rect bounds, float startFrame, float endFrame, float frameRate, List<Layer> layers,  Dictionary<long, Layer> layerMap, Dictionary<string, List<Layer>> precomps, Dictionary<string, LottieImageAsset> images, Dictionary<int, FontCharacter> characters, Dictionary<string, Font> fonts)
         {
             Bounds = bounds;
             StartFrame = startFrame;
             EndFrame = endFrame;
             FrameRate = frameRate;
-            MajorVersion = majorVersion;
-            MinorVersion = minorVersion;
-            PatchVersion = patchVersion;
             Layers = layers;
             _layerMap = layerMap;
             _precomps = precomps;
