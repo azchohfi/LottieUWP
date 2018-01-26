@@ -1,9 +1,8 @@
 ﻿using LottieUWP.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LottieUWP.Tests
 {
-    [TestClass]
     public class MeanCalculatorTest
     {
         private readonly MeanCalculator _meanCalculator;
@@ -13,53 +12,53 @@ namespace LottieUWP.Tests
             _meanCalculator = new MeanCalculator();
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMeanWithNoNumbers()
         {
-            Assert.AreEqual(0f, _meanCalculator.Mean);
+            Assert.Equal(0f, _meanCalculator.Mean);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMeanWithOneNumber()
         {
             _meanCalculator.Add(2);
-            Assert.AreEqual(2f, _meanCalculator.Mean);
+            Assert.Equal(2f, _meanCalculator.Mean);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMeanWithTwoNumbers()
         {
             _meanCalculator.Add(2);
             _meanCalculator.Add(4);
-            Assert.AreEqual(3f, _meanCalculator.Mean);
+            Assert.Equal(3f, _meanCalculator.Mean);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMeanWithTwentyNumbers()
         {
             for (int i = 1; i <= 20; i++)
             {
                 _meanCalculator.Add(i);
             }
-            Assert.AreEqual(10.5f, _meanCalculator.Mean);
+            Assert.Equal(10.5f, _meanCalculator.Mean);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMeanWithHugeNumber()
         {
             _meanCalculator.Add(int.MaxValue - 1);
             _meanCalculator.Add(int.MaxValue - 1);
-            Assert.AreEqual(int.MaxValue - 1, _meanCalculator.Mean);
+            Assert.Equal(int.MaxValue - 1, _meanCalculator.Mean);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMeanWithHugeNumberAndNegativeHugeNumber()
         {
             _meanCalculator.Add(int.MaxValue - 1);
             _meanCalculator.Add(int.MaxValue - 1);
             _meanCalculator.Add(-int.MaxValue + 1);
             _meanCalculator.Add(-int.MaxValue + 1);
-            Assert.AreEqual(0f, _meanCalculator.Mean);
+            Assert.Equal(0f, _meanCalculator.Mean);
         }
     }
 }

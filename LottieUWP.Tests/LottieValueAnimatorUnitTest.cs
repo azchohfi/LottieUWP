@@ -1,12 +1,12 @@
-﻿using LottieUWP.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using LottieUWP.Utils;
+using Xunit;
 
 namespace LottieUWP.Tests
 {
-    [TestClass]
-    public class LottieValueAnimatorUnitTest
+    public class LottieValueAnimatorUnitTest : IDisposable
     {
-        private readonly LottieValueAnimator _animator;
+        private LottieValueAnimator _animator;
 
         public LottieValueAnimatorUnitTest()
         {
@@ -15,94 +15,100 @@ namespace LottieUWP.Tests
                 CompositionDuration = 1000
             };
         }
-        
-        [TestMethod]
-        public void TestInitialState()
+
+        public void Dispose()
         {
-            Assert.AreEqual(0f, _animator.Value);
+            _animator.Cancel();
+            _animator = null;
         }
 
-        [TestMethod]
+        [Fact]
+        public void TestInitialState()
+        {
+            Assert.Equal(0f, _animator.Value);
+        }
+
+        [Fact]
         public void TestResumingMaintainsValue()
         {
             _animator.Value = 0.5f;
             _animator.ResumeAnimation();
-            Assert.AreEqual(0.5f, _animator.Value);
+            Assert.Equal(0.5f, _animator.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPlayingResetsValue()
         {
             _animator.Value = 0.5f;
             _animator.PlayAnimation();
-            Assert.AreEqual(0f, _animator.Value);
-            Assert.AreEqual(0f, _animator.AnimatedFraction);
+            Assert.Equal(0f, _animator.Value);
+            Assert.Equal(0f, _animator.AnimatedFraction);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestReversingMaintainsValue()
         {
             _animator.Value = 0.25f;
             _animator.ReverseAnimationSpeed();
-            Assert.AreEqual(0.25f, _animator.Value);
-            Assert.AreEqual(0.75f, _animator.AnimatedFraction);
+            Assert.Equal(0.25f, _animator.Value);
+            Assert.Equal(0.75f, _animator.AnimatedFraction);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestReversingWithMinValueMaintainsValue()
         {
             _animator.MinValue = 0.1f;
             _animator.Value = 1f;
             _animator.ReverseAnimationSpeed();
-            Assert.AreEqual(1f, _animator.Value);
-            Assert.AreEqual(0f, _animator.AnimatedFraction);
+            Assert.Equal(1f, _animator.Value);
+            Assert.Equal(0f, _animator.AnimatedFraction);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestReversingWithMaxValueMaintainsValue()
         {
             _animator.MaxValue = 0.9f;
             _animator.ReverseAnimationSpeed();
-            Assert.AreEqual(0f, _animator.Value);
-            Assert.AreEqual(1f, _animator.AnimatedFraction);
+            Assert.Equal(0f, _animator.Value);
+            Assert.Equal(1f, _animator.AnimatedFraction);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestResumeReversingWithMinValueMaintainsValue()
         {
             _animator.MaxValue = 0.9f;
             _animator.ReverseAnimationSpeed();
             _animator.ResumeAnimation();
-            Assert.AreEqual(0.9f, _animator.Value);
-            Assert.AreEqual(0f, _animator.AnimatedFraction);
+            Assert.Equal(0.9f, _animator.Value);
+            Assert.Equal(0f, _animator.AnimatedFraction);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPlayReversingWithMinValueMaintainsValue()
         {
             _animator.MaxValue = 0.9f;
             _animator.ReverseAnimationSpeed();
             _animator.PlayAnimation();
-            Assert.AreEqual(0.9f, _animator.Value);
-            Assert.AreEqual(0f, _animator.AnimatedFraction);
+            Assert.Equal(0.9f, _animator.Value);
+            Assert.Equal(0f, _animator.AnimatedFraction);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMinAndMaxBothSet()
         {
             _animator.MinValue = 0.2f;
             _animator.MaxValue = 0.8f;
             _animator.Value = 0.4f;
-            Assert.AreEqual(0.33f, _animator.AnimatedFraction, 0.01);
+            Assert.Equal(0.33f, _animator.AnimatedFraction, 2);
             _animator.ReverseAnimationSpeed();
-            Assert.AreEqual(0.4f, _animator.Value, 0.01);
-            Assert.AreEqual(0.66f, _animator.AnimatedFraction, 0.01);
+            Assert.Equal(0.4f, _animator.Value, 2);
+            Assert.Equal(0.666f, _animator.AnimatedFraction, 2);
             _animator.ResumeAnimation();
-            Assert.AreEqual(0.4f, _animator.Value, 0.01);
-            Assert.AreEqual(0.66f, _animator.AnimatedFraction, 0.01);
+            Assert.Equal(0.4f, _animator.Value, 2);
+            Assert.Equal(0.666f, _animator.AnimatedFraction, 2);
             _animator.PlayAnimation();
-            Assert.AreEqual(0.8f, _animator.Value);
-            Assert.AreEqual(0f, _animator.AnimatedFraction);
+            Assert.Equal(0.8f, _animator.Value);
+            Assert.Equal(0f, _animator.AnimatedFraction, 2);
         }
     }
 }
