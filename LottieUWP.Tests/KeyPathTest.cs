@@ -4,12 +4,11 @@ using System.IO;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using LottieUWP.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LottieUWP.Tests
 {
-    [TestClass]
-    public class KeyPathTest
+    public class KeyPathTest : IDisposable
     {
         private static readonly string[] V =
         {
@@ -27,7 +26,7 @@ namespace LottieUWP.Tests
 
         public KeyPathTest()
         {
-            var task = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            var task = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
             {
                 _lottieDrawable = new LottieDrawable();
 
@@ -45,182 +44,193 @@ namespace LottieUWP.Tests
             task.Wait();
         }
 
+        public void Dispose()
+        {
+            var task = CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+            {
+                _lottieDrawable.ClearComposition();
+                _lottieDrawable = null;
+            }).AsTask();
+
+            task.Wait();
+        }
+
         #region Basic Tests
-        [TestMethod]
+        [Fact]
         public void TestV()
         {
             AssertSize(1, V[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestI()
         {
             AssertSize(0, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIi()
         {
             AssertSize(0, I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIv()
         {
             AssertSize(0, I, V[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVi()
         {
             AssertSize(0, V[0], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVv()
         {
             AssertSize(1, V[0], V[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIii()
         {
             AssertSize(0, I, I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIiv()
         {
             AssertSize(0, I, I, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIvi()
         {
             AssertSize(0, I, V[2], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIvv()
         {
             AssertSize(0, I, V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVii()
         {
             AssertSize(0, V[0], I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestViv()
         {
             AssertSize(0, V[0], I, V[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvi()
         {
             AssertSize(0, V[0], V[1], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvv()
         {
             AssertSize(1, V[0], V[1], V[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIiii()
         {
             AssertSize(0, I, I, I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIiiv()
         {
             AssertSize(0, I, I, I, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIivi()
         {
             AssertSize(0, I, I, V[2], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIivv()
         {
             AssertSize(0, I, I, V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIvii()
         {
             AssertSize(0, I, V[1], I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIviv()
         {
             AssertSize(0, I, V[1], I, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIvvi()
         {
             AssertSize(0, I, V[1], V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIvvv()
         {
             AssertSize(0, I, V[1], V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestViii()
         {
             AssertSize(0, V[0], I, I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestViiv()
         {
             AssertSize(0, V[0], I, I, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVivi()
         {
             AssertSize(0, V[0], I, V[2], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVivv()
         {
             AssertSize(0, V[0], I, V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvii()
         {
             AssertSize(0, V[0], V[1], I, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVviv()
         {
             AssertSize(0, V[0], V[1], I, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvvi()
         {
             AssertSize(0, V[0], V[1], V[2], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvvv()
         {
             AssertSize(1, V[0], V[1], V[2], V[3]);
@@ -228,25 +238,25 @@ namespace LottieUWP.Tests
         #endregion
 
         #region One Wildcard
-        [TestMethod]
+        [Fact]
         public void TestWvvv()
         {
             AssertSize(2, W, V[1], V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVwvv()
         {
             AssertSize(2, V[0], W, V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvwv()
         {
             AssertSize(1, V[0], V[1], W, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestVvvw()
         {
             AssertSize(2, V[0], V[1], V[2], W);
@@ -254,37 +264,37 @@ namespace LottieUWP.Tests
         #endregion
 
         #region Two Wildcards
-        [TestMethod]
+        [Fact]
         public void TestWwvv()
         {
             AssertSize(4, W, W, V[2], V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWvwv()
         {
             AssertSize(2, W, V[1], W, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWvvw()
         {
             AssertSize(4, W, V[1], V[2], W);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWwiv()
         {
             AssertSize(0, W, W, I, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWwvi()
         {
             AssertSize(0, W, W, V[2], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWvw()
         {
             AssertSize(2, W, V[1], W);
@@ -292,19 +302,19 @@ namespace LottieUWP.Tests
         #endregion
 
         #region Three Wildcards
-        [TestMethod]
+        [Fact]
         public void TestWww()
         {
             AssertSize(4, W, W, W);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWwwv()
         {
             AssertSize(4, W, W, W, V[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWwwi()
         {
             AssertSize(0, W, W, W, I);
@@ -312,7 +322,7 @@ namespace LottieUWP.Tests
         #endregion
 
         #region Four Wildcards
-        [TestMethod]
+        [Fact]
         public void TestWwww()
         {
             AssertSize(8, W, W, W, W);
@@ -320,43 +330,43 @@ namespace LottieUWP.Tests
         #endregion
 
         #region One Globstar
-        [TestMethod]
+        [Fact]
         public void TestG()
         {
             AssertSize(18, G);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGi()
         {
             AssertSize(0, G, I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv0()
         {
             AssertSize(1, G, V[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv0V0()
         {
             AssertSize(0, G, V[0], V[0]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv1()
         {
             AssertSize(2, G, V[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv2()
         {
             AssertSize(4, G, V[2]);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv3()
         {
             AssertSize(4, G, V[3]);
@@ -364,25 +374,25 @@ namespace LottieUWP.Tests
         #endregion
 
         #region Two Globstars
-        [TestMethod]
+        [Fact]
         public void TestGv0G()
         {
             AssertSize(9, G, V[0], G);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv1G()
         {
             AssertSize(8, G, V[1], G);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv2G()
         {
             AssertSize(12, G, V[2], G);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGig()
         {
             AssertSize(0, G, I, G);
@@ -390,43 +400,43 @@ namespace LottieUWP.Tests
         #endregion
 
         #region Wildcard and Globstar
-        [TestMethod]
+        [Fact]
         public void TestWg()
         {
             AssertSize(18, W, G);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv0W()
         {
             AssertSize(2, G, V[0], W);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWv0I()
         {
             AssertSize(0, W, V[0], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv1W()
         {
             AssertSize(2, G, V[1], W);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWv1I()
         {
             AssertSize(0, W, V[1], I);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGv2W()
         {
             AssertSize(8, G, V[2], W);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestWv2I()
         {
             AssertSize(0, W, V[2], I);
@@ -438,7 +448,7 @@ namespace LottieUWP.Tests
         {
             KeyPath keyPath = new KeyPath(keys);
             List<KeyPath> resolvedKeyPaths = _lottieDrawable.ResolveKeyPath(keyPath);
-            Assert.AreEqual(size, resolvedKeyPaths.Count);
+            Assert.Equal(size, resolvedKeyPaths.Count);
         }
     }
 }
