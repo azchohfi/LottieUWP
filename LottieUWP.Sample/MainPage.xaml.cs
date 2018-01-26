@@ -37,8 +37,17 @@ namespace LottieUWP.Sample
             if (!(sender is ListView listView))
                 return;
 
-            await LottieAnimationView.SetAnimationAsync((string)listView.SelectedItem);
-            LottieAnimationView.PlayAnimation();
+            var selectedItem = (string) listView.SelectedItem;
+            if (selectedItem != null)
+            {
+                var assetsLength = "Assets\\".Length;
+                var fileName = selectedItem.Substring(assetsLength, selectedItem.Length - assetsLength);
+                fileName = fileName.Substring(0, fileName.Length - ".json".Length);
+
+                LottieAnimationView.ImageAssetsFolder = $"Assets/Images/{fileName}";
+                await LottieAnimationView.SetAnimationAsync(selectedItem);
+                LottieAnimationView.PlayAnimation();
+            }
         }
 
         private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -53,18 +62,38 @@ namespace LottieUWP.Sample
                 LottieAnimationView.Scale = (float)e.NewValue;
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void DebugButton_OnClick(object sender, RoutedEventArgs e)
         {
+            var debugButton = (Button) sender;
             LottieLog.TraceEnabled = !LottieLog.TraceEnabled;
             if (LottieLog.TraceEnabled)
             {
-                DebugButton.Background = new SolidColorBrush(Colors.Red);
-                DebugButton.Content = "Debug On";
+                debugButton.Background = new SolidColorBrush(Colors.Red);
+                debugButton.Content = "Debug On";
             }
             else
             {
-                DebugButton.Background = new SolidColorBrush(Colors.LightGray);
-                DebugButton.Content = "Debug Off";
+                debugButton.Background = new SolidColorBrush(Colors.LightGray);
+                debugButton.Content = "Debug Off";
+            }
+        }
+
+        private void BackgroundColorButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var backgroundColorButton = (Button)sender;
+            var solidColorBrush = (SolidColorBrush)LottieAnimationViewGrid.Background;
+            if (solidColorBrush != null)
+            {
+                if (solidColorBrush.Color == Colors.White)
+                {
+                    backgroundColorButton.Content = "Background Black";
+                    LottieAnimationViewGrid.Background = new SolidColorBrush(Colors.Black);
+                }
+                else
+                {
+                    backgroundColorButton.Content = "Background White";
+                    LottieAnimationViewGrid.Background = new SolidColorBrush(Colors.White);
+                }
             }
         }
     }
