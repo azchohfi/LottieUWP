@@ -221,7 +221,7 @@ namespace LottieUWP
                 _lottieDrawable.PlayAnimation();
             }
 
-            EnableMergePathsForKitKatAndAbove(true);
+            EnableMergePathsForKitKatAndAbove(false);
 
             SimpleColorFilter filter = new SimpleColorFilter(ColorFilter);
             KeyPath keyPath = new KeyPath("**");
