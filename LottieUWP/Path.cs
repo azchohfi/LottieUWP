@@ -24,11 +24,11 @@ namespace LottieUWP
         {
             private Vector2 _startPoint;
             private Vector2 _endPoint;
-            private readonly Rect _rect;
+            private Rect _rect;
             private readonly float _startAngle;
             private readonly float _sweepAngle;
-            private readonly float _a;
-            private readonly float _b;
+            private float _a;
+            private float _b;
 
             public ArcContour(Vector2 startPoint, Rect rect, float startAngle, float sweepAngle)
             {
@@ -46,6 +46,19 @@ namespace LottieUWP
             {
                 _startPoint = matrix.Transform(_startPoint);
                 _endPoint = matrix.Transform(_endPoint);
+
+                var p1 = new Vector2((float)_rect.Left, (float)_rect.Top);
+                var p2 = new Vector2((float)_rect.Right, (float)_rect.Top);
+                var p3 = new Vector2((float)_rect.Left, (float)_rect.Bottom);
+                var p4 = new Vector2((float)_rect.Right, (float)_rect.Bottom);
+
+                p1 = matrix.Transform(p1);
+                p2 = matrix.Transform(p2);
+                p3 = matrix.Transform(p3);
+                p4 = matrix.Transform(p4);
+
+                _a = (p2 - p1).Length() / 2;
+                _b = (p4 - p3).Length() / 2;
             }
 
             public IContour Copy()
@@ -59,7 +72,7 @@ namespace LottieUWP
 
             public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
             {
-                canvasPathBuilder.AddArc(_endPoint, _a/2, _b/2, _sweepAngle, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
+                canvasPathBuilder.AddArc(_endPoint, _a, _b, (float)MathExt.ToRadians(_sweepAngle), CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
 
                 closed = false;
             }
