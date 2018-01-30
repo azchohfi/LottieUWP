@@ -3,11 +3,11 @@ using Newtonsoft.Json;
 
 namespace LottieUWP.Parser
 {
-    internal class ColorParser : IValueParser<Color>
+    internal class ColorParser : IValueParser<Color?>
     {
         internal static readonly ColorParser Instance = new ColorParser();
 
-        public Color Parse(JsonReader reader, float scale)
+        public Color? Parse(JsonReader reader, float scale)
         {
             bool isArray = reader.Peek() == JsonToken.StartArray;
             if (isArray)

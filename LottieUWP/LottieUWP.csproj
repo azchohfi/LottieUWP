@@ -190,7 +190,7 @@
     <Compile Include="Model\Animatable\AnimatableTransform.cs" />
     <Compile Include="Parser\AnimatableValueParser.cs" />
     <Compile Include="Model\Animatable\BaseAnimatableValue.cs" />
-    <Compile Include="Parser\ColorFactory.cs" />
+    <Compile Include="Parser\ColorParser.cs" />
     <Compile Include="Model\Content\CircleShape.cs" />
     <Compile Include="Model\Content\GradientColor.cs" />
     <Compile Include="Model\Content\GradientFill.cs" />

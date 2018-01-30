@@ -9,7 +9,7 @@ namespace LottieUWP.Animation.Content
 {
     internal class StrokeContent : BaseStrokeContent
     {
-        private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<Color?, Color?> _colorAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
         internal StrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) : base(lottieDrawable, layer, ShapeStroke.LineCapTypeToPaintCap(stroke.CapType), ShapeStroke.LineJoinTypeToPaintLineJoin(stroke.JoinType), stroke.Opacity, stroke.Width, stroke.LineDashPattern, stroke.DashOffset)
@@ -22,7 +22,7 @@ namespace LottieUWP.Animation.Content
 
         public override void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
-            Paint.Color = _colorAnimation.Value;
+            Paint.Color = _colorAnimation.Value ?? Colors.White;
             base.Draw(canvas, parentMatrix, parentAlpha);
         }
 
@@ -33,7 +33,7 @@ namespace LottieUWP.Animation.Content
             base.AddValueCallback(property, callback);
             if (property == LottieProperty.StrokeColor)
             {
-                _colorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+                _colorAnimation.SetValueCallback((ILottieValueCallback<Color?>)callback);
             }
             else if (property == LottieProperty.ColorFilter)
             {

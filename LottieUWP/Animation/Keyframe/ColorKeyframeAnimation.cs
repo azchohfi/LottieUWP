@@ -4,13 +4,13 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Animation.Keyframe
 {
-    internal class ColorKeyframeAnimation : KeyframeAnimation<Color>
+    internal class ColorKeyframeAnimation : KeyframeAnimation<Color?>
     {
-        internal ColorKeyframeAnimation(List<Keyframe<Color>> keyframes) : base(keyframes)
+        internal ColorKeyframeAnimation(List<Keyframe<Color?>> keyframes) : base(keyframes)
         {
         }
 
-        public override Color GetValue(Keyframe<Color> keyframe, float keyframeProgress)
+        public override Color? GetValue(Keyframe<Color?> keyframe, float keyframeProgress)
         {
             if (keyframe.StartValue == null || keyframe.EndValue == null)
             {
@@ -24,7 +24,7 @@ namespace LottieUWP.Animation.Keyframe
                 return ValueCallback.GetValueInternal(keyframe.StartFrame.Value, keyframe.EndFrame.Value, startColor, endColor, keyframeProgress, LinearCurrentKeyframeProgress, Progress);
             }
 
-            return GammaEvaluator.Evaluate(keyframeProgress, startColor, endColor);
+            return GammaEvaluator.Evaluate(keyframeProgress, startColor.Value, endColor.Value);
         }
     }
 }

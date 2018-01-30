@@ -15,7 +15,7 @@ namespace LottieUWP.Animation.Content
         private readonly Path _path = new Path();
         private readonly Paint _paint = new Paint(Paint.AntiAliasFlag);
         private readonly List<IPathContent> _paths = new List<IPathContent>();
-        private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<Color?, Color?> _colorAnimation;
         private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
         private readonly LottieDrawable _lottieDrawable;
@@ -64,7 +64,7 @@ namespace LottieUWP.Animation.Content
         public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("FillContent.Draw");
-            _paint.Color = _colorAnimation.Value;
+            _paint.Color = _colorAnimation.Value ?? Colors.White;
             var alpha = (byte)(parentAlpha / 255f * _opacityAnimation.Value / 100f * 255);
             _paint.Alpha = alpha;
 
@@ -105,7 +105,7 @@ namespace LottieUWP.Animation.Content
         {
             if (property == LottieProperty.Color)
             {
-                _colorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+                _colorAnimation.SetValueCallback((ILottieValueCallback<Color?>)callback);
             }
             else if (property == LottieProperty.Opacity)
             {

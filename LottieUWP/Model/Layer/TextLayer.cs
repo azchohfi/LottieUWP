@@ -23,8 +23,8 @@ namespace LottieUWP.Model.Layer
         private readonly TextKeyframeAnimation _textAnimation;
         private readonly LottieDrawable _lottieDrawable;
         private readonly LottieComposition _composition;
-        private readonly IBaseKeyframeAnimation<Color, Color> _colorAnimation;
-        private readonly IBaseKeyframeAnimation<Color, Color> _strokeColorAnimation;
+        private readonly IBaseKeyframeAnimation<Color?, Color?> _colorAnimation;
+        private readonly IBaseKeyframeAnimation<Color?, Color?> _strokeColorAnimation;
         private readonly IBaseKeyframeAnimation<float?, float?> _strokeWidthAnimation;
         private readonly IBaseKeyframeAnimation<float?, float?> _trackingAnimation;
 
@@ -258,11 +258,11 @@ namespace LottieUWP.Model.Layer
             base.AddValueCallback(property, callback);
             if (property == LottieProperty.Color && _colorAnimation != null)
             {
-                _colorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+                _colorAnimation.SetValueCallback((ILottieValueCallback<Color?>)callback);
             }
             else if (property == LottieProperty.StrokeColor && _strokeColorAnimation != null)
             {
-                _strokeColorAnimation.SetValueCallback((ILottieValueCallback<Color>)callback);
+                _strokeColorAnimation.SetValueCallback((ILottieValueCallback<Color?>)callback);
             }
             else if (property == LottieProperty.StrokeWidth && _strokeWidthAnimation != null)
             {
