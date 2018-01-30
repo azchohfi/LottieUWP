@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Windows.Foundation;
 using LottieUWP.Model;
@@ -156,15 +155,15 @@ namespace LottieUWP.Parser
                     }
                 }
                 reader.EndObject();
-                if (layers.Any())
-                {
-                    precomps.Add(id, layers);
-                }
-                else if (imageFileName != null)
+                if (imageFileName != null)
                 {
                     var image =
                         new LottieImageAsset(width, height, id, imageFileName, relativeFolder);
                     images[image.Id] = image;
+                }
+                else
+                {
+                    precomps.Add(id, layers);
                 }
             }
             reader.EndArray();
