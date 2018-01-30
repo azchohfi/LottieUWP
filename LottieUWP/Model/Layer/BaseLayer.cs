@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.Foundation;
 using LottieUWP.Animation.Content;
 using LottieUWP.Animation.Keyframe;
@@ -308,12 +309,30 @@ namespace LottieUWP.Model.Layer
         private void ApplyMasks(BitmapCanvas canvas, Matrix3X3 matrix)
         {
             ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeAdd);
+            // Treat intersect masks like add masks. This is not correct but it's closer. 
+            ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeIntersect);
             ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
         } 
  
         private void ApplyMasks(BitmapCanvas canvas, Matrix3X3 matrix, Mask.MaskMode maskMode)
         {
-            var paint = maskMode == Mask.MaskMode.MaskModeSubtract ? _subtractMaskPaint : _addMaskPaint;
+            Paint paint;
+            switch (maskMode)
+            {
+                case Mask.MaskMode.MaskModeSubtract:
+                    paint = _subtractMaskPaint;
+                    break;
+                case Mask.MaskMode.MaskModeIntersect:
+                    Debug.WriteLine("Animation contains intersect masks. They are not supported but will be " +
+                                 "treated like intersect masks.", LottieLog.Tag);
+                    goto case Mask.MaskMode.MaskModeAdd;
+                case Mask.MaskMode.MaskModeAdd:
+                default:
+                    // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's 
+                    // better than nothing.
+                    paint = _addMaskPaint;
+                    break;
+            }
 
             var size = _mask.Masks.Count;
 
