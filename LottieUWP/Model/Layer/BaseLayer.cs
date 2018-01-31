@@ -324,7 +324,7 @@ namespace LottieUWP.Model.Layer
                     break;
                 case Mask.MaskMode.MaskModeIntersect:
                     Debug.WriteLine("Animation contains intersect masks. They are not supported but will be " +
-                                 "treated like intersect masks.", LottieLog.Tag);
+                                 "treated like add masks.", LottieLog.Tag);
                     goto case Mask.MaskMode.MaskModeAdd;
                 case Mask.MaskMode.MaskModeAdd:
                 default:
