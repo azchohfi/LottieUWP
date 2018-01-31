@@ -183,6 +183,20 @@ namespace LottieUWP
         }
 
         /// <summary>
+        /// Overload of <see cref="AddValueCallback{T}(KeyPath, LottieProperty, ILottieValueCallback{T})"/> that takes an interface. This allows you to use a single abstract 
+        /// method code block in Kotlin such as: 
+        /// animationView.AddValueCallback(yourKeyPath, LottieProperty.Color) { yourColor }
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keyPath"></param>
+        /// <param name="property"></param>
+        /// <param name="callback"></param>
+        public void AddValueCallback<T>(KeyPath keyPath, LottieProperty property, SimpleLottieValueCallback<T> callback)
+        {
+            _lottieDrawable.AddValueCallback(keyPath, property, new SimpleImplLottieValueCallback<T>(callback));
+        }
+
+        /// <summary>
         /// Set the scale on the current composition. The only cost of this function is re-rendering the
         /// current frame so you may call it frequent to scale something up or down.
         /// 

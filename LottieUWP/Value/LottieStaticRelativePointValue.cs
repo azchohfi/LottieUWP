@@ -11,8 +11,7 @@ namespace LottieUWP.Value
             _offset = offset;
         }
 
-        public override Vector2 GetOffset(float startFrame, float endFrame, Vector2 startValue, Vector2 endValue, float linearKeyframeProgress,
-            float interpolatedKeyframeProgress, float overallProgress)
+        public override Vector2 GetOffset(LottieFrameInfo<Vector2> frameInfo)
         {
             return _offset;
         }

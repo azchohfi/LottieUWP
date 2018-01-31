@@ -241,6 +241,7 @@
     <Compile Include="Parser\IValueParser.cs" />
     <Compile Include="PathIterator.cs" />
     <Compile Include="Value\ILottieValueCallback.cs" />
+    <Compile Include="Value\LottieFrameInfo.cs" />
     <Compile Include="Value\LottieStaticInterpolatedFloatValue.cs" />
     <Compile Include="Value\LottieStaticInterpolatedIntegerValue.cs" />
     <Compile Include="Value\LottieStaticInterpolatedPointValue.cs" />
@@ -290,6 +291,8 @@
     <Compile Include="Utils\MiscUtils.cs" />
     <Compile Include="Utils\Utils.cs" />
     <Compile Include="ValueAnimator.cs" />
+    <Compile Include="Value\SimpleImplLottieValueCallback.cs" />
+    <Compile Include="Value\SimpleLottieValueCallback.cs" />
     <EmbeddedResource Include="Properties\LottieUWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>

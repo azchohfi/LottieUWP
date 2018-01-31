@@ -1,4 +1,5 @@
-﻿using LottieUWP.Animation.Keyframe;
+﻿using System;
+using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Value
 {
@@ -7,8 +8,10 @@ namespace LottieUWP.Value
     /// This API is not ready for public use yet. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class LottieValueCallback<T> : ILottieValueCallback<T>
+    public class LottieValueCallback<T> : ILottieValueCallback<T>
     {
+        private readonly LottieFrameInfo<T> _frameInfo = new LottieFrameInfo<T>();
+
         IBaseKeyframeAnimation _animation;
 
         /// <summary>
@@ -17,14 +20,29 @@ namespace LottieUWP.Value
         /// </summary>
         private T _value;
 
-        public abstract T GetValue(
-            float startFrame,
-            float endFrame,
-            T startValue,
-            T endValue,
-            float linearKeyframeProgress,
-            float interpolatedKeyframeProgress,
-            float overallProgress);
+        public LottieValueCallback()
+        {
+        }
+
+        public LottieValueCallback(T staticValue)
+        {
+            _value = staticValue;
+        }
+
+        /// <summary>
+        /// Override this if you haven't set a static value in the constructor or with SetValue.
+        /// </summary>
+        /// <param name="frameInfo"></param>
+        /// <returns></returns>
+        public virtual T GetValue(LottieFrameInfo<T> frameInfo)
+        {
+            if (_value == null)
+            {
+                throw new ArgumentException("You must provide a static value in the constructor " +
+                                                   ", call SetValue, or override GetValue.");
+            }
+            return _value;
+        }
 
         public void SetValue(T value)
         {
@@ -49,8 +67,17 @@ namespace LottieUWP.Value
             {
                 return _value;
             }
-            return GetValue(startFrame, endFrame, startValue, endValue, linearKeyframeProgress,
-                interpolatedKeyframeProgress, overallProgress);
+            return GetValue(
+                _frameInfo.Set(
+                    startFrame,
+                    endFrame,
+                    startValue,
+                    endValue,
+                    linearKeyframeProgress,
+                    interpolatedKeyframeProgress,
+                    overallProgress
+                )
+            );
         }
 
         public void SetAnimation(IBaseKeyframeAnimation animation)

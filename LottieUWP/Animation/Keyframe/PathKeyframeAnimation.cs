@@ -24,7 +24,7 @@ namespace LottieUWP.Animation.Keyframe
 
             if (ValueCallback != null)
             {
-                return ValueCallback.GetValue(pathKeyframe.StartFrame.Value, pathKeyframe.EndFrame.Value,
+                return ValueCallback.GetValueInternal(pathKeyframe.StartFrame.Value, pathKeyframe.EndFrame.Value,
                 pathKeyframe.StartValue, pathKeyframe.EndValue, LinearCurrentKeyframeProgress,
                 keyframeProgress, Progress);
             }

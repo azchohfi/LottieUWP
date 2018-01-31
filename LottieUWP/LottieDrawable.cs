@@ -774,7 +774,20 @@ namespace LottieUWP
             }
         }
 
-        /// 
+        /// <summary>
+        /// Overload of <see cref="AddValueCallback{T}(KeyPath, LottieProperty, ILottieValueCallback{T})"/> that takes an interface. This allows you to use a single abstract 
+        /// method code block in Kotlin such as: 
+        /// drawable.AddValueCallback(yourKeyPath, LottieProperty.Color) { yourColor } 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keyPath"></param>
+        /// <param name="property"></param>
+        /// <param name="callback"></param>
+        public void AddValueCallback<T>(KeyPath keyPath, LottieProperty property, SimpleLottieValueCallback<T> callback)
+        {
+            AddValueCallback(keyPath, property, new SimpleImplLottieValueCallback<T>(callback));
+        }
+
         /// <summary>
         /// Allows you to modify or clear a bitmap that was loaded for an image either automatically
         /// 

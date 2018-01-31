@@ -18,10 +18,9 @@
             _interpolator = interpolator;
         }
 
-        public override T GetValue(float startFrame, float endFrame, T startValue, T endValue,
-            float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress)
+        public override T GetValue(LottieFrameInfo<T> frameInfo)
         {
-            float progress = _interpolator.GetInterpolation(overallProgress);
+            float progress = _interpolator.GetInterpolation(frameInfo.OverallProgress);
             return InterpolateValue(_startValue, _endValue, progress);
         }
 

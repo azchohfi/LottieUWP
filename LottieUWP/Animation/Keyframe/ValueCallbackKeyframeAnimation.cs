@@ -5,6 +5,8 @@ namespace LottieUWP.Animation.Keyframe
 {
     internal class ValueCallbackKeyframeAnimation<TK, TA> : BaseKeyframeAnimation<TK, TA>
     {
+        private readonly LottieFrameInfo<TA> _frameInfo = new LottieFrameInfo<TA>();
+
         internal ValueCallbackKeyframeAnimation(ILottieValueCallback<TA> valueCallback) : base(new List<Keyframe<TK>>())
         {
             SetValueCallback(valueCallback);
@@ -24,7 +26,7 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        public override TA Value => ValueCallback.GetValue(0f, 0f, default(TA), default(TA), Progress, Progress, Progress);
+        public override TA Value => ValueCallback.GetValueInternal(0f, 0f, default(TA), default(TA), Progress, Progress, Progress);
 
         public override TA GetValue(Keyframe<TK> keyframe, float keyframeProgress)
         {

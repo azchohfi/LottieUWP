@@ -3,18 +3,22 @@
 namespace LottieUWP.Value
 {
     /// <summary>
-    /// <see cref="LottieUWP.Value.LottieValueCallback{T}"/> that provides a value offset from the original animation 
+    /// <see cref="Value.LottieValueCallback{T}"/> that provides a value offset from the original animation 
     ///  rather than an absolute value.
     /// </summary>
     public abstract class LottieRelativeIntegerValueCallback : LottieValueCallback<int>
     {
-        public override int GetValue(float sf, float ef, int sv, int ev, float lkp, float ikp, float p)
+        public override int GetValue(LottieFrameInfo<int> frameInfo)
         {
-            int originalValue = MiscUtils.Lerp(sv, ev, ikp);
-            int newValue = GetOffset(sf, ef, sv, ev, lkp, ikp, p);
+            int originalValue = MiscUtils.Lerp(
+                frameInfo.StartValue,
+                frameInfo.EndValue,
+                frameInfo.InterpolatedKeyframeProgress
+            );
+            int newValue = GetOffset(frameInfo);
             return originalValue + newValue;
         }
 
-        public abstract int GetOffset(float startFrame, float endFrame, int startValue, int endValue, float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress);
+        public abstract int GetOffset(LottieFrameInfo<int> frameInfo);
     }
 }

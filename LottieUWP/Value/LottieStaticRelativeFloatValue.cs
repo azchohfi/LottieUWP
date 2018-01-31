@@ -12,7 +12,7 @@
             _offset = offset;
         }
 
-        public override float GetOffset(float startFrame, float endFrame, float startValue, float endValue, float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress)
+        public override float GetOffset(LottieFrameInfo<float> frameInfo)
         {
             return _offset;
         }

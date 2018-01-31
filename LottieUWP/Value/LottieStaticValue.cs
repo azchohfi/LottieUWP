@@ -9,7 +9,7 @@
             _value = value;
         }
 
-        public override T GetValue(float startFrame, float endFrame, T startValue, T endValue, float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress)
+        public override T GetValue(LottieFrameInfo<T> frameInfo)
         {
             return _value;
         }
