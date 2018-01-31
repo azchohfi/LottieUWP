@@ -1,17 +1,17 @@
 ﻿namespace LottieUWP.Value
 {
-    public abstract class LottieStaticInterpolatedValue<T> : LottieValueCallback<T>
+    public abstract class LottieInterpolatedValue<T> : LottieValueCallback<T>
     {
         private readonly T _startValue;
         private readonly T _endValue;
         private readonly IInterpolator _interpolator;
 
-        protected LottieStaticInterpolatedValue(T startValue, T endValue)
+        protected LottieInterpolatedValue(T startValue, T endValue)
             : this(startValue, endValue, new LinearInterpolator())
         {
         }
 
-        protected LottieStaticInterpolatedValue(T startValue, T endValue, IInterpolator interpolator)
+        protected LottieInterpolatedValue(T startValue, T endValue, IInterpolator interpolator)
         {
             _startValue = startValue;
             _endValue = endValue;

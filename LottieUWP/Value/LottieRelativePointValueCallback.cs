@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using LottieUWP.Utils;
 
 namespace LottieUWP.Value
@@ -7,18 +8,28 @@ namespace LottieUWP.Value
     /// <see cref="Value.LottieValueCallback{T}"/> that provides a value offset from the original animation 
     ///  rather than an absolute value.
     /// </summary>
-    public abstract class LottieRelativePointValueCallback : LottieValueCallback<Vector2>
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class LottieRelativePointValueCallback : LottieValueCallback<Vector2?>
     {
-        public override Vector2 GetValue(LottieFrameInfo<Vector2> frameInfo)
+        public LottieRelativePointValueCallback()
+        {
+        }
+
+        public LottieRelativePointValueCallback(Vector2 staticValue)
+            : base(staticValue)
+        {
+        }
+
+        public override Vector2? GetValue(LottieFrameInfo<Vector2?> frameInfo)
         {
             var point = new Vector2(
                 MiscUtils.Lerp(
-                    frameInfo.StartValue.X,
-                    frameInfo.EndValue.X,
+                    frameInfo.StartValue.Value.X,
+                    frameInfo.EndValue.Value.X,
                     frameInfo.InterpolatedKeyframeProgress),
                 MiscUtils.Lerp(
-                    frameInfo.StartValue.Y,
-                    frameInfo.EndValue.Y,
+                    frameInfo.StartValue.Value.Y,
+                    frameInfo.EndValue.Value.Y,
                     frameInfo.InterpolatedKeyframeProgress)
             );
 
@@ -28,6 +39,19 @@ namespace LottieUWP.Value
             return point;
         }
 
-        public abstract Vector2 GetOffset(LottieFrameInfo<Vector2> frameInfo);
+        /// <summary>
+        /// Override this to provide your own offset on every frame. 
+        /// </summary>
+        /// <param name="frameInfo"></param>
+        /// <returns></returns>
+        public Vector2 GetOffset(LottieFrameInfo<Vector2?> frameInfo)
+        {
+            if (Value == null)
+            {
+                throw new ArgumentException("You must provide a static value in the constructor " +
+                                                    ", call setValue, or override getValue.");
+            }
+            return Value.Value;
+        }
     }
 }

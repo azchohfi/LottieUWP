@@ -3,16 +3,17 @@ using LottieUWP.Utils;
 
 namespace LottieUWP.Value
 {
-    public class LottieStaticInterpolatedPointValue : LottieStaticInterpolatedValue<Vector2>
+    // ReSharper disable once UnusedMember.Global
+    public class LottieInterpolatedPointValue : LottieInterpolatedValue<Vector2>
     {
         private Vector2 _point;
 
-        public LottieStaticInterpolatedPointValue(Vector2 startValue, Vector2 endValue)
+        public LottieInterpolatedPointValue(Vector2 startValue, Vector2 endValue)
         : base(startValue, endValue)
         {
         }
 
-        public LottieStaticInterpolatedPointValue(Vector2 startValue, Vector2 endValue, IInterpolator interpolator)
+        public LottieInterpolatedPointValue(Vector2 startValue, Vector2 endValue, IInterpolator interpolator)
         : base(startValue, endValue, interpolator)
         {
         }

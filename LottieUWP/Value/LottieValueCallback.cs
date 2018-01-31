@@ -5,7 +5,6 @@ namespace LottieUWP.Value
 {
     /// <summary>
     /// Allows you to set a callback on a resolved <see cref="Model.KeyPath"/> to modify its animation values at runtime. 
-    /// This API is not ready for public use yet. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LottieValueCallback<T> : ILottieValueCallback<T>
@@ -18,7 +17,7 @@ namespace LottieUWP.Value
         /// This can be set with <see cref="SetValue(T)"/> to use a value instead of deferring
         /// to the callback.
         /// </summary>
-        private T _value;
+        protected T Value;
 
         public LottieValueCallback()
         {
@@ -26,7 +25,7 @@ namespace LottieUWP.Value
 
         public LottieValueCallback(T staticValue)
         {
-            _value = staticValue;
+            Value = staticValue;
         }
 
         /// <summary>
@@ -36,19 +35,19 @@ namespace LottieUWP.Value
         /// <returns></returns>
         public virtual T GetValue(LottieFrameInfo<T> frameInfo)
         {
-            if (_value == null)
+            if (Value == null)
             {
                 throw new ArgumentException("You must provide a static value in the constructor " +
                                                    ", call SetValue, or override GetValue.");
             }
-            return _value;
+            return Value;
         }
 
         public void SetValue(T value)
         {
             if (_animation != null)
             {
-                _value = value;
+                Value = value;
                 _animation.OnValueChanged();
             }
         }
@@ -63,10 +62,6 @@ namespace LottieUWP.Value
             float overallProgress
         )
         {
-            if (_value != null)
-            {
-                return _value;
-            }
             return GetValue(
                 _frameInfo.Set(
                     startFrame,

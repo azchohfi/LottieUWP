@@ -2,14 +2,15 @@
 
 namespace LottieUWP.Value
 {
-    public class LottieStaticInterpolatedFloatValue : LottieStaticInterpolatedValue<float>
+    // ReSharper disable once UnusedMember.Global
+    public class LottieInterpolatedFloatValue : LottieInterpolatedValue<float>
     {
-        public LottieStaticInterpolatedFloatValue(float startValue, float endValue)
+        public LottieInterpolatedFloatValue(float startValue, float endValue)
             : base(startValue, endValue)
         {
         }
 
-        public LottieStaticInterpolatedFloatValue(float startValue, float endValue, IInterpolator interpolator)
+        public LottieInterpolatedFloatValue(float startValue, float endValue, IInterpolator interpolator)
             : base(startValue, endValue, interpolator)
         {
         }
