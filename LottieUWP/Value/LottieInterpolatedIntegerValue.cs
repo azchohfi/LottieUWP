@@ -10,8 +10,7 @@ namespace LottieUWP.Value
         {
         }
 
-        public LottieInterpolatedIntegerValue(int startValue, int endValue,
-            IInterpolator interpolator)
+        public LottieInterpolatedIntegerValue(int startValue, int endValue, IInterpolator interpolator)
             : base(startValue, endValue, interpolator)
         {
         }
