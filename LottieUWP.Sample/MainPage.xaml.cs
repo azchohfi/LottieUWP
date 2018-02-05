@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -94,6 +96,19 @@ namespace LottieUWP.Sample
                     backgroundColorButton.Content = "Background White";
                     LottieAnimationViewGrid.Background = new SolidColorBrush(Colors.White);
                 }
+            }
+        }
+
+        private async void OpenFileButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var filePicker = new FileOpenPicker();
+            filePicker.FileTypeFilter.Add(".json");
+            var file = await filePicker.PickSingleFileAsync();
+
+            if (file != null)
+            {
+                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync())));
+                LottieAnimationView.PlayAnimation();
             }
         }
     }
