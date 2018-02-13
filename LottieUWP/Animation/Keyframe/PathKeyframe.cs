@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using LottieUWP.Value;
+using System.Numerics;
 
 namespace LottieUWP.Animation.Keyframe
 {

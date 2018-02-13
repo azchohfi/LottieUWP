@@ -115,7 +115,7 @@
     <Compile Include="Animation\Content\ShapeContent.cs" />
     <Compile Include="Animation\Content\StrokeContent.cs" />
     <Compile Include="Animation\Content\TrimPathContent.cs" />
-    <Compile Include="Animation\Keyframe.cs" />
+    <Compile Include="Value\Keyframe.cs" />
     <Compile Include="Animation\Keyframe\BaseKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\ColorKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\FloatKeyframeAnimation.cs" />

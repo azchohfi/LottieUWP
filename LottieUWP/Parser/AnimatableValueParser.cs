@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using LottieUWP.Animation;
+using LottieUWP.Value;
 using LottieUWP.Model.Animatable;
 
 namespace LottieUWP.Parser

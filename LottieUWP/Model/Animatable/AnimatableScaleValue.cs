@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using LottieUWP.Animation;
 using LottieUWP.Animation.Keyframe;
 using LottieUWP.Value;
 

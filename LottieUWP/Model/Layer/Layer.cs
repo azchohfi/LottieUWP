@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text;
 using Windows.UI;
-using LottieUWP.Animation;
+using LottieUWP.Value;
 using LottieUWP.Model.Animatable;
 using LottieUWP.Model.Content;
 

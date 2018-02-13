@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using LottieUWP.Animation;
+using LottieUWP.Value;
 using LottieUWP.Animation.Keyframe;
 
 namespace LottieUWP.Model.Animatable

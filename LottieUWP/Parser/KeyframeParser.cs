@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using LottieUWP.Animation;
+using LottieUWP.Value;
 using LottieUWP.Utils;
 
 namespace LottieUWP.Parser

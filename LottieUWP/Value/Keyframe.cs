@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace LottieUWP.Animation
+namespace LottieUWP.Value
 {
     public class Keyframe<T>
     {

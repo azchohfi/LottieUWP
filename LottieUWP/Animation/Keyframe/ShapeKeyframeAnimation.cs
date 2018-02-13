@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LottieUWP.Model.Content;
 using LottieUWP.Utils;
+using LottieUWP.Value;
 
 namespace LottieUWP.Animation.Keyframe
 {

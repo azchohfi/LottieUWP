@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using LottieUWP.Animation;
+using LottieUWP.Value;
 using Newtonsoft.Json;
 
 namespace LottieUWP.Parser

@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using LottieUWP.Animation;
+using LottieUWP.Value;
 using LottieUWP.Animation.Keyframe;
 using Newtonsoft.Json;
 
