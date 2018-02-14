@@ -231,7 +231,12 @@ namespace LottieUWP
             {
                 _animator.Cancel();
             }
-            _composition = null;
+
+            lock (this)
+            {
+                _composition = null;
+            }
+
             _compositionLayer = null;
             _imageAssetManager = null;
             InvalidateSelf();

@@ -446,7 +446,7 @@ namespace LottieUWP
                 return;
             }
 
-            _lottieDrawable.CancelAnimation();
+            ClearComposition();
             CancelLoaderTask();
 
             var cancellationTokenSource = new CancellationTokenSource();
@@ -502,6 +502,7 @@ namespace LottieUWP
         /// </summary>
         public virtual async Task SetAnimationAsync(JsonReader reader)
         {
+            ClearComposition();
             CancelLoaderTask();
             var cancellationTokenSource = new CancellationTokenSource();
 
@@ -830,6 +831,12 @@ namespace LottieUWP
         }
 
         public virtual PerformanceTracker PerformanceTracker => _lottieDrawable.PerformanceTracker;
+
+        private void ClearComposition()
+        {
+            _composition = null;
+            _lottieDrawable.ClearComposition();
+        }
 
         private void EnableOrDisableHardwareLayer()
         {
