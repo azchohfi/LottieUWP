@@ -68,7 +68,7 @@ namespace LottieUWP
                 //}
                 if (_compositionLayer != null)
                 {
-                    _compositionLayer.Progress = _animator.Value;
+                    _compositionLayer.Progress = _animator.AnimatedValueAbsolute;
                 }
             };
             Loaded += UserControl_Loaded;
@@ -187,8 +187,8 @@ namespace LottieUWP
                 ClearComposition();
                 _composition = composition;
                 BuildCompositionLayer();
-                _animator.CompositionDuration = composition.Duration;
-                Progress = _animator.Value;
+                _animator.Composition = composition;
+                Progress = _animator.AnimatedFraction;
                 Scale = _scale;
                 UpdateBounds();
 
@@ -378,20 +378,9 @@ namespace LottieUWP
         /// <summary>
         /// Sets the minimum frame that the animation will start from when playing or looping.
         /// </summary>
-        public int MinFrame
+        public float MinFrame
         {
-            set
-            {
-                if (_composition == null)
-                {
-                    _lazyCompositionTasks.Add(composition =>
-                        {
-                            MinFrame = value;
-                        });
-                    return;
-                }
-                MinProgress = value / _composition.DurationFrames;
-            }
+            set => _animator.MinFrame = value;
         }
 
         /// <summary>
@@ -399,26 +388,26 @@ namespace LottieUWP
         /// </summary>
         public float MinProgress
         {
-            set => _animator.MinValue = value;
-        }
-
-        /// <summary>
-        /// Sets the maximum frame that the animation will end at when playing or looping.
-        /// </summary>
-        public int MaxFrame
-        {
             set
             {
                 if (_composition == null)
                 {
                     _lazyCompositionTasks.Add(composition =>
-                        {
-                            MaxFrame = value;
-                        });
+                    {
+                        MinProgress = value;
+                    });
                     return;
                 }
-                MaxProgress = value / _composition.DurationFrames;
+                MinFrame = value * _composition.DurationFrames;
             }
+        }
+
+        /// <summary>
+        /// Sets the maximum frame that the animation will end at when playing or looping.
+        /// </summary>
+        public float MaxFrame
+        {
+            set => _animator.MaxFrame = value;
         }
 
         /// <summary>
@@ -432,7 +421,16 @@ namespace LottieUWP
                     value = 0;
                 if (value > 1)
                     value = 1;
-                _animator.MaxValue = value;
+
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(composition =>
+                    {
+                        MaxProgress = value;
+                    });
+                    return;
+                }
+                MaxFrame = value / _composition.DurationFrames;
             }
         }
 
@@ -442,17 +440,9 @@ namespace LottieUWP
         /// </summary>
         /// <param name="minFrame"></param>
         /// <param name="maxFrame"></param>
-        public void SetMinAndMaxFrame(int minFrame, int maxFrame)
+        public void SetMinAndMaxFrame(float minFrame, float maxFrame)
         {
-            if (_composition == null)
-            {
-                _lazyCompositionTasks.Add(composition =>
-                {
-                    SetMinAndMaxFrame(minFrame, maxFrame);
-                });
-                return;
-            }
-            _animator.SetMinAndMaxValues(minFrame / _composition.DurationFrames, maxFrame / _composition.DurationFrames);
+            _animator.SetMinAndMaxFrames(minFrame, maxFrame);
         }
 
         /// <summary>
@@ -471,7 +461,16 @@ namespace LottieUWP
                 maxProgress = 0;
             if (maxProgress > 1)
                 maxProgress = 1;
-            _animator.SetMinAndMaxValues(minProgress, maxProgress);
+
+            if (_composition == null)
+            {
+                _lazyCompositionTasks.Add(composition =>
+                {
+                    SetMinAndMaxProgress(minProgress, maxProgress);
+                });
+                return;
+            }
+            SetMinAndMaxFrame(minProgress * _composition.DurationFrames, maxProgress * _composition.DurationFrames);
         }
 
         /// <summary>
@@ -517,7 +516,7 @@ namespace LottieUWP
             _animator.RemoveAllListeners();
         }
 
-        public int Frame
+        public float Frame
         {
             /**
             * Sets the progress to the specified frame.
@@ -540,27 +539,23 @@ namespace LottieUWP
             /**
             * Get the currently rendered frame.
             */
-            get
-            {
-                if (_composition == null)
-                {
-                    return 0;
-                }
-
-                return (int)Math.Round(Progress * _composition.DurationFrames);
-            }
+            get => _animator.Frame;
         }
 
         public virtual float Progress
         {
-            get => _animator.Value;
+            get => _animator.AnimatedValueAbsolute;
             set
             {
-                _animator.Value = value;
-                if (_compositionLayer != null)
+                if (_composition == null)
                 {
-                    _compositionLayer.Progress = value;
+                    _lazyCompositionTasks.Add(composition =>
+                    {
+                        Progress = value;
+                    });
+                    return;
                 }
+                _animator.Frame = value * _composition.DurationFrames + _composition.StartFrame;
             }
         }
 
@@ -603,12 +598,13 @@ namespace LottieUWP
             get => _animator.RepeatCount;
         }
 
-        public virtual bool IsAnimating => _animator.IsRunning;
-
-        internal virtual void SystemAnimationsAreDisabled()
+        public int TargetFps
         {
-            _animator.SystemAnimationsAreDisabled();
+            get => _animator.TargetFps;
+            set => _animator.TargetFps = value;
         }
+
+        public virtual bool IsAnimating => _animator.IsRunning;
 
         /// <summary>
         /// Use this to manually set fonts. 

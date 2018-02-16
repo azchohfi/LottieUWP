@@ -8,16 +8,6 @@ namespace LottieUWP
 
         protected Animator()
         {
-            Duration = 300;
-        }
-
-        public virtual void Start()
-        {
-        }
-
-        public virtual void End()
-        {
-            Cancel();
         }
 
         public virtual void Cancel()

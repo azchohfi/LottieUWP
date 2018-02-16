@@ -4,12 +4,11 @@ using System.Threading;
 
 namespace LottieUWP
 {
-    public class ValueAnimator : Animator
+    public abstract class ValueAnimator : Animator
     {
         protected ValueAnimator()
         {
-            _timerInterval = TimeSpan.FromMilliseconds(Math.Floor(1000.0 / TargetFps));
-            Interpolator = new AccelerateDecelerateInterpolator();
+            _interpolator = new AccelerateDecelerateInterpolator();
         }
 
         public class ValueAnimatorUpdateEventArgs : EventArgs
@@ -34,27 +33,18 @@ namespace LottieUWP
         {
             ValueChanged = null;
         }
-        
-        private float _floatValue1;
-        private float _floatValue2;
-        private float _animatedValue;
-        private IInterpolator _interpolator;
-        private DateTime _lastTick;
-        private const int TargetFps = 60;
-        private readonly TimeSpan _timerInterval;
-        private Timer _timer;
-        private float _currentPlayTime;
-        private int _repeatedTimes;
-        private bool _reverse;
 
-        public float CurrentPlayTime
+        private IInterpolator _interpolator;
+        private Timer _timer;
+        private int _targetFps = 60;
+
+        public int TargetFps
         {
-            get => _currentPlayTime;
+            get => _targetFps;
             set
             {
-                _currentPlayTime = value;
-                UpdateAnimatedValues(CurrentPlayTime / Duration, false);
-                OnValueChanged();
+                _targetFps = value <= 1000 ? (value > 1 ? value : 1) : 1000;
+                _timer?.Change(TimeSpan.Zero, GetTimerInterval());
             }
         }
 
@@ -63,12 +53,12 @@ namespace LottieUWP
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public int RepeatCount { get; set; } = LottieDrawable.Infinite;
+        public int RepeatCount { get; set; }
         public RepeatMode RepeatMode { get; set; }
 
         public override bool IsRunning => _timer != null;
 
-        public IInterpolator Interpolator
+        public virtual IInterpolator Interpolator
         {
             get => _interpolator;
             set
@@ -79,127 +69,49 @@ namespace LottieUWP
             }
         }
 
-        public float AnimatedFraction { get; private set; }
+        public abstract float AnimatedFraction { get; }
 
-        public float AnimatedValue
-        {
-            get => _animatedValue;
-            private set
-            {
-                _animatedValue = value;
-                OnAnimationUpdate();
-            }
-        }
-
-        public override void Start()
-        {
-            _repeatedTimes = 0;
-            _reverse = false;
-
-            PrivateStart(true);
-
-            base.Start();
-        }
-
-        private void PrivateStart(bool recreateTimer)
-        {
-            _lastTick = DateTime.Now;
-
-            UpdateAnimatedValues(0);
-
-            if (recreateTimer || _timer == null)
-            {
-                _timer?.Dispose();
-                _timer = new Timer(TimerCallback, null, TimeSpan.Zero, _timerInterval);
-            }
-        }
-
-        void OnAnimationUpdate()
+        protected void OnAnimationUpdate()
         {
             Update?.Invoke(this, new ValueAnimatorUpdateEventArgs(this));
         }
 
+        protected void PrivateStart()
+        {
+            if (_timer == null)
+            {
+                _timer?.Dispose();
+                _timer = new Timer(TimerCallback, null, TimeSpan.Zero, GetTimerInterval());
+            }
+        }
+
+        private TimeSpan GetTimerInterval()
+        {
+            return TimeSpan.FromTicks((long)Math.Floor((decimal)TimeSpan.TicksPerSecond / TargetFps));
+        }
+
+        protected virtual void RemoveFrameCallback()
+        {
+            _timer?.Dispose();
+            _timer = null;
+        }
+
         private void TimerCallback(object state)
         {
-            var tick = (float)(DateTime.Now - _lastTick).TotalMilliseconds;
-            if (tick < _timerInterval.TotalMilliseconds)
-                tick = (float)Math.Floor(1000.0 / TargetFps);
-            _lastTick = DateTime.Now;
-
-            Debug.WriteLineIf(LottieLog.TraceEnabled, $"Tick milliseconds: {tick}", LottieLog.Tag);
-
-            CurrentPlayTime += tick;
-
-            var progress = CurrentPlayTime / Duration;
-
-            if (progress > 1)
-            {
-                if ((RepeatCount > 0 && _repeatedTimes < RepeatCount) || RepeatCount == LottieDrawable.Infinite)
-                {
-                    CurrentPlayTime = 0;
-                    progress = 0;
-                    _repeatedTimes++;
-
-                    if (RepeatMode == RepeatMode.Reverse)
-                    {
-                        _reverse = !_reverse;
-                    }
-
-                    PrivateStart(false);
-                }
-                else
-                {
-                    PrivateCancel();
-                }
-            }
-
-            UpdateAnimatedValues(progress);
+            DoFrame();
         }
 
-        private void UpdateAnimatedValues(float progress, bool notify = true)
+        public virtual void DoFrame()
         {
-            AnimatedFraction = Interpolator.GetInterpolation(_reverse ? 1 - progress : progress);
-            var animatedValue = MathExt.Lerp(_floatValue1, _floatValue2, AnimatedFraction);
-            if (notify)
-                AnimatedValue = animatedValue;
-            else
-                _animatedValue = animatedValue;
+            OnValueChanged();
         }
 
-        public override void End()
+        protected long SystemnanoTime()
         {
-            CurrentPlayTime = Duration;
-            base.End();
-        }
-
-        public override void Cancel()
-        {
-            PrivateCancel();
-            base.Cancel();
-        }
-
-        private void PrivateCancel()
-        {
-            if (_timer != null)
-            {
-                _timer.Dispose();
-                _timer = null;
-            }
-        }
-
-        public void SetFloatValues(float floatValue1, float floatValue2)
-        {
-            _floatValue1 = floatValue1;
-            _floatValue2 = floatValue2;
-        }
-
-        public static ValueAnimator OfFloat(float floatValue1, float floatValue2)
-        {
-            return new ValueAnimator
-            {
-                _floatValue1 = floatValue1,
-                _floatValue2 = floatValue2
-            };
+            long nano = 10000L * Stopwatch.GetTimestamp();
+            nano /= TimeSpan.TicksPerMillisecond;
+            nano *= 100L;
+            return nano;
         }
     }
 }

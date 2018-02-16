@@ -115,6 +115,7 @@
     <Compile Include="Animation\Content\ShapeContent.cs" />
     <Compile Include="Animation\Content\StrokeContent.cs" />
     <Compile Include="Animation\Content\TrimPathContent.cs" />
+    <Compile Include="Utils\BaseLottieAnimator.cs" />
     <Compile Include="Value\Keyframe.cs" />
     <Compile Include="Animation\Keyframe\BaseKeyframeAnimation.cs" />
     <Compile Include="Animation\Keyframe\ColorKeyframeAnimation.cs" />
@@ -293,7 +294,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.6</Version>
+      <Version>6.0.7</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.3</Version>

@@ -55,7 +55,8 @@ namespace LottieUWP.Sample
         private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             LottieAnimationView.PauseAnimation();
-            LottieAnimationView.Progress = (float) (e.NewValue / 1000);
+            var slider = (Slider)sender;
+            LottieAnimationView.Progress = (float) (e.NewValue / slider.Maximum);
         }
 
         private void Scale_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)

@@ -63,12 +63,11 @@ namespace LottieUWP
         {
             get
             {
-                var frameDuration = EndFrame - StartFrame;
-                return (long)(frameDuration / FrameRate * 1000);
+                return (long)(DurationFrames / FrameRate * 1000);
             }
         }
 
-        public void Init(Rect bounds, float startFrame, float endFrame, float frameRate, List<Layer> layers,  Dictionary<long, Layer> layerMap, Dictionary<string, List<Layer>> precomps, Dictionary<string, LottieImageAsset> images, Dictionary<int, FontCharacter> characters, Dictionary<string, Font> fonts)
+        public void Init(Rect bounds, float startFrame, float endFrame, float frameRate, List<Layer> layers, Dictionary<long, Layer> layerMap, Dictionary<string, List<Layer>> precomps, Dictionary<string, LottieImageAsset> images, Dictionary<int, FontCharacter> characters, Dictionary<string, Font> fonts)
         {
             Bounds = bounds;
             StartFrame = startFrame;
@@ -91,7 +90,7 @@ namespace LottieUWP
 
         public virtual Dictionary<string, LottieImageAsset> Images => _images;
 
-        internal virtual float DurationFrames => Duration * FrameRate / 1000f;
+        internal virtual float DurationFrames => EndFrame - StartFrame;
 
         public override string ToString()
         {

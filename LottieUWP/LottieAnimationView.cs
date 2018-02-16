@@ -234,6 +234,7 @@ namespace LottieUWP
             {
                 _lottieDrawable.PlayAnimation();
             }
+            _lottieDrawable.RepeatCount = RepeatCount;
 
             EnableMergePathsForKitKatAndAbove(false);
 
@@ -241,11 +242,6 @@ namespace LottieUWP
             KeyPath keyPath = new KeyPath("**");
             var callback = new LottieValueCallback<ColorFilter>(filter);
             AddValueCallback(keyPath, LottieProperty.ColorFilter, callback);
-
-            if (Utils.Utils.GetAnimationScale() == 0f)
-            {
-                _lottieDrawable.SystemAnimationsAreDisabled();
-            }
 
             EnableOrDisableHardwareLayer();
         }
@@ -533,6 +529,10 @@ namespace LottieUWP
         /// </summary>
         public virtual LottieComposition Composition
         {
+            get
+            {
+                return _composition;
+            }
             set
             {
                 Debug.WriteLine("Set Composition \n" + value, Tag);
@@ -631,7 +631,7 @@ namespace LottieUWP
         /// </summary>
         /// <param name="minFrame"></param>
         /// <param name="maxFrame"></param>
-        public void SetMinAndMaxFrame(int minFrame, int maxFrame)
+        public void SetMinAndMaxFrame(float minFrame, float maxFrame)
         {
             _lottieDrawable.SetMinAndMaxFrame(minFrame, maxFrame);
         }
@@ -769,6 +769,22 @@ namespace LottieUWP
                 lottieAnimationView._lottieDrawable.RepeatCount = (int)e.NewValue;
         }
 
+        public int TargetFps
+        {
+            get { return (int)GetValue(TargetFpsProperty); }
+            set { SetValue(TargetFpsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for RepeatCount.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TargetFpsProperty =
+            DependencyProperty.Register("TargetFps", typeof(int), typeof(LottieAnimationView), new PropertyMetadata(60, TargetFpsPropertyChangedCallback));
+
+        private static void TargetFpsPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is LottieAnimationView lottieAnimationView)
+                lottieAnimationView._lottieDrawable.TargetFps = (int)e.NewValue;
+        }
+
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
 
         /// <summary>
@@ -803,7 +819,7 @@ namespace LottieUWP
             EnableOrDisableHardwareLayer();
         }
 
-        public int Frame
+        public float Frame
         {
             /** 
             * Sets the progress to the specified frame. 

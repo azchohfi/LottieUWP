@@ -8,6 +8,7 @@ namespace LottieUWP.Utils
 {
     public static class Utils
     {
+        public static readonly int SecondInNanos = 1000000000;
         private static readonly PathMeasure PathMeasure = new PathMeasure();
         private static Path _tempPath = new Path();
         private static Path _tempPath2 = new Path();
@@ -208,24 +209,6 @@ namespace LottieUWP.Utils
                 result = (int)(31 * result * d);
             }
             return result;
-        }
-
-        public static float GetAnimationScale()
-        {
-            // TODO: Detect battery saver mode or UWP system animations disabled
-            //Windows.System.Power.PowerManager.EnergySaverStatus == EnergySaverStatus.On
-            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            //{
-            //    return Settings.Global.getFloat(context.getContentResolver(),
-            //        Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
-            //}
-            //else
-            //{
-            //    return Settings.System.getFloat(context.getContentResolver(),
-            //        Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
-            //}
-            float systemAnimationScale = 1;
-            return systemAnimationScale;
         }
 
         public static float DpScale()

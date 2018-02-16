@@ -83,6 +83,11 @@ namespace LottieUWP.Utils
             return Math.Max(min, Math.Min(max, number));
         }
 
+        public static bool Contains(float number, float rangeMin, float rangeMax)
+        {
+            return number >= rangeMin && number <= rangeMax;
+        }
+
         /// <summary>
         /// Helper method for any <see cref="IKeyPathElementContent"/> that will check if the content 
         /// fully matches the keypath then will add itself as the final key, resolve it, and add 
