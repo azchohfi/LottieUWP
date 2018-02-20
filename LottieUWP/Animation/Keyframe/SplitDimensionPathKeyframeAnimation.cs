@@ -15,6 +15,8 @@ namespace LottieUWP.Animation.Keyframe
         {
             _xAnimation = xAnimation;
             _yAnimation = yAnimation;
+            // We need to call an initial setProgress so point gets set with the initial value. 
+            Progress = Progress;
         }
 
         public override float Progress
