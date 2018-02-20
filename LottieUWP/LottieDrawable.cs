@@ -598,10 +598,10 @@ namespace LottieUWP
             get => _animator.RepeatCount;
         }
 
-        public int TargetFps
+        public float FrameRate
         {
-            get => _animator.TargetFps;
-            set => _animator.TargetFps = value;
+            get => _animator.FrameRate;
+            set => _animator.FrameRate = value;
         }
 
         public virtual bool IsAnimating => _animator.IsRunning;

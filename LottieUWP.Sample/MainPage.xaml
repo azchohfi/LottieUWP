@@ -34,7 +34,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="FPS:" VerticalAlignment="Center" Margin="5,0"/>
-                <TextBox Grid.Column="1" Text="{x:Bind LottieAnimationView.TargetFps, Mode=TwoWay}"/>
+                <TextBox Grid.Column="1" Text="{x:Bind LottieAnimationView.FrameRate, Mode=TwoWay}"/>
             </Grid>
         </StackPanel>
         <Slider Grid.Row="1" Maximum="10" Value="1" Minimum="0.1" SmallChange="0.1" LargeChange="0.1" ValueChanged="Scale_OnValueChanged" StepFrequency="0.1" />

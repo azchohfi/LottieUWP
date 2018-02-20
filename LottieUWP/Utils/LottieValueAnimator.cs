@@ -16,8 +16,9 @@ namespace LottieUWP.Utils
         private float _minFrame = int.MinValue;
         private float _maxFrame = int.MaxValue;
         private LottieComposition _composition;
+        private float _frameRate;
         protected bool _isRunning;
-
+        
         /// <summary>
         /// Returns a float representing the current value of the animation from 0 to 1
         /// regardless of the animation speed, direction, or min and max frames.
@@ -96,15 +97,17 @@ namespace LottieUWP.Utils
             long timeSinceFrame = now - _frameTime;
             float frameDuration = FrameDurationNs;
             float frames = timeSinceFrame / frameDuration;
-            if (frames == 0)
+            int wholeFrames = (int)frames;
+            if (wholeFrames == 0)
             {
                 return;
             }
-            _frame += IsReversed ? -frames : frames;
+            _frame += IsReversed ? -wholeFrames : wholeFrames;
             bool ended = !MiscUtils.Contains(_frame, MinFrame, MaxFrame);
             _frame = MiscUtils.Clamp(_frame, MinFrame, MaxFrame);
 
-            _frameTime = now;
+            float partialFramesDuration = (frames - wholeFrames) * frameDuration;
+            _frameTime = (long)(now - partialFramesDuration);
 
             Debug.WriteLineIf(LottieLog.TraceEnabled, $"Tick milliseconds: {timeSinceFrame}", LottieLog.Tag);
 
@@ -148,11 +151,22 @@ namespace LottieUWP.Utils
             }
         }
 
+        public override float FrameRate
+        {
+            get => _frameRate;
+            set
+            {
+                _frameRate = value <= 1000 ? (value > 1 ? value : 1) : 1000;
+                UpdateTimerInterval();
+            }
+        }
+
         public LottieComposition Composition
         {
             set
             {
                 _composition = value;
+                FrameRate = _composition.FrameRate;
                 _frame = MinFrame;
                 _frameTime = SystemnanoTime();
             }

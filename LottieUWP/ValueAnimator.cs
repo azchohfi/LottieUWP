@@ -36,17 +36,8 @@ namespace LottieUWP
 
         private IInterpolator _interpolator;
         private Timer _timer;
-        private int _targetFps = 60;
 
-        public int TargetFps
-        {
-            get => _targetFps;
-            set
-            {
-                _targetFps = value <= 1000 ? (value > 1 ? value : 1) : 1000;
-                _timer?.Change(TimeSpan.Zero, GetTimerInterval());
-            }
-        }
+        public abstract float FrameRate { get; set; }
 
         protected virtual void OnValueChanged()
         {
@@ -85,9 +76,14 @@ namespace LottieUWP
             }
         }
 
+        protected void UpdateTimerInterval()
+        {
+            _timer?.Change(TimeSpan.Zero, GetTimerInterval());
+        }
+
         private TimeSpan GetTimerInterval()
         {
-            return TimeSpan.FromTicks((long)Math.Floor((decimal)TimeSpan.TicksPerSecond / TargetFps));
+            return TimeSpan.FromTicks((long)Math.Floor(TimeSpan.TicksPerSecond / (decimal)FrameRate));
         }
 
         protected virtual void RemoveFrameCallback()

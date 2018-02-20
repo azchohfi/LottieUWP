@@ -550,6 +550,7 @@ namespace LottieUWP
                 ImageDrawable = _lottieDrawable;
 
                 _composition = value;
+                FrameRate = _composition.FrameRate;
 
                 InvalidateArrange();
                 InvalidateMeasure();
@@ -769,20 +770,20 @@ namespace LottieUWP
                 lottieAnimationView._lottieDrawable.RepeatCount = (int)e.NewValue;
         }
 
-        public int TargetFps
+        public float FrameRate
         {
-            get { return (int)GetValue(TargetFpsProperty); }
-            set { SetValue(TargetFpsProperty, value); }
+            get { return (float)GetValue(FrameRateProperty); }
+            set { SetValue(FrameRateProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for RepeatCount.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty TargetFpsProperty =
-            DependencyProperty.Register("TargetFps", typeof(int), typeof(LottieAnimationView), new PropertyMetadata(60, TargetFpsPropertyChangedCallback));
+        public static readonly DependencyProperty FrameRateProperty =
+            DependencyProperty.Register("FrameRate", typeof(float), typeof(LottieAnimationView), new PropertyMetadata(60f, FrameRatePropertyChangedCallback));
 
-        private static void TargetFpsPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        private static void FrameRatePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             if (dependencyObject is LottieAnimationView lottieAnimationView)
-                lottieAnimationView._lottieDrawable.TargetFps = (int)e.NewValue;
+                lottieAnimationView._lottieDrawable.FrameRate = (float)e.NewValue;
         }
 
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
