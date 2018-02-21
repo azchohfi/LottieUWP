@@ -97,17 +97,15 @@ namespace LottieUWP.Utils
             long timeSinceFrame = now - _frameTime;
             float frameDuration = FrameDurationNs;
             float frames = timeSinceFrame / frameDuration;
-            int wholeFrames = (int)frames;
-            if (wholeFrames == 0)
+            if (frames == 0)
             {
                 return;
             }
-            _frame += IsReversed ? -wholeFrames : wholeFrames;
+            _frame += IsReversed ? -frames : frames;
             bool ended = !MiscUtils.Contains(_frame, MinFrame, MaxFrame);
             _frame = MiscUtils.Clamp(_frame, MinFrame, MaxFrame);
 
-            float partialFramesDuration = (frames - wholeFrames) * frameDuration;
-            _frameTime = (long)(now - partialFramesDuration);
+            _frameTime = now;
 
             Debug.WriteLineIf(LottieLog.TraceEnabled, $"Tick milliseconds: {timeSinceFrame}", LottieLog.Tag);
 
