@@ -63,22 +63,23 @@ namespace LottieUWP.Animation.Content
 
             UpdateClip(width, height);
 
-            return _drawingSession.CreateLayer(1f, CanvasGeometry.CreateRectangle(_device, _currentClip));
+            return _drawingSession.CreateLayer(1f, _currentClip);
         }
 
         public void DrawRect(double x1, double y1, double x2, double y2, Paint paint)
         {
             UpdateDrawingSessionWithFlags(paint.Flags);
             _drawingSession.Transform = GetCurrentTransform();
-            var brush = new CanvasSolidColorBrush(_device, paint.Color);
-
-            if (paint.Style == Paint.PaintStyle.Stroke)
+            using (var brush = new CanvasSolidColorBrush(_device, paint.Color))
             {
-                _drawingSession.DrawRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
-            }
-            else
-            {
-                _drawingSession.FillRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush);
+                if (paint.Style == Paint.PaintStyle.Stroke)
+                {
+                    _drawingSession.DrawRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
+                }
+                else
+                {
+                    _drawingSession.FillRectangle((float)x1, (float)y1, (float)(x2 - x1), (float)(y2 - y1), brush);
+                }
             }
 
             if (paint.Xfermode.Mode == PorterDuff.Mode.Clear)
@@ -104,15 +105,17 @@ namespace LottieUWP.Animation.Content
         {
             UpdateDrawingSessionWithFlags(paint.Flags);
             _drawingSession.Transform = GetCurrentTransform();
-            var brush = new CanvasSolidColorBrush(_device, paint.Color);
 
-            if (paint.Style == Paint.PaintStyle.Stroke)
+            using (var brush = new CanvasSolidColorBrush(_device, paint.Color))
             {
-                _drawingSession.DrawRectangle(rect, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
-            }
-            else
-            {
-                _drawingSession.FillRectangle(rect, brush);
+                if (paint.Style == Paint.PaintStyle.Stroke)
+                {
+                    _drawingSession.DrawRectangle(rect, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
+                }
+                else
+                {
+                    _drawingSession.FillRectangle(rect, brush);
+                }
             }
         }
 
@@ -122,16 +125,22 @@ namespace LottieUWP.Animation.Content
 
             _drawingSession.Transform = GetCurrentTransform();
 
-            var geometry = path.GetGeometry(_device);
-
             var gradient = paint.Shader as Gradient;
             var brush = gradient != null ? gradient.GetBrush(_device, paint.Alpha) : new CanvasSolidColorBrush(_device, paint.Color);
             brush = paint.ColorFilter?.Apply(this, brush) ?? brush;
 
-            if (paint.Style == Paint.PaintStyle.Stroke)
-                _drawingSession.DrawGeometry(geometry, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
-            else
-                _drawingSession.FillGeometry(geometry, brush);
+            using (var geometry = path.GetGeometry(_device))
+            {
+                if (paint.Style == Paint.PaintStyle.Stroke)
+                    _drawingSession.DrawGeometry(geometry, brush, paint.StrokeWidth, GetCanvasStrokeStyle(paint));
+                else
+                    _drawingSession.FillGeometry(geometry, brush);
+            }
+
+            if (gradient == null)
+            {
+                brush.Dispose();
+            }
         }
 
         private Matrix3x2 GetCurrentTransform()
@@ -316,6 +325,11 @@ namespace LottieUWP.Animation.Content
             };
             var textLayout = new CanvasTextLayout(_drawingSession, text, textFormat, 0.0f, 0.0f);
             _drawingSession.DrawText(text, 0, 0, brush, textFormat);
+
+            if (gradient == null)
+            {
+                brush.Dispose();
+            }
 
             return textLayout.LayoutBounds;
         }

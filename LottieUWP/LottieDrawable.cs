@@ -27,7 +27,7 @@ namespace LottieUWP
     /// of compositions.
     /// </para>
     /// </summary>
-    public class LottieDrawable : UserControl, IAnimatable
+    public class LottieDrawable : UserControl, IAnimatable, IDisposable
     {
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private LottieComposition _composition;
@@ -853,6 +853,23 @@ namespace LottieUWP
             var maxScaleX = (float)canvas.Width / (float)_composition.Bounds.Width;
             var maxScaleY = (float)canvas.Height / (float)_composition.Bounds.Height;
             return Math.Min(maxScaleX, maxScaleY);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            _animator.Dispose();
+            _imageAssetManager.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~LottieDrawable()
+        {
+            Dispose(false);
         }
 
         private class ColorFilterData

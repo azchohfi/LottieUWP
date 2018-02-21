@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace LottieUWP
 {
-    public abstract class ValueAnimator : Animator
+    public abstract class ValueAnimator : Animator, IDisposable
     {
         protected ValueAnimator()
         {
@@ -71,7 +71,6 @@ namespace LottieUWP
         {
             if (_timer == null)
             {
-                _timer?.Dispose();
                 _timer = new Timer(TimerCallback, null, TimeSpan.Zero, GetTimerInterval());
             }
         }
@@ -108,6 +107,26 @@ namespace LottieUWP
             nano /= TimeSpan.TicksPerMillisecond;
             nano *= 100L;
             return nano;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~ValueAnimator()
+        {
+            Dispose(false);
         }
     }
 }

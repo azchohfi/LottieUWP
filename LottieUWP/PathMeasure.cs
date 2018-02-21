@@ -1,10 +1,11 @@
+using System;
 using System.Numerics;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 
 namespace LottieUWP
 {
-    internal class PathMeasure
+    internal class PathMeasure : IDisposable
     {
         private CachedPathIteratorFactory _originalPathIterator;
         private Path _path;
@@ -18,14 +19,11 @@ namespace LottieUWP
             Length = _geometry.ComputePathLength();
         }
 
-        public PathMeasure()
-        {
-        }
-
         public void SetPath(Path path)
         {
             _originalPathIterator = new CachedPathIteratorFactory(new FullPathIterator(path));
             _path = path;
+            _geometry?.Dispose();
             _geometry = _path.GetGeometry(CanvasDevice.GetSharedDevice());
             Length = _geometry.ComputePathLength();
         }
@@ -116,6 +114,26 @@ namespace LottieUWP
             }
 
             return !isZeroLength;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_geometry != null)
+            {
+                _geometry.Dispose();
+                _geometry = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~PathMeasure()
+        {
+            Dispose(false);
         }
     }
 }

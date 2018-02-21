@@ -1,10 +1,11 @@
 ﻿using LottieUWP.Value;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
 namespace LottieUWP.Animation.Keyframe
 {
-    internal class PathKeyframeAnimation : KeyframeAnimation<Vector2?>
+    internal class PathKeyframeAnimation : KeyframeAnimation<Vector2?>, IDisposable
     {
         private PathKeyframe _pathMeasureKeyframe;
         private PathMeasure _pathMeasure;
@@ -32,11 +33,32 @@ namespace LottieUWP.Animation.Keyframe
 
             if (_pathMeasureKeyframe != pathKeyframe)
             {
+                _pathMeasure?.Dispose();
                 _pathMeasure = new PathMeasure(path);
                 _pathMeasureKeyframe = pathKeyframe;
             }
 
             return _pathMeasure.GetPosTan(keyframeProgress * _pathMeasure.Length);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_pathMeasure != null)
+            {
+                _pathMeasure.Dispose();
+                _pathMeasure = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~PathKeyframeAnimation()
+        {
+            Dispose(false);
         }
     }
 }

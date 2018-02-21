@@ -343,21 +343,23 @@ namespace LottieUWP
                 ? CanvasFilledRegionDetermination.Winding
                 : CanvasFilledRegionDetermination.Alternate;
             //    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
-            
-            var canvasPathBuilder = new CanvasPathBuilder(device);
-            canvasPathBuilder.SetFilledRegionDetermination(fill);
 
-            var closed = true;
-
-            for (var i = 0; i < Contours.Count; i++)
+            using (var canvasPathBuilder = new CanvasPathBuilder(device))
             {
-                Contours[i].AddPathSegment(canvasPathBuilder, ref closed);
+                canvasPathBuilder.SetFilledRegionDetermination(fill);
+
+                var closed = true;
+
+                for (var i = 0; i < Contours.Count; i++)
+                {
+                    Contours[i].AddPathSegment(canvasPathBuilder, ref closed);
+                }
+
+                if (!closed)
+                    canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
+
+                return CanvasGeometry.CreatePath(canvasPathBuilder);
             }
-
-            if (!closed)
-                canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
-
-            return CanvasGeometry.CreatePath(canvasPathBuilder);
         }
 
         public void ComputeBounds(out Rect rect)
@@ -368,8 +370,10 @@ namespace LottieUWP
                 return;
             }
 
-            var geometry = GetGeometry(CanvasDevice.GetSharedDevice());
-            rect = geometry.ComputeBounds();
+            using (var geometry = GetGeometry(CanvasDevice.GetSharedDevice()))
+            {
+                rect = geometry.ComputeBounds();
+            }
         }
 
         public void AddPath(Path path, Matrix3X3 matrix)

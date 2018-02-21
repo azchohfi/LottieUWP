@@ -2,15 +2,17 @@ using System.Numerics;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
+using System;
 
 namespace LottieUWP.Animation.Content
 {
-    internal class RadialGradient : Gradient
+    internal class RadialGradient : Gradient, IDisposable
     {
         private readonly float _x0;
         private readonly float _y0;
         private readonly float _r;
         private readonly CanvasGradientStop[] _canvasGradientStopCollection;
+        private CanvasRadialGradientBrush _canvasRadialGradientBrush;
 
         public RadialGradient(float x0, float y0, float r, Color[] colors, float[] positions)
         {
@@ -30,19 +32,44 @@ namespace LottieUWP.Animation.Content
 
         public override ICanvasBrush GetBrush(CanvasDevice device, byte alpha)
         {
-            var center = new Vector2(_x0, _y0);
-            center = LocalMatrix.Transform(center);
-
-            var canvasRadialGradientBrush = new CanvasRadialGradientBrush(device,
-                _canvasGradientStopCollection,
-                CanvasEdgeBehavior.Clamp, CanvasAlphaMode.Straight)
+            if (_canvasRadialGradientBrush == null)
             {
-                Center = center,
-                Opacity = alpha / 255f,
-                RadiusX = _r,
-                RadiusY = _r
-            };
-            return canvasRadialGradientBrush;
+                var center = new Vector2(_x0, _y0);
+                center = LocalMatrix.Transform(center);
+
+                _canvasRadialGradientBrush = new CanvasRadialGradientBrush(device,
+                    _canvasGradientStopCollection,
+                    CanvasEdgeBehavior.Clamp, CanvasAlphaMode.Straight)
+                {
+                    Center = center,
+                    RadiusX = _r,
+                    RadiusY = _r
+                };
+            }
+
+            _canvasRadialGradientBrush.Opacity = alpha / 255f;
+
+            return _canvasRadialGradientBrush;
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if(_canvasRadialGradientBrush != null)
+            {
+                _canvasRadialGradientBrush.Dispose();
+                _canvasRadialGradientBrush = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~RadialGradient()
+        {
+            Dispose(false);
         }
     }
 }

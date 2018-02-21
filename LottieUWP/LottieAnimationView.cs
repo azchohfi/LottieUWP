@@ -32,7 +32,7 @@ namespace LottieUWP
     /// <seealso cref="LottieAnimationView.Progress"/>
     /// </para>
     /// </summary>
-    public class LottieAnimationView : UserControl
+    public class LottieAnimationView : UserControl, IDisposable
     {
         private new static readonly string Tag = typeof(LottieAnimationView).Name;
 
@@ -859,6 +859,23 @@ namespace LottieUWP
         {
             var useHardwareLayer = _useHardwareLayer && _lottieDrawable.IsAnimating;
             _lottieDrawable.ForceSoftwareRenderer(!useHardwareLayer);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            _compositionLoader?.Dispose();
+            _lottieDrawable.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~LottieAnimationView()
+        {
+            Dispose(false);
         }
 
         //private class SavedState : BaseSavedState

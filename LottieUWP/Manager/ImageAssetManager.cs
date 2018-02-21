@@ -7,7 +7,7 @@ using Microsoft.Graphics.Canvas;
 
 namespace LottieUWP.Manager
 {
-    internal class ImageAssetManager
+    internal class ImageAssetManager : IDisposable
     {
         private readonly string _imagesFolder;
         private IImageAssetDelegate _delegate;
@@ -35,7 +35,13 @@ namespace LottieUWP.Manager
 
         internal virtual IImageAssetDelegate Delegate
         {
-            set => _delegate = value;
+            set
+            {
+                lock (this)
+                {
+                    _delegate = value;
+                }
+            }
         }
 
         /// <summary>
@@ -46,74 +52,93 @@ namespace LottieUWP.Manager
         /// <returns></returns>
         internal CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
-            if (bitmap == null)
+            lock (this)
             {
-                if (_bitmaps.TryGetValue(id, out var removed))
-                    _bitmaps.Remove(id);
-                return removed;
+                if (bitmap == null)
+                {
+                    if (_bitmaps.TryGetValue(id, out var removed))
+                        _bitmaps.Remove(id);
+                    return removed;
+                }
+                _bitmaps.Add(id, bitmap);
+                return bitmap;
             }
-            _bitmaps.Add(id, bitmap);
-            return bitmap;
         }
 
         internal virtual CanvasBitmap BitmapForId(CanvasDevice device, string id)
         {
-            if (!_bitmaps.TryGetValue(id, out CanvasBitmap bitmap))
+            lock (this)
             {
-                var imageAsset = _imageAssets[id];
-                if (imageAsset == null)
+                if (!_bitmaps.TryGetValue(id, out CanvasBitmap bitmap))
                 {
-                    return null;
-                }
-                if (_delegate != null)
-                {
-                    bitmap = _delegate.FetchBitmap(imageAsset);
-                    if (bitmap != null)
+                    var imageAsset = _imageAssets[id];
+                    if (imageAsset == null)
                     {
-                        _bitmaps[id] = bitmap;
+                        return null;
                     }
-                    return bitmap;
-                }
-
-                Stream @is;
-                try
-                {
-                    if (string.IsNullOrEmpty(_imagesFolder))
+                    if (_delegate != null)
                     {
-                        throw new InvalidOperationException("You must set an images folder before loading an image." + " Set it with LottieDrawable.ImageAssetsFolder");
+                        bitmap = _delegate.FetchBitmap(imageAsset);
+                        if (bitmap != null)
+                        {
+                            _bitmaps[id] = bitmap;
+                        }
+                        return bitmap;
                     }
-                    @is = File.OpenRead(_imagesFolder + imageAsset.FileName);
-                }
-                catch (IOException e)
-                {
-                    Debug.WriteLine($"Unable to open asset. {e}", LottieLog.Tag);
-                    return null;
-                }
-                var task = CanvasBitmap.LoadAsync(device, @is.AsRandomAccessStream(), 160).AsTask();
-                task.Wait();
-                bitmap = task.Result;
 
-                @is.Dispose();
+                    Stream @is;
+                    try
+                    {
+                        if (string.IsNullOrEmpty(_imagesFolder))
+                        {
+                            throw new InvalidOperationException("You must set an images folder before loading an image." + " Set it with LottieDrawable.ImageAssetsFolder");
+                        }
+                        @is = File.OpenRead(_imagesFolder + imageAsset.FileName);
+                    }
+                    catch (IOException e)
+                    {
+                        Debug.WriteLine($"Unable to open asset. {e}", LottieLog.Tag);
+                        return null;
+                    }
+                    var task = CanvasBitmap.LoadAsync(device, @is.AsRandomAccessStream(), 160).AsTask();
+                    task.Wait();
+                    bitmap = task.Result;
 
-                _bitmaps[id] = bitmap;
+                    @is.Dispose();
+
+                    _bitmaps[id] = bitmap;
+                }
+                return bitmap;
             }
-            return bitmap;
         }
 
         internal virtual void RecycleBitmaps()
         {
-            var keyValuePairs = new HashSet<KeyValuePair<string, CanvasBitmap>>();
-            foreach (var keyValuePair in _bitmaps)
+            lock (this)
             {
-                keyValuePairs.Add(keyValuePair);
+                for (var i = _bitmaps.Count - 1; i >= 0; i--)
+                {
+                    var entry = _bitmaps.ElementAt(i);
+                    entry.Value.Dispose();
+                    _bitmaps.Remove(entry.Key);
+                }
             }
+        }
 
-            for (var i = keyValuePairs.Count - 1; i >= 0; i--)
-            {
-                var entry = keyValuePairs.ElementAt(i);
-                entry.Value.Dispose();
-                keyValuePairs.Remove(entry);
-            }
+        private void Dispose(bool disposing)
+        {
+            RecycleBitmaps();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~ImageAssetManager()
+        {
+            Dispose(false);
         }
     }
 }

@@ -136,7 +136,7 @@ namespace LottieUWP.Model.Layer
             }
             if (SolidWidth != 0 && SolidHeight != 0)
             {
-                sb.Append(prefix).Append("\tBackground: ").Append(string.Format(CultureInfo.InvariantCulture, "%dx%d %X\n", SolidWidth, SolidHeight, SolidColor));
+                sb.Append(prefix).Append("\tBackground: ").Append(string.Format(CultureInfo.InvariantCulture, "{0}x{1} {2}\n", SolidWidth, SolidHeight, SolidColor));
             }
             if (_shapes.Count > 0)
             {

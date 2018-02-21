@@ -14,7 +14,6 @@ namespace LottieUWP.Animation.Content
 {
     public abstract class BaseStrokeContent : IDrawingContent, IKeyPathElementContent
     {
-        private readonly PathMeasure _pm = new PathMeasure();
         private readonly Path _path = new Path();
         private readonly Path _trimPathPath = new Path();
         private Rect _rect;
@@ -188,8 +187,11 @@ namespace LottieUWP.Animation.Content
             {
                 _path.AddPath(pathGroup.Paths[j].Path, parentMatrix);
             }
-            _pm.SetPath(_path);
-            var totalLength = _pm.Length;
+            float totalLength;
+            using (var pm = new PathMeasure(_path))
+            {
+                totalLength = pm.Length;
+            }
             var offsetLength = totalLength * pathGroup.TrimPath.Offset.Value.Value / 360f;
             var startLength = totalLength * pathGroup.TrimPath.Start.Value.Value / 100f + offsetLength;
             var endLength = totalLength * pathGroup.TrimPath.End.Value.Value / 100f + offsetLength;
@@ -199,8 +201,12 @@ namespace LottieUWP.Animation.Content
             {
                 _trimPathPath.Set(pathGroup.Paths[j].Path);
                 _trimPathPath.Transform(parentMatrix);
-                _pm.SetPath(_trimPathPath);
-                var length = _pm.Length;
+
+                float length;
+                using (var pm = new PathMeasure(_trimPathPath))
+                {
+                    length = pm.Length;
+                }
                 if (endLength > totalLength && endLength - totalLength < currentLength + length && currentLength < endLength - totalLength)
                 {
                     // Draw the segment when the end is greater than the length which wraps around to the
