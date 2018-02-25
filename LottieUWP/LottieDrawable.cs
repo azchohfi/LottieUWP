@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -858,7 +858,7 @@ namespace LottieUWP
         private void Dispose(bool disposing)
         {
             _animator.Dispose();
-            _imageAssetManager.Dispose();
+            _imageAssetManager?.Dispose();
         }
 
         public void Dispose()
