@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
@@ -917,6 +918,11 @@ namespace LottieUWP
         ~LottieAnimationView()
         {
             Dispose(false);
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new FrameworkElementAutomationPeer(this);
         }
 
         //private class SavedState : BaseSavedState
