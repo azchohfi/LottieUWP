@@ -205,21 +205,21 @@ namespace LottieUWP
         /// with a scaleType such as centerInside will yield better performance with little perceivable
         /// quality loss.
         /// </summary>
-        public virtual float Scale
+        public virtual double Scale
         {
-            get => (float)GetValue(ScaleProperty);
+            get => (double)GetValue(ScaleProperty);
             set => SetValue(ScaleProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for Scale.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ScaleProperty =
-            DependencyProperty.Register("Scale", typeof(float), typeof(LottieAnimationView), new PropertyMetadata(1, ScalePropertyChangedCallback));
+            DependencyProperty.Register("Scale", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(1, ScalePropertyChangedCallback));
 
         private static void ScalePropertyChangedCallback(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs e)
         {
             if (dependencyObject is LottieAnimationView lottieAnimationView)
-                lottieAnimationView._lottieDrawable.Scale = (float)e.NewValue;
+                lottieAnimationView._lottieDrawable.Scale = (float)Convert.ToDouble(e.NewValue);
         }
 
         public LottieAnimationView()
@@ -673,10 +673,20 @@ namespace LottieUWP
         /// Sets the playback speed. If speed &lt; 0, the animation will play backwards. 
         /// Returns the current playback speed. This will be &lt; 0 if the animation is playing backwards. 
         /// </summary>
-        public virtual float Speed
+        public double Speed
         {
-            set => _lottieDrawable.Speed = value;
-            get => _lottieDrawable.Speed;
+            get { return (double)GetValue(SpeedProperty); }
+            set { SetValue(SpeedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Speed.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SpeedProperty =
+            DependencyProperty.Register("Speed", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(1f, SpeedProperyChangedCallback));
+
+        private static void SpeedProperyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is LottieAnimationView lottieAnimationView)
+                lottieAnimationView._lottieDrawable.Speed = (float)Convert.ToDouble(e.NewValue);
         }
 
         public event EventHandler<ValueAnimator.ValueAnimatorUpdateEventArgs> AnimatorUpdate
@@ -770,20 +780,20 @@ namespace LottieUWP
                 lottieAnimationView._lottieDrawable.RepeatCount = (int)e.NewValue;
         }
 
-        public float FrameRate
+        public double FrameRate
         {
-            get { return (float)GetValue(FrameRateProperty); }
+            get { return (double)GetValue(FrameRateProperty); }
             set { SetValue(FrameRateProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for RepeatCount.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FrameRateProperty =
-            DependencyProperty.Register("FrameRate", typeof(float), typeof(LottieAnimationView), new PropertyMetadata(60f, FrameRatePropertyChangedCallback));
+            DependencyProperty.Register("FrameRate", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(60f, FrameRatePropertyChangedCallback));
 
         private static void FrameRatePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             if (dependencyObject is LottieAnimationView lottieAnimationView)
-                lottieAnimationView._lottieDrawable.FrameRate = (float)e.NewValue;
+                lottieAnimationView._lottieDrawable.FrameRate = (float)Convert.ToDouble(e.NewValue);
         }
 
         public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
