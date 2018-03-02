@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 
 namespace LottieUWP
@@ -103,7 +102,7 @@ namespace LottieUWP
 
         protected long SystemnanoTime()
         {
-            long nano = 10000L * Stopwatch.GetTimestamp();
+            long nano = 10000L * DateTime.Now.Ticks;
             nano /= TimeSpan.TicksPerMillisecond;
             nano *= 100L;
             return nano;
