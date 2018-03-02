@@ -82,6 +82,7 @@ namespace LottieUWP
                 ForceSoftwareRenderer = _forceSoftwareRenderer
             };
 
+            _canvasControl.Paused = true;
             _canvasControl.Draw += CanvasControlOnDraw;
             Content = _canvasControl;
         }
