@@ -213,7 +213,7 @@ namespace LottieUWP
 
         // Using a DependencyProperty as the backing store for Scale.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ScaleProperty =
-            DependencyProperty.Register("Scale", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(1, ScalePropertyChangedCallback));
+            DependencyProperty.Register("Scale", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(1.0, ScalePropertyChangedCallback));
 
         private static void ScalePropertyChangedCallback(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs e)
@@ -681,7 +681,7 @@ namespace LottieUWP
 
         // Using a DependencyProperty as the backing store for Speed.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SpeedProperty =
-            DependencyProperty.Register("Speed", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(1f, SpeedProperyChangedCallback));
+            DependencyProperty.Register("Speed", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(1.0, SpeedProperyChangedCallback));
 
         private static void SpeedProperyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
@@ -788,7 +788,7 @@ namespace LottieUWP
 
         // Using a DependencyProperty as the backing store for RepeatCount.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FrameRateProperty =
-            DependencyProperty.Register("FrameRate", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(60f, FrameRatePropertyChangedCallback));
+            DependencyProperty.Register("FrameRate", typeof(double), typeof(LottieAnimationView), new PropertyMetadata(60.0, FrameRatePropertyChangedCallback));
 
         private static void FrameRatePropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
