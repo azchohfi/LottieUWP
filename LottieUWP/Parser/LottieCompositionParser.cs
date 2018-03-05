@@ -50,9 +50,9 @@ namespace LottieUWP.Parser
                         var majorVersion = int.Parse(versions[0]);
                         var minorVersion = int.Parse(versions[1]);
                         var patchVersion = int.Parse(versions[2]);
-                        if (!Utils.Utils.IsAtLeastVersion(majorVersion, minorVersion, patchVersion, 4, 5, 0))
+                        if (!Utils.Utils.IsAtLeastVersion(majorVersion, minorVersion, patchVersion, 4, 4, 0))
                         {
-                            composition.AddWarning("Lottie only supports bodymovin >= 4.5.0");
+                            composition.AddWarning("Lottie only supports bodymovin >= 4.4.0");
                         }
                         break;
                     case "layers":

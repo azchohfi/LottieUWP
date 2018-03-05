@@ -149,6 +149,11 @@ namespace LottieUWP
             }
         }
 
+        public bool IsMergePathsEnabledForKitKatAndAbove()
+        {
+            return _enableMergePaths;
+        }
+
         /// <summary>
         /// If you use image assets, you must explicitly specify the folder in assets/ in which they are
         /// located because bodymovin uses the name filenames across all compositions (img_#).

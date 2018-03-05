@@ -376,6 +376,15 @@ namespace LottieUWP
             _lottieDrawable.EnableMergePathsForKitKatAndAbove(enable);
         }
 
+        /// <summary>
+        /// Returns whether merge paths are enabled for KitKat and above.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsMergePathsEnabledForKitKatAndAbove()
+        {
+            return _lottieDrawable.IsMergePathsEnabledForKitKatAndAbove();
+        }
+
         public virtual void UseExperimentalHardwareAcceleration(bool use = true)
         {
             UseHardwareAcceleration(use);
@@ -401,6 +410,11 @@ namespace LottieUWP
         {
             _useHardwareLayer = use;
             EnableOrDisableHardwareLayer();
+        }
+
+        public bool GetUseHardwareAcceleration()
+        {
+            return _useHardwareLayer;
         }
 
         /// <summary>
