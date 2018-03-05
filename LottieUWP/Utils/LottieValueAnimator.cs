@@ -178,7 +178,7 @@ namespace LottieUWP.Utils
                 {
                     return 0;
                 }
-                return _minFrame == int.MinValue ? 0 : _minFrame;
+                return _minFrame == int.MinValue ? _composition.StartFrame : _minFrame;
             }
             set
             {
