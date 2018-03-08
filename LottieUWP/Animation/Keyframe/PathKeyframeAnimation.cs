@@ -45,7 +45,7 @@ namespace LottieUWP.Animation.Keyframe
         {
             if (_pathMeasure != null)
             {
-                _pathMeasure.Dispose();
+                _pathMeasure.Dispose(disposing);
                 _pathMeasure = null;
             }
         }

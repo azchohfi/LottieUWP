@@ -116,12 +116,29 @@ namespace LottieUWP
             return !isZeroLength;
         }
 
-        private void Dispose(bool disposing)
+        internal void Dispose(bool disposing)
         {
             if (_geometry != null)
             {
-                _geometry.Dispose();
-                _geometry = null;
+                try
+                {
+                    if (disposing)
+                    {
+                        _geometry.Dispose();
+                    }
+                    else
+                    {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(_geometry);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Ignore, but should not happen
+                }
+                finally
+                {
+                    _geometry = null;
+                }
             }
         }
 
