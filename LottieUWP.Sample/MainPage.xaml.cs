@@ -112,5 +112,17 @@ namespace LottieUWP.Sample
                 LottieAnimationView.PlayAnimation();
             }
         }
+
+        private void ResumePauseButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (LottieAnimationView.IsAnimating)
+            {
+                LottieAnimationView.PauseAnimation();
+            }
+            else
+            {
+                LottieAnimationView.ResumeAnimation();
+            }
+        }
     }
 }
