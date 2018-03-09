@@ -35,14 +35,18 @@ namespace LottieUWP.Animation.Content
 
         class RenderTargetSave
         {
-            public RenderTargetSave(CanvasRenderTarget canvasRenderTarget, Paint paint)
+            public RenderTargetSave(CanvasRenderTarget canvasRenderTarget, int paintFlags, PorterDuffXfermode paintXfermode, byte paintAlpha)
             {
                 CanvasRenderTarget = canvasRenderTarget;
-                Paint = paint;
+                PaintFlags = paintFlags;
+                PaintXfermode = paintXfermode;
+                PaintAlpha = paintAlpha;
             }
 
             public CanvasRenderTarget CanvasRenderTarget { get; }
-            public Paint Paint { get; }
+            public int PaintFlags { get; }
+            public PorterDuffXfermode PaintXfermode { get; }
+            public byte PaintAlpha { get; }
         }
 
         private readonly Stack<RenderTargetSave> _renderTargetSaves = new Stack<RenderTargetSave>();
@@ -220,7 +224,7 @@ namespace LottieUWP.Animation.Content
                 UpdateDrawingSessionWithFlags(paint.Flags);
 
                 var rendertarget = CreateCanvasRenderTarget(bounds, _renderTargetSaves.Count);
-                _renderTargetSaves.Push(new RenderTargetSave(rendertarget, paint));
+                _renderTargetSaves.Push(new RenderTargetSave(rendertarget, paint.Flags, paint.Xfermode, paint.Xfermode != null ? (byte)255 : paint.Alpha));
 
                 var drawingSession = rendertarget.CreateDrawingSession();
                 drawingSession.Clear(Colors.Transparent);
@@ -275,25 +279,19 @@ namespace LottieUWP.Animation.Content
 
                 var rt = renderTargetSave.CanvasRenderTarget;
 
-                var paint = renderTargetSave.Paint;
-
-                UpdateDrawingSessionWithFlags(paint.Flags);
+                UpdateDrawingSessionWithFlags(renderTargetSave.PaintFlags);
                 CurrentDrawingSession.Transform = GetCurrentTransform();
 
-                if (paint.Xfermode != null)
+                var canvasComposite = CanvasComposite.SourceAtop;
+                if (renderTargetSave.PaintXfermode != null)
                 {
-                    CurrentDrawingSession.DrawImage(rt, 0, 0, rt.Bounds,
-                        1,
-                        CanvasImageInterpolation.Linear,
-                        PorterDuff.ToCanvasComposite(paint.Xfermode.Mode));
+                    canvasComposite = PorterDuff.ToCanvasComposite(renderTargetSave.PaintXfermode.Mode);
                 }
-                else
-                {
-                    CurrentDrawingSession.DrawImage(rt, 0, 0, rt.Bounds,
-                        paint.Alpha / 255f,
-                        CanvasImageInterpolation.Linear,
-                        CanvasComposite.SourceAtop);
-                }
+
+                CurrentDrawingSession.DrawImage(rt, 0, 0, rt.Bounds,
+                    renderTargetSave.PaintAlpha / 255f,
+                    CanvasImageInterpolation.Linear,
+                    canvasComposite);
             }
 
             CurrentDrawingSession.Flush();

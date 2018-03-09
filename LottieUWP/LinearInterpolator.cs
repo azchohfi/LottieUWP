@@ -1,6 +1,6 @@
 namespace LottieUWP
 {
-    public struct LinearInterpolator : IInterpolator
+    public class LinearInterpolator : IInterpolator
     {
         public float GetInterpolation(float f)
         {

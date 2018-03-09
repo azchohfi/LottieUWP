@@ -2,127 +2,103 @@ using System;
 
 namespace LottieUWP
 {
-    public struct PathInterpolator : IInterpolator
+    public class PathInterpolator : IInterpolator
     {
-        private readonly float _controlX1;
-        private readonly float _controlY1;
-        private readonly float _controlX2;
-        private readonly float _controlY2;
-
         public PathInterpolator(float controlX1, float controlY1, float controlX2, float controlY2)
         {
-            _controlX1 = controlX1;
-            _controlY1 = controlY1;
-            _controlX2 = controlX2;
-            _controlY2 = controlY2;
+            InitCubic(controlX1, controlY1, controlX2, controlY2);
         }
 
-        public float GetInterpolation(float x)
+        private static readonly float Precision = 0.002f;
+
+        private float[] _mX; // x coordinates in the line
+
+        private float[] _mY; // y coordinates in the line
+
+        private void InitCubic(float x1, float y1, float x2, float y2)
         {
-            if (x < 0 || float.IsNaN(x))
-                x = 0;
-            if (x > 1)
-                x = 1;
-
-            // Determine t
-            double t;
-            if (x == 0)
-            {
-                // Handle corner cases explicitly to prevent rounding errors
-                t = 0;
-            }
-            else if (x == 1)
-            {
-                t = 1;
-            }
-            else
-            {
-                // Calculate t
-                var a = 3.0 * _controlX1 - 3.0 * _controlX2 + 1.0;
-                var b = -6.0 * _controlX1 + 3.0 * _controlX2;
-                var c = 3.0 * _controlX1;
-                double d = x;
-                var tTemp = SolveCubic(a, b, c, d);
-                if (tTemp == null)
-                    return x;
-                t = tTemp.Value;
-            }
-
-            // Calculate y from t
-            return (float)(Cubed(1 - t) * 0
-                   + 3 * t * Squared(1 - t) * _controlY1
-                   + 3 * Squared(t) * (1 - t) * _controlY2
-                   + Cubed(t) * 1);
+            Path path = new Path();
+            path.MoveTo(0, 0);
+            path.CubicTo(x1, y1, x2, y2, 1f, 1f);
+            InitPath(path);
         }
 
-        private static double? SolveCubic(double a, double b, double c, double d)
+        private void InitPath(Path path)
         {
-            if (a == 0) return SolveQuadratic(b, c, d);
-            if (d == 0) return 0;
+            float[] pointComponents = path.Approximate(Precision);
 
-            b /= a;
-            c /= a;
-            d /= a;
-            var q = (3.0 * c - Squared(b)) / 9.0;
-            var r = (-27.0 * d + b * (9.0 * c - 2.0 * Squared(b))) / 54.0;
-            var disc = Cubed(q) + Squared(r);
-            var term1 = b / 3.0;
-
-            if (disc > 0)
+            int numPoints = pointComponents.Length / 3;
+            if (pointComponents[1] != 0 || pointComponents[2] != 0
+                                        || pointComponents[pointComponents.Length - 2] != 1
+                                        || pointComponents[pointComponents.Length - 1] != 1)
             {
-                var s = r + Math.Sqrt(disc);
-                s = s < 0 ? -CubicRoot(-s) : CubicRoot(s);
-                var t = r - Math.Sqrt(disc);
-                t = t < 0 ? -CubicRoot(-t) : CubicRoot(t);
-
-                var result = -term1 + s + t;
-                if (result >= 0 && result <= 1) return result;
-            }
-            else if (disc == 0)
-            {
-                var r13 = r < 0 ? -CubicRoot(-r) : CubicRoot(r);
-
-                var result = -term1 + 2.0 * r13;
-                if (result >= 0 && result <= 1) return result;
-
-                result = -(r13 + term1);
-                if (result >= 0 && result <= 1) return result;
-            }
-            else
-            {
-                q = -q;
-                var dum1 = q * q * q;
-                dum1 = Math.Acos(r / Math.Sqrt(dum1));
-                var r13 = 2.0 * Math.Sqrt(q);
-
-                var result = -term1 + r13 * Math.Cos(dum1 / 3.0);
-                if (result >= 0 && result <= 1) return result;
-
-                result = -term1 + r13 * Math.Cos((dum1 + 2.0 * Math.PI) / 3.0);
-                if (result >= 0 && result <= 1) return result;
-
-                result = -term1 + r13 * Math.Cos((dum1 + 4.0 * Math.PI) / 3.0);
-                if (result >= 0 && result <= 1) return result;
+                //throw new ArgumentException("The Path must start at (0,0) and end at (1,1)");
             }
 
-            return null;
+            _mX = new float[numPoints];
+            _mY = new float[numPoints];
+            float prevX = 0;
+            float prevFraction = 0;
+            int componentIndex = 0;
+            for (int i = 0; i < numPoints; i++)
+            {
+                float fraction = pointComponents[componentIndex++];
+                float x = pointComponents[componentIndex++];
+                float y = pointComponents[componentIndex++];
+                if (fraction == prevFraction && x != prevX)
+                {
+                    throw new ArgumentException("The Path cannot have discontinuity in the X axis.");
+                }
+                if (x < prevX)
+                {
+                    //throw new ArgumentException("The Path cannot loop back on itself.");
+                }
+                _mX[i] = x;
+                _mY[i] = y;
+                prevX = x;
+                prevFraction = fraction;
+            }
         }
 
-        private static double? SolveQuadratic(double a, double b, double c)
+        public float GetInterpolation(float t)
         {
-            var result = (-b + Math.Sqrt(Squared(b) - 4 * a * c)) / (2 * a);
-            if (result >= 0 && result <= 1) return result;
+            if (t <= 0 || float.IsNaN(t))
+            {
+                return 0;
+            }
+            if (t >= 1)
+            {
+                return 1;
+            }
+            // Do a binary search for the correct x to interpolate between.
+            int startIndex = 0;
+            int endIndex = _mX.Length - 1;
 
-            result = (-b - Math.Sqrt(Squared(b) - 4 * a * c)) / (2 * a);
-            if (result >= 0 && result <= 1) return result;
+            while (endIndex - startIndex > 1)
+            {
+                int midIndex = (startIndex + endIndex) / 2;
+                if (t < _mX[midIndex])
+                {
+                    endIndex = midIndex;
+                }
+                else
+                {
+                    startIndex = midIndex;
+                }
+            }
 
-            return null;
+            float xRange = _mX[endIndex] - _mX[startIndex];
+            if (xRange == 0)
+            {
+                return _mY[startIndex];
+            }
+
+            float tInRange = t - _mX[startIndex];
+            float fraction = tInRange / xRange;
+
+            float startY = _mY[startIndex];
+            float endY = _mY[endIndex];
+            return startY + (fraction * (endY - startY));
         }
-
-        private static double Squared(double f) { return f * f; }
-
-        private static double Cubed(double f) { return f * f * f; }
-
-        private static double CubicRoot(double f) { return Math.Pow(f, 1.0 / 3.0); }
     }
 }
