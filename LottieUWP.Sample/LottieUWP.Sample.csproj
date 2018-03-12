@@ -369,6 +369,7 @@
     <Content Include="Assets\Tests\SolidLayerTransform.json" />
     <Content Include="Assets\AndroidWave.json" />
     <Content Include="Assets\Tests\RGB.json" />
+    <Content Include="Assets\bullseye.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
