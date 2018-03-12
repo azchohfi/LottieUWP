@@ -114,6 +114,12 @@ namespace LottieUWP
         /// 
         /// If your images are located in src/main/assets/airbnb_loader/ then call
         /// `setImageAssetsFolder("airbnb_loader/");`.
+        /// 
+        /// Be wary if you are using many images, however. Lottie is designed to work with vector shapes
+        /// from After Effects.If your images look like they could be represented with vector shapes,
+        /// see if it is possible to convert them to shape layers and re-export your animation.Check
+        /// the documentation at http://airbnb.io/lottie for more information about importing shapes from
+        /// Sketch or Illustrator to avoid this.
         /// </summary>
         public string ImageAssetsFolder
         {
@@ -204,6 +210,9 @@ namespace LottieUWP
         /// animation down then rendering it in a larger ImageView and letting ImageView scale it back up
         /// with a scaleType such as centerInside will yield better performance with little perceivable
         /// quality loss.
+        /// 
+        /// You can also use a fixed view width/height in conjunction with the normal ImageView 
+        /// scaleTypes centerCrop and centerInside.
         /// </summary>
         public virtual double Scale
         {
@@ -828,6 +837,12 @@ namespace LottieUWP
         /// Use this if you can't bundle images with your app. This may be useful if you download the
         /// animations from the network or have the images saved to an SD Card. In that case, Lottie
         /// will defer the loading of the bitmap to this delegate.
+        /// 
+        /// Be wary if you are using many images, however. Lottie is designed to work with vector shapes
+        /// from After Effects. If your images look like they could be represented with vector shapes,
+        /// see if it is possible to convert them to shape layers and re-export your animation. Check
+        /// the documentation at http://airbnb.io/lottie for more information about importing shapes from
+        /// Sketch or Illustrator to avoid this.
         /// </summary>
         public virtual IImageAssetDelegate ImageAssetDelegate
         {
