@@ -35,11 +35,6 @@ namespace LottieUWP.Value
         /// <returns></returns>
         public virtual T GetValue(LottieFrameInfo<T> frameInfo)
         {
-            if (Value == null)
-            {
-                throw new ArgumentException("You must provide a static value in the constructor " +
-                                                   ", call SetValue, or override GetValue.");
-            }
             return Value;
         }
 
