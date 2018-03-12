@@ -609,11 +609,12 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Sets the minimum frame that the animation will start from when playing or looping.
+        /// Gets or sets the minimum frame that the animation will start from when playing or looping.
         /// </summary>
-        public int MinFrame
+        public float MinFrame
         {
             set => _lottieDrawable.MinFrame = value;
+            get => _lottieDrawable.MinFrame;
         }
 
         /// <summary>
@@ -625,11 +626,12 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Sets the maximum frame that the animation will end at when playing or looping.
+        /// Gets or sets the maximum frame that the animation will end at when playing or looping.
         /// </summary>
-        public int MaxFrame
+        public float MaxFrame
         {
             set => _lottieDrawable.MaxFrame = value;
+            get => _lottieDrawable.MaxFrame;
         }
 
         /// <summary>
