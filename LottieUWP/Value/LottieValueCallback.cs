@@ -45,9 +45,9 @@ namespace LottieUWP.Value
 
         public void SetValue(T value)
         {
+            Value = value;
             if (_animation != null)
             {
-                Value = value;
                 _animation.OnValueChanged();
             }
         }
