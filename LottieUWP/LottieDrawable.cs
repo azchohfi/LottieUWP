@@ -546,7 +546,7 @@ namespace LottieUWP
                     return;
                 }
 
-                Progress = value / _composition.DurationFrames;
+                _animator.Frame = value;
             }
             /**
             * Get the currently rendered frame.
@@ -567,7 +567,7 @@ namespace LottieUWP
                     });
                     return;
                 }
-                _animator.Frame = value * _composition.DurationFrames + _composition.StartFrame;
+                Frame = MiscUtils.Lerp(_composition.StartFrame, _composition.EndFrame, value);
             }
         }
 
