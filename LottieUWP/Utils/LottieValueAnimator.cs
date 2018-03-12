@@ -219,11 +219,11 @@ namespace LottieUWP.Utils
 
         public void PlayAnimation()
         {
-            _frame = IsReversed ? MaxFrame : MinFrame;
+            OnAnimationStart(IsReversed);
+            Frame = IsReversed ? MaxFrame : MinFrame;
             _lastFrameTimeNs = SystemnanoTime();
             _repeatCount = 0;
             PostFrameCallback();
-            OnAnimationStart(IsReversed);
         }
 
         public void EndAnimation()
