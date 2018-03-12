@@ -180,6 +180,11 @@ namespace LottieUWP
 
             public static LottieComposition FromInputStreamSync(Stream stream)
             {
+                return FromInputStreamSync(stream, true);
+            }
+
+            public static LottieComposition FromInputStreamSync(Stream stream, bool close)
+            {
                 LottieComposition composition;
                 try
                 {
@@ -191,7 +196,10 @@ namespace LottieUWP
                 }
                 finally
                 {
-                    stream.CloseQuietly();
+                    if (close)
+                    {
+                        stream.CloseQuietly();
+                    }
                 }
 
                 return composition;
