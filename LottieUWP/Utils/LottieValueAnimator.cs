@@ -160,6 +160,7 @@ namespace LottieUWP.Utils
             set
             {
                 _composition = value;
+                SetMinAndMaxFrames(_composition.StartFrame, _composition.EndFrame);
                 FrameRate = _composition.FrameRate;
                 Frame = _frame;
                 _lastFrameTimeNs = SystemnanoTime();
