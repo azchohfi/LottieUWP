@@ -164,7 +164,7 @@ namespace LottieUWP.Utils
             {
                 _composition = value;
                 FrameRate = _composition.FrameRate;
-                _frame = MinFrame;
+                Frame = _frame;
                 _frameTime = SystemnanoTime();
             }
         }
