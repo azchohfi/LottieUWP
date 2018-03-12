@@ -232,6 +232,11 @@ namespace LottieUWP.Model
             return _keys[_keys.Count - 1].Equals("**");
         }
 
+        public string KeysToString()
+        {
+            return _keys.ToString();
+        }
+
         public override string ToString()
         {
             return $"KeyPath{{keys={_keys},resolved={_resolvedElement != null}}}";
