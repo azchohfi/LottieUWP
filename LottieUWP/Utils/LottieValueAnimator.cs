@@ -10,7 +10,7 @@ namespace LottieUWP.Utils
     public class LottieValueAnimator : BaseLottieAnimator
     {
         private float _speed = 1f;
-        private long _frameTime;
+        private long _lastFrameTimeNs;
         private float _frame;
         private int _repeatCount;
         private float _minFrame = int.MinValue;
@@ -76,7 +76,7 @@ namespace LottieUWP.Utils
                     return;
                 }
                 _frame = MiscUtils.Clamp(value, MinFrame, MaxFrame);
-                _frameTime = SystemnanoTime();
+                _lastFrameTimeNs = SystemnanoTime();
                 OnAnimationUpdate();
             }
         }
@@ -93,18 +93,15 @@ namespace LottieUWP.Utils
             }
 
             long now = SystemnanoTime();
-            long timeSinceFrame = now - _frameTime;
+            long timeSinceFrame = now - _lastFrameTimeNs;
             float frameDuration = FrameDurationNs;
-            float frames = timeSinceFrame / frameDuration;
-            if (frames == 0)
-            {
-                return;
-            }
-            _frame += IsReversed ? -frames : frames;
+            float dFrames = timeSinceFrame / frameDuration;
+
+            _frame += IsReversed ? -dFrames : dFrames;
             bool ended = !MiscUtils.Contains(_frame, MinFrame, MaxFrame);
             _frame = MiscUtils.Clamp(_frame, MinFrame, MaxFrame);
 
-            _frameTime = now;
+            _lastFrameTimeNs = now;
 
             Debug.WriteLineIf(LottieLog.TraceEnabled, $"Tick milliseconds: {timeSinceFrame}", LottieLog.Tag);
 
@@ -129,7 +126,7 @@ namespace LottieUWP.Utils
                     {
                         _frame = MinFrame;
                     }
-                    _frameTime = now;
+                    _lastFrameTimeNs = now;
                 }
             }
 
@@ -165,7 +162,7 @@ namespace LottieUWP.Utils
                 _composition = value;
                 FrameRate = _composition.FrameRate;
                 Frame = _frame;
-                _frameTime = SystemnanoTime();
+                _lastFrameTimeNs = SystemnanoTime();
             }
         }
 
@@ -222,7 +219,7 @@ namespace LottieUWP.Utils
         public void PlayAnimation()
         {
             _frame = IsReversed ? MaxFrame : MinFrame;
-            _frameTime = SystemnanoTime();
+            _lastFrameTimeNs = SystemnanoTime();
             _repeatCount = 0;
             PostFrameCallback();
             OnAnimationStart(IsReversed);
@@ -242,7 +239,7 @@ namespace LottieUWP.Utils
         public void ResumeAnimation()
         {
             PostFrameCallback();
-            _frameTime = SystemnanoTime();
+            _lastFrameTimeNs = SystemnanoTime();
             if (IsReversed && Frame == MinFrame)
             {
                 _frame = MaxFrame;
