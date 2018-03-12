@@ -552,9 +552,10 @@ namespace LottieUWP
                 Debug.WriteLine("Set Composition \n" + value, Tag);
                 //lottieDrawable.Callback = this;
 
+                _composition = value;
                 var isNewComposition = _lottieDrawable.SetComposition(value);
                 EnableOrDisableHardwareLayer();
-                if (!isNewComposition)
+                if (_viewbox?.Child == _lottieDrawable && !isNewComposition)
                 {
                     // We can avoid re-setting the drawable, and invalidating the view, since the value
                     // hasn't changed.
@@ -563,7 +564,6 @@ namespace LottieUWP
 
                 ImageDrawable = _lottieDrawable;
 
-                _composition = value;
                 FrameRate = _composition.FrameRate;
 
                 InvalidateArrange();
