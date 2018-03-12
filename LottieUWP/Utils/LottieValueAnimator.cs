@@ -124,7 +124,7 @@ namespace LottieUWP.Utils
                     }
                     else
                     {
-                        _frame = MinFrame;
+                        _frame = IsReversed ? MaxFrame : MinFrame;
                     }
                     _lastFrameTimeNs = now;
                 }
