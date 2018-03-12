@@ -14,6 +14,7 @@ using LottieUWP.Utils;
 using LottieUWP.Value;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using Windows.Foundation;
 
 namespace LottieUWP
 {
@@ -58,14 +59,6 @@ namespace LottieUWP
         {
             _animator.Update += (sender, e) =>
             {
-                //if (_systemAnimationsAreDisabled)
-                //{
-                //    Progress = 1f;
-                //}
-                //else
-                //{
-                //    Progress = e.Animation.AnimatedValue;
-                //}
                 if (_compositionLayer != null)
                 {
                     _compositionLayer.Progress = _animator.AnimatedValueAbsolute;
@@ -84,6 +77,7 @@ namespace LottieUWP
 
             _canvasControl.Paused = true;
             _canvasControl.Draw += CanvasControlOnDraw;
+            _canvasControl.Loaded += (s, args) => InvalidateMeasure();
             Content = _canvasControl;
         }
 
@@ -668,6 +662,12 @@ namespace LottieUWP
                 }
             }
             get => _scale;
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            InvalidateSelf();
+            return base.MeasureOverride(availableSize);
         }
 
         /// <summary>
