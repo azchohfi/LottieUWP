@@ -76,7 +76,6 @@ namespace LottieUWP.Utils
                     return;
                 }
                 _frame = MiscUtils.Clamp(value, MinFrame, MaxFrame);
-                VerifyFrame();
                 _frameTime = SystemnanoTime();
                 OnAnimationUpdate();
             }
@@ -182,11 +181,7 @@ namespace LottieUWP.Utils
             }
             set
             {
-                _minFrame = value;
-                if (_frame < _minFrame)
-                {
-                    _frame = _minFrame;
-                }
+                SetMinAndMaxFrames(value, _maxFrame);
             }
         }
 
@@ -202,11 +197,7 @@ namespace LottieUWP.Utils
             }
             set
             {
-                _maxFrame = value;
-                if (_frame > _maxFrame)
-                {
-                    _frame = _maxFrame;
-                }
+                SetMinAndMaxFrames(_minFrame, value);
             }
         }
 
@@ -214,7 +205,7 @@ namespace LottieUWP.Utils
         {
             _minFrame = minFrame;
             _maxFrame = maxFrame;
-            _frame = MiscUtils.Clamp(_frame, minFrame, maxFrame);
+            Frame = MiscUtils.Clamp(_frame, minFrame, maxFrame);
         }
 
         public void ReverseAnimationSpeed()
