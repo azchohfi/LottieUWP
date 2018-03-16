@@ -95,6 +95,8 @@ namespace LottieUWP
                 _bitmapCanvas.Dispose();
                 _bitmapCanvas = null;
             }
+
+            ClearComposition();
         }
 
         public void ForceSoftwareRenderer(bool force)
@@ -281,6 +283,11 @@ namespace LottieUWP
         {
             lock (this)
             {
+                if (_bitmapCanvas == null)
+                {
+                    return;
+                }
+
                 using (_bitmapCanvas.CreateSession(canvasControl.Device, canvasControl.Size.Width, canvasControl.Size.Height, args.DrawingSession))
                 {
                     _bitmapCanvas.Clear(Colors.Transparent);
