@@ -6,12 +6,12 @@ namespace LottieUWP.Parser
 {
     static class CircleShapeParser
     {
-        internal static CircleShape Parse(JsonReader reader, LottieComposition composition)
+        internal static CircleShape Parse(JsonReader reader, LottieComposition composition, int d)
         {
             string name = null;
             IAnimatableValue<Vector2?, Vector2?> position = null;
             AnimatablePointValue size = null;
-            bool reversed = false;
+            bool reversed = d == 3;
 
             while (reader.HasNext())
             {

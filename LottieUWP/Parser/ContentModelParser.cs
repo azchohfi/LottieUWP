@@ -10,18 +10,26 @@ namespace LottieUWP.Parser
             string type = null;
 
             reader.BeginObject();
+            // Unfortunately, for an ellipse, d is before "ty" which means that it will get parsed 
+            // before we are in the ellipse parser. 
+            // "d" is 2 for normal and 3 for reversed. 
+            int d = 2;
             while (reader.HasNext())
             {
-                if (reader.NextName().Equals("ty"))
+                switch (reader.NextName())
                 {
-                    type = reader.NextString();
-                    break;
-                }
-                else
-                {
-                    reader.SkipValue();
+                    case "ty":
+                        type = reader.NextString();
+                        goto typeLoop;
+                    case "d":
+                        d = reader.NextInt();
+                        break;
+                    default:
+                        reader.SkipValue();
+                        break;
                 }
             }
+            typeLoop:
 
             if (type == null)
             {
@@ -53,7 +61,7 @@ namespace LottieUWP.Parser
                     model = ShapePathParser.Parse(reader, composition);
                     break;
                 case "el":
-                    model = CircleShapeParser.Parse(reader, composition);
+                    model = CircleShapeParser.Parse(reader, composition, d);
                     break;
                 case "rc":
                     model = RectangleShapeParser.Parse(reader, composition);
