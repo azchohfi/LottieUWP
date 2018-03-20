@@ -37,6 +37,8 @@ namespace LottieUWP
     {
         private new static readonly string Tag = typeof(LottieAnimationView).Name;
 
+        public static CacheStrategy GlobalDefaultCacheStrategy = CacheStrategy.Weak;
+
         /// <summary>
         /// Caching strategy for compositions that will be reused frequently.
         /// Weak or Strong indicates the GC reference strength of the composition in the cache.
@@ -61,7 +63,7 @@ namespace LottieUWP
 
         // Using a DependencyProperty as the backing store for DefaultCacheStrategy.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DefaultCacheStrategyProperty =
-            DependencyProperty.Register("DefaultCacheStrategy", typeof(CacheStrategy), typeof(LottieAnimationView), new PropertyMetadata(CacheStrategy.Weak));
+            DependencyProperty.Register("DefaultCacheStrategy", typeof(CacheStrategy), typeof(LottieAnimationView), PropertyMetadata.Create(() => GlobalDefaultCacheStrategy));
 
         private string _animationName;
         //private bool wasAnimatingWhenDetached = false;
