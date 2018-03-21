@@ -18,7 +18,7 @@ namespace LottieUWP.Utils
         private LottieComposition _composition;
         private float _frameRate;
         protected bool _isRunning;
-        
+
         /// <summary>
         /// Returns a float representing the current value of the animation from 0 to 1
         /// regardless of the animation speed, direction, or min and max frames.
@@ -160,7 +160,11 @@ namespace LottieUWP.Utils
             set
             {
                 _composition = value;
-                SetMinAndMaxFrames(_composition.StartFrame, _composition.EndFrame);
+
+                SetMinAndMaxFrames(
+                    (int)Math.Max(_minFrame, _composition.StartFrame),
+                    (int)Math.Min(_maxFrame, _composition.EndFrame)
+                );
                 FrameRate = _composition.FrameRate;
                 Frame = _frame;
                 _lastFrameTimeNs = SystemnanoTime();
