@@ -162,8 +162,8 @@ namespace LottieUWP.Utils
                 _composition = value;
 
                 SetMinAndMaxFrames(
-                    (int)Math.Max(_minFrame, _composition.StartFrame),
-                    (int)Math.Min(_maxFrame, _composition.EndFrame)
+                    _minFrame == int.MinValue ? int.MinValue : (int)Math.Max(_minFrame, _composition.StartFrame),
+                    _maxFrame == int.MaxValue ? int.MaxValue : (int)Math.Min(_maxFrame, _composition.EndFrame)
                 );
                 FrameRate = _composition.FrameRate;
                 Frame = _frame;
