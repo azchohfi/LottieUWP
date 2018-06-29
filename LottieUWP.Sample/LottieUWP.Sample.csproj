@@ -371,6 +371,7 @@
     <Content Include="Assets\Tests\RGB.json" />
     <Content Include="Assets\bullseye.json" />
     <Content Include="Assets\Tests\EllipseDirection.json" />
+    <Content Include="Assets\Tests\StartEndFrame.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

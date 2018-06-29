@@ -126,13 +126,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk">
-      <Version>15.6.1</Version>
+      <Version>15.7.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.8</Version>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.8.2</Version>
+      <Version>4.8.3</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.3.1</Version>

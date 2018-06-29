@@ -418,7 +418,7 @@ namespace LottieUWP
                     });
                     return;
                 }
-                MinFrame = value * _composition.DurationFrames;
+                MinFrame = MiscUtils.Lerp(value, _composition.StartFrame, _composition.EndFrame);
             }
         }
 
@@ -451,7 +451,7 @@ namespace LottieUWP
                     });
                     return;
                 }
-                MaxFrame = value / _composition.DurationFrames;
+                MaxFrame = MiscUtils.Lerp(value, _composition.StartFrame, _composition.EndFrame);
             }
         }
 

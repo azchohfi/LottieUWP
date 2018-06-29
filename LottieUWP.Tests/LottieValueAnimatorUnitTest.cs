@@ -11,14 +11,15 @@ namespace LottieUWP.Tests
 {
     public class LottieValueAnimatorUnitTest : IDisposable
     {
+        private LottieComposition _composition;
         private TestLottieValueAnimator _animator;
         private readonly Mock<TestLottieValueAnimator> _mockAnimator;
         private volatile bool isDone;
 
         public LottieValueAnimatorUnitTest()
         {
-            LottieComposition composition = new LottieComposition();
-            composition.Init(new Rect(), 0, 1000, 1000, new List<Layer>(),
+            _composition = new LottieComposition();
+            _composition.Init(new Rect(), 0, 1000, 1000, new List<Layer>(),
                 new Dictionary<long, Layer>(0), new Dictionary<string, List<Layer>>(0),
                 new Dictionary<string, LottieImageAsset>(0), new Dictionary<int, FontCharacter>(0),
                 new Dictionary<string, Font>(0));
@@ -27,7 +28,7 @@ namespace LottieUWP.Tests
                 CallBase = true,
             };
             _animator = _mockAnimator.Object;
-            _animator.Composition = composition;
+            _animator.Composition = _composition;
 
             isDone = false;
         }
@@ -269,6 +270,20 @@ namespace LottieUWP.Tests
                 _mockAnimator.Verify(l => l.OnAnimationEnd(true), Times.Once);
                 _mockAnimator.Verify(l => l.OnAnimationCancel(), Times.Never);
             });
+        }
+
+        [Fact]
+        public void SetMinFrameSmallerThanComposition()
+        {
+            _animator.MinFrame = -9000;
+            Assert.Equal(_animator.MinFrame, _composition.StartFrame);
+        }
+
+        [Fact]
+        public void SetMaxFrameLargerThanComposition()
+        {
+            _animator.MaxFrame = 9000;
+            Assert.Equal(_animator.MaxFrame, _composition.EndFrame);
         }
 
         private void TestAnimator(Action verifyListener)

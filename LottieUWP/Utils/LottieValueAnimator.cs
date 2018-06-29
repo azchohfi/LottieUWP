@@ -10,6 +10,7 @@ namespace LottieUWP.Utils
     public class LottieValueAnimator : BaseLottieAnimator
     {
         private float _speed = 1f;
+        private bool _speedReversedForRepeatMode = false;
         private long _lastFrameTimeNs;
         private float _frame;
         private int _repeatCount;
@@ -111,8 +112,8 @@ namespace LottieUWP.Utils
                 if (RepeatCount != LottieDrawable.Infinite && _repeatCount >= RepeatCount)
                 {
                     _frame = MaxFrame;
-                    OnAnimationEnd(IsReversed);
                     RemoveFrameCallback();
+                    OnAnimationEnd(IsReversed);
                 }
                 else
                 {
@@ -120,6 +121,7 @@ namespace LottieUWP.Utils
                     _repeatCount++;
                     if (RepeatMode == RepeatMode.Reverse)
                     {
+                        _speedReversedForRepeatMode = !_speedReversedForRepeatMode;
                         ReverseAnimationSpeed();
                     }
                     else
@@ -205,8 +207,10 @@ namespace LottieUWP.Utils
 
         public void SetMinAndMaxFrames(float minFrame, float maxFrame)
         {
-            _minFrame = minFrame;
-            _maxFrame = maxFrame;
+            float compositionMinFrame = _composition == null ? float.MinValue : _composition.StartFrame;
+            float compositionMaxFrame = _composition == null ? float.MaxValue : _composition.EndFrame;
+            _minFrame = MiscUtils.Clamp(minFrame, compositionMinFrame, compositionMaxFrame);
+            _maxFrame = MiscUtils.Clamp(maxFrame, compositionMinFrame, compositionMaxFrame);
             Frame = MiscUtils.Clamp(_frame, minFrame, maxFrame);
         }
 
@@ -215,10 +219,26 @@ namespace LottieUWP.Utils
             Speed = -Speed;
         }
 
+        /// <summary>
+        /// Gets or sets the current speed. This will be affected by repeat mode <see cref="RepeatMode.Reverse"/>.
+        /// </summary>
         public float Speed
         {
             set => _speed = value;
             get => _speed;
+        }
+
+        public override RepeatMode RepeatMode
+        {
+            set
+            {
+                base.RepeatMode = value;
+                if (value != RepeatMode.Reverse && _speedReversedForRepeatMode)
+                {
+                    _speedReversedForRepeatMode = false;
+                    ReverseAnimationSpeed();
+                }
+            }
         }
 
         public void PlayAnimation()
@@ -261,7 +281,7 @@ namespace LottieUWP.Utils
             RemoveFrameCallback();
         }
 
-        private bool IsReversed => _speed < 0;
+        private bool IsReversed => Speed < 0;
 
         protected virtual void PostFrameCallback()
         {

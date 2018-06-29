@@ -44,7 +44,7 @@ namespace LottieUWP
         }
 
         public int RepeatCount { get; set; }
-        public RepeatMode RepeatMode { get; set; }
+        public virtual RepeatMode RepeatMode { get; set; }
 
         public override bool IsRunning => _timer != null;
 
