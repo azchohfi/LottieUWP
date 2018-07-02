@@ -363,7 +363,7 @@ namespace LottieUWP
         {
             if (_compositionLayer == null)
             {
-                _lazyCompositionTasks.Add(composition =>
+                _lazyCompositionTasks.Add(c =>
                 {
                     PlayAnimation();
                 });
@@ -386,7 +386,7 @@ namespace LottieUWP
         {
             if (_compositionLayer == null)
             {
-                _lazyCompositionTasks.Add(composition =>
+                _lazyCompositionTasks.Add(c =>
                 {
                     ResumeAnimation();
                 });
@@ -413,7 +413,7 @@ namespace LottieUWP
             {
                 if (_composition == null)
                 {
-                    _lazyCompositionTasks.Add(composition =>
+                    _lazyCompositionTasks.Add(c =>
                     {
                         MinProgress = value;
                     });
@@ -446,7 +446,7 @@ namespace LottieUWP
 
                 if (_composition == null)
                 {
-                    _lazyCompositionTasks.Add(composition =>
+                    _lazyCompositionTasks.Add(c =>
                     {
                         MaxProgress = value;
                     });
@@ -486,7 +486,7 @@ namespace LottieUWP
 
             if (_composition == null)
             {
-                _lazyCompositionTasks.Add(composition =>
+                _lazyCompositionTasks.Add(c =>
                 {
                     SetMinAndMaxProgress(minProgress, maxProgress);
                 });
@@ -550,7 +550,7 @@ namespace LottieUWP
             {
                 if (_composition == null)
                 {
-                    _lazyCompositionTasks.Add(composition =>
+                    _lazyCompositionTasks.Add(c =>
                     {
                         Frame = value;
                     });
@@ -572,7 +572,7 @@ namespace LottieUWP
             {
                 if (_composition == null)
                 {
-                    _lazyCompositionTasks.Add(composition =>
+                    _lazyCompositionTasks.Add(c =>
                     {
                         Progress = value;
                     });
@@ -779,7 +779,7 @@ namespace LottieUWP
         {
             if (_compositionLayer == null)
             {
-                _lazyCompositionTasks.Add(composition =>
+                _lazyCompositionTasks.Add(c =>
                 {
                     AddValueCallback(keyPath, property, callback);
                 });

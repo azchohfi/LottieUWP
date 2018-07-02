@@ -61,12 +61,12 @@ namespace LottieUWP.Tests
 
             protected override void PostFrameCallback()
             {
-                _isRunning = true;
+                _running = true;
             }
 
             protected override void RemoveFrameCallback()
             {
-                _isRunning = false;
+                _running = false;
             }
         }
 

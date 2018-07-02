@@ -18,7 +18,7 @@ namespace LottieUWP.Utils
         private float _maxFrame = int.MaxValue;
         private LottieComposition _composition;
         private float _frameRate;
-        protected bool _isRunning;
+        protected bool _running;
 
         /// <summary>
         /// Returns a float representing the current value of the animation from 0 to 1
@@ -82,7 +82,7 @@ namespace LottieUWP.Utils
             }
         }
 
-        public override bool IsRunning => _isRunning;
+        public override bool IsRunning => _running;
 
         public override void DoFrame()
         {
@@ -303,13 +303,13 @@ namespace LottieUWP.Utils
         protected virtual void PostFrameCallback()
         {
             PrivateStart();
-            _isRunning = true;
+            _running = true;
         }
 
         protected override void RemoveFrameCallback()
         {
             base.RemoveFrameCallback();
-            _isRunning = false;
+            _running = false;
         }
 
         private void VerifyFrame()
