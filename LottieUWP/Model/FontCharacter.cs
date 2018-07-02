@@ -17,7 +17,7 @@ namespace LottieUWP.Model
         private readonly char _character;
         private readonly string _fontFamily;
 
-        public FontCharacter(List<ShapeGroup> shapes, char character, int size, double width, string style, string fontFamily)
+        public FontCharacter(List<ShapeGroup> shapes, char character, double size, double width, string style, string fontFamily)
         {
             Shapes = shapes;
             _character = character;
@@ -29,7 +29,7 @@ namespace LottieUWP.Model
 
         public List<ShapeGroup> Shapes { get; }
 
-        private int _size;
+        private double _size;
 
         public double Width { get; }
 

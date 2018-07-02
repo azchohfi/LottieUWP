@@ -13,6 +13,8 @@ namespace LottieUWP.Model.Layer
     {
         private static readonly int SaveFlags = BitmapCanvas.ClipSaveFlag | BitmapCanvas.ClipToLayerSaveFlag | BitmapCanvas.MatrixSaveFlag;
 
+        private static bool _hasLoggedIntersectMasks = false;
+
         internal static BaseLayer ForModel(Layer layerModel, LottieDrawable drawable, LottieComposition composition)
         {
             switch (layerModel.GetLayerType())
@@ -313,8 +315,8 @@ namespace LottieUWP.Model.Layer
             // Treat intersect masks like add masks. This is not correct but it's closer. 
             ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeIntersect);
             ApplyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
-        } 
- 
+        }
+
         private void ApplyMasks(BitmapCanvas canvas, Matrix3X3 matrix, Mask.MaskMode maskMode)
         {
             Paint paint;
@@ -324,8 +326,12 @@ namespace LottieUWP.Model.Layer
                     paint = _subtractMaskPaint;
                     break;
                 case Mask.MaskMode.MaskModeIntersect:
-                    Debug.WriteLine("Animation contains intersect masks. They are not supported but will be " +
+                    if (!_hasLoggedIntersectMasks)
+                    {
+                        Debug.WriteLine("Animation contains intersect masks. They are not supported but will be " +
                                  "treated like add masks.", LottieLog.Tag);
+                        _hasLoggedIntersectMasks = true;
+                    }
                     goto case Mask.MaskMode.MaskModeAdd;
                 case Mask.MaskMode.MaskModeAdd:
                 default:

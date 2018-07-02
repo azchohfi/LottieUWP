@@ -204,7 +204,7 @@ namespace LottieUWP.Parser
             }
 
             // The + 1 is because the animation should be visible on the out frame itself. 
-            outFrame = (outFrame > 0 ? outFrame : composition.EndFrame) + 1;
+            outFrame = (outFrame > 0 ? outFrame : composition.EndFrame);
             Keyframe<float?> visibleKeyframe = new Keyframe<float?>(composition, 1f, 1f, null, inFrame, outFrame);
             inOutKeyframes.Add(visibleKeyframe);
 

@@ -253,6 +253,7 @@ namespace LottieUWP
 
             _compositionLayer = null;
             _imageAssetManager = null;
+            _animator.ClearComposition();
             InvalidateSelf();
         }
 
@@ -418,7 +419,7 @@ namespace LottieUWP
                     });
                     return;
                 }
-                MinFrame = MiscUtils.Lerp(value, _composition.StartFrame, _composition.EndFrame);
+                MinFrame = MiscUtils.Lerp(_composition.StartFrame, _composition.EndFrame, value);
             }
         }
 
@@ -451,7 +452,7 @@ namespace LottieUWP
                     });
                     return;
                 }
-                MaxFrame = MiscUtils.Lerp(value, _composition.StartFrame, _composition.EndFrame);
+                MaxFrame = MiscUtils.Lerp(_composition.StartFrame, _composition.EndFrame, value);
             }
         }
 
@@ -491,7 +492,8 @@ namespace LottieUWP
                 });
                 return;
             }
-            SetMinAndMaxFrame(minProgress * _composition.DurationFrames, maxProgress * _composition.DurationFrames);
+            SetMinAndMaxFrame((int)MiscUtils.Lerp(_composition.StartFrame, _composition.EndFrame, minProgress),
+                (int)MiscUtils.Lerp(_composition.StartFrame, _composition.EndFrame, maxProgress));
         }
 
         /// <summary>

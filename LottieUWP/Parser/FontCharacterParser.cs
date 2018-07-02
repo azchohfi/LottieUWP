@@ -10,7 +10,7 @@ namespace LottieUWP.Parser
         internal static FontCharacter Parse(JsonReader reader, LottieComposition composition)
         {
             char character = '\0';
-            int size = 0;
+            double size = 0;
             double width = 0;
             String style = null;
             String fontFamily = null;
@@ -25,7 +25,7 @@ namespace LottieUWP.Parser
                         character = reader.NextString()[0];
                         break;
                     case "size":
-                        size = reader.NextInt();
+                        size = reader.NextDouble();
                         break;
                     case "w":
                         width = reader.NextDouble();

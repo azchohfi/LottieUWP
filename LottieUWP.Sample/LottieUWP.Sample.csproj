@@ -372,6 +372,8 @@
     <Content Include="Assets\bullseye.json" />
     <Content Include="Assets\Tests\EllipseDirection.json" />
     <Content Include="Assets\Tests\StartEndFrame.json" />
+    <Content Include="Assets\Tests\WeAcceptInlineImage.json" />
+    <Content Include="Assets\Tests\EndFrame.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

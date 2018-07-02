@@ -8,7 +8,7 @@ namespace LottieUWP.Utils
 {
     public static class Utils
     {
-        public static readonly int SecondInNanos = 1000000000;
+        public const int SecondInNanos = 1000000000;
         private static Path _tempPath = new Path();
         private static Path _tempPath2 = new Path();
         private static Vector2[] _points = new Vector2[2];
