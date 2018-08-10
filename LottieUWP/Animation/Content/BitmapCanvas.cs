@@ -282,7 +282,7 @@ namespace LottieUWP.Animation.Content
                 UpdateDrawingSessionWithFlags(renderTargetSave.PaintFlags);
                 CurrentDrawingSession.Transform = GetCurrentTransform();
 
-                var canvasComposite = CanvasComposite.SourceAtop;
+                var canvasComposite = CanvasComposite.SourceOver;
                 if (renderTargetSave.PaintXfermode != null)
                 {
                     canvasComposite = PorterDuff.ToCanvasComposite(renderTargetSave.PaintXfermode.Mode);
