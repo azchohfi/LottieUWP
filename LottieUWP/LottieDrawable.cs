@@ -400,7 +400,16 @@ namespace LottieUWP
         /// </summary>
         public float MinFrame
         {
-            set => _animator.MinFrame = value;
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(c => MinFrame = value);
+                    return;
+                }
+                _animator.MinFrame = value;
+            }
+
             get => _animator.MinFrame;
         }
 
@@ -428,7 +437,16 @@ namespace LottieUWP
         /// </summary>
         public float MaxFrame
         {
-            set => _animator.MaxFrame = value;
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(c => MaxFrame = value);
+                    return;
+                }
+                _animator.MaxFrame = value;
+            }
+
             get => _animator.MaxFrame;
         }
 
@@ -464,6 +482,11 @@ namespace LottieUWP
         /// <param name="maxFrame"></param>
         public void SetMinAndMaxFrame(float minFrame, float maxFrame)
         {
+            if (_composition == null)
+            {
+                _lazyCompositionTasks.Add(c => SetMinAndMaxFrame(minFrame, maxFrame));
+                return;
+            }
             _animator.SetMinAndMaxFrames(minFrame, maxFrame);
         }
 
