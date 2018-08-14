@@ -131,7 +131,7 @@ namespace LottieUWP
                 {
                     Sb.AppendLine(Msgs.Dequeue());
                 }
-                Debug.WriteLine(Sb.ToString());
+                Debug.WriteLine(Sb.ToString(), Tag);
             }
         }
 

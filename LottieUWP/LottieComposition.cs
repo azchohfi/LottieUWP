@@ -122,7 +122,7 @@ namespace LottieUWP
             /// </summary>
             public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return (await LottieCompositionFactory.FromJsonInputStream(stream, null, cancellationToken)).Value;
+                return (await LottieCompositionFactory.FromJsonInputStreamAsync(stream, null, cancellationToken)).Value;
             }
 
             /// <summary>

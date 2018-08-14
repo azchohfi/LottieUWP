@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Windows.Storage.Pickers;
 using Windows.UI;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -125,6 +126,20 @@ namespace LottieUWP.Sample
             else
             {
                 LottieAnimationView.ResumeAnimation();
+            }
+        }
+
+        private async void OpenUrlButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var inputDialog = new InputDialog();
+            var result = await inputDialog.ShowAsync();
+            if(result == ContentDialogResult.Primary)
+            {
+                // ex: https://www.lottiefiles.com/download/427
+                var compositionResult = await LottieCompositionFactory.FromUrlAsync(LottieAnimationView.Device, inputDialog.Text);
+
+                LottieAnimationView.Composition = compositionResult.Value;
+                LottieAnimationView.PlayAnimation();
             }
         }
     }

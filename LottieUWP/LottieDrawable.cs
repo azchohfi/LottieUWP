@@ -46,7 +46,7 @@ namespace LottieUWP
         private byte _alpha = 255;
         private bool _performanceTrackingEnabled;
         private BitmapCanvas _bitmapCanvas;
-        internal CanvasAnimatedControl _canvasControl;
+        private CanvasAnimatedControl _canvasControl;
         private bool _forceSoftwareRenderer;
 
         /// <summary>
@@ -905,6 +905,8 @@ namespace LottieUWP
                 return _imageAssetManager;
             }
         }
+
+        public CanvasDevice Device => _canvasControl?.Device;
 
         internal virtual Typeface GetTypeface(string fontFamily, string style)
         {

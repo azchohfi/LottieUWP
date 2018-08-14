@@ -454,7 +454,7 @@ namespace LottieUWP
 
             try
             {
-                var compositionResult = await LottieCompositionFactory.FromAsset(_lottieDrawable?._canvasControl?.Device, assetName, cancellationTokenSource.Token);
+                var compositionResult = await LottieCompositionFactory.FromAsset(_lottieDrawable?.Device, assetName, cancellationTokenSource.Token);
 
                 LottieCompositionCache.Instance.Put(assetName, compositionResult.Value);
 
@@ -897,6 +897,8 @@ namespace LottieUWP
             var useHardwareLayer = _useHardwareLayer && _lottieDrawable.IsAnimating;
             _lottieDrawable.ForceSoftwareRenderer(!useHardwareLayer);
         }
+
+        public CanvasDevice Device => _lottieDrawable?.Device;
 
         private void Dispose(bool disposing)
         {

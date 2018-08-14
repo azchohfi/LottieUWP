@@ -1,4 +1,5 @@
 ﻿using LottieUWP.Model;
+using LottieUWP.Network;
 using LottieUWP.Parser;
 using LottieUWP.Utils;
 using Microsoft.Graphics.Canvas;
@@ -23,6 +24,29 @@ namespace LottieUWP
             Utils.Utils.DpScale();
         }
 
+        /// <summary>
+        /// Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
+        /// future use. Because of this, you may call <seealso cref="FromUrl(Context, string)"/> ahead of time to warm the cache if you think you
+        /// might need an animation in the future.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static async Task<LottieResult<LottieComposition>> FromUrlAsync(CanvasDevice device, string url, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await NetworkFetcher.FetchAsync(device, url, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Parse an animation from src/main/assets. It is recommended to use {@link #fromRawRes(Context, int)} instead.
+        /// The asset file name will be used as a cache key so future usages won't have to parse the json again.
+        /// However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
+        /// <see cref="FromZipStreamAsync(CanvasDevice, ZipArchive, string, CancellationToken)"/>
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="fileName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<LottieResult<LottieComposition>> FromAsset(CanvasDevice device, string fileName, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
@@ -32,8 +56,9 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will 
-        /// be parsed as json.
+        /// Parse an animation from src/main/assets. It is recommended to use {@link #fromRawRes(Context, int)} instead.
+        /// The asset file name will be used as a cache key so future usages won't have to parse the json again.
+        /// However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
         /// <see cref="FromZipStreamSync(CanvasDevice, ZipArchive, string)"/>
         /// </summary>
         /// <param name="fileName"></param>
@@ -62,7 +87,7 @@ namespace LottieUWP
         /// <param name="stream"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<LottieResult<LottieComposition>> FromJsonInputStream(Stream stream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromJsonInputStreamAsync(Stream stream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
@@ -145,7 +170,7 @@ namespace LottieUWP
             }
         }
 
-        public static async Task<LottieResult<LottieComposition>> FromZipStream(CanvasDevice device, ZipArchive inputStream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromZipStreamAsync(CanvasDevice device, ZipArchive inputStream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
@@ -153,14 +178,16 @@ namespace LottieUWP
             }, cancellationToken).ConfigureAwait(false);
         }
 
-        /** 
-         * Parses a zip input stream into a Lottie composition. 
-         * Your zip file should just be a folder with your json file and images zipped together. 
-         * It will automatically store and configure any images inside the animation if they exist. 
-         * 
-         * It will also close the input stream. 
-         */
-        private static LottieResult<LottieComposition> FromZipStreamSync(CanvasDevice device, ZipArchive inputStream, string cacheKey)
+        /// <summary>
+        /// Parses a zip input stream into a Lottie composition. 
+        /// Your zip file should just be a folder with your json file and images zipped together.
+        /// It will automatically store and configure any images inside the animation if they exist. 
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="inputStream"></param>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        public static LottieResult<LottieComposition> FromZipStreamSync(CanvasDevice device, ZipArchive inputStream, string cacheKey)
         {
             try
             {

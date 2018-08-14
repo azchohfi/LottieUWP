@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Graphics.Canvas;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -80,6 +81,14 @@ namespace LottieUWP.Tests
             LottieResult<LottieComposition> result = LottieCompositionFactory.FromAssetSync(null, "not_json.txt");
             Assert.NotNull(result.Exception);
             Assert.Null(result.Value);
+        }
+
+        [Fact]
+        public async Task TestLoadJsonUrl()
+        {
+            LottieResult<LottieComposition> result = await LottieCompositionFactory.FromUrlAsync(CanvasDevice.GetSharedDevice(), "https://www.lottiefiles.com/download/427");
+            Assert.Null(result.Exception);
+            Assert.NotNull(result.Value);
         }
     }
 }

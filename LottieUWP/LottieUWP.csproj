@@ -119,6 +119,9 @@
     <Compile Include="LottieResult.cs" />
     <Compile Include="Model\LottieCompositionCache.cs" />
     <Compile Include="Model\LruCache.cs" />
+    <Compile Include="Network\FileExtension.cs" />
+    <Compile Include="Network\NetworkCache.cs" />
+    <Compile Include="Network\NetworkFetcher.cs" />
     <Compile Include="Utils\BaseLottieAnimator.cs" />
     <Compile Include="Value\Keyframe.cs" />
     <Compile Include="Animation\Keyframe\BaseKeyframeAnimation.cs" />
