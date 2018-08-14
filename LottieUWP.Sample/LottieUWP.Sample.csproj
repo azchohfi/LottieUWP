@@ -107,7 +107,7 @@
     </AppxManifest>
     <Content Include="Assets\9squares-AlBoardman.json" />
     <Content Include="Assets\EmptyState.json" />
-    <Content Include="Assets\HamburgerArrow.json" />
+	<Content Include="Assets\hamburger_arrow.json" />
     <Content Include="Assets\Logo\LogoSmall.json" />
     <Content Include="Assets\lottiefiles.com - Animated Graph.json" />
     <Content Include="Assets\lottiefiles.com - ATM.json" />
