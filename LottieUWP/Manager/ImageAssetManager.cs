@@ -13,7 +13,6 @@ namespace LottieUWP.Manager
         private readonly string _imagesFolder;
         private IImageAssetDelegate _delegate;
         private readonly Dictionary<string, LottieImageAsset> _imageAssets;
-        private readonly Dictionary<string, CanvasBitmap> _bitmaps = new Dictionary<string, CanvasBitmap>();
 
         internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, Dictionary<string, LottieImageAsset> imageAssets)
         {
@@ -57,11 +56,15 @@ namespace LottieUWP.Manager
             {
                 if (bitmap == null)
                 {
-                    if (_bitmaps.TryGetValue(id, out var removed))
-                        _bitmaps.Remove(id);
-                    return removed;
+                    if (_imageAssets.TryGetValue(id, out var asset))
+                    {
+                        var ret = asset.Bitmap;
+                        asset.Bitmap = null;
+                        return ret;
+                    }
+                    return null;
                 }
-                _bitmaps[id] = bitmap;
+                PutBitmap(id, bitmap);
                 return bitmap;
             }
         }
@@ -70,22 +73,23 @@ namespace LottieUWP.Manager
         {
             lock (this)
             {
-                if (_bitmaps.TryGetValue(id, out CanvasBitmap bitmap))
-                {
-                    return bitmap;
-                }
-
-                var imageAsset = _imageAssets[id];
-                if (imageAsset == null)
+                if (!_imageAssets.TryGetValue(id, out var imageAsset))
                 {
                     return null;
                 }
+                else if (imageAsset.Bitmap != null)
+                {
+                    return imageAsset.Bitmap;
+                }
+
+                CanvasBitmap bitmap;
+
                 if (_delegate != null)
                 {
                     bitmap = _delegate.FetchBitmap(imageAsset);
                     if (bitmap != null)
                     {
-                        _bitmaps[id] = bitmap;
+                        PutBitmap(id, bitmap);
                     }
                     return bitmap;
                 }
@@ -114,7 +118,7 @@ namespace LottieUWP.Manager
 
                     @is.Dispose();
 
-                    _bitmaps[id] = bitmap;
+                    PutBitmap(id, bitmap);
                     return bitmap;
                 }
 
@@ -137,8 +141,8 @@ namespace LottieUWP.Manager
 
                 @is.Dispose();
 
-                _bitmaps[id] = bitmap;
-                
+                PutBitmap(id, bitmap);
+
                 return bitmap;
             }
         }
@@ -147,12 +151,21 @@ namespace LottieUWP.Manager
         {
             lock (this)
             {
-                for (var i = _bitmaps.Count - 1; i >= 0; i--)
+                for (var i = _imageAssets.Count - 1; i >= 0; i--)
                 {
-                    var entry = _bitmaps.ElementAt(i);
-                    entry.Value.Dispose();
-                    _bitmaps.Remove(entry.Key);
+                    var entry = _imageAssets.ElementAt(i);
+                    entry.Value.Bitmap?.Dispose();
+                    _imageAssets.Remove(entry.Key);
                 }
+            }
+        }
+
+        private CanvasBitmap PutBitmap(string key, CanvasBitmap bitmap)
+        {
+            lock (this)
+            {
+                _imageAssets[key].Bitmap = bitmap;
+                return bitmap;
             }
         }
 

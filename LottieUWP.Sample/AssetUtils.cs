@@ -7,25 +7,26 @@ namespace LottieUWP.Sample
 {
     static class AssetUtils
     {
-        public static async Task<List<StorageFile>> GetJsonAssets()
+        public static async Task<List<StorageFile>> GetAssets()
         {
             var localizationDirectory = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync(@"Assets");
 
-            return await GetJsonAssetsFromFolder(localizationDirectory);
+            return await GetAssetsFromFolder(localizationDirectory);
         }
 
-        private static async Task<List<StorageFile>> GetJsonAssetsFromFolder(StorageFolder folder)
+        private static async Task<List<StorageFile>> GetAssetsFromFolder(StorageFolder folder)
         {
             var files = new List<StorageFile>();
             foreach (var asset in await folder.GetItemsAsync())
             {
-                if (asset is StorageFile file && file.Name.ToLower().EndsWith(".json", StringComparison.Ordinal))
+                if (asset is StorageFile file && 
+                    (file.Name.ToLower().EndsWith(".json", StringComparison.Ordinal) || file.Name.ToLower().EndsWith(".zip", StringComparison.Ordinal)))
                 {
                     files.Add(file);
                 }
                 else if (asset is StorageFolder storageFolder)
                 {
-                    files.AddRange(await GetJsonAssetsFromFolder(storageFolder));
+                    files.AddRange(await GetAssetsFromFolder(storageFolder));
                 }
             }
             return files;

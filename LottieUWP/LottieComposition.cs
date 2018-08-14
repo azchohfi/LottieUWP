@@ -114,7 +114,7 @@ namespace LottieUWP
             /// </summary>
             public static async Task<LottieComposition> FromAssetFileNameAsync(string fileName, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return (await LottieCompositionFactory.FromAsset(fileName, cancellationToken)).Value;
+                return (await LottieCompositionFactory.FromAsset(null, fileName, cancellationToken)).Value;
             }
 
             /// <summary>
@@ -146,7 +146,7 @@ namespace LottieUWP
             /// </summary>
             public static LottieComposition FromFileSync(string fileName)
             {
-                return LottieCompositionFactory.FromAssetSync(fileName).Value;
+                return LottieCompositionFactory.FromAssetSync(null, fileName).Value;
             }
 
             /// <summary>

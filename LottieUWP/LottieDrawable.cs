@@ -46,7 +46,7 @@ namespace LottieUWP
         private byte _alpha = 255;
         private bool _performanceTrackingEnabled;
         private BitmapCanvas _bitmapCanvas;
-        private CanvasAnimatedControl _canvasControl;
+        internal CanvasAnimatedControl _canvasControl;
         private bool _forceSoftwareRenderer;
 
         /// <summary>

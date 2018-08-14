@@ -1,10 +1,14 @@
 ﻿using LottieUWP.Parser;
 using LottieUWP.Utils;
+using Microsoft.Graphics.Canvas;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
 
 namespace LottieUWP
 {
@@ -18,18 +22,29 @@ namespace LottieUWP
             Utils.Utils.DpScale();
         }
 
-        public static async Task<LottieResult<LottieComposition>> FromAsset(string fileName, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromAsset(CanvasDevice device, string fileName, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
-                return FromAssetSync(fileName);
+                return FromAssetSync(device, fileName);
             }, cancellationToken).ConfigureAwait(false);
         }
 
-        public static LottieResult<LottieComposition> FromAssetSync(string fileName)
+        /// <summary>
+        /// Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will 
+        /// be parsed as json.
+        /// <see cref="FromZipStream(ZipInputStream)"/>
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static LottieResult<LottieComposition> FromAssetSync(CanvasDevice device, string fileName)
         {
             try
             {
+                if (fileName.EndsWith(".zip"))
+                {
+                    return FromZipStreamSync(device, new ZipArchive(File.OpenRead(fileName)));
+                }
                 return FromJsonInputStreamSync(File.OpenRead(fileName));
             }
             catch (IOException e)
@@ -38,6 +53,13 @@ namespace LottieUWP
             }
         }
 
+        /// <summary>
+        /// Auto-closes the stream.
+        /// <see cref="FromJsonInputStreamSync(InputStream, bool"/>
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<LottieResult<LottieComposition>> FromJsonInputStream(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
@@ -46,6 +68,12 @@ namespace LottieUWP
             }, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Auto-closes the stream.
+        /// <see cref="FromJsonInputStreamSync(InputStream, bool)"/>
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public static LottieResult<LottieComposition> FromJsonInputStreamSync(Stream stream)
         {
             return FromJsonInputStreamSync(stream, true);
@@ -72,6 +100,12 @@ namespace LottieUWP
             }
         }
 
+        /// <summary>
+        /// <see cref="FromJsonStringSync(string)"/>
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<LottieResult<LottieComposition>> FromJsonString(string json, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
@@ -114,6 +148,119 @@ namespace LottieUWP
             {
                 return new LottieResult<LottieComposition>(e);
             }
+        }
+
+        public static async Task<LottieResult<LottieComposition>> FromZipStream(CanvasDevice device, ZipArchive inputStream, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await Task.Run(() =>
+            {
+                return FromZipStreamSync(device, inputStream);
+            }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /** 
+         * Parses a zip input stream into a Lottie composition. 
+         * Your zip file should just be a folder with your json file and images zipped together. 
+         * It will automatically store and configure any images inside the animation if they exist. 
+         * 
+         * It will also close the input stream. 
+         */
+        private static LottieResult<LottieComposition> FromZipStreamSync(CanvasDevice device, ZipArchive inputStream)
+        {
+            try
+            {
+                return FromZipStreamSyncInternal(device, inputStream);
+            }
+            finally
+            {
+                inputStream.CloseQuietly();
+            }
+        }
+
+        private static LottieResult<LottieComposition> FromZipStreamSyncInternal(CanvasDevice device, ZipArchive inputStream)
+        {
+            LottieComposition composition = null;
+            Dictionary<string, CanvasBitmap> images = new Dictionary<string, CanvasBitmap>();
+
+            try
+            {
+                foreach (ZipArchiveEntry entry in inputStream.Entries)
+                {
+                    if (entry.FullName.Contains("__MACOSX"))
+                    {
+                        continue;
+                    }
+                    else if (entry.FullName.Contains(".json"))
+                    {
+                        composition = FromJsonInputStreamSync(entry.Open(), false).Value;
+                    }
+                    else if (entry.FullName.Contains(".png"))
+                    {
+                        string[] splitName = entry.FullName.Split('/');
+                        string name = splitName[splitName.Length - 1];
+                        using (var stream = AsRandomAccessStream(entry.Open()))
+                        {
+                            var task = CanvasBitmap.LoadAsync(device, stream, 160).AsTask();
+                            task.Wait();
+                            var bitmap = task.Result;
+                            images[name] = bitmap;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                return new LottieResult<LottieComposition>(e);
+            }
+
+            if (composition == null)
+            {
+                return new LottieResult<LottieComposition>(new ArgumentException("Unable to parse composition"));
+            }
+
+            foreach (var e in images)
+            {
+                LottieImageAsset imageAsset = FindImageAssetForFileName(composition, e.Key);
+                if (imageAsset != null)
+                {
+                    imageAsset.Bitmap = e.Value;
+                }
+            }
+
+            // Ensure that all bitmaps have been set. 
+            foreach (var entry in composition.Images)
+            {
+                if (entry.Value.Bitmap == null)
+                {
+                    return new LottieResult<LottieComposition>(new ArgumentException("There is no image for " + entry.Value.FileName));
+                }
+            }
+
+            return new LottieResult<LottieComposition>(composition);
+        }
+
+        private static IRandomAccessStream AsRandomAccessStream(Stream stream)
+        {
+            var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms.AsRandomAccessStream();
+        }
+
+        private static LottieImageAsset FindImageAssetForFileName(LottieComposition composition, string fileName)
+        {
+            foreach (var asset in composition.Images.Values)
+            {
+                if (asset.FileName.Equals(fileName))
+                {
+                    return asset;
+                }
+            }
+            return null;
         }
     }
 }

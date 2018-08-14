@@ -465,7 +465,7 @@ namespace LottieUWP
 
             try
             {
-                var compositionResult = await LottieCompositionFactory.FromAsset(assetName, cancellationTokenSource.Token);
+                var compositionResult = await LottieCompositionFactory.FromAsset(_lottieDrawable?._canvasControl?.Device, assetName, cancellationTokenSource.Token);
 
                 LottieCompositionCache.Instance.Put(assetName, compositionResult.Value, cacheStrategy);
 
@@ -474,6 +474,10 @@ namespace LottieUWP
             catch (TaskCanceledException e)
             {
                 Debug.WriteLine(e);
+            }
+            catch(Exception e)
+            {
+                throw new InvalidOperationException("Unable to parse composition", e);
             }
         }
 
@@ -504,13 +508,24 @@ namespace LottieUWP
 
             _compositionTaskCTS = cancellationTokenSource;
 
-            var compositionResult = await LottieCompositionFactory.FromJsonReader(reader, cancellationTokenSource.Token);
-
-            if (compositionResult.Value != null)
+            try
             {
-                Composition = compositionResult.Value;
+                var compositionResult = await LottieCompositionFactory.FromJsonReader(reader, cancellationTokenSource.Token);
+
+                if (compositionResult.Value != null)
+                {
+                    Composition = compositionResult.Value;
+                }
+                _compositionTaskCTS = null;
             }
-            _compositionTaskCTS = null;
+            catch (TaskCanceledException e)
+            {
+                Debug.WriteLine(e);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("Unable to parse composition", e);
+            }
         }
 
         private void CancelLoaderTask()

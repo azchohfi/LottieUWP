@@ -376,6 +376,8 @@
     <Content Include="Assets\Tests\EndFrame.json" />
     <Content Include="Assets\Tests\MiterLimit.json" />
     <Content Include="Assets\Tests\TimeStretchMask.json" />
+    <Content Include="Assets\HamburgerArrow.json" />
+    <Content Include="Assets\Tests\Airbnb.zip" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

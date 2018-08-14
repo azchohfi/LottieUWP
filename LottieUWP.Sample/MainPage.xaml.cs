@@ -29,7 +29,7 @@ namespace LottieUWP.Sample
             var localizationDirectory = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync(@"Assets");
             var basePathLength = localizationDirectory.Path.Length - "Assets".Length;
 
-            foreach (var file in await AssetUtils.GetJsonAssets())
+            foreach (var file in await AssetUtils.GetAssets())
             {
                 Files.Add(file.Path.Substring(basePathLength, file.Path.Length - basePathLength));
             }
@@ -45,7 +45,8 @@ namespace LottieUWP.Sample
             {
                 var assetsLength = "Assets\\".Length;
                 var fileName = selectedItem.Substring(assetsLength, selectedItem.Length - assetsLength);
-                fileName = fileName.Substring(0, fileName.Length - ".json".Length);
+                var extensionLength = (fileName.EndsWith(".json") ? ".json" : ".zip").Length;
+                fileName = fileName.Substring(0, fileName.Length - extensionLength);
 
                 LottieAnimationView.ImageAssetsFolder = $"Assets/Images/{fileName}";
                 await LottieAnimationView.SetAnimationAsync(selectedItem);
@@ -105,6 +106,7 @@ namespace LottieUWP.Sample
         {
             var filePicker = new FileOpenPicker();
             filePicker.FileTypeFilter.Add(".json");
+            filePicker.FileTypeFilter.Add(".zip");
             var file = await filePicker.PickSingleFileAsync();
 
             if (file != null)
