@@ -124,6 +124,7 @@ namespace LottieUWP.Animation.Content
                 DashCap = paint.StrokeCap,
                 EndCap = paint.StrokeCap,
                 LineJoin = paint.StrokeJoin,
+                MiterLimit = paint.StrokeMiter
             };
             paint.PathEffect?.Apply(style, paint);
             return style;

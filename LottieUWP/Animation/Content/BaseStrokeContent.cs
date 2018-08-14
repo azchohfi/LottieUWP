@@ -29,7 +29,7 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<float?, float?> _dashPatternOffsetAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
-        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
+        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
             _lottieDrawable = lottieDrawable;
             _layer = layer;
@@ -37,6 +37,7 @@ namespace LottieUWP.Animation.Content
             Paint.Style = Paint.PaintStyle.Stroke;
             Paint.StrokeCap = cap;
             Paint.StrokeJoin = join;
+            Paint.StrokeMiter = miterLimit;
 
             _opacityAnimation = opacity.CreateAnimation();
             _widthAnimation = width.CreateAnimation();

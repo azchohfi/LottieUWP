@@ -42,6 +42,7 @@ namespace LottieUWP.Animation.Content
         public ColorFilter ColorFilter { get; set; }
         public CanvasCapStyle StrokeCap { get; set; }
         public CanvasLineJoin StrokeJoin { get; set; }
+        public float StrokeMiter { get; set; }
         public float StrokeWidth { get; set; }
         public PathEffect PathEffect { get; set; }
         public PorterDuffXfermode Xfermode { get; set; }
