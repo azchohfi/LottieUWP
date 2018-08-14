@@ -115,6 +115,9 @@
     <Compile Include="Animation\Content\ShapeContent.cs" />
     <Compile Include="Animation\Content\StrokeContent.cs" />
     <Compile Include="Animation\Content\TrimPathContent.cs" />
+    <Compile Include="LottieCompositionFactory.cs" />
+    <Compile Include="LottieResult.cs" />
+    <Compile Include="Model\LottieCompositionCache.cs" />
     <Compile Include="Utils\BaseLottieAnimator.cs" />
     <Compile Include="Value\Keyframe.cs" />
     <Compile Include="Animation\Keyframe\BaseKeyframeAnimation.cs" />
@@ -214,7 +217,6 @@
     <Compile Include="Model\Font.cs" />
     <Compile Include="Model\FontCharacter.cs" />
     <Compile Include="Model\IKeyPathElementContent.cs" />
-    <Compile Include="Model\AsyncCompositionLoader.cs" />
     <Compile Include="Model\KeyPath.cs" />
     <Compile Include="Model\IKeyPathElement.cs" />
     <Compile Include="Model\Layer\BaseLayer.cs" />

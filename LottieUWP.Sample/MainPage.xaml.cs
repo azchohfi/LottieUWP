@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -108,7 +109,7 @@ namespace LottieUWP.Sample
 
             if (file != null)
             {
-                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync())));
+                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync(), Encoding.UTF8)));
                 LottieAnimationView.PlayAnimation();
             }
         }

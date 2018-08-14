@@ -59,9 +59,12 @@ namespace LottieUWP
         {
             _animator.Update += (sender, e) =>
             {
-                if (_compositionLayer != null)
+                lock (this)
                 {
-                    _compositionLayer.Progress = _animator.AnimatedValueAbsolute;
+                    if (_compositionLayer != null)
+                    {
+                        _compositionLayer.Progress = _animator.AnimatedValueAbsolute;
+                    }
                 }
             };
             Loaded += UserControl_Loaded;
@@ -183,7 +186,11 @@ namespace LottieUWP
             _imageAssetManager?.RecycleBitmaps();
         }
 
-        /// <returns> True if the composition is different from the previously set composition, false otherwise. </returns>
+        /// <summary>
+        /// Create a composition with <see cref="LottieCompositionFactory"/>
+        /// </summary>
+        /// <param name="composition">The new composition.</param>
+        /// <returns>True if the composition is different from the previously set composition, false otherwise.</returns>
         public virtual bool SetComposition(LottieComposition composition)
         {
             //if (Callback == null) // TODO: needed?

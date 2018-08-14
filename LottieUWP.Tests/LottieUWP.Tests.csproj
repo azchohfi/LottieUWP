@@ -94,6 +94,8 @@
   <ItemGroup>
     <Compile Include="Fixtures.cs" />
     <Compile Include="KeyPathTest.cs" />
+    <Compile Include="LottieCompositionCacheTest.cs" />
+    <Compile Include="LottieCompositionFactoryTest.cs" />
     <Compile Include="LottieDrawableTest.cs" />
     <Compile Include="LottieValueAnimatorUnitTest.cs" />
     <Compile Include="MeanCalculatorTest.cs" />

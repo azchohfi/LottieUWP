@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -50,9 +49,6 @@ namespace LottieUWP
             Strong
         }
 
-        private static readonly Dictionary<string, LottieComposition> AssetStrongRefCache = new Dictionary<string, LottieComposition>();
-        private static readonly Dictionary<string, WeakReference<LottieComposition>> AssetWeakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
-
         private readonly LottieDrawable _lottieDrawable;
 
         public CacheStrategy DefaultCacheStrategy
@@ -69,7 +65,7 @@ namespace LottieUWP
         //private bool wasAnimatingWhenDetached = false;
         private bool _useHardwareLayer;
 
-        private CancellationTokenSource _compositionLoader;
+        private CancellationTokenSource _compositionTaskCTS;
         /// <summary>
         /// Can be null because it is created async
         /// </summary>
@@ -443,28 +439,20 @@ namespace LottieUWP
 
         /// <summary>
         /// Sets the animation from a file in the assets directory.
-        /// This will load and deserialize the file asynchronously.
+        /// This will load and deserialize the file asynchronously if it is not already in the cache.
         /// <para>
         /// You may also specify a cache strategy. Specifying <seealso cref="CacheStrategy.Strong"/> will hold a
         /// strong reference to the composition once it is loaded
         /// and deserialized. <seealso cref="CacheStrategy.Weak"/> will hold a weak reference to said composition.
         /// </para>
         /// </summary>
-        public virtual async Task SetAnimationAsync(string animationName, CacheStrategy cacheStrategy)
+        public virtual async Task SetAnimationAsync(string assetName, CacheStrategy cacheStrategy)
         {
-            _animationName = animationName;
-            if (AssetWeakRefCache.ContainsKey(animationName))
+            _animationName = assetName;
+            var cachedComposition = LottieCompositionCache.Instance.Get(assetName);
+            if (cachedComposition != null)
             {
-                var compRef = AssetWeakRefCache[animationName];
-                if (compRef.TryGetTarget(out LottieComposition lottieComposition))
-                {
-                    Composition = lottieComposition;
-                    return;
-                }
-            }
-            else if (AssetStrongRefCache.ContainsKey(animationName))
-            {
-                Composition = AssetStrongRefCache[animationName];
+                Composition = cachedComposition;
                 return;
             }
 
@@ -473,34 +461,20 @@ namespace LottieUWP
 
             var cancellationTokenSource = new CancellationTokenSource();
 
-            _compositionLoader = cancellationTokenSource;
+            _compositionTaskCTS = cancellationTokenSource;
 
-            var composition = await LottieComposition.Factory.FromAssetFileNameAsync(animationName, cancellationTokenSource.Token);
-
-            if (cacheStrategy == CacheStrategy.Strong)
+            try
             {
-                AssetStrongRefCache[animationName] = composition;
+                var compositionResult = await LottieCompositionFactory.FromAsset(assetName, cancellationTokenSource.Token);
+
+                LottieCompositionCache.Instance.Put(assetName, compositionResult.Value, cacheStrategy);
+
+                Composition = compositionResult.Value;
             }
-            else if (cacheStrategy == CacheStrategy.Weak)
+            catch (TaskCanceledException e)
             {
-                AssetWeakRefCache[animationName] = new WeakReference<LottieComposition>(composition);
+                Debug.WriteLine(e);
             }
-
-            Composition = composition;
-        }
-
-        /// <summary>
-        /// <see cref="SetAnimationAsync(JsonReader)"/> which is more efficient than using a JSONObject.
-        /// For animations loaded from the network, use <see cref="SetAnimationFromJsonAsync(string)"/>
-        /// 
-        /// If you must use a JsonObject, you can convert it to a StreamReader with:
-        /// <code>new JsonReader(new StringReader(json.ToString()));</code>
-        /// </summary>
-        /// <param name="json"></param>
-        [Obsolete]
-        public async Task SetAnimationAsync(JsonObject json)
-        {
-            await SetAnimationAsync(new JsonReader(new StringReader(json.ToString())));
         }
 
         /// <summary>
@@ -528,23 +502,23 @@ namespace LottieUWP
             CancelLoaderTask();
             var cancellationTokenSource = new CancellationTokenSource();
 
-            _compositionLoader = cancellationTokenSource;
+            _compositionTaskCTS = cancellationTokenSource;
 
-            var composition = await LottieComposition.Factory.FromJsonReaderAsync(reader, cancellationTokenSource.Token);
+            var compositionResult = await LottieCompositionFactory.FromJsonReader(reader, cancellationTokenSource.Token);
 
-            if (composition != null)
+            if (compositionResult.Value != null)
             {
-                Composition = composition;
+                Composition = compositionResult.Value;
             }
-            _compositionLoader = null;
+            _compositionTaskCTS = null;
         }
 
         private void CancelLoaderTask()
         {
-            if (_compositionLoader != null)
+            if (_compositionTaskCTS != null)
             {
-                _compositionLoader.Cancel();
-                _compositionLoader = null;
+                _compositionTaskCTS.Cancel();
+                _compositionTaskCTS = null;
             }
         }
 
@@ -907,7 +881,7 @@ namespace LottieUWP
 
         private void Dispose(bool disposing)
         {
-            _compositionLoader?.Dispose();
+            _compositionTaskCTS?.Dispose();
             _lottieDrawable.Dispose();
         }
 

@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using LottieUWP.Model;
 using LottieUWP.Model.Layer;
-using LottieUWP.Parser;
-using LottieUWP.Utils;
 
 namespace LottieUWP
 {
     /// <summary>
     /// After Effects/Bodymovin composition model. This is the serialized model from which the
     /// animation will be created.
+    /// 
+    /// To create one, use <see cref="LottieCompositionFactory"/>.
+    /// 
     /// It can be used with a <seealso cref="LottieAnimationView"/> or
     /// <seealso cref="LottieDrawable"/>.
     /// </summary>
@@ -102,112 +103,74 @@ namespace LottieUWP
             return sb.ToString();
         }
 
+        /// <summary>
+        /// <see cref="LottieCompositionFactory"/>
+        /// </summary>
+        [Obsolete]
         public static class Factory
         {
             /// <summary>
-            /// Loads a composition from a file stored in /assets.
+            /// <see cref="LottieCompositionFactory.FromAsset(string)"/>
             /// </summary>
             public static async Task<LottieComposition> FromAssetFileNameAsync(string fileName, CancellationToken cancellationToken = default(CancellationToken))
             {
-                Stream stream;
-                try
-                {
-                    stream = File.OpenRead(fileName);
-                }
-                catch (IOException e)
-                {
-                    throw new ArgumentException("Unable to find file " + fileName, e);
-                }
-
-                return await FromInputStreamAsync(stream, cancellationToken);
+                return (await LottieCompositionFactory.FromAsset(fileName, cancellationToken)).Value;
             }
 
             /// <summary>
-            /// Loads a composition from an arbitrary input stream.
-            /// <para>
-            /// ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
-            /// </para>
+            /// <see cref="LottieCompositionFactory.FromJsonInputStream(Stream)"/>
             /// </summary>
             public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return await FromJsonReaderAsync(new JsonReader(new StreamReader(stream, Encoding.UTF8)), cancellationToken);
+                return (await LottieCompositionFactory.FromJsonInputStream(stream, cancellationToken)).Value;
             }
 
             /// <summary>
-            /// Loads a composition from a json string. This is preferable to loading a JSONObject because 
-            /// internally, Lottie uses {@link JsonReader} so any original overhead to create the JSONObject 
-            /// is wasted. 
-            /// 
-            /// This is the preferred method to use when loading an animation from the network because you 
-            /// have the response body as a raw string already. No need to convert it to a JSONObject. 
-            /// 
-            /// If you do have a JSONObject, you can call: 
-            ///    `new JsonReader(new StringReader(jsonObject));` 
-            /// However, this is not recommended. 
+            /// <see cref="LottieCompositionFactory.FromJsonString(string)"/>
             /// </summary>
-            /// <param name="jsonString"></param>
-            /// <param name="cancellationToken"></param>
-            /// <returns></returns>
             public static async Task<LottieComposition> FromJsonStringAsync(string jsonString, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return await FromJsonReaderAsync(new JsonReader(new StringReader(jsonString)), cancellationToken);
+                return (await LottieCompositionFactory.FromJsonString(jsonString, cancellationToken)).Value;
             }
 
             /// <summary>
-            /// Loads a composition from a json reader.
-            /// ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
+            /// <see cref="LottieCompositionFactory.FromJsonReader(JsonReader)"/>
             /// </summary>
-            /// <param name="reader"></param>
-            /// <param name="cancellationToken"></param>
-            /// <returns></returns>
             public static async Task<LottieComposition> FromJsonReaderAsync(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var loader = new AsyncCompositionLoader(cancellationToken);
-                return await loader.Execute(reader);
+                return (await LottieCompositionFactory.FromJsonReader(reader, cancellationToken)).Value;
             }
 
+            /// <summary>
+            /// <see cref="LottieCompositionFactory.FromAssetSync(string)"/>
+            /// </summary>
             public static LottieComposition FromFileSync(string fileName)
             {
-                try
-                {
-                    return FromInputStreamSync(File.OpenRead(fileName));
-                }
-                catch (IOException e)
-                {
-                    throw new InvalidOperationException("Unable to open asset " + fileName, e);
-                }
+                return LottieCompositionFactory.FromAssetSync(fileName).Value;
             }
 
+            /// <summary>
+            /// <see cref="LottieCompositionFactory.FromJsonInputStreamSync(Stream)"/>
+            /// </summary>
             public static LottieComposition FromInputStreamSync(Stream stream)
             {
-                return FromInputStreamSync(stream, true);
+                return LottieCompositionFactory.FromJsonInputStreamSync(stream).Value;
             }
 
+            /// <summary>
+            /// <see cref="LottieCompositionFactory.FromJsonInputStreamSync(Stream, bool)"/>
+            /// </summary>
             public static LottieComposition FromInputStreamSync(Stream stream, bool close)
             {
-                LottieComposition composition;
-                try
-                {
-                    composition = FromJsonSync(new JsonReader(new StreamReader(stream, Encoding.UTF8)));
-                }
-                catch (IOException e)
-                {
-                    throw new InvalidOperationException("Unable to parse composition.", e);
-                }
-                finally
-                {
-                    if (close)
-                    {
-                        stream.CloseQuietly();
-                    }
-                }
-
-                return composition;
+                return LottieCompositionFactory.FromJsonInputStreamSync(stream, close).Value;
             }
 
+            /// <summary>
+            /// <see cref="LottieCompositionFactory.FromJsonSync(JsonReader)"/>
+            /// </summary>
             public static LottieComposition FromJsonSync(JsonReader reader)
             {
-                return LottieCompositionParser.Parse(reader);
+                return LottieCompositionFactory.FromJsonReaderSync(reader).Value;
             }
         }
     }

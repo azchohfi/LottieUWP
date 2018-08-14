@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using LottieUWP.Model;
@@ -30,15 +29,8 @@ namespace LottieUWP.Tests
             {
                 _lottieDrawable = new LottieDrawable();
 
-                try
-                {
-                    LottieComposition composition = LottieComposition.Factory.FromJsonSync(new JsonReader(new StringReader(Fixtures.Squares)));
-                    _lottieDrawable.SetComposition(composition);
-                }
-                catch (IOException e)
-                {
-                    throw new ArgumentException(e.Message, e);
-                }
+                LottieComposition composition = LottieCompositionFactory.FromJsonStringSync(Fixtures.Squares).Value;
+                _lottieDrawable.SetComposition(composition);
             }).AsTask();
 
             task.Wait();
