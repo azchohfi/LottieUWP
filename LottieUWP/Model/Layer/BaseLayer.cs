@@ -89,7 +89,8 @@ namespace LottieUWP.Model.Layer
                 _mask = new MaskKeyframeAnimation(layerModel.Masks);
                 foreach (var animation in _mask.MaskAnimations)
                 {
-                    AddAnimation(animation);
+                    // Don't call AddAnimation() because progress gets set manually in setProgress to 
+                    // properly handle time scale.
                     animation.ValueChanged += OnValueChanged;
                 }
                 foreach (var animation in _mask.OpacityAnimations)
@@ -408,6 +409,13 @@ namespace LottieUWP.Model.Layer
             {
                 // Time stretch should not be applied to the layer transform. 
                 Transform.Progress = value;
+                if (_mask != null)
+                {
+                    for (int i = 0; i < _mask.MaskAnimations.Count; i++)
+                    {
+                        _mask.MaskAnimations[i].Progress = value;
+                    }
+                }
                 if (LayerModel.TimeStretch != 0)
                 {
                     value /= LayerModel.TimeStretch;

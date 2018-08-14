@@ -375,6 +375,7 @@
     <Content Include="Assets\Tests\WeAcceptInlineImage.json" />
     <Content Include="Assets\Tests\EndFrame.json" />
     <Content Include="Assets\Tests\MiterLimit.json" />
+    <Content Include="Assets\Tests\TimeStretchMask.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
