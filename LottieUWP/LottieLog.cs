@@ -8,6 +8,11 @@ namespace LottieUWP
     {
         internal const string Tag = "LOTTIE";
 
+        /// <summary>
+        /// Set to ensure that we only log each message one time max.
+        /// </summary>
+        private static readonly List<string> _loggedMessages = new List<string>();
+
         private const int MaxDepth = 100;
         private static bool _traceEnabled;
         private static bool _shouldResetTrace;
@@ -16,9 +21,18 @@ namespace LottieUWP
         private static int _traceDepth;
         private static int _depthPastMaxDepth;
 
+        /// <summary>
+        /// Warn to Debug. Keeps track of messages so they are only logged once ever.
+        /// </summary>
+        /// <param name="msg"></param>
         public static void Warn(string msg)
         {
+            if (_loggedMessages.Contains(msg))
+            {
+                return;
+            }
             Debug.WriteLine(msg, Tag);
+            _loggedMessages.Add(msg);
         }
 
         private static readonly Queue<string> Msgs = new Queue<string>();

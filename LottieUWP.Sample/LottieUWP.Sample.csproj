@@ -379,6 +379,7 @@
     <Content Include="Assets\HamburgerArrow.json" />
     <Content Include="Assets\Tests\Airbnb.zip" />
     <Content Include="Assets\Tests\map.zip" />
+    <Content Include="Assets\Tests\DifferentPointsCount.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
