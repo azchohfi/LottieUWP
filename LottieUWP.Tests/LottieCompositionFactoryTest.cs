@@ -35,7 +35,7 @@ namespace LottieUWP.Tests
         [Fact]
         public void TestLoadJsonString()
         {
-            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonStringSync(_json);
+            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonStringSync(_json, "json");
             Assert.Null(result.Exception);
             Assert.NotNull(result.Value);
         }
@@ -43,7 +43,7 @@ namespace LottieUWP.Tests
         [Fact]
         public void TestLoadInvalidJsonString()
         {
-            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonStringSync(_notJson);
+            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonStringSync(_notJson, "not_json");
             Assert.NotNull(result.Exception);
             Assert.Null(result.Value);
         }
@@ -52,7 +52,7 @@ namespace LottieUWP.Tests
         public void TestLoadJsonReader()
         {
             JsonReader reader = new JsonReader(new StringReader(_json));
-            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonReaderSync(reader);
+            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonReaderSync(reader, "json");
             Assert.Null(result.Exception);
             Assert.NotNull(result.Value);
         }
@@ -61,7 +61,7 @@ namespace LottieUWP.Tests
         public void TestLoadInvalidJsonReader()
         {
             JsonReader reader = new JsonReader(new StringReader(_notJson));
-            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonReaderSync(reader);
+            LottieResult<LottieComposition> result = LottieCompositionFactory.FromJsonReaderSync(reader, "json");
             Assert.NotNull(result.Exception);
             Assert.Null(result.Value);
         }
@@ -69,7 +69,7 @@ namespace LottieUWP.Tests
         [Fact]
         public void TestLoadInvalidAssetName()
         {
-            LottieResult<LottieComposition> result = LottieCompositionFactory.FromAssetSync("square2.json");
+            LottieResult<LottieComposition> result = LottieCompositionFactory.FromAssetSync(null, "square2.json");
             Assert.Equal(typeof(FileNotFoundException), result.Exception.GetType());
             Assert.Null(result.Value);
         }
@@ -77,7 +77,7 @@ namespace LottieUWP.Tests
         [Fact]
         public void TestNonJsonAssetFile()
         {
-            LottieResult<LottieComposition> result = LottieCompositionFactory.FromAssetSync("not_json.txt");
+            LottieResult<LottieComposition> result = LottieCompositionFactory.FromAssetSync(null, "not_json.txt");
             Assert.NotNull(result.Exception);
             Assert.Null(result.Value);
         }

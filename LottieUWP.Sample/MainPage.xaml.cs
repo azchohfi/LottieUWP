@@ -111,7 +111,7 @@ namespace LottieUWP.Sample
 
             if (file != null)
             {
-                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync(), Encoding.UTF8)));
+                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync(), Encoding.UTF8)), file.Name);
                 LottieAnimationView.PlayAnimation();
             }
         }

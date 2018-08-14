@@ -122,7 +122,7 @@ namespace LottieUWP
             /// </summary>
             public static async Task<LottieComposition> FromInputStreamAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return (await LottieCompositionFactory.FromJsonInputStream(stream, cancellationToken)).Value;
+                return (await LottieCompositionFactory.FromJsonInputStream(stream, null, cancellationToken)).Value;
             }
 
             /// <summary>
@@ -130,7 +130,7 @@ namespace LottieUWP
             /// </summary>
             public static async Task<LottieComposition> FromJsonStringAsync(string jsonString, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return (await LottieCompositionFactory.FromJsonString(jsonString, cancellationToken)).Value;
+                return (await LottieCompositionFactory.FromJsonString(jsonString, null, cancellationToken)).Value;
             }
 
             /// <summary>
@@ -138,7 +138,7 @@ namespace LottieUWP
             /// </summary>
             public static async Task<LottieComposition> FromJsonReaderAsync(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
             {
-                return (await LottieCompositionFactory.FromJsonReader(reader, cancellationToken)).Value;
+                return (await LottieCompositionFactory.FromJsonReader(reader, null, cancellationToken)).Value;
             }
 
             /// <summary>
@@ -154,15 +154,20 @@ namespace LottieUWP
             /// </summary>
             public static LottieComposition FromInputStreamSync(Stream stream)
             {
-                return LottieCompositionFactory.FromJsonInputStreamSync(stream).Value;
+                return LottieCompositionFactory.FromJsonInputStreamSync(stream, null).Value;
             }
 
             /// <summary>
+            /// This will now auto-close the input stream!
             /// <see cref="LottieCompositionFactory.FromJsonInputStreamSync(Stream, bool)"/>
             /// </summary>
             public static LottieComposition FromInputStreamSync(Stream stream, bool close)
             {
-                return LottieCompositionFactory.FromJsonInputStreamSync(stream, close).Value;
+                if (close)
+                {
+                    Debug.WriteLine("Lottie now auto-closes input stream!", LottieLog.Tag);
+                }
+                return LottieCompositionFactory.FromJsonInputStreamSync(stream, null).Value;
             }
 
             /// <summary>
@@ -170,7 +175,7 @@ namespace LottieUWP
             /// </summary>
             public static LottieComposition FromJsonSync(JsonReader reader)
             {
-                return LottieCompositionFactory.FromJsonReaderSync(reader).Value;
+                return LottieCompositionFactory.FromJsonReaderSync(reader, null).Value;
             }
         }
     }

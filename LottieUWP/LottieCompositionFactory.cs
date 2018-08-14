@@ -1,4 +1,5 @@
-﻿using LottieUWP.Parser;
+﻿using LottieUWP.Model;
+using LottieUWP.Parser;
 using LottieUWP.Utils;
 using Microsoft.Graphics.Canvas;
 using System;
@@ -13,7 +14,7 @@ using Windows.Storage.Streams;
 namespace LottieUWP
 {
     /// <summary>
-    /// Helpers to create a LottieComposition.
+    /// Helpers to create or cache a LottieComposition.
     /// </summary>
     public static class LottieCompositionFactory
     {
@@ -33,7 +34,7 @@ namespace LottieUWP
         /// <summary>
         /// Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will 
         /// be parsed as json.
-        /// <see cref="FromZipStream(ZipInputStream)"/>
+        /// <see cref="FromZipStreamSync(CanvasDevice, ZipArchive, string)"/>
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
@@ -41,11 +42,12 @@ namespace LottieUWP
         {
             try
             {
+                string cacheKey = "asset_" + fileName;
                 if (fileName.EndsWith(".zip"))
                 {
-                    return FromZipStreamSync(device, new ZipArchive(File.OpenRead(fileName)));
+                    return FromZipStreamSync(device, new ZipArchive(File.OpenRead(fileName)), cacheKey);
                 }
-                return FromJsonInputStreamSync(File.OpenRead(fileName));
+                return FromJsonInputStreamSync(File.OpenRead(fileName), cacheKey);
             }
             catch (IOException e)
             {
@@ -55,41 +57,32 @@ namespace LottieUWP
 
         /// <summary>
         /// Auto-closes the stream.
-        /// <see cref="FromJsonInputStreamSync(InputStream, bool"/>
+        /// <see cref="FromJsonInputStreamSync(Stream, bool"/>
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<LottieResult<LottieComposition>> FromJsonInputStream(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromJsonInputStream(Stream stream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
-                return FromJsonInputStreamSync(stream);
+                return FromJsonInputStreamSync(stream, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Auto-closes the stream.
-        /// <see cref="FromJsonInputStreamSync(InputStream, bool)"/>
+        /// Return a LottieComposition for the given InputStream to json.
         /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        public static LottieResult<LottieComposition> FromJsonInputStreamSync(Stream stream)
+        public static LottieResult<LottieComposition> FromJsonInputStreamSync(Stream stream, string cacheKey)
         {
-            return FromJsonInputStreamSync(stream, true);
+            return FromJsonInputStreamSync(stream, cacheKey, true);
         }
 
-        /// <summary>
-        /// Return a LottieComposition for the given Stream to json.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="close"></param>
-        /// <returns></returns>
-        public static LottieResult<LottieComposition> FromJsonInputStreamSync(Stream stream, bool close)
+        private static LottieResult<LottieComposition> FromJsonInputStreamSync(Stream stream, string cacheKey, bool close)
         {
             try
             {
-                return FromJsonReaderSync(new JsonReader(new StreamReader(stream, Encoding.UTF8)));
+                return FromJsonReaderSync(new JsonReader(new StreamReader(stream, Encoding.UTF8)), cacheKey);
             }
             finally
             {
@@ -101,16 +94,16 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// <see cref="FromJsonStringSync(string)"/>
+        /// <see cref="FromJsonStringSync(string, string)"/>
         /// </summary>
         /// <param name="json"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<LottieResult<LottieComposition>> FromJsonString(string json, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromJsonString(string json, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
-                return FromJsonStringSync(json);
+                return FromJsonStringSync(json, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
         }
 
@@ -120,16 +113,16 @@ namespace LottieUWP
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static LottieResult<LottieComposition> FromJsonStringSync(string json)
+        public static LottieResult<LottieComposition> FromJsonStringSync(string json, string cacheKey)
         {
-            return FromJsonReaderSync(new JsonReader(new StringReader(json)));
+            return FromJsonReaderSync(new JsonReader(new StringReader(json)), cacheKey);
         }
 
-        public static async Task<LottieResult<LottieComposition>> FromJsonReader(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromJsonReader(JsonReader reader, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
-                return FromJsonReaderSync(reader);
+                return FromJsonReaderSync(reader, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
         }
 
@@ -138,11 +131,13 @@ namespace LottieUWP
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static LottieResult<LottieComposition> FromJsonReaderSync(JsonReader reader)
+        public static LottieResult<LottieComposition> FromJsonReaderSync(JsonReader reader, string cacheKey)
         {
             try
             {
-                return new LottieResult<LottieComposition>(LottieCompositionParser.Parse(reader));
+                LottieComposition composition = LottieCompositionParser.Parse(reader);
+                LottieCompositionCache.Instance.Put(cacheKey, composition);
+                return new LottieResult<LottieComposition>(composition);
             }
             catch (Exception e)
             {
@@ -150,11 +145,11 @@ namespace LottieUWP
             }
         }
 
-        public static async Task<LottieResult<LottieComposition>> FromZipStream(CanvasDevice device, ZipArchive inputStream, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<LottieResult<LottieComposition>> FromZipStream(CanvasDevice device, ZipArchive inputStream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await Task.Run(() =>
             {
-                return FromZipStreamSync(device, inputStream);
+                return FromZipStreamSync(device, inputStream, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
         }
 
@@ -165,11 +160,11 @@ namespace LottieUWP
          * 
          * It will also close the input stream. 
          */
-        private static LottieResult<LottieComposition> FromZipStreamSync(CanvasDevice device, ZipArchive inputStream)
+        private static LottieResult<LottieComposition> FromZipStreamSync(CanvasDevice device, ZipArchive inputStream, string cacheKey)
         {
             try
             {
-                return FromZipStreamSyncInternal(device, inputStream);
+                return FromZipStreamSyncInternal(device, inputStream, cacheKey);
             }
             finally
             {
@@ -177,7 +172,7 @@ namespace LottieUWP
             }
         }
 
-        private static LottieResult<LottieComposition> FromZipStreamSyncInternal(CanvasDevice device, ZipArchive inputStream)
+        private static LottieResult<LottieComposition> FromZipStreamSyncInternal(CanvasDevice device, ZipArchive inputStream, string cacheKey)
         {
             LottieComposition composition = null;
             Dictionary<string, CanvasBitmap> images = new Dictionary<string, CanvasBitmap>();
@@ -192,7 +187,7 @@ namespace LottieUWP
                     }
                     else if (entry.FullName.Contains(".json"))
                     {
-                        composition = FromJsonInputStreamSync(entry.Open(), false).Value;
+                        composition = FromJsonInputStreamSync(entry.Open(), cacheKey, false).Value;
                     }
                     else if (entry.FullName.Contains(".png"))
                     {
@@ -240,6 +235,7 @@ namespace LottieUWP
                 }
             }
 
+            LottieCompositionCache.Instance.Put(cacheKey, composition);
             return new LottieResult<LottieComposition>(composition);
         }
 

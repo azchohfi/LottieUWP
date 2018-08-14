@@ -26,35 +26,35 @@ namespace LottieUWP.Tests
         [Fact]
         public void TestStrongAsset()
         {
-            cache.Put("foo", composition, LottieAnimationView.CacheStrategy.Strong);
+            cache.Put("foo", composition);
             Assert.Equal(composition, cache.Get("foo"));
         }
 
         [Fact]
         public void TestWeakAsset()
         {
-            cache.Put("foo", composition, LottieAnimationView.CacheStrategy.Weak);
+            cache.Put("foo", composition);
             Assert.Equal(composition, cache.Get("foo"));
         }
 
         [Fact]
         public void TestStrongRawRes()
         {
-            cache.Put(123, composition, LottieAnimationView.CacheStrategy.Strong);
+            cache.Put(123, composition);
             Assert.Equal(composition, cache.GetRawRes(123));
         }
 
         [Fact]
         public void TestWeakRawRes()
         {
-            cache.Put(123, composition, LottieAnimationView.CacheStrategy.Weak);
+            cache.Put(123, composition);
             Assert.Equal(composition, cache.GetRawRes(123));
         }
 
         [Fact]
         public void TestStringAndWeakRawRes()
         {
-            cache.Put(123, composition, LottieAnimationView.CacheStrategy.Weak);
+            cache.Put(123, composition);
             Assert.Equal(composition, cache.GetRawRes(123));
         }
     }

@@ -59,12 +59,9 @@ namespace LottieUWP
         {
             _animator.Update += (sender, e) =>
             {
-                lock (this)
+                if (_compositionLayer != null)
                 {
-                    if (_compositionLayer != null)
-                    {
-                        _compositionLayer.Progress = _animator.AnimatedValueAbsolute;
-                    }
+                    _compositionLayer.Progress = _animator.AnimatedValueAbsolute;
                 }
             };
             Loaded += UserControl_Loaded;
@@ -889,7 +886,7 @@ namespace LottieUWP
         {
             get
             {
-                if (_imageAssetManager != null && false)//!_imageAssetManager.hasSameContext(Context))
+                if (_imageAssetManager != null && !_imageAssetManager.HasSameContext(_canvasControl.Device))
                 {
                     _imageAssetManager.RecycleBitmaps();
                     _imageAssetManager = null;
@@ -897,7 +894,12 @@ namespace LottieUWP
 
                 if (_imageAssetManager == null)
                 {
-                    _imageAssetManager = new ImageAssetManager(ImageAssetsFolder, _imageAssetDelegate, _composition.Images);
+                    var clonedDict = new Dictionary<string, LottieImageAsset>();
+                    foreach (var entry in _composition.Images)
+                    {
+                        clonedDict.Add(entry.Key, entry.Value);
+                    }
+                    _imageAssetManager = new ImageAssetManager(ImageAssetsFolder, _imageAssetDelegate, clonedDict, _canvasControl.Device);
                 }
 
                 return _imageAssetManager;

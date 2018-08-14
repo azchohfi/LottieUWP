@@ -29,7 +29,7 @@ namespace LottieUWP.Tests
             {
                 _lottieDrawable = new LottieDrawable();
 
-                LottieComposition composition = LottieCompositionFactory.FromJsonStringSync(Fixtures.Squares).Value;
+                LottieComposition composition = LottieCompositionFactory.FromJsonStringSync(Fixtures.Squares, "squares").Value;
                 _lottieDrawable.SetComposition(composition);
             }).AsTask();
 

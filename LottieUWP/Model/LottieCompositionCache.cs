@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LottieUWP.Model
+﻿namespace LottieUWP.Model
 {
     internal class LottieCompositionCache
     {
+        //private static readonly int _cacheSizeMB = 10;
+        private static readonly int _cacheSizeCount = 10;
+
         public static LottieCompositionCache Instance { get; } = new LottieCompositionCache();
 
-        private readonly Dictionary<string, LottieComposition> _strongRefCache = new Dictionary<string, LottieComposition>();
-        private readonly Dictionary<string, WeakReference<LottieComposition>> _weakRefCache = new Dictionary<string, WeakReference<LottieComposition>>();
+        private readonly LruCache<string, LottieComposition> _cache = new LruCache<string, LottieComposition>(_cacheSizeCount);//1024 * 1024 * _cacheSizeMB);
 
         internal LottieCompositionCache()
         {
@@ -21,34 +20,21 @@ namespace LottieUWP.Model
 
         public LottieComposition Get(string assetName)
         {
-            if (_strongRefCache.ContainsKey(assetName))
-            {
-                return _strongRefCache[assetName];
-            }
-            else if (_weakRefCache.ContainsKey(assetName))
-            {
-                WeakReference<LottieComposition> compRef = _weakRefCache[assetName];
-                compRef.TryGetTarget(out var target);
-                return target;
-            }
-            return null;
+            return _cache.Get(assetName);
         }
 
-        public void Put(int rawRes, LottieComposition composition, LottieAnimationView.CacheStrategy cacheStrategy)
+        public void Put(int rawRes, LottieComposition composition)
         {
-            Put(rawRes.ToString(), composition, cacheStrategy);
+            Put(rawRes.ToString(), composition);
         }
 
-        public void Put(string cacheKey, LottieComposition composition, LottieAnimationView.CacheStrategy cacheStrategy)
+        public void Put(string cacheKey, LottieComposition composition)
         {
-            if (cacheStrategy == LottieAnimationView.CacheStrategy.Strong)
+            if (cacheKey == null)
             {
-                _strongRefCache[cacheKey] = composition;
+                return;
             }
-            else if (cacheStrategy == LottieAnimationView.CacheStrategy.Weak)
-            {
-                _weakRefCache[cacheKey] = new WeakReference<LottieComposition>(composition);
-            }
+            _cache.Put(cacheKey, composition);
         }
     }
 }

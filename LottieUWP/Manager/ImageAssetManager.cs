@@ -13,10 +13,12 @@ namespace LottieUWP.Manager
         private readonly string _imagesFolder;
         private IImageAssetDelegate _delegate;
         private readonly Dictionary<string, LottieImageAsset> _imageAssets;
+        private readonly CanvasDevice _context;
 
-        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, Dictionary<string, LottieImageAsset> imageAssets)
+        internal ImageAssetManager(string imagesFolder, IImageAssetDelegate @delegate, Dictionary<string, LottieImageAsset> imageAssets, CanvasDevice context)
         {
             _imagesFolder = imagesFolder;
+            _context = context;
             if (!string.IsNullOrEmpty(imagesFolder) && _imagesFolder[_imagesFolder.Length - 1] != '/')
             {
                 _imagesFolder += '/';
@@ -155,9 +157,15 @@ namespace LottieUWP.Manager
                 {
                     var entry = _imageAssets.ElementAt(i);
                     entry.Value.Bitmap?.Dispose();
+                    entry.Value.Bitmap = null;
                     _imageAssets.Remove(entry.Key);
                 }
             }
+        }
+
+        public bool HasSameContext(CanvasDevice context)
+        {
+            return context == null && _context == null || _context.Equals(context);
         }
 
         private CanvasBitmap PutBitmap(string key, CanvasBitmap bitmap)

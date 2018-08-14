@@ -118,6 +118,7 @@
     <Compile Include="LottieCompositionFactory.cs" />
     <Compile Include="LottieResult.cs" />
     <Compile Include="Model\LottieCompositionCache.cs" />
+    <Compile Include="Model\LruCache.cs" />
     <Compile Include="Utils\BaseLottieAnimator.cs" />
     <Compile Include="Value\Keyframe.cs" />
     <Compile Include="Animation\Keyframe\BaseKeyframeAnimation.cs" />
