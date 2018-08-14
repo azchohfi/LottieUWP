@@ -383,6 +383,7 @@
     <Content Include="Assets\Tests\Airbnb.zip" />
     <Content Include="Assets\Tests\map.zip" />
     <Content Include="Assets\Tests\DifferentPointsCount.json" />
+    <Content Include="Assets\heart.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

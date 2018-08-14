@@ -16,9 +16,19 @@ namespace LottieUWP
 {
     /// <summary>
     /// Helpers to create or cache a LottieComposition.
+    /// All factory methods take a cache key. The animation will be stored in an LRU cache for future use.
+    /// In-progress tasks will also be held so they can be returned for subsequent requests for the same
+    /// animation prior to the cache being populated.
     /// </summary>
     public static class LottieCompositionFactory
     {
+        /// <summary>
+        /// Keep a map of cache keys to in-progress tasks and return them for new requests. 
+        /// Without this, simultaneous requests to parse a composition will trigger multiple parallel 
+        /// parse tasks prior to the cache getting populated. 
+        /// </summary>
+        private static readonly Dictionary<string, Task<LottieResult<LottieComposition>>> _taskCache = new Dictionary<string, Task<LottieResult<LottieComposition>>>();
+
         static LottieCompositionFactory()
         {
             Utils.Utils.DpScale();
@@ -49,7 +59,7 @@ namespace LottieUWP
         /// <returns></returns>
         public static async Task<LottieResult<LottieComposition>> FromAsset(CanvasDevice device, string fileName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await Task.Run(() =>
+            return await CacheAsync(fileName, () =>
             {
                 return FromAssetSync(device, fileName);
             }, cancellationToken).ConfigureAwait(false);
@@ -89,7 +99,7 @@ namespace LottieUWP
         /// <returns></returns>
         public static async Task<LottieResult<LottieComposition>> FromJsonInputStreamAsync(Stream stream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await Task.Run(() =>
+            return await CacheAsync(cacheKey, () =>
             {
                 return FromJsonInputStreamSync(stream, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
@@ -126,7 +136,7 @@ namespace LottieUWP
         /// <returns></returns>
         public static async Task<LottieResult<LottieComposition>> FromJsonString(string json, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await Task.Run(() =>
+            return await CacheAsync(cacheKey, () =>
             {
                 return FromJsonStringSync(json, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
@@ -145,7 +155,7 @@ namespace LottieUWP
 
         public static async Task<LottieResult<LottieComposition>> FromJsonReader(JsonReader reader, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await Task.Run(() =>
+            return await CacheAsync(cacheKey, () =>
             {
                 return FromJsonReaderSync(reader, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
@@ -172,7 +182,7 @@ namespace LottieUWP
 
         public static async Task<LottieResult<LottieComposition>> FromZipStreamAsync(CanvasDevice device, ZipArchive inputStream, string cacheKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await Task.Run(() =>
+            return await CacheAsync(cacheKey, () =>
             {
                 return FromZipStreamSync(device, inputStream, cacheKey);
             }, cancellationToken).ConfigureAwait(false);
@@ -284,6 +294,34 @@ namespace LottieUWP
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// First, check to see if there are any in-progress tasks associated with the cache key and return it if there is. 
+        /// If not, create a new task for the callable. 
+        /// Then, add the new task to the task cache and set up listeners to it gets cleared when done. 
+        /// </summary>
+        private static async Task<LottieResult<LottieComposition>> CacheAsync(string cacheKey, Func<LottieResult<LottieComposition>> callable, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (_taskCache.ContainsKey(cacheKey))
+            {
+                return await _taskCache[cacheKey].AsAsyncOperation().AsTask(cancellationToken);
+            }
+
+            var task = Task.Run(callable, cancellationToken);
+
+            try
+            {
+                _taskCache[cacheKey] = task;
+                await task.AsAsyncOperation().AsTask(cancellationToken);
+                _taskCache.Remove(cacheKey);
+            }
+            catch
+            {
+                _taskCache.Remove(cacheKey);
+            }
+
+            return task.Result;
         }
     }
 }
