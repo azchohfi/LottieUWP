@@ -88,6 +88,24 @@ namespace LottieUWP
                 await lottieAnimationView.SetAnimationAsync((string)e.NewValue);
             }
         }
+        
+        public string Url
+        {
+            get { return (string)GetValue(UrlProperty); }
+            set { SetValue(UrlProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Url.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UrlProperty =
+            DependencyProperty.Register("Url", typeof(string), typeof(LottieAnimationView), new PropertyMetadata(null, UrlPropertyChangedCallback));
+
+        private static async void UrlPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is LottieAnimationView lottieAnimationView)
+            {
+                await lottieAnimationView.SetAnimationFromUrlAsync((string)e.NewValue);
+            }
+        }
 
         public bool AutoPlay
         {
@@ -234,9 +252,16 @@ namespace LottieUWP
         {
             _lottieDrawable = new LottieDrawable();
 
-            if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled && !string.IsNullOrEmpty(FileName))
+            if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled)
             {
-                SetAnimationAsync(FileName).RunSynchronously();
+                if (!string.IsNullOrEmpty(FileName))
+                {
+                    SetAnimationAsync(FileName).RunSynchronously();
+                }
+                else if (!string.IsNullOrEmpty(Url))
+                {
+                    SetAnimationFromUrlAsync(Url).RunSynchronously();
+                }
             }
             if (AutoPlay)
             {
@@ -515,6 +540,43 @@ namespace LottieUWP
             try
             {
                 var compositionResult = await LottieCompositionFactory.FromJsonReader(reader, cacheKey, cancellationTokenSource.Token);
+
+                if (compositionResult.Value != null)
+                {
+                    Composition = compositionResult.Value;
+                }
+                _compositionTaskCTS = null;
+            }
+            catch (TaskCanceledException e)
+            {
+                Debug.WriteLine(e);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("Unable to parse composition", e);
+            }
+        }
+
+        /// <summary>
+        /// Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them togethre and lottie
+        /// will unzip and link the images automatically.
+        /// Under the hood, Lottie uses HttpClient. It will download the file
+        /// to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
+        /// can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public async Task SetAnimationFromUrlAsync(string url)
+        {
+            ClearComposition();
+            CancelLoaderTask();
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            _compositionTaskCTS = cancellationTokenSource;
+
+            try
+            {
+                var compositionResult = await LottieCompositionFactory.FromUrlAsync(Device, url, cancellationTokenSource.Token);
 
                 if (compositionResult.Value != null)
                 {

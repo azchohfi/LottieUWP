@@ -112,7 +112,10 @@ namespace LottieUWP.Sample
 
             if (file != null)
             {
-                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync(), Encoding.UTF8)), file.Name);
+                using (var stream = await file.OpenStreamForReadAsync())
+                {
+                    await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(stream, Encoding.UTF8)), file.Name);
+                }
                 LottieAnimationView.PlayAnimation();
             }
         }
@@ -136,9 +139,8 @@ namespace LottieUWP.Sample
             if(result == ContentDialogResult.Primary)
             {
                 // ex: https://www.lottiefiles.com/download/427
-                var compositionResult = await LottieCompositionFactory.FromUrlAsync(LottieAnimationView.Device, inputDialog.Text);
+                await LottieAnimationView.SetAnimationFromUrlAsync(inputDialog.Text);
 
-                LottieAnimationView.Composition = compositionResult.Value;
                 LottieAnimationView.PlayAnimation();
             }
         }

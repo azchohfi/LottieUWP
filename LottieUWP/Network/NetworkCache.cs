@@ -82,8 +82,10 @@ namespace LottieUWP.Network
             var file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting).AsTask(cancellationToken);
             try
             {
-                var output = await file.OpenStreamForWriteAsync().AsAsyncOperation().AsTask(cancellationToken);
-                await stream.CopyToAsync(output).AsAsyncAction().AsTask(cancellationToken);
+                using (var output = await file.OpenStreamForWriteAsync().AsAsyncOperation().AsTask(cancellationToken))
+                {
+                    await stream.CopyToAsync(output).AsAsyncAction().AsTask(cancellationToken);
+                }
             }
             finally
             {

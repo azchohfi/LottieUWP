@@ -55,19 +55,21 @@ namespace LottieUWP.Network
             }
 
             var extension = cacheResult.Value.Key;
-            var inputStream = cacheResult.Value.Value;
-            LottieResult<LottieComposition> result;
-            if (extension == FileExtension.Zip)
+            using (var inputStream = cacheResult.Value.Value)
             {
-                result = await LottieCompositionFactory.FromZipStreamAsync(_device, new ZipArchive(inputStream), _url);
-            }
-            else
-            {
-                result = await LottieCompositionFactory.FromJsonInputStreamAsync(inputStream, _url, cancellationToken);
-            }
-            if (result.Value != null)
-            {
-                return result.Value;
+                LottieResult<LottieComposition> result;
+                if (extension == FileExtension.Zip)
+                {
+                    result = await LottieCompositionFactory.FromZipStreamAsync(_device, new ZipArchive(inputStream), _url);
+                }
+                else
+                {
+                    result = await LottieCompositionFactory.FromJsonInputStreamAsync(inputStream, _url, cancellationToken);
+                }
+                if (result.Value != null)
+                {
+                    return result.Value;
+                }
             }
             return null;
         }
@@ -78,7 +80,7 @@ namespace LottieUWP.Network
             {
                 return await FetchFromNetworkInternalAsync(cancellationToken);
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 return new LottieResult<LottieComposition>(e);
             }
@@ -105,14 +107,20 @@ namespace LottieUWP.Network
                             Debug.WriteLine("Handling zip response.", LottieLog.Tag);
                             extension = FileExtension.Zip;
                             file = await _networkCache.WriteTempCacheFileAsync(await response.Content.ReadAsStreamAsync().AsAsyncOperation().AsTask(cancellationToken), extension, cancellationToken);
-                            result = await LottieCompositionFactory.FromZipStreamAsync(_device, new ZipArchive(await file.OpenStreamForReadAsync().AsAsyncOperation().AsTask(cancellationToken)), _url);
+                            using (var stream = await file.OpenStreamForReadAsync().AsAsyncOperation().AsTask(cancellationToken))
+                            {
+                                result = await LottieCompositionFactory.FromZipStreamAsync(_device, new ZipArchive(stream), _url);
+                            }
                             break;
                         case "application/json":
                         default:
                             Debug.WriteLine("Received json response.", LottieLog.Tag);
                             extension = FileExtension.Json;
                             file = await _networkCache.WriteTempCacheFileAsync(await response.Content.ReadAsStreamAsync().AsAsyncOperation().AsTask(cancellationToken), extension, cancellationToken);
-                            result = await LottieCompositionFactory.FromJsonInputStreamAsync(await file.OpenStreamForReadAsync().AsAsyncOperation().AsTask(cancellationToken), _url);
+                            using (var stream = await file.OpenStreamForReadAsync().AsAsyncOperation().AsTask(cancellationToken))
+                            {
+                                result = await LottieCompositionFactory.FromJsonInputStreamAsync(stream, _url);
+                            }
                             break;
                     }
 
