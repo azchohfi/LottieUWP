@@ -46,13 +46,15 @@ namespace LottieUWP.Model.Content
             }
             _closed = shapeData1.Closed || shapeData2.Closed;
 
-            if (_curves.Count > 0 && _curves.Count != shapeData1.Curves.Count && _curves.Count != shapeData2.Curves.Count)
+            if (shapeData1.Curves.Count != shapeData2.Curves.Count)
             {
-                throw new InvalidOperationException("Curves must have the same number of control points. This: " + Curves.Count + "\tShape 1: " + shapeData1.Curves.Count + "\tShape 2: " + shapeData2.Curves.Count);
+                LottieLog.Warn($"Curves must have the same number of control points. Shape 1: {shapeData1.Curves.Count}\tShape 2: {shapeData2.Curves.Count}");
             }
+
             if (_curves.Count == 0)
             {
-                for (var i = shapeData1.Curves.Count - 1; i >= 0; i--)
+                int points = Math.Min(shapeData1.Curves.Count, shapeData2.Curves.Count);
+                for (int i = 0; i < points; i++)
                 {
                     _curves.Add(new CubicCurveData());
                 }

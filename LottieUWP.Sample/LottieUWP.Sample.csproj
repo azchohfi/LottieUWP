@@ -96,6 +96,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AssetUtils.cs" />
+    <Compile Include="InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -107,7 +110,7 @@
     </AppxManifest>
     <Content Include="Assets\9squares-AlBoardman.json" />
     <Content Include="Assets\EmptyState.json" />
-    <Content Include="Assets\HamburgerArrow.json" />
+    <Content Include="Assets\hamburger_arrow.json" />
     <Content Include="Assets\Logo\LogoSmall.json" />
     <Content Include="Assets\lottiefiles.com - Animated Graph.json" />
     <Content Include="Assets\lottiefiles.com - ATM.json" />
@@ -374,6 +377,13 @@
     <Content Include="Assets\Tests\StartEndFrame.json" />
     <Content Include="Assets\Tests\WeAcceptInlineImage.json" />
     <Content Include="Assets\Tests\EndFrame.json" />
+    <Content Include="Assets\Tests\MiterLimit.json" />
+    <Content Include="Assets\Tests\TimeStretchMask.json" />
+    <Content Include="Assets\HamburgerArrow.json" />
+    <Content Include="Assets\Tests\Airbnb.zip" />
+    <Content Include="Assets\Tests\map.zip" />
+    <Content Include="Assets\Tests\DifferentPointsCount.json" />
+    <Content Include="Assets\heart.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -392,6 +402,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="InputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -399,7 +413,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.8</Version>
+      <Version>6.1.7</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

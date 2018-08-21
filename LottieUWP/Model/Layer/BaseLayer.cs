@@ -13,8 +13,6 @@ namespace LottieUWP.Model.Layer
     {
         private static readonly int SaveFlags = BitmapCanvas.ClipSaveFlag | BitmapCanvas.ClipToLayerSaveFlag | BitmapCanvas.MatrixSaveFlag;
 
-        private static bool _hasLoggedIntersectMasks = false;
-
         internal static BaseLayer ForModel(Layer layerModel, LottieDrawable drawable, LottieComposition composition)
         {
             switch (layerModel.GetLayerType())
@@ -89,7 +87,8 @@ namespace LottieUWP.Model.Layer
                 _mask = new MaskKeyframeAnimation(layerModel.Masks);
                 foreach (var animation in _mask.MaskAnimations)
                 {
-                    AddAnimation(animation);
+                    // Don't call AddAnimation() because progress gets set manually in setProgress to 
+                    // properly handle time scale.
                     animation.ValueChanged += OnValueChanged;
                 }
                 foreach (var animation in _mask.OpacityAnimations)
@@ -326,12 +325,6 @@ namespace LottieUWP.Model.Layer
                     paint = _subtractMaskPaint;
                     break;
                 case Mask.MaskMode.MaskModeIntersect:
-                    if (!_hasLoggedIntersectMasks)
-                    {
-                        Debug.WriteLine("Animation contains intersect masks. They are not supported but will be " +
-                                 "treated like add masks.", LottieLog.Tag);
-                        _hasLoggedIntersectMasks = true;
-                    }
                     goto case Mask.MaskMode.MaskModeAdd;
                 case Mask.MaskMode.MaskModeAdd:
                 default:
@@ -408,6 +401,13 @@ namespace LottieUWP.Model.Layer
             {
                 // Time stretch should not be applied to the layer transform. 
                 Transform.Progress = value;
+                if (_mask != null)
+                {
+                    for (int i = 0; i < _mask.MaskAnimations.Count; i++)
+                    {
+                        _mask.MaskAnimations[i].Progress = value;
+                    }
+                }
                 if (LayerModel.TimeStretch != 0)
                 {
                     value /= LayerModel.TimeStretch;

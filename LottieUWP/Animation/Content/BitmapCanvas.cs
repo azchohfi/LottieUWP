@@ -124,6 +124,7 @@ namespace LottieUWP.Animation.Content
                 DashCap = paint.StrokeCap,
                 EndCap = paint.StrokeCap,
                 LineJoin = paint.StrokeJoin,
+                MiterLimit = paint.StrokeMiter
             };
             paint.PathEffect?.Apply(style, paint);
             return style;
@@ -282,7 +283,7 @@ namespace LottieUWP.Animation.Content
                 UpdateDrawingSessionWithFlags(renderTargetSave.PaintFlags);
                 CurrentDrawingSession.Transform = GetCurrentTransform();
 
-                var canvasComposite = CanvasComposite.SourceAtop;
+                var canvasComposite = CanvasComposite.SourceOver;
                 if (renderTargetSave.PaintXfermode != null)
                 {
                     canvasComposite = PorterDuff.ToCanvasComposite(renderTargetSave.PaintXfermode.Mode);

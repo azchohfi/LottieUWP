@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using Windows.Storage.Pickers;
 using Windows.UI;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,7 +30,7 @@ namespace LottieUWP.Sample
             var localizationDirectory = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync(@"Assets");
             var basePathLength = localizationDirectory.Path.Length - "Assets".Length;
 
-            foreach (var file in await AssetUtils.GetJsonAssets())
+            foreach (var file in await AssetUtils.GetAssets())
             {
                 Files.Add(file.Path.Substring(basePathLength, file.Path.Length - basePathLength));
             }
@@ -44,7 +46,8 @@ namespace LottieUWP.Sample
             {
                 var assetsLength = "Assets\\".Length;
                 var fileName = selectedItem.Substring(assetsLength, selectedItem.Length - assetsLength);
-                fileName = fileName.Substring(0, fileName.Length - ".json".Length);
+                var extensionLength = (fileName.EndsWith(".json") ? ".json" : ".zip").Length;
+                fileName = fileName.Substring(0, fileName.Length - extensionLength);
 
                 LottieAnimationView.ImageAssetsFolder = $"Assets/Images/{fileName}";
                 await LottieAnimationView.SetAnimationAsync(selectedItem);
@@ -104,11 +107,15 @@ namespace LottieUWP.Sample
         {
             var filePicker = new FileOpenPicker();
             filePicker.FileTypeFilter.Add(".json");
+            filePicker.FileTypeFilter.Add(".zip");
             var file = await filePicker.PickSingleFileAsync();
 
             if (file != null)
             {
-                await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(await file.OpenStreamForReadAsync())));
+                using (var stream = await file.OpenStreamForReadAsync())
+                {
+                    await LottieAnimationView.SetAnimationAsync(new JsonReader(new StreamReader(stream, Encoding.UTF8)), file.Name);
+                }
                 LottieAnimationView.PlayAnimation();
             }
         }
@@ -122,6 +129,19 @@ namespace LottieUWP.Sample
             else
             {
                 LottieAnimationView.ResumeAnimation();
+            }
+        }
+
+        private async void OpenUrlButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var inputDialog = new InputDialog();
+            var result = await inputDialog.ShowAsync();
+            if(result == ContentDialogResult.Primary)
+            {
+                // ex: https://www.lottiefiles.com/download/427
+                await LottieAnimationView.SetAnimationFromUrlAsync(inputDialog.Text);
+
+                LottieAnimationView.PlayAnimation();
             }
         }
     }

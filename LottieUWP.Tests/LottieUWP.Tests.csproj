@@ -94,6 +94,8 @@
   <ItemGroup>
     <Compile Include="Fixtures.cs" />
     <Compile Include="KeyPathTest.cs" />
+    <Compile Include="LottieCompositionCacheTest.cs" />
+    <Compile Include="LottieCompositionFactoryTest.cs" />
     <Compile Include="LottieDrawableTest.cs" />
     <Compile Include="LottieValueAnimatorUnitTest.cs" />
     <Compile Include="MeanCalculatorTest.cs" />
@@ -130,7 +132,7 @@
       <Version>15.7.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.0.8</Version>
+      <Version>6.1.7</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.8.3</Version>

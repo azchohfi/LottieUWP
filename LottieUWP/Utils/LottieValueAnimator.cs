@@ -224,7 +224,7 @@ namespace LottieUWP.Utils
 
         public void SetMinAndMaxFrames(float minFrame, float maxFrame)
         {
-            float compositionMinFrame = _composition == null ? float.MinValue : _composition.StartFrame;
+            float compositionMinFrame = _composition == null ? -float.MaxValue : _composition.StartFrame;
             float compositionMaxFrame = _composition == null ? float.MaxValue : _composition.EndFrame;
             _minFrame = MiscUtils.Clamp(minFrame, compositionMinFrame, compositionMaxFrame);
             _maxFrame = MiscUtils.Clamp(maxFrame, compositionMinFrame, compositionMaxFrame);

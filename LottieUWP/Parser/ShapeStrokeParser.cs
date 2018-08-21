@@ -16,6 +16,7 @@ namespace LottieUWP.Parser
             ShapeStroke.LineCapType capType = ShapeStroke.LineCapType.Unknown;
             ShapeStroke.LineJoinType joinType = ShapeStroke.LineJoinType.Round;
             AnimatableFloatValue offset = null;
+            float miterLimit = 0f;
 
             List<AnimatableFloatValue> lineDashPattern = new List<AnimatableFloatValue>();
 
@@ -40,6 +41,9 @@ namespace LottieUWP.Parser
                         break;
                     case "lj":
                         joinType = (ShapeStroke.LineJoinType)(reader.NextInt() - 1);
+                        break;
+                    case "ml":
+                        miterLimit = reader.NextDouble();
                         break;
                     case "d":
                         reader.BeginArray();
@@ -91,7 +95,7 @@ namespace LottieUWP.Parser
                 }
             }
 
-            return new ShapeStroke(name, offset, lineDashPattern, color, opacity, width, capType, joinType);
+            return new ShapeStroke(name, offset, lineDashPattern, color, opacity, width, capType, joinType, miterLimit);
         }
     }
 }

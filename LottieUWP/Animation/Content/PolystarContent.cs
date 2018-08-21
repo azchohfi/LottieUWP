@@ -75,8 +75,8 @@ namespace LottieUWP.Animation.Content
             _outerRoundednessAnimation.ValueChanged += OnValueChanged;
             if (_type == PolystarShape.Type.Star)
             {
-                _outerRadiusAnimation.ValueChanged += OnValueChanged;
-                _outerRoundednessAnimation.ValueChanged += OnValueChanged;
+                _innerRadiusAnimation.ValueChanged += OnValueChanged;
+                _innerRoundednessAnimation.ValueChanged += OnValueChanged;
             }
         }
 

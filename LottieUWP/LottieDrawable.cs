@@ -220,7 +220,11 @@ namespace LottieUWP
             _imageAssetManager?.RecycleBitmaps();
         }
 
-        /// <returns> True if the composition is different from the previously set composition, false otherwise. </returns>
+        /// <summary>
+        /// Create a composition with <see cref="LottieCompositionFactory"/>
+        /// </summary>
+        /// <param name="composition">The new composition.</param>
+        /// <returns>True if the composition is different from the previously set composition, false otherwise.</returns>
         public virtual bool SetComposition(LottieComposition composition)
         {
             //if (Callback == null) // TODO: needed?
@@ -437,7 +441,16 @@ namespace LottieUWP
         /// </summary>
         public float MinFrame
         {
-            set => _animator.MinFrame = value;
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(c => MinFrame = value);
+                    return;
+                }
+                _animator.MinFrame = value;
+            }
+
             get => _animator.MinFrame;
         }
 
@@ -465,7 +478,16 @@ namespace LottieUWP
         /// </summary>
         public float MaxFrame
         {
-            set => _animator.MaxFrame = value;
+            set
+            {
+                if (_composition == null)
+                {
+                    _lazyCompositionTasks.Add(c => MaxFrame = value);
+                    return;
+                }
+                _animator.MaxFrame = value;
+            }
+
             get => _animator.MaxFrame;
         }
 
@@ -501,6 +523,11 @@ namespace LottieUWP
         /// <param name="maxFrame"></param>
         public void SetMinAndMaxFrame(float minFrame, float maxFrame)
         {
+            if (_composition == null)
+            {
+                _lazyCompositionTasks.Add(c => SetMinAndMaxFrame(minFrame, maxFrame));
+                return;
+            }
             _animator.SetMinAndMaxFrames(minFrame, maxFrame);
         }
 
@@ -896,7 +923,7 @@ namespace LottieUWP
         {
             get
             {
-                if (_imageAssetManager != null && false)//!_imageAssetManager.hasSameContext(Context))
+                if (_imageAssetManager != null && !_imageAssetManager.HasSameContext(_canvasControl.Device))
                 {
                     _imageAssetManager.RecycleBitmaps();
                     _imageAssetManager = null;
@@ -904,12 +931,19 @@ namespace LottieUWP
 
                 if (_imageAssetManager == null)
                 {
-                    _imageAssetManager = new ImageAssetManager(ImageAssetsFolder, _imageAssetDelegate, _composition.Images);
+                    var clonedDict = new Dictionary<string, LottieImageAsset>();
+                    foreach (var entry in _composition.Images)
+                    {
+                        clonedDict.Add(entry.Key, entry.Value);
+                    }
+                    _imageAssetManager = new ImageAssetManager(ImageAssetsFolder, _imageAssetDelegate, clonedDict, _canvasControl.Device);
                 }
 
                 return _imageAssetManager;
             }
         }
+
+        public CanvasDevice Device => _canvasControl?.Device;
 
         internal virtual Typeface GetTypeface(string fontFamily, string style)
         {

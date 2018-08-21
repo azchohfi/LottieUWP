@@ -25,7 +25,8 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _startPointAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _endPointAnimation;
 
-        internal GradientStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) : base(lottieDrawable, layer, ShapeStroke.LineCapTypeToPaintCap(stroke.CapType), ShapeStroke.LineJoinTypeToPaintLineJoin(stroke.JoinType), stroke.Opacity, stroke.Width, stroke.LineDashPattern, stroke.DashOffset)
+        internal GradientStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) 
+            : base(lottieDrawable, layer, ShapeStroke.LineCapTypeToPaintCap(stroke.CapType), ShapeStroke.LineJoinTypeToPaintLineJoin(stroke.JoinType), stroke.MiterLimit, stroke.Opacity, stroke.Width, stroke.LineDashPattern, stroke.DashOffset)
         {
             Name = stroke.Name;
             _type = stroke.GradientType;
