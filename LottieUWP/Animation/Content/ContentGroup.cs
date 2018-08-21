@@ -87,9 +87,9 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public virtual string Name { get; }
+        public string Name { get; }
 
-        public virtual void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             // Do nothing with contents after.
             var myContentsBefore = new List<IContent>(contentsBefore.Count + _contents.Count);
@@ -103,7 +103,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        internal virtual List<IPathContent> PathList
+        internal List<IPathContent> PathList
         {
             get
             {
@@ -122,7 +122,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        internal virtual Matrix3X3 TransformationMatrix
+        internal Matrix3X3 TransformationMatrix
         {
             get
             {
@@ -157,7 +157,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
+        public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             _matrix.Set(parentMatrix);
             byte alpha;
@@ -178,7 +178,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public virtual void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
+        public void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             _matrix.Set(parentMatrix);
             if (_transformAnimation != null)

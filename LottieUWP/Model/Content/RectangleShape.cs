@@ -19,13 +19,13 @@ namespace LottieUWP.Model.Content
             _cornerRadius = cornerRadius;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual AnimatableFloatValue CornerRadius => _cornerRadius;
+        internal AnimatableFloatValue CornerRadius => _cornerRadius;
 
-        internal virtual AnimatablePointValue Size => _size;
+        internal AnimatablePointValue Size => _size;
 
-        internal virtual IAnimatableValue<Vector2?, Vector2?> Position => _position;
+        internal IAnimatableValue<Vector2?, Vector2?> Position => _position;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

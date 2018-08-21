@@ -40,12 +40,12 @@ namespace LottieUWP
             }
         }
 
-        public virtual bool Enabled
+        public bool Enabled
         {
             set => _enabled = value;
         }
 
-        public virtual void RecordRenderTime(string layerName, float millis)
+        public void RecordRenderTime(string layerName, float millis)
         {
             if (!_enabled)
             {
@@ -63,12 +63,12 @@ namespace LottieUWP
             }
         }
 
-        public virtual void ClearRenderTimes()
+        public void ClearRenderTimes()
         {
             _layerRenderTimes.Clear();
         }
 
-        public virtual void LogRenderTimes()
+        public void LogRenderTimes()
         {
             if (!_enabled)
             {
@@ -83,7 +83,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual List<Tuple<string, float?>> SortedRenderTimes
+        public List<Tuple<string, float?>> SortedRenderTimes
         {
             get
             {
@@ -101,7 +101,7 @@ namespace LottieUWP
             }
         }
 
-        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
+        protected void OnFrameRendered(FrameRenderedEventArgs e)
         {
             FrameRendered?.Invoke(this, e);
         }

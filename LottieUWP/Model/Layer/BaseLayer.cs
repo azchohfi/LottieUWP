@@ -100,22 +100,22 @@ namespace LottieUWP.Model.Layer
             SetupInOutAnimations();
         }
 
-        public virtual void OnValueChanged(object sender, EventArgs eventArgs)
+        public void OnValueChanged(object sender, EventArgs eventArgs)
         {
             InvalidateSelf();
         }
 
-        internal virtual BaseLayer MatteLayer
+        internal BaseLayer MatteLayer
         {
             set => _matteLayer = value;
         }
 
-        internal virtual bool HasMatteOnThisLayer()
+        internal bool HasMatteOnThisLayer()
         {
             return _matteLayer != null;
         }
 
-        internal virtual BaseLayer ParentLayer
+        internal BaseLayer ParentLayer
         {
             set => _parentLayer = value;
         }
@@ -378,7 +378,7 @@ namespace LottieUWP.Model.Layer
             LottieLog.EndSection("Layer.DrawMask");
         }
 
-        internal virtual bool HasMasksOnThisLayer()
+        internal bool HasMasksOnThisLayer()
         {
             return _mask != null && _mask.MaskAnimations.Count > 0;
         }

@@ -22,7 +22,7 @@ namespace LottieUWP.Manager
             _delegate = @delegate;
         }
 
-        internal virtual FontAssetDelegate Delegate
+        internal FontAssetDelegate Delegate
         {
             set => _delegate = value;
         }
@@ -34,12 +34,12 @@ namespace LottieUWP.Manager
         /// 
         /// Defaults to `.ttf`
         /// </summary>
-        public virtual string DefaultFontFileExtension
+        public string DefaultFontFileExtension
         {
             set => _defaultFontFileExtension = value;
         }
 
-        internal virtual Typeface GetTypeface(string fontFamily, string style)
+        internal Typeface GetTypeface(string fontFamily, string style)
         {
             _tempPair = new Tuple<string, string>(fontFamily, style);
             if (_fontMap.TryGetValue(_tempPair, out var typeface))

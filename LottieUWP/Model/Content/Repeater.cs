@@ -14,13 +14,13 @@ namespace LottieUWP.Model.Content
             Transform = transform;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual AnimatableFloatValue Copies { get; }
+        internal AnimatableFloatValue Copies { get; }
 
-        internal virtual AnimatableFloatValue Offset { get; }
+        internal AnimatableFloatValue Offset { get; }
 
-        internal virtual AnimatableTransform Transform { get; }
+        internal AnimatableTransform Transform { get; }
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

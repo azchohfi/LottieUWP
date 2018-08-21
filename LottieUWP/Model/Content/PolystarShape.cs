@@ -28,26 +28,26 @@ namespace LottieUWP.Model.Content
             OuterRoundedness = outerRoundedness;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal new virtual Type GetType()
+        internal new Type GetType()
         {
             return _type;
         }
 
-        internal virtual AnimatableFloatValue Points { get; }
+        internal AnimatableFloatValue Points { get; }
 
-        internal virtual IAnimatableValue<Vector2?, Vector2?> Position { get; }
+        internal IAnimatableValue<Vector2?, Vector2?> Position { get; }
 
-        internal virtual AnimatableFloatValue Rotation { get; }
+        internal AnimatableFloatValue Rotation { get; }
 
-        internal virtual AnimatableFloatValue InnerRadius { get; }
+        internal AnimatableFloatValue InnerRadius { get; }
 
-        internal virtual AnimatableFloatValue OuterRadius { get; }
+        internal AnimatableFloatValue OuterRadius { get; }
 
-        internal virtual AnimatableFloatValue InnerRoundedness { get; }
+        internal AnimatableFloatValue InnerRoundedness { get; }
 
-        internal virtual AnimatableFloatValue OuterRoundedness { get; }
+        internal AnimatableFloatValue OuterRoundedness { get; }
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

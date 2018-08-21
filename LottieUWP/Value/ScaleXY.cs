@@ -12,9 +12,9 @@
         {
         }
 
-        internal virtual float ScaleX { get; }
+        internal float ScaleX { get; }
 
-        internal virtual float ScaleY { get; }
+        internal float ScaleY { get; }
 
         public override string ToString()
         {

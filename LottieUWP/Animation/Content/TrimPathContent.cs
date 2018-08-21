@@ -42,12 +42,12 @@ namespace LottieUWP.Animation.Content
 
         public string Name { get; }
 
-        internal virtual ShapeTrimPath.Type Type { get; }
+        internal ShapeTrimPath.Type Type { get; }
 
-        public virtual IBaseKeyframeAnimation<float?, float?> Start => _startAnimation;
+        public IBaseKeyframeAnimation<float?, float?> Start => _startAnimation;
 
-        public virtual IBaseKeyframeAnimation<float?, float?> End => _endAnimation;
+        public IBaseKeyframeAnimation<float?, float?> End => _endAnimation;
 
-        public virtual IBaseKeyframeAnimation<float?, float?> Offset => _offsetAnimation;
+        public IBaseKeyframeAnimation<float?, float?> Offset => _offsetAnimation;
     }
 }

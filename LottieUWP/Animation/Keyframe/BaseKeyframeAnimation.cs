@@ -22,7 +22,7 @@ namespace LottieUWP.Animation.Keyframe
     /// <typeparam name="TA">Animation type</typeparam>
     public abstract class BaseKeyframeAnimation<TK, TA> : IBaseKeyframeAnimation<TK, TA>
     {
-        public virtual event EventHandler ValueChanged;
+        public event EventHandler ValueChanged;
         private bool _isDiscrete;
 
         private readonly List<Keyframe<TK>> _keyframes;
@@ -36,7 +36,7 @@ namespace LottieUWP.Animation.Keyframe
             _keyframes = keyframes;
         }
 
-        internal virtual void SetIsDiscrete()
+        internal void SetIsDiscrete()
         {
             _isDiscrete = true;
         }

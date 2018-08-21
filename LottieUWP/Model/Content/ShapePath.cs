@@ -17,9 +17,9 @@ namespace LottieUWP.Model.Content
             _shapePath = shapePath;
         }
 
-        public virtual string Name => _name;
+        public string Name => _name;
 
-        internal virtual AnimatableShapeValue GetShapePath()
+        internal AnimatableShapeValue GetShapePath()
         {
             return _shapePath;
         }

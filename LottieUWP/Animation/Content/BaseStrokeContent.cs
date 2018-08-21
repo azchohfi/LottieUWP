@@ -82,7 +82,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public virtual void OnValueChanged(object sender, EventArgs eventArgs)
+        public void OnValueChanged(object sender, EventArgs eventArgs)
         {
             _lottieDrawable.InvalidateSelf();
         }

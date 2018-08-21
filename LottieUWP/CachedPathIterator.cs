@@ -205,7 +205,7 @@ namespace LottieUWP
             point[1] = curve[2 + lastPointIndex + 1];
         }
 
-        public virtual CachedPathIterator Iterator()
+        public CachedPathIterator Iterator()
         {
             return new CachedPathIterator(this);
         }
@@ -254,7 +254,7 @@ namespace LottieUWP
                 Next();
             }
 
-            public virtual float CurrentSegmentLength => _currentSegmentLength;
+            public float CurrentSegmentLength => _currentSegmentLength;
 
             public override bool Done => _isIteratorDone;
 
@@ -330,7 +330,7 @@ namespace LottieUWP
             /// <summary>
             /// Returns the point where the current segment ends
             /// </summary>
-            public virtual void GetCurrentSegmentEnd(float[] point)
+            public void GetCurrentSegmentEnd(float[] point)
             {
                 point[0] = _mLastPoint[0];
                 point[1] = _mLastPoint[1];
@@ -339,7 +339,7 @@ namespace LottieUWP
             /// <summary>
             /// Restarts the iterator and jumps all the segments of this path up to the length value.
             /// </summary>
-            public virtual void JumpToSegment(float length)
+            public void JumpToSegment(float length)
             {
                 _isIteratorDone = false;
                 if (length <= 0f)

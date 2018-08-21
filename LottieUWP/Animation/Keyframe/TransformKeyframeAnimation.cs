@@ -32,7 +32,7 @@ namespace LottieUWP.Animation.Keyframe
             _endOpacity = animatableTransform.EndOpacity?.CreateAnimation();
         }
 
-        internal virtual void AddAnimationsToLayer(BaseLayer layer)
+        internal void AddAnimationsToLayer(BaseLayer layer)
         {
             layer.AddAnimation(_anchorPoint);
             layer.AddAnimation(_position);
@@ -105,13 +105,13 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        internal virtual IBaseKeyframeAnimation<int?, int?> Opacity => _opacity;
+        internal IBaseKeyframeAnimation<int?, int?> Opacity => _opacity;
 
-        internal virtual IBaseKeyframeAnimation<float?, float?> StartOpacity => _startOpacity;
+        internal IBaseKeyframeAnimation<float?, float?> StartOpacity => _startOpacity;
 
-        internal virtual IBaseKeyframeAnimation<float?, float?> EndOpacity => _endOpacity;
+        internal IBaseKeyframeAnimation<float?, float?> EndOpacity => _endOpacity;
 
-        internal virtual Matrix3X3 Matrix
+        internal Matrix3X3 Matrix
         {
             get
             {

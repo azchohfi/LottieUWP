@@ -20,12 +20,12 @@ namespace LottieUWP.Model.Content
             Opacity = opacity;
         }
 
-        internal virtual MaskMode GetMaskMode()
+        internal MaskMode GetMaskMode()
         {
             return _maskMode;
         }
 
-        internal virtual AnimatableShapeValue MaskPath { get; }
-        internal virtual AnimatableIntegerValue Opacity { get; }
+        internal AnimatableShapeValue MaskPath { get; }
+        internal AnimatableIntegerValue Opacity { get; }
     }
 }

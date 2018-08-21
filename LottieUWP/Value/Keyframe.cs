@@ -43,7 +43,7 @@ namespace LottieUWP.Value
             EndFrame = float.MaxValue;
         }
 
-        public virtual float StartProgress
+        public float StartProgress
         {
             get
             {
@@ -59,7 +59,7 @@ namespace LottieUWP.Value
             }
         }
 
-        public virtual float EndProgress
+        public float EndProgress
         {
             get
             {
@@ -85,9 +85,9 @@ namespace LottieUWP.Value
             }
         }
 
-        public virtual bool Static => Interpolator == null;
+        public bool Static => Interpolator == null;
 
-        public virtual bool ContainsProgress(float progress)
+        public bool ContainsProgress(float progress)
         {
             return progress >= StartProgress && progress < EndProgress;
         }

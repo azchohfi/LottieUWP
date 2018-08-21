@@ -26,18 +26,18 @@ namespace LottieUWP.Model.Content
             _offset = offset;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal new virtual Type GetType()
+        internal new Type GetType()
         {
             return _type;
         }
 
-        internal virtual AnimatableFloatValue End => _end;
+        internal AnimatableFloatValue End => _end;
 
-        internal virtual AnimatableFloatValue Start => _start;
+        internal AnimatableFloatValue Start => _start;
 
-        internal virtual AnimatableFloatValue Offset => _offset;
+        internal AnimatableFloatValue Offset => _offset;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

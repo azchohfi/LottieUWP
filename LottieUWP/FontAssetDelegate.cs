@@ -10,7 +10,7 @@
         /// <summary>
         /// Override this if you want to return a Typeface from a font family.
         /// </summary>
-        public virtual Typeface FetchFont(string fontFamily)
+        public Typeface FetchFont(string fontFamily)
         {
             return null;
         }
@@ -18,7 +18,7 @@
         /// <summary>
         /// Override this if you want to specify the asset path for a given font family.
         /// </summary>
-        public virtual string GetFontPath(string fontFamily)
+        public string GetFontPath(string fontFamily)
         {
             return null;
         }

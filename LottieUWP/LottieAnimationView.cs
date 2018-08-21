@@ -231,7 +231,7 @@ namespace LottieUWP
         /// You can also use a fixed view width/height in conjunction with the normal ImageView 
         /// scaleTypes centerCrop and centerInside.
         /// </summary>
-        public virtual double Scale
+        public double Scale
         {
             get => (double)GetValue(ScaleProperty);
             set => SetValue(ScaleProperty, value);
@@ -390,7 +390,7 @@ namespace LottieUWP
         //    base.onDetachedFromWindow();
         //}
 
-        internal virtual void RecycleBitmaps()
+        internal void RecycleBitmaps()
         {
             // AppCompatImageView constructor will set the image when set from xml
             // before LottieDrawable has been initialized
@@ -418,7 +418,7 @@ namespace LottieUWP
             return _lottieDrawable.IsMergePathsEnabledForKitKatAndAbove();
         }
 
-        public virtual void UseExperimentalHardwareAcceleration(bool use = true)
+        public void UseExperimentalHardwareAcceleration(bool use = true)
         {
             UseHardwareAcceleration(use);
         }
@@ -439,7 +439,7 @@ namespace LottieUWP
         ///    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
         ///    anything about that.
         /// </summary>
-        public virtual void UseHardwareAcceleration(bool use = true)
+        public void UseHardwareAcceleration(bool use = true)
         {
             _useHardwareLayer = use;
             EnableOrDisableHardwareLayer();
@@ -455,12 +455,12 @@ namespace LottieUWP
         /// <see cref="SetAnimationAsync(string)"/>
         /// </summary>
         [Obsolete]
-        public virtual async Task SetAnimationAsync(string animationName, CacheStrategy cacheStrategy)
+        public async Task SetAnimationAsync(string animationName, CacheStrategy cacheStrategy)
         {
             await SetAnimationAsync(animationName, DefaultCacheStrategy);
         }
 
-        public virtual async Task SetAnimationAsync(string assetName)
+        public async Task SetAnimationAsync(string assetName)
         {
             _animationName = assetName;
             var cachedComposition = LottieCompositionCache.Instance.Get(assetName);
@@ -516,7 +516,7 @@ namespace LottieUWP
         }
 
         [Obsolete]
-        public virtual async Task SetAnimationAsync(JsonReader reader)
+        public async Task SetAnimationAsync(JsonReader reader)
         {
             await SetAnimationAsync(reader, null);
         }
@@ -529,7 +529,7 @@ namespace LottieUWP
         /// bodymovin json from the network and pass it directly here.
         /// </para>
         /// </summary>
-        public virtual async Task SetAnimationAsync(JsonReader reader, string cacheKey)
+        public async Task SetAnimationAsync(JsonReader reader, string cacheKey)
         {
             ClearComposition();
             CancelLoaderTask();
@@ -608,7 +608,7 @@ namespace LottieUWP
         /// You can set a default cache strategy if this view was inflated with xml by
         /// using <seealso cref="LottieAnimationView.CacheStrategy"/>.
         /// </summary>
-        public virtual LottieComposition Composition
+        public LottieComposition Composition
         {
             get
             {
@@ -642,7 +642,7 @@ namespace LottieUWP
         /// <summary>
         /// Returns whether or not any layers in this composition has masks.
         /// </summary>
-        public virtual bool HasMasks()
+        public bool HasMasks()
         {
             return _lottieDrawable.HasMasks();
         }
@@ -650,7 +650,7 @@ namespace LottieUWP
         /// <summary>
         /// Returns whether or not any layers in this composition has a matte layer.
         /// </summary>
-        public virtual bool HasMatte()
+        public bool HasMatte()
         {
             return _lottieDrawable.HasMatte();
         }
@@ -659,7 +659,7 @@ namespace LottieUWP
         /// Plays the animation from the beginning.If speed is &lt; 0, it will start at the end
         /// and play towards the beginning
         /// </summary>
-        public virtual void PlayAnimation()
+        public void PlayAnimation()
         {
             _lottieDrawable.PlayAnimation();
             EnableOrDisableHardwareLayer();
@@ -669,7 +669,7 @@ namespace LottieUWP
         /// Continues playing the animation from its current position. If speed &lt; 0, it will play backwards
         /// from the current position.
         /// </summary>
-        public virtual void ResumeAnimation()
+        public void ResumeAnimation()
         {
             _lottieDrawable.ResumeAnimation();
             EnableOrDisableHardwareLayer();
@@ -879,7 +879,7 @@ namespace LottieUWP
                 lottieAnimationView._lottieDrawable.FrameRate = (float)Convert.ToDouble(e.NewValue);
         }
 
-        public virtual bool IsAnimating => _lottieDrawable.IsAnimating;
+        public bool IsAnimating => _lottieDrawable.IsAnimating;
 
         /// <summary>
         /// Allows you to modify or clear a bitmap that was loaded for an image either automatically
@@ -902,18 +902,18 @@ namespace LottieUWP
         /// the documentation at http://airbnb.io/lottie for more information about importing shapes from
         /// Sketch or Illustrator to avoid this.
         /// </summary>
-        public virtual IImageAssetDelegate ImageAssetDelegate
+        public IImageAssetDelegate ImageAssetDelegate
         {
             set => _lottieDrawable.ImageAssetDelegate = value;
         }
 
-        public virtual void CancelAnimation()
+        public void CancelAnimation()
         {
             _lottieDrawable.CancelAnimation();
             EnableOrDisableHardwareLayer();
         }
 
-        public virtual void PauseAnimation()
+        public void PauseAnimation()
         {
             _lottieDrawable.PauseAnimation();
             EnableOrDisableHardwareLayer();
@@ -933,20 +933,20 @@ namespace LottieUWP
             get => _lottieDrawable.Frame;
         }
 
-        public virtual float Progress
+        public float Progress
         {
             get => _lottieDrawable.Progress;
             set => _lottieDrawable.Progress = value;
         }
 
-        public virtual long Duration => _composition != null ? (long)_composition.Duration : 0;
+        public long Duration => _composition != null ? (long)_composition.Duration : 0;
 
-        public virtual bool PerformanceTrackingEnabled
+        public bool PerformanceTrackingEnabled
         {
             set => _lottieDrawable.PerformanceTrackingEnabled = value;
         }
 
-        public virtual PerformanceTracker PerformanceTracker => _lottieDrawable.PerformanceTracker;
+        public PerformanceTracker PerformanceTracker => _lottieDrawable.PerformanceTracker;
 
         private void ClearComposition()
         {
@@ -1026,12 +1026,12 @@ namespace LottieUWP
         //        {
         //        }
 
-        //        public virtual SavedState createFromParcel(Parcel @in)
+        //        public SavedState createFromParcel(Parcel @in)
         //        {
         //            return new SavedState(@in);
         //        }
 
-        //        public virtual SavedState[] newArray(int size)
+        //        public SavedState[] newArray(int size)
         //        {
         //            return new SavedState[size];
         //        }
