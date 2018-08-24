@@ -303,6 +303,10 @@ namespace LottieUWP
         /// </summary>
         private static async Task<LottieResult<LottieComposition>> CacheAsync(string cacheKey, Func<LottieResult<LottieComposition>> callable, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (string.IsNullOrEmpty(cacheKey))
+            {
+                return await Task.Run(callable, cancellationToken);
+            }
             if (_taskCache.ContainsKey(cacheKey))
             {
                 return await _taskCache[cacheKey].AsAsyncOperation().AsTask(cancellationToken);
