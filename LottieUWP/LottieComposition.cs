@@ -28,13 +28,13 @@ namespace LottieUWP
         private Dictionary<string, List<Layer>> _precomps;
         private Dictionary<string, LottieImageAsset> _images;
         /** Map of font names to fonts */
-        public virtual Dictionary<string, Font> Fonts { get; private set; }
-        public virtual Dictionary<int, FontCharacter> Characters { get; private set; }
+        public Dictionary<string, Font> Fonts { get; private set; }
+        public Dictionary<int, FontCharacter> Characters { get; private set; }
         private Dictionary<long, Layer> _layerMap;
         public List<Layer> Layers { get; private set; }
 
         // This is stored as a set to avoid duplicates.
-        public virtual Rect Bounds { get; private set; }
+        public Rect Bounds { get; private set; }
         public float StartFrame { get; private set; }
         public float EndFrame { get; private set; }
         public float FrameRate { get; private set; }
@@ -47,20 +47,20 @@ namespace LottieUWP
 
         public List<string> Warnings => _warnings.ToList();
 
-        public virtual bool PerformanceTrackingEnabled
+        public bool PerformanceTrackingEnabled
         {
             set => _performanceTracker.Enabled = value;
         }
 
-        public virtual PerformanceTracker PerformanceTracker => _performanceTracker;
+        public PerformanceTracker PerformanceTracker => _performanceTracker;
 
-        internal virtual Layer LayerModelForId(long id)
+        internal Layer LayerModelForId(long id)
         {
             _layerMap.TryGetValue(id, out Layer layer);
             return layer;
         }
 
-        public virtual float Duration
+        public float Duration
         {
             get
             {
@@ -82,16 +82,16 @@ namespace LottieUWP
             Fonts = fonts;
         }
 
-        internal virtual List<Layer> GetPrecomps(string id)
+        internal List<Layer> GetPrecomps(string id)
         {
             return _precomps[id];
         }
 
-        public virtual bool HasImages => _images.Count > 0;
+        public bool HasImages => _images.Count > 0;
 
-        public virtual Dictionary<string, LottieImageAsset> Images => _images;
+        public Dictionary<string, LottieImageAsset> Images => _images;
 
-        internal virtual float DurationFrames => EndFrame - StartFrame;
+        internal float DurationFrames => EndFrame - StartFrame;
 
         public override string ToString()
         {

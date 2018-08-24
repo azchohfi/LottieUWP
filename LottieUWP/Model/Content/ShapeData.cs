@@ -32,13 +32,13 @@ namespace LottieUWP.Model.Content
             _initialPoint.Y = y;
         }
 
-        internal virtual Vector2 InitialPoint => _initialPoint;
+        internal Vector2 InitialPoint => _initialPoint;
 
-        internal virtual bool Closed => _closed;
+        internal bool Closed => _closed;
 
-        internal virtual List<CubicCurveData> Curves => _curves;
+        internal List<CubicCurveData> Curves => _curves;
 
-        internal virtual void InterpolateBetween(ShapeData shapeData1, ShapeData shapeData2, float percentage)
+        internal void InterpolateBetween(ShapeData shapeData1, ShapeData shapeData2, float percentage)
         {
             if (_initialPoint == null)
             {

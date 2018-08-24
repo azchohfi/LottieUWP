@@ -8,7 +8,7 @@
         private float _sum;
         private int _n;
 
-        public virtual void Add(float number)
+        public void Add(float number)
         {
             _sum += number;
             _n++;
@@ -19,7 +19,7 @@
             }
         }
 
-        public virtual float Mean
+        public float Mean
         {
             get
             {

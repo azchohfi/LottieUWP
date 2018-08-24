@@ -15,7 +15,7 @@ namespace LottieUWP
             AnimationCanceled();
         }
 
-        protected virtual void AnimationCanceled()
+        protected void AnimationCanceled()
         {
         }
     }

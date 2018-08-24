@@ -35,7 +35,7 @@ namespace LottieUWP.Manager
             Delegate = @delegate;
         }
 
-        internal virtual IImageAssetDelegate Delegate
+        internal IImageAssetDelegate Delegate
         {
             set
             {
@@ -71,7 +71,7 @@ namespace LottieUWP.Manager
             }
         }
 
-        internal virtual CanvasBitmap BitmapForId(CanvasDevice device, string id)
+        internal CanvasBitmap BitmapForId(CanvasDevice device, string id)
         {
             lock (this)
             {
@@ -149,7 +149,7 @@ namespace LottieUWP.Manager
             }
         }
 
-        internal virtual void RecycleBitmaps()
+        internal void RecycleBitmaps()
         {
             lock (this)
             {

@@ -15,9 +15,9 @@ namespace LottieUWP.Model.Content
             _items = items;
         }
 
-        public virtual string Name => _name;
+        public string Name => _name;
 
-        public virtual List<IContentModel> Items => _items;
+        public List<IContentModel> Items => _items;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

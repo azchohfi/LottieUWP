@@ -145,7 +145,7 @@ namespace LottieUWP.Model.Layer
             }
         }
 
-        internal virtual bool HasMasks()
+        internal bool HasMasks()
         {
             if (_hasMasks == null)
             {
@@ -171,7 +171,7 @@ namespace LottieUWP.Model.Layer
             return _hasMasks.Value;
         }
 
-        internal virtual bool HasMatte()
+        internal bool HasMatte()
         {
             if (_hasMatte == null)
             {

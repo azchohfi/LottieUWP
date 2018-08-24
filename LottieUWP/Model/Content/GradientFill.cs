@@ -21,23 +21,23 @@ namespace LottieUWP.Model.Content
             HighlightAngle = highlightAngle;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual GradientType GradientType { get; }
+        internal GradientType GradientType { get; }
 
-        internal virtual PathFillType FillType { get; }
+        internal PathFillType FillType { get; }
 
-        internal virtual AnimatableGradientColorValue GradientColor { get; }
+        internal AnimatableGradientColorValue GradientColor { get; }
 
-        internal virtual AnimatableIntegerValue Opacity { get; }
+        internal AnimatableIntegerValue Opacity { get; }
 
-        internal virtual AnimatablePointValue StartPoint { get; }
+        internal AnimatablePointValue StartPoint { get; }
 
-        internal virtual AnimatablePointValue EndPoint { get; }
+        internal AnimatablePointValue EndPoint { get; }
 
-        internal virtual AnimatableFloatValue HighlightLength { get; }
+        internal AnimatableFloatValue HighlightLength { get; }
 
-        internal virtual AnimatableFloatValue HighlightAngle { get; }
+        internal AnimatableFloatValue HighlightAngle { get; }
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

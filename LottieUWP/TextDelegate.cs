@@ -48,7 +48,7 @@ namespace LottieUWP
         /// <summary>
         /// Update the text that will be rendered for the given input text.
         /// </summary>
-        public virtual void SetText(string input, string output)
+        public void SetText(string input, string output)
         {
             _stringMap[input] = output;
             Invalidate();
@@ -58,7 +58,7 @@ namespace LottieUWP
         /// Sets whether or not <seealso cref="TextDelegate"/> will cache (memoize) the results of getText.
         /// If this isn't necessary then set it to false.
         /// </summary>
-        public virtual bool CacheText
+        public bool CacheText
         {
             set => _cacheText = value;
         }
@@ -66,7 +66,7 @@ namespace LottieUWP
         /// <summary>
         /// Invalidates a cached string with the given input.
         /// </summary>
-        public virtual void InvalidateText(string input)
+        public void InvalidateText(string input)
         {
             _stringMap.Remove(input);
             Invalidate();
@@ -75,7 +75,7 @@ namespace LottieUWP
         /// <summary>
         /// Invalidates all cached strings
         /// </summary>
-        public virtual void InvalidateAllText()
+        public void InvalidateAllText()
         {
             _stringMap.Clear();
             Invalidate();

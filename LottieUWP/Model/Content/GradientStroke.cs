@@ -23,29 +23,29 @@ namespace LottieUWP.Model.Content
             DashOffset = dashOffset;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual GradientType GradientType { get; }
+        internal GradientType GradientType { get; }
 
-        internal virtual AnimatableGradientColorValue GradientColor { get; }
+        internal AnimatableGradientColorValue GradientColor { get; }
 
-        internal virtual AnimatableIntegerValue Opacity { get; }
+        internal AnimatableIntegerValue Opacity { get; }
 
-        internal virtual AnimatablePointValue StartPoint { get; }
+        internal AnimatablePointValue StartPoint { get; }
 
-        internal virtual AnimatablePointValue EndPoint { get; }
+        internal AnimatablePointValue EndPoint { get; }
 
-        internal virtual AnimatableFloatValue Width { get; }
+        internal AnimatableFloatValue Width { get; }
 
-        internal virtual ShapeStroke.LineCapType CapType { get; }
+        internal ShapeStroke.LineCapType CapType { get; }
 
-        internal virtual ShapeStroke.LineJoinType JoinType { get; }
+        internal ShapeStroke.LineJoinType JoinType { get; }
 
-        internal virtual float MiterLimit { get; }
+        internal float MiterLimit { get; }
 
-        internal virtual List<AnimatableFloatValue> LineDashPattern { get; }
+        internal List<AnimatableFloatValue> LineDashPattern { get; }
 
-        internal virtual AnimatableFloatValue DashOffset { get; }
+        internal AnimatableFloatValue DashOffset { get; }
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

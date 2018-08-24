@@ -49,7 +49,7 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public virtual Path Path
+        public Path Path
         {
             get
             {

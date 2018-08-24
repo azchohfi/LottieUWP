@@ -19,13 +19,13 @@ namespace LottieUWP.Model.Content
             _opacity = opacity;
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual AnimatableColorValue Color => _color;
+        internal AnimatableColorValue Color => _color;
 
-        internal virtual AnimatableIntegerValue Opacity => _opacity;
+        internal AnimatableIntegerValue Opacity => _opacity;
 
-        internal virtual PathFillType FillType { get; }
+        internal PathFillType FillType { get; }
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

@@ -49,7 +49,7 @@ namespace LottieUWP.Animation.Content
             layer.AddAnimation(_opacityAnimation);
         }
 
-        public virtual void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
+        public void SetContents(List<IContent> contentsBefore, List<IContent> contentsAfter)
         {
             for (var i = 0; i < contentsAfter.Count; i++)
             {
@@ -61,9 +61,9 @@ namespace LottieUWP.Animation.Content
             }
         }
 
-        public virtual string Name { get; }
+        public string Name { get; }
 
-        public virtual void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
+        public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection("FillContent.Draw");
             _paint.Color = _colorAnimation.Value ?? Colors.White;
@@ -86,7 +86,7 @@ namespace LottieUWP.Animation.Content
             LottieLog.EndSection("FillContent.Draw");
         }
 
-        public virtual void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
+        public void GetBounds(out Rect outBounds, Matrix3X3 parentMatrix)
         {
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)

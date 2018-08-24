@@ -23,9 +23,9 @@ namespace LottieUWP.Model.Content
             _mode = mode;
         }
 
-        public virtual string Name { get; }
+        public string Name { get; }
 
-        internal virtual MergePathsMode Mode => _mode;
+        internal MergePathsMode Mode => _mode;
 
         public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
         {

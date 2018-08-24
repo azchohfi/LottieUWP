@@ -32,21 +32,21 @@ namespace LottieUWP.Model.Animatable
             EndOpacity = endOpacity;
         }
 
-        internal virtual AnimatablePathValue AnchorPoint { get; }
+        internal AnimatablePathValue AnchorPoint { get; }
 
-        internal virtual IAnimatableValue<Vector2?, Vector2?> Position { get; }
+        internal IAnimatableValue<Vector2?, Vector2?> Position { get; }
 
-        internal virtual AnimatableScaleValue Scale { get; }
+        internal AnimatableScaleValue Scale { get; }
 
-        internal virtual AnimatableFloatValue Rotation { get; }
+        internal AnimatableFloatValue Rotation { get; }
 
-        internal virtual AnimatableIntegerValue Opacity { get; }
+        internal AnimatableIntegerValue Opacity { get; }
 
         // Used for repeaters 
-        internal virtual AnimatableFloatValue StartOpacity { get; }
-        internal virtual AnimatableFloatValue EndOpacity { get; }
+        internal AnimatableFloatValue StartOpacity { get; }
+        internal AnimatableFloatValue EndOpacity { get; }
 
-        public virtual TransformKeyframeAnimation CreateAnimation()
+        public TransformKeyframeAnimation CreateAnimation()
         {
             return new TransformKeyframeAnimation(this);
         }

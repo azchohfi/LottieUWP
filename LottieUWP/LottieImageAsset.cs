@@ -16,15 +16,15 @@ namespace LottieUWP
             DirName = dirName;
         }
 
-        public virtual int Width { get; }
+        public int Width { get; }
 
-        public virtual int Height { get; }
+        public int Height { get; }
 
-        public virtual string Id { get; }
+        public string Id { get; }
 
-        public virtual string FileName { get; }
+        public string FileName { get; }
 
-        public virtual string DirName { get; }
+        public string DirName { get; }
 
         /** Pre-set a bitmap for this asset */
         // Returns the bitmap that has been stored for this image asset if one was explicitly set.

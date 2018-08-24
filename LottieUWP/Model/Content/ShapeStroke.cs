@@ -68,22 +68,22 @@ namespace LottieUWP.Model.Content
             return new StrokeContent(drawable, layer, this);
         }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual AnimatableColorValue Color { get; }
+        internal AnimatableColorValue Color { get; }
 
-        internal virtual AnimatableIntegerValue Opacity { get; }
+        internal AnimatableIntegerValue Opacity { get; }
 
-        internal virtual AnimatableFloatValue Width { get; }
+        internal AnimatableFloatValue Width { get; }
 
-        internal virtual List<AnimatableFloatValue> LineDashPattern { get; }
+        internal List<AnimatableFloatValue> LineDashPattern { get; }
 
-        internal virtual AnimatableFloatValue DashOffset { get; }
+        internal AnimatableFloatValue DashOffset { get; }
 
-        internal virtual LineCapType CapType { get; }
+        internal LineCapType CapType { get; }
 
-        internal virtual LineJoinType JoinType { get; }
+        internal LineJoinType JoinType { get; }
 
-        internal virtual float MiterLimit { get; }
+        internal float MiterLimit { get; }
     }
 }

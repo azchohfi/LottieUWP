@@ -148,7 +148,7 @@ namespace LottieUWP
         /// <summary>
         /// Returns whether or not any layers in this composition has masks.
         /// </summary>
-        public virtual bool HasMasks()
+        public bool HasMasks()
         {
             return _compositionLayer != null && _compositionLayer.HasMasks();
         }
@@ -156,12 +156,12 @@ namespace LottieUWP
         /// <summary>
         /// Returns whether or not any layers in this composition has a matte layer.
         /// </summary>
-        public virtual bool HasMatte()
+        public bool HasMatte()
         {
             return _compositionLayer != null && _compositionLayer.HasMatte();
         }
 
-        internal virtual bool EnableMergePathsForKitKatAndAbove()
+        internal bool EnableMergePathsForKitKatAndAbove()
         {
             return _enableMergePaths;
         }
@@ -173,7 +173,7 @@ namespace LottieUWP
         /// first shape. If you need to cut out one shape from another shape, use an even-odd fill type
         /// instead of using merge paths.
         /// </summary>
-        public virtual void EnableMergePathsForKitKatAndAbove(bool enable)
+        public void EnableMergePathsForKitKatAndAbove(bool enable)
         {
             _enableMergePaths = enable;
             if (_composition != null)
@@ -206,7 +206,7 @@ namespace LottieUWP
         /// the documentation at http://airbnb.io/lottie for more information about importing shapes from 
         /// Sketch or Illustrator to avoid this. 
         /// </summary>
-        public virtual string ImageAssetsFolder { get; set; }
+        public string ImageAssetsFolder { get; set; }
 
         /// <summary>
         /// If you have image assets and use <seealso cref="LottieDrawable"/> directly, you must call this yourself.
@@ -215,7 +215,7 @@ namespace LottieUWP
         /// will recreate the bitmaps if needed but they will leak if you don't recycle them.
         /// 
         /// </summary>
-        public virtual void RecycleBitmaps()
+        public void RecycleBitmaps()
         {
             _imageAssetManager?.RecycleBitmaps();
         }
@@ -225,7 +225,7 @@ namespace LottieUWP
         /// </summary>
         /// <param name="composition">The new composition.</param>
         /// <returns>True if the composition is different from the previously set composition, false otherwise.</returns>
-        public virtual bool SetComposition(LottieComposition composition)
+        public bool SetComposition(LottieComposition composition)
         {
             //if (Callback == null) // TODO: needed?
             //{
@@ -260,7 +260,7 @@ namespace LottieUWP
             return true;
         }
 
-        public virtual bool PerformanceTrackingEnabled
+        public bool PerformanceTrackingEnabled
         {
             set
             {
@@ -272,7 +272,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual PerformanceTracker PerformanceTracker => _composition?.PerformanceTracker;
+        public PerformanceTracker PerformanceTracker => _composition?.PerformanceTracker;
 
         private void BuildCompositionLayer()
         {
@@ -400,7 +400,7 @@ namespace LottieUWP
         /// Plays the animation from the beginning. If speed is &lt; 0, it will start at the end
         /// and play towards the beginning
         /// </summary>
-        public virtual void PlayAnimation()
+        public void PlayAnimation()
         {
             if (_compositionLayer == null)
             {
@@ -423,7 +423,7 @@ namespace LottieUWP
         /// Continues playing the animation from its current position. If speed &lt; 0, it will play backwards 
         /// from the current position.
         /// </summary>
-        public virtual void ResumeAnimation()
+        public void ResumeAnimation()
         {
             if (_compositionLayer == null)
             {
@@ -575,7 +575,7 @@ namespace LottieUWP
         /// Sets the playback speed. If speed &lt; 0, the animation will play backwards.
         /// Returns the current playback speed. This will be &lt; 0 if the animation is playing backwards.
         /// </summary>
-        public virtual float Speed
+        public float Speed
         {
             set => _animator.Speed = value;
             get => _animator.Speed;
@@ -629,7 +629,7 @@ namespace LottieUWP
             get => _animator.Frame;
         }
 
-        public virtual float Progress
+        public float Progress
         {
             get => _animator.AnimatedValueAbsolute;
             set
@@ -650,7 +650,7 @@ namespace LottieUWP
         /// <see cref="RepeatCount"/>
         /// </summary>
         [Obsolete]
-        public virtual bool Looping
+        public bool Looping
         {
             get => _animator.RepeatCount == Infinite;
             set => _animator.RepeatCount = value ? Infinite : 0;
@@ -691,12 +691,12 @@ namespace LottieUWP
             set => _animator.FrameRate = value;
         }
 
-        public virtual bool IsAnimating => _animator.IsRunning;
+        public bool IsAnimating => _animator.IsRunning;
 
         /// <summary>
         /// Use this to manually set fonts. 
         /// </summary>
-        public virtual FontAssetDelegate FontAssetDelegate
+        public FontAssetDelegate FontAssetDelegate
         {
             set
             {
@@ -708,13 +708,13 @@ namespace LottieUWP
             }
         }
 
-        public virtual TextDelegate TextDelegate
+        public TextDelegate TextDelegate
         {
             set => _textDelegate = value;
             get => _textDelegate;
         }
 
-        internal virtual bool UseTextGlyphs()
+        internal bool UseTextGlyphs()
         {
             return _textDelegate == null && _composition.Characters.Count > 0;
         }
@@ -731,7 +731,7 @@ namespace LottieUWP
         /// You can also use a fixed view width/height in conjunction with the normal ImageView 
         /// scaleTypes centerCrop and centerInside. 
         /// </summary>
-        public virtual float Scale
+        public float Scale
         {
             set
             {
@@ -763,7 +763,7 @@ namespace LottieUWP
         /// the documentation at http://airbnb.io/lottie for more information about importing shapes from 
         /// Sketch or Illustrator to avoid this. 
         /// </summary>
-        public virtual IImageAssetDelegate ImageAssetDelegate
+        public IImageAssetDelegate ImageAssetDelegate
         {
             set
             {
@@ -775,7 +775,7 @@ namespace LottieUWP
             }
         }
 
-        public virtual LottieComposition Composition => _composition;
+        public LottieComposition Composition => _composition;
 
         private void UpdateBounds()
         {
@@ -789,7 +789,7 @@ namespace LottieUWP
             _bitmapCanvas = new BitmapCanvas(Width, Height);
         }
 
-        public virtual void CancelAnimation()
+        public void CancelAnimation()
         {
             _lazyCompositionTasks.Clear();
             _animator.Cancel();
@@ -901,7 +901,7 @@ namespace LottieUWP
         /// </summary>
         /// <returns> the previous Bitmap or null.
         ///  </returns>
-        public virtual CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
+        public CanvasBitmap UpdateBitmap(string id, CanvasBitmap bitmap)
         {
             var bm = ImageAssetManager;
             if (bm == null)
@@ -914,7 +914,7 @@ namespace LottieUWP
             return ret;
         }
 
-        internal virtual CanvasBitmap GetImageAsset(string id)
+        internal CanvasBitmap GetImageAsset(string id)
         {
             return ImageAssetManager?.BitmapForId(_canvasControl.Device, id);
         }
@@ -945,7 +945,7 @@ namespace LottieUWP
 
         public CanvasDevice Device => _canvasControl?.Device;
 
-        internal virtual Typeface GetTypeface(string fontFamily, string style)
+        internal Typeface GetTypeface(string fontFamily, string style)
         {
             var assetManager = FontAssetManager;
             return assetManager?.GetTypeface(fontFamily, style);

@@ -14,13 +14,13 @@ namespace LottieUWP.Model.Content
             _colors = colors;
         }
 
-        internal virtual float[] Positions => _positions;
+        internal float[] Positions => _positions;
 
-        internal virtual Color[] Colors => _colors;
+        internal Color[] Colors => _colors;
 
-        internal virtual int Size => _colors.Length;
+        internal int Size => _colors.Length;
 
-        internal virtual void Lerp(GradientColor gc1, GradientColor gc2, float progress)
+        internal void Lerp(GradientColor gc1, GradientColor gc2, float progress)
         {
             if (gc1._colors.Length != gc2._colors.Length)
             {

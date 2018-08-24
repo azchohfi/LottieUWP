@@ -59,62 +59,62 @@ namespace LottieUWP.Model.Layer
             TimeRemapping = timeRemapping;
         }
 
-        internal virtual LottieComposition Composition => _composition;
+        internal LottieComposition Composition => _composition;
 
-        internal virtual float TimeStretch { get; }
+        internal float TimeStretch { get; }
 
-        internal virtual float StartFrame { get; }
+        internal float StartFrame { get; }
 
-        internal virtual float StartProgress => StartFrame / _composition.DurationFrames;
+        internal float StartProgress => StartFrame / _composition.DurationFrames;
 
-        internal virtual List<Keyframe<float?>> InOutKeyframes { get; }
+        internal List<Keyframe<float?>> InOutKeyframes { get; }
 
-        internal virtual long Id { get; }
+        internal long Id { get; }
 
-        internal virtual string Name { get; }
+        internal string Name { get; }
 
-        internal virtual string RefId { get; }
+        internal string RefId { get; }
 
-        internal virtual int PreCompWidth { get; }
+        internal int PreCompWidth { get; }
 
-        internal virtual int PreCompHeight { get; }
+        internal int PreCompHeight { get; }
 
-        internal virtual AnimatableTextFrame Text { get; }
+        internal AnimatableTextFrame Text { get; }
 
-        internal virtual AnimatableTextProperties TextProperties { get; }
+        internal AnimatableTextProperties TextProperties { get; }
 
-        internal virtual AnimatableFloatValue TimeRemapping { get; }
+        internal AnimatableFloatValue TimeRemapping { get; }
 
-        internal virtual List<Mask> Masks { get; }
+        internal List<Mask> Masks { get; }
 
-        internal virtual LayerType GetLayerType()
+        internal LayerType GetLayerType()
         {
             return _layerType;
         }
 
-        internal virtual MatteType GetMatteType()
+        internal MatteType GetMatteType()
         {
             return _matteType;
         }
 
-        internal virtual long ParentId { get; }
+        internal long ParentId { get; }
 
-        internal virtual List<IContentModel> Shapes => _shapes;
+        internal List<IContentModel> Shapes => _shapes;
 
-        internal virtual AnimatableTransform Transform { get; }
+        internal AnimatableTransform Transform { get; }
 
-        internal virtual Color SolidColor { get; }
+        internal Color SolidColor { get; }
 
-        internal virtual int SolidHeight { get; }
+        internal int SolidHeight { get; }
 
-        internal virtual int SolidWidth { get; }
+        internal int SolidWidth { get; }
 
         public override string ToString()
         {
             return ToString("");
         }
 
-        internal virtual string ToString(string prefix)
+        internal string ToString(string prefix)
         {
             var sb = new StringBuilder();
             sb.Append(prefix).Append(Name).Append("\n");

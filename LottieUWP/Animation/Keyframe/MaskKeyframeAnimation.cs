@@ -21,10 +21,10 @@ namespace LottieUWP.Animation.Keyframe
             }
         }
 
-        internal virtual List<Mask> Masks { get; }
+        internal List<Mask> Masks { get; }
 
-        internal virtual List<IBaseKeyframeAnimation<ShapeData, Path>> MaskAnimations => _maskAnimations;
+        internal List<IBaseKeyframeAnimation<ShapeData, Path>> MaskAnimations => _maskAnimations;
 
-        internal virtual List<IBaseKeyframeAnimation<int?, int?>> OpacityAnimations => _opacityAnimations;
+        internal List<IBaseKeyframeAnimation<int?, int?>> OpacityAnimations => _opacityAnimations;
     }
 }
