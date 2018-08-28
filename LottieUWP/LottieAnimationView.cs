@@ -63,7 +63,7 @@ namespace LottieUWP
 
         private string _animationName;
         //private bool wasAnimatingWhenDetached = false;
-        private bool _useHardwareLayer;
+        private bool _useHardwareLayer = true;
 
         private CancellationTokenSource _compositionTaskCTS;
         /// <summary>
