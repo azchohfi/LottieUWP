@@ -612,7 +612,7 @@ namespace LottieUWP
         /// <summary>
         /// <see cref="RepeatCount"/>
         /// </summary>
-        [Obsolete]
+        [Obsolete("Loop property is Obsolete, and will be removed on a future version. Use RepeatCount instead.")]
         public bool Looping
         {
             get => _animator.RepeatCount == Infinite;
