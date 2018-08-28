@@ -797,7 +797,7 @@ namespace LottieUWP
         /// <summary>
         /// <see cref="RepeatCount"/>
         /// </summary>
-        [Obsolete]
+        [Obsolete("Loop property is Obsolete, and will be removed on a future version. Use RepeatCount instead.")]
         public bool Loop
         {
             get => (bool)GetValue(LoopProperty);
@@ -805,7 +805,7 @@ namespace LottieUWP
         }
 
         // Using a DependencyProperty as the backing store for Loop.  This enables animation, styling, binding, etc...
-        [Obsolete]
+        [Obsolete("Loop property is Obsolete, and will be removed on a future version. Use RepeatCount instead.")]
         public static readonly DependencyProperty LoopProperty =
             DependencyProperty.Register("Loop", typeof(bool), typeof(LottieAnimationView), new PropertyMetadata(false, LoopPropertyChangedCallback));
 
