@@ -68,43 +68,6 @@ namespace LottieUWP
             Unloaded += UserControl_Unloaded;
         }
 
-        public CanvasCommandList GetCanvasImage(ICanvasResourceCreator resourceCreator, float scaleX, float scaleY)
-        {
-            lock (this)
-            {
-                var commandList = new CanvasCommandList(resourceCreator);
-                using (var session = commandList.CreateDrawingSession())
-                {
-                    var width = _composition.Bounds.Width * scaleX;
-                    var height = _composition.Bounds.Height * scaleY;
-                    if (_bitmapCanvas == null || _bitmapCanvas.Width < width || _bitmapCanvas.Height < height)
-                    {
-                        _bitmapCanvas?.Dispose();
-                        _bitmapCanvas = new BitmapCanvas(width, height);
-                    }
-
-                    using (_bitmapCanvas.CreateSession(resourceCreator.Device, (float) width,
-                        (float) height, session))
-                    {
-                        _bitmapCanvas.Clear(Colors.Transparent);
-                        LottieLog.BeginSection("Drawable.Draw");
-                        if (_compositionLayer == null)
-                        {
-                            return null;
-                        }
-
-                        _matrix.Reset();
-                        _matrix = MatrixExt.PreScale(_matrix, scaleX, scaleY);
-                        _compositionLayer.Draw(_bitmapCanvas, _matrix, _alpha);
-                        LottieLog.EndSection("Drawable.Draw");
-                    }
-
-                }
-
-                return commandList;
-            }
-        }
-
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             _canvasControl = new CanvasAnimatedControl
