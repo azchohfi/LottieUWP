@@ -621,7 +621,18 @@ namespace LottieUWP
 
                 _composition = value;
                 var isNewComposition = _lottieDrawable.SetComposition(value);
+
+                var needResume = _lottieDrawable.IsAnimating;
+                if (needResume)
+                {
+                    _lottieDrawable.PauseAnimation();
+                }
                 EnableOrDisableHardwareLayer();
+                if (needResume)
+                {
+                    _lottieDrawable.PlayAnimation();
+                }
+
                 if (_viewbox?.Child == _lottieDrawable && !isNewComposition)
                 {
                     // We can avoid re-setting the drawable, and invalidating the view, since the value
@@ -956,8 +967,7 @@ namespace LottieUWP
 
         private void EnableOrDisableHardwareLayer()
         {
-            var useHardwareLayer = _useHardwareLayer && _lottieDrawable.IsAnimating;
-            _lottieDrawable.ForceSoftwareRenderer(!useHardwareLayer);
+            _lottieDrawable.ForceSoftwareRenderer(!_useHardwareLayer);
         }
 
         public CanvasDevice Device => _lottieDrawable?.Device;
