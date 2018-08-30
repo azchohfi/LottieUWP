@@ -19,7 +19,7 @@
   </metadata>
   <files>
 	<file src="..\LottieUWP\bin\Release\LottieUWP.dll" target="lib\uap10.0"/>
-	<file src="..\LottieUWP\bin\Release\LottieUWP.pri" target="lib\uap10.0"/>
 	<file src="..\LottieUWP\bin\Release\LottieUWP.pdb" target="lib\uap10.0"/>
+	<file src="..\LottieUWP\**\*.cs" exclude="..\LottieUWP\obj\**\*.cs" target="src" />
   </files>
 </package>
