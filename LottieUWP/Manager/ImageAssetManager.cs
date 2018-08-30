@@ -75,20 +75,19 @@ namespace LottieUWP.Manager
         {
             lock (this)
             {
-                if (!_imageAssets.TryGetValue(id, out var imageAsset))
+                if (!_imageAssets.TryGetValue(id, out var asset))
                 {
                     return null;
                 }
-                else if (imageAsset.Bitmap != null)
+                var bitmap = asset.Bitmap;
+                if (bitmap != null)
                 {
-                    return imageAsset.Bitmap;
+                    return bitmap;
                 }
-
-                CanvasBitmap bitmap;
 
                 if (_delegate != null)
                 {
-                    bitmap = _delegate.FetchBitmap(imageAsset);
+                    bitmap = _delegate.FetchBitmap(asset);
                     if (bitmap != null)
                     {
                         PutBitmap(id, bitmap);
@@ -96,7 +95,7 @@ namespace LottieUWP.Manager
                     return bitmap;
                 }
 
-                var filename = imageAsset.FileName;
+                var filename = asset.FileName;
                 Task<CanvasBitmap> task = null;
                 Stream @is;
 
@@ -130,7 +129,7 @@ namespace LottieUWP.Manager
                     {
                         throw new InvalidOperationException("You must set an images folder before loading an image. Set it with LottieDrawable.ImageAssetsFolder");
                     }
-                    @is = File.OpenRead(_imagesFolder + imageAsset.FileName);
+                    @is = File.OpenRead(_imagesFolder + asset.FileName);
                 }
                 catch (IOException e)
                 {
@@ -156,8 +155,11 @@ namespace LottieUWP.Manager
                 for (var i = _imageAssets.Count - 1; i >= 0; i--)
                 {
                     var entry = _imageAssets.ElementAt(i);
-                    entry.Value.Bitmap?.Dispose();
-                    entry.Value.Bitmap = null;
+                    if (entry.Value.Bitmap != null)
+                    {
+                        entry.Value.Bitmap.Dispose();
+                        entry.Value.Bitmap = null;
+                    }
                     _imageAssets.Remove(entry.Key);
                 }
             }
