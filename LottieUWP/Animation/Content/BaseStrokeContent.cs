@@ -17,7 +17,7 @@ namespace LottieUWP.Animation.Content
         private readonly Path _path = new Path();
         private readonly Path _trimPathPath = new Path();
         private Rect _rect;
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
         private readonly BaseLayer _layer;
         private readonly List<PathGroup> _pathGroups = new List<PathGroup>();
         private readonly float[] _dashPatternValues;
@@ -29,7 +29,7 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<float?, float?> _dashPatternOffsetAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
-        internal BaseStrokeContent(LottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
+        internal BaseStrokeContent(ILottieDrawable lottieDrawable, BaseLayer layer, CanvasCapStyle cap, CanvasLineJoin join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width, List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset)
         {
             _lottieDrawable = lottieDrawable;
             _layer = layer;

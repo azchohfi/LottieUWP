@@ -27,7 +27,7 @@ namespace LottieUWP.Model.Content
 
         internal PathFillType FillType { get; }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new FillContent(drawable, layer, this);
         }

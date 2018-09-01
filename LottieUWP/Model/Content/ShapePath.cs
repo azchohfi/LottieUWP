@@ -24,7 +24,7 @@ namespace LottieUWP.Model.Content
             return _shapePath;
         }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new ShapeContent(drawable, layer, this);
         }

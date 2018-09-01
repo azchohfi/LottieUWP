@@ -15,14 +15,14 @@ namespace LottieUWP.Animation.Content
         private Matrix3X3 _matrix = Matrix3X3.CreateIdentity();
         private readonly Path _path = new Path();
 
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
         private readonly BaseLayer _layer;
         private readonly IBaseKeyframeAnimation<float?, float?> _copies;
         private readonly IBaseKeyframeAnimation<float?, float?> _offset;
         private readonly TransformKeyframeAnimation _transform;
         private ContentGroup _contentGroup;
 
-        internal RepeaterContent(LottieDrawable lottieDrawable, BaseLayer layer, Repeater repeater)
+        internal RepeaterContent(ILottieDrawable lottieDrawable, BaseLayer layer, Repeater repeater)
         {
             _lottieDrawable = lottieDrawable;
             _layer = layer;

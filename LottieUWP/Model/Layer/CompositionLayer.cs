@@ -16,7 +16,7 @@ namespace LottieUWP.Model.Layer
         private bool? _hasMatte;
         private bool? _hasMasks;
 
-        internal CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels, LottieComposition composition) : base(lottieDrawable, layerModel)
+        internal CompositionLayer(ILottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels, LottieComposition composition) : base(lottieDrawable, layerModel)
         {
             var timeRemapping = layerModel.TimeRemapping;
             if (timeRemapping != null)

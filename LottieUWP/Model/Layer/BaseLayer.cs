@@ -13,7 +13,7 @@ namespace LottieUWP.Model.Layer
     {
         private static readonly int SaveFlags = BitmapCanvas.ClipSaveFlag | BitmapCanvas.ClipToLayerSaveFlag | BitmapCanvas.MatrixSaveFlag;
 
-        internal static BaseLayer ForModel(Layer layerModel, LottieDrawable drawable, LottieComposition composition)
+        internal static BaseLayer ForModel(Layer layerModel, ILottieDrawable drawable, LottieComposition composition)
         {
             switch (layerModel.GetLayerType())
             {
@@ -50,7 +50,7 @@ namespace LottieUWP.Model.Layer
         private Rect _tempMaskBoundsRect;
         private readonly string _drawTraceName;
         internal Matrix3X3 BoundsMatrix = Matrix3X3.CreateIdentity();
-        internal readonly LottieDrawable LottieDrawable;
+        internal readonly ILottieDrawable LottieDrawable;
         internal Layer LayerModel;
         private readonly MaskKeyframeAnimation _mask;
         private BaseLayer _matteLayer;
@@ -61,7 +61,7 @@ namespace LottieUWP.Model.Layer
         internal readonly TransformKeyframeAnimation Transform;
         private bool _visible = true;
 
-        internal BaseLayer(LottieDrawable lottieDrawable, Layer layerModel)
+        internal BaseLayer(ILottieDrawable lottieDrawable, Layer layerModel)
         {
             LottieDrawable = lottieDrawable;
             LayerModel = layerModel;

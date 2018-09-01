@@ -27,7 +27,7 @@ namespace LottieUWP.Model.Content
 
         internal MergePathsMode Mode => _mode;
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             if (!drawable.EnableMergePathsForKitKatAndAbove())
             {

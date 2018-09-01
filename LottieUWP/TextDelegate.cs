@@ -12,7 +12,7 @@ namespace LottieUWP
     {
         private readonly Dictionary<string, string> _stringMap = new Dictionary<string, string>();
         private readonly LottieAnimationView _animationView;
-        private readonly LottieDrawable _drawable;
+        private readonly ILottieDrawable _drawable;
         private bool _cacheText = true;
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace LottieUWP
             _drawable = null;
         }
 
-        public TextDelegate(LottieDrawable drawable)
+        public TextDelegate(ILottieDrawable drawable)
         {
             _drawable = drawable;
             _animationView = null;

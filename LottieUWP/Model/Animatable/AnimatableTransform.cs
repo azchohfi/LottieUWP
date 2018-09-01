@@ -51,7 +51,7 @@ namespace LottieUWP.Model.Animatable
             return new TransformKeyframeAnimation(this);
         }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return null;
         }

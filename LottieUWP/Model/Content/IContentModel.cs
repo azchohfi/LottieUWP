@@ -5,6 +5,6 @@ namespace LottieUWP.Model.Content
 {
     public interface IContentModel
     {
-        IContent ToContent(LottieDrawable drawable, BaseLayer layer);
+        IContent ToContent(ILottieDrawable drawable, BaseLayer layer);
     }
 }

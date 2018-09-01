@@ -47,7 +47,7 @@ namespace LottieUWP.Model.Content
 
         internal AnimatableFloatValue DashOffset { get; }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new GradientStrokeContent(drawable, layer, this);
         }

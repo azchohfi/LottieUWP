@@ -19,9 +19,9 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<Color?, Color?> _colorAnimation;
         private readonly IBaseKeyframeAnimation<int?, int?> _opacityAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
 
-        internal FillContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill)
+        internal FillContent(ILottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill)
         {
             _layer = layer;
             Name = fill.Name;
