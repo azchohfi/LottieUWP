@@ -63,7 +63,7 @@ namespace LottieUWP.Model.Content
             MiterLimit = miterLimit;
         }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new StrokeContent(drawable, layer, this);
         }

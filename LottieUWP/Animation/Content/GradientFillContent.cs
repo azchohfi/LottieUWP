@@ -32,10 +32,10 @@ namespace LottieUWP.Animation.Content
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _startPointAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _endPointAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
         private readonly int _cacheSteps;
 
-        internal GradientFillContent(LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill)
+        internal GradientFillContent(ILottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill)
         {
             _layer = layer;
             Name = fill.Name;

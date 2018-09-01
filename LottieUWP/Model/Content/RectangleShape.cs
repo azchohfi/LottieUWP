@@ -27,7 +27,7 @@ namespace LottieUWP.Model.Content
 
         internal IAnimatableValue<Vector2?, Vector2?> Position => _position;
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new RectangleContent(drawable, layer, this);
         }

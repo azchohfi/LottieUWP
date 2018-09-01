@@ -49,7 +49,7 @@ namespace LottieUWP.Model.Content
 
         internal AnimatableFloatValue OuterRoundedness { get; }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new PolystarContent(drawable, layer, this);
         }

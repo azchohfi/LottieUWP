@@ -14,7 +14,7 @@ namespace LottieUWP.Model.Layer
         private Rect _dst;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
-        internal ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
+        internal ImageLayer(ILottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
         }
 

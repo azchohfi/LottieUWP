@@ -39,7 +39,7 @@ namespace LottieUWP.Model.Content
 
         internal AnimatableFloatValue Offset => _offset;
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new TrimPathContent(layer, this);
         }

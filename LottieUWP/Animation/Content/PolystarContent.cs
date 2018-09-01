@@ -22,7 +22,7 @@ namespace LottieUWP.Animation.Content
         private const float PolygonMagicNumber = .25f;
         private readonly Path _path = new Path();
 
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
         private readonly PolystarShape.Type _type;
         private readonly IBaseKeyframeAnimation<float?, float?> _pointsAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _positionAnimation;
@@ -35,7 +35,7 @@ namespace LottieUWP.Animation.Content
         private TrimPathContent _trimPath;
         private bool _isPathValid;
 
-        internal PolystarContent(LottieDrawable lottieDrawable, BaseLayer layer, PolystarShape polystarShape)
+        internal PolystarContent(ILottieDrawable lottieDrawable, BaseLayer layer, PolystarShape polystarShape)
         {
             _lottieDrawable = lottieDrawable;
 

@@ -16,7 +16,7 @@ namespace LottieUWP.Animation.Content
         private readonly Path _path = new Path();
         private Rect _rect;
 
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _positionAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _sizeAnimation;
         private readonly IBaseKeyframeAnimation<float?, float?> _cornerRadiusAnimation;
@@ -24,7 +24,7 @@ namespace LottieUWP.Animation.Content
         private TrimPathContent _trimPath;
         private bool _isPathValid;
 
-        internal RectangleContent(LottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape)
+        internal RectangleContent(ILottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape)
         {
             Name = rectShape.Name;
             _lottieDrawable = lottieDrawable;

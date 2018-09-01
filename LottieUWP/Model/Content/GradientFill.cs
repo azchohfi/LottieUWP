@@ -39,7 +39,7 @@ namespace LottieUWP.Model.Content
 
         internal AnimatableFloatValue HighlightAngle { get; }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new GradientFillContent(drawable, layer, this);
         }

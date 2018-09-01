@@ -13,7 +13,7 @@ namespace LottieUWP.Model.Layer
         private readonly Path _path = new Path();
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
-        internal SolidLayer(LottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
+        internal SolidLayer(ILottieDrawable lottieDrawable, Layer layerModel) : base(lottieDrawable, layerModel)
         {
             LayerModel = layerModel;
 

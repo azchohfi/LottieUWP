@@ -115,6 +115,7 @@
     <Compile Include="Animation\Content\ShapeContent.cs" />
     <Compile Include="Animation\Content\StrokeContent.cs" />
     <Compile Include="Animation\Content\TrimPathContent.cs" />
+    <Compile Include="ILottieDrawable.cs" />
     <Compile Include="LottieCompositionFactory.cs" />
     <Compile Include="LottieResult.cs" />
     <Compile Include="Model\LottieCompositionCache.cs" />

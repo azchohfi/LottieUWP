@@ -13,7 +13,7 @@ namespace LottieUWP.Animation.Content
 {
     internal class ContentGroup : IDrawingContent, IPathContent, IKeyPathElement
     {
-        private static List<IContent> ContentsFromModels(LottieDrawable drawable, BaseLayer layer, List<IContentModel> contentModels)
+        private static List<IContent> ContentsFromModels(ILottieDrawable drawable, BaseLayer layer, List<IContentModel> contentModels)
         {
             var contents = new List<IContent>(contentModels.Count);
             for (var i = 0; i < contentModels.Count; i++)
@@ -48,14 +48,14 @@ namespace LottieUWP.Animation.Content
         private List<IPathContent> _pathContents;
         private readonly TransformKeyframeAnimation _transformAnimation;
 
-        internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup)
+        internal ContentGroup(ILottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup)
             : this(lottieDrawable, layer, shapeGroup.Name,
                 ContentsFromModels(lottieDrawable, layer, shapeGroup.Items),
                 FindTransform(shapeGroup.Items))
         {
         }
 
-        internal ContentGroup(LottieDrawable lottieDrawable, BaseLayer layer, string name, List<IContent> contents, AnimatableTransform transform)
+        internal ContentGroup(ILottieDrawable lottieDrawable, BaseLayer layer, string name, List<IContent> contents, AnimatableTransform transform)
         {
             Name = name;
             _contents = contents;

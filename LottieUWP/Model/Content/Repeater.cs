@@ -22,7 +22,7 @@ namespace LottieUWP.Model.Content
 
         internal AnimatableTransform Transform { get; }
 
-        public IContent ToContent(LottieDrawable drawable, BaseLayer layer)
+        public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
             return new RepeaterContent(drawable, layer, this);
         }

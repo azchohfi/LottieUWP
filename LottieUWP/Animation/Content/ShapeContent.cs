@@ -10,13 +10,13 @@ namespace LottieUWP.Animation.Content
     {
         private readonly Path _path = new Path();
 
-        private readonly LottieDrawable _lottieDrawable;
+        private readonly ILottieDrawable _lottieDrawable;
         private readonly IBaseKeyframeAnimation<ShapeData, Path> _shapeAnimation;
 
         private bool _isPathValid;
         private TrimPathContent _trimPath;
 
-        internal ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape)
+        internal ShapeContent(ILottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape)
         {
             Name = shape.Name;
             _lottieDrawable = lottieDrawable;
