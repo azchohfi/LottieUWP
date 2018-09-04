@@ -88,7 +88,7 @@ namespace LottieUWP
                 await lottieAnimationView.SetAnimationAsync((string)e.NewValue);
             }
         }
-        
+
         public string Url
         {
             get { return (string)GetValue(UrlProperty); }
@@ -441,6 +441,10 @@ namespace LottieUWP
         /// </summary>
         public void UseHardwareAcceleration(bool use = true)
         {
+            if (_useHardwareLayer == use)
+            {
+                return;
+            }
             _useHardwareLayer = use;
             EnableOrDisableHardwareLayer();
         }

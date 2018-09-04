@@ -138,6 +138,10 @@ namespace LottieUWP
         /// </summary>
         public void EnableMergePathsForKitKatAndAbove(bool enable)
         {
+            if (_enableMergePaths == enable)
+            {
+                return;
+            }
             _enableMergePaths = enable;
             if (_composition != null)
             {
