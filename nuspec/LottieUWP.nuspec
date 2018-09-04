@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>LottieUWP</id>
-    <version>2.6.0-rc3</version>
+    <version>2.6.0</version>
     <authors>azchohfi</authors>
     <owners>azchohfi</owners>
     <licenseUrl>https://github.com/azchohfi/LottieUWP/blob/master/LICENSE</licenseUrl>

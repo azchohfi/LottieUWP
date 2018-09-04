@@ -390,6 +390,8 @@
     <Content Include="Assets\Tests\map.zip" />
     <Content Include="Assets\Tests\DifferentPointsCount.json" />
     <Content Include="Assets\heart.json" />
+    <Content Include="Assets\Fail.json" />
+    <Content Include="Assets\hired.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
