@@ -254,7 +254,7 @@ class ImageAssetDelegate : IImageAssetDelegate
 4. If you are using your animation in a list, it is recommended to use a CacheStrategy in LottieAnimationView.setAnimation(String, CacheStrategy) so the animations do not have to be deserialized every time.
 
 ## Try it out
-Clone this repository and run the LottieUWP.Sample module to see a bunch of sample animations. The JSON files for them are located in [LottieUWP.Sample/Assets](https://github.com/azchohfi/LottieUWP/tree/master/LottieUWP.Sample/assets) and the orignal After Effects files are located in [/After Effects Samples](https://github.com/airbnb/lottie-android/tree/master/After%20Effects%20Samples)
+Clone this repository and run the LottieUWP.Sample module to see a bunch of sample animations. The JSON files for them are located in [LottieUWP.Sample/Assets](https://github.com/azchohfi/LottieUWP/tree/master/LottieUWP.Sample/Assets) and the orignal After Effects files are located in [/After Effects Samples](https://github.com/airbnb/lottie-android/tree/master/After%20Effects%20Samples)
 
 ## Community Contributions
  * [Xamarin bindings](https://github.com/martijn00/LottieXamarin)
