@@ -640,6 +640,8 @@ namespace LottieUWP
                 InvalidateArrange();
                 InvalidateMeasure();
                 _lottieDrawable.InvalidateSelf();
+
+                OnLottieCompositionLoaded();
             }
         }
 
@@ -796,6 +798,18 @@ namespace LottieUWP
         public void RemoveAllAnimatorListeners()
         {
             _lottieDrawable.RemoveAllAnimatorListeners();
+        }
+
+        public event EventHandler LottieCompositionLoaded;
+
+        protected void OnLottieCompositionLoaded()
+        {
+            LottieCompositionLoaded?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RemoveAllLottieOnCompositionLoadedListener()
+        {
+            LottieCompositionLoaded = null;
         }
 
         /// <summary>
