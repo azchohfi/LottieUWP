@@ -782,7 +782,7 @@ namespace LottieUWP
         /// zero or more actual <see cref="KeyPath"/>s
         /// that exist in the current animation.
         /// 
-        /// If you want to set value callbacks for any of these values, it is recommend to use the 
+        /// If you want to set value callbacks for any of these values, it is recommended to use the 
         /// returned <see cref="KeyPath"/> objects because they will be internally resolved to their content 
         /// and won't trigger a tree walk of the animation contents when applied. 
         /// </summary>
@@ -801,8 +801,8 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Add an property callback for the specified <see cref="KeyPath"/>. This <see cref="KeyPath"/> can resolve 
-        /// to multiple contents. In that case, the callbacks's value will apply to all of them. 
+        /// Add a property callback for the specified <see cref="KeyPath"/>. This <see cref="KeyPath"/> can resolve 
+        /// to multiple contents. In that case, the callback's value will apply to all of them. 
         /// 
         /// Internally, this will check if the <see cref="KeyPath"/> has already been resolved with 
         /// <see cref="ResolveKeyPath"/> and will resolve it if it hasn't. 
