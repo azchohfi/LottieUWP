@@ -56,8 +56,18 @@ namespace LottieUWP.Animation.Content
         {
             if(_canvasRadialGradientBrush != null)
             {
-                _canvasRadialGradientBrush.Dispose();
-                _canvasRadialGradientBrush = null;
+                try
+                {
+                    _canvasRadialGradientBrush.Dispose();
+                }
+                catch
+                {
+                    // Ignore
+                }
+                finally
+                {
+                    _canvasRadialGradientBrush = null;
+                }
             }
         }
 

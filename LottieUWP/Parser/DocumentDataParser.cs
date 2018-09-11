@@ -18,7 +18,7 @@ namespace LottieUWP.Parser
             double baselineShift = 0;
             Color fillColor;
             Color strokeColor;
-            int strokeWidth = 0;
+            double strokeWidth = 0;
             bool strokeOverFill = true;
 
             reader.BeginObject();
@@ -54,7 +54,7 @@ namespace LottieUWP.Parser
                         strokeColor = JsonUtils.JsonToColor(reader);
                         break;
                     case "sw":
-                        strokeWidth = reader.NextInt();
+                        strokeWidth = reader.NextDouble();
                         break;
                     case "of":
                         strokeOverFill = reader.NextBoolean();

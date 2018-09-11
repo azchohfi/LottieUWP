@@ -95,7 +95,7 @@ namespace LottieUWP.Model.Layer
             else
             {
                 var parentScale = Utils.Utils.GetScale(parentMatrix);
-                _strokePaint.StrokeWidth = documentData.StrokeWidth * Utils.Utils.DpScale() * parentScale;
+                _strokePaint.StrokeWidth = (float)(documentData.StrokeWidth * Utils.Utils.DpScale() * parentScale);
             }
 
             if (_lottieDrawable.UseTextGlyphs())

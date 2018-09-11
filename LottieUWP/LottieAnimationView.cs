@@ -21,7 +21,7 @@ namespace LottieUWP
     /// <para>
     /// You may set the animation in one of two ways:
     /// 1) Attrs: <seealso cref="LottieAnimationView.FileNameProperty"/>
-    /// 2) Programatically: <seealso cref="SetAnimationAsync(string)"/>, <seealso cref="Composition"/>,
+    /// 2) Programmatically: <seealso cref="SetAnimationAsync(string)"/>, <seealso cref="Composition"/>,
     /// or <seealso cref="SetAnimationAsync(JsonReader)"/>.
     /// </para>
     /// <para>
@@ -184,7 +184,7 @@ namespace LottieUWP
         /// Takes a <see cref="KeyPath"/>, potentially with wildcards or globstars and resolve it to a list of
         /// zero or more actual <see cref="KeyPath"/>s that exist in the current animation.
         /// 
-        /// If you want to set value callbacks for any of these values, it is recommend to use the 
+        /// If you want to set value callbacks for any of these values, it is recommended to use the 
         /// returned <see cref="KeyPath"/> objects because they will be internally resolved to their content
         /// and won't trigger a tree walk of the animation contents when applied. 
         /// </summary>
@@ -195,8 +195,8 @@ namespace LottieUWP
             return _lottieDrawable.ResolveKeyPath(keyPath);
         }
 
-        /// Add an property callback for the specified <see cref="KeyPath"/>. This <see cref="KeyPath"/> can resolve 
-        /// to multiple contents. In that case, the callbacks's value will apply to all of them. 
+        /// Add a property callback for the specified <see cref="KeyPath"/>. This <see cref="KeyPath"/> can resolve 
+        /// to multiple contents. In that case, the callback's value will apply to all of them. 
         /// 
         /// Internally, this will check if the <see cref="KeyPath"/> has already been resolved with 
         /// <see cref="ResolveKeyPath"/> and will resolve it if it hasn't. 
@@ -510,7 +510,7 @@ namespace LottieUWP
 
         /// <summary>
         /// Sets the animation from json string. This is the ideal API to use when loading an animation 
-        /// over the network because you can use the raw response body here and a converstion to a
+        /// over the network because you can use the raw response body here and a conversion to a
         /// JsonObject never has to be done.
         /// </summary>
         /// <param name="jsonString"></param>
@@ -562,7 +562,7 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them togethre and lottie
+        /// Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and lottie
         /// will unzip and link the images automatically.
         /// Under the hood, Lottie uses HttpClient. It will download the file
         /// to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
@@ -651,6 +651,8 @@ namespace LottieUWP
                 InvalidateArrange();
                 InvalidateMeasure();
                 _lottieDrawable.InvalidateSelf();
+
+                OnLottieCompositionLoaded();
             }
         }
 
@@ -807,6 +809,18 @@ namespace LottieUWP
         public void RemoveAllAnimatorListeners()
         {
             _lottieDrawable.RemoveAllAnimatorListeners();
+        }
+
+        public event EventHandler LottieCompositionLoaded;
+
+        protected void OnLottieCompositionLoaded()
+        {
+            LottieCompositionLoaded?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RemoveAllLottieOnCompositionLoadedListener()
+        {
+            LottieCompositionLoaded = null;
         }
 
         /// <summary>

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Popups;
@@ -109,7 +113,11 @@ namespace LottieUWP.Sample
             filePicker.FileTypeFilter.Add(".json");
             filePicker.FileTypeFilter.Add(".zip");
             var file = await filePicker.PickSingleFileAsync();
+            await LoadFile(file);
+        }
 
+        private async Task LoadFile(StorageFile file)
+        {
             if (file != null)
             {
                 using (var stream = await file.OpenStreamForReadAsync())
@@ -142,6 +150,26 @@ namespace LottieUWP.Sample
                 await LottieAnimationView.SetAnimationFromUrlAsync(inputDialog.Text);
 
                 LottieAnimationView.PlayAnimation();
+            }
+        }
+
+        private void Grid_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+
+            if (e.DragUIOverride != null)
+            {
+                e.DragUIOverride.Caption = "Load file";
+                e.DragUIOverride.IsContentVisible = true;
+            }
+        }
+
+        private async void Grid_Drop(object sender, DragEventArgs e)
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                var file = (await e.DataView.GetStorageItemsAsync()).FirstOrDefault() as StorageFile;
+                await LoadFile(file);
             }
         }
     }

@@ -152,15 +152,15 @@ namespace LottieUWP.Manager
         {
             lock (this)
             {
-                for (var i = _imageAssets.Count - 1; i >= 0; i--)
+                foreach (var entry in _imageAssets)
                 {
-                    var entry = _imageAssets.ElementAt(i);
-                    if (entry.Value.Bitmap != null)
+                    var asset = entry.Value;
+                    var bitmap = asset.Bitmap;
+                    if (bitmap != null)
                     {
-                        entry.Value.Bitmap.Dispose();
-                        entry.Value.Bitmap = null;
+                        bitmap.Dispose();
+                        asset.Bitmap = null;
                     }
-                    _imageAssets.Remove(entry.Key);
                 }
             }
         }
