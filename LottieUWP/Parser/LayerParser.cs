@@ -17,7 +17,9 @@ namespace LottieUWP.Parser
 
         public static Layer Parse(JsonReader reader, LottieComposition composition)
         {
-            string layerName = null;
+            // This should always be set by After Effects. However, if somebody wants to minify 
+            // and optimize their json, the name isn't critical for most cases so it can be removed. 
+            string layerName = "UNSET";
             Layer.LayerType layerType = Layer.LayerType.Unknown;
             string refId = null;
             long layerId = 0;
