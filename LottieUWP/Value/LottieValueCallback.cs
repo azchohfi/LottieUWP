@@ -10,7 +10,7 @@ namespace LottieUWP.Value
     {
         private readonly LottieFrameInfo<T> _frameInfo = new LottieFrameInfo<T>();
 
-        IBaseKeyframeAnimation _animation;
+        private IBaseKeyframeAnimation _animation;
 
         /// <summary>
         /// This can be set with <see cref="SetValue(T)"/> to use a value instead of deferring
@@ -29,6 +29,8 @@ namespace LottieUWP.Value
 
         /// <summary>
         /// Override this if you haven't set a static value in the constructor or with SetValue.
+        /// 
+        /// Return null to resort to the default value.
         /// </summary>
         /// <param name="frameInfo"></param>
         /// <returns></returns>

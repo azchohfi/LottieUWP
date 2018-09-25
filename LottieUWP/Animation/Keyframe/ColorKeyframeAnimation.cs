@@ -22,7 +22,11 @@ namespace LottieUWP.Animation.Keyframe
 
             if (ValueCallback != null)
             {
-                return ValueCallback.GetValueInternal(keyframe.StartFrame.Value, keyframe.EndFrame.Value, startColor, endColor, keyframeProgress, LinearCurrentKeyframeProgress, Progress);
+                var value = ValueCallback.GetValueInternal(keyframe.StartFrame.Value, keyframe.EndFrame.Value, startColor, endColor, keyframeProgress, LinearCurrentKeyframeProgress, Progress);
+                if (value != null)
+                {
+                    return value;
+                }
             }
 
             return GammaEvaluator.Evaluate(keyframeProgress, startColor.Value, endColor.Value);
