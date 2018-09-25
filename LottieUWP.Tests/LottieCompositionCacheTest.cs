@@ -20,7 +20,6 @@ namespace LottieUWP.Tests
         public void TestEmpty()
         {
             Assert.Null(cache.Get("foo"));
-            Assert.Null(cache.GetRawRes(123));
         }
 
         [Fact]
@@ -35,27 +34,6 @@ namespace LottieUWP.Tests
         {
             cache.Put("foo", composition);
             Assert.Equal(composition, cache.Get("foo"));
-        }
-
-        [Fact]
-        public void TestStrongRawRes()
-        {
-            cache.Put(123, composition);
-            Assert.Equal(composition, cache.GetRawRes(123));
-        }
-
-        [Fact]
-        public void TestWeakRawRes()
-        {
-            cache.Put(123, composition);
-            Assert.Equal(composition, cache.GetRawRes(123));
-        }
-
-        [Fact]
-        public void TestStringAndWeakRawRes()
-        {
-            cache.Put(123, composition);
-            Assert.Equal(composition, cache.GetRawRes(123));
         }
     }
 }

@@ -13,19 +13,13 @@
         {
         }
 
-        public LottieComposition GetRawRes(int rawRes)
+        public LottieComposition Get(string cacheKey)
         {
-            return Get(rawRes.ToString());
-        }
-
-        public LottieComposition Get(string assetName)
-        {
-            return _cache.Get(assetName);
-        }
-
-        public void Put(int rawRes, LottieComposition composition)
-        {
-            Put(rawRes.ToString(), composition);
+            if (cacheKey == null)
+            {
+                return null;
+            }
+            return _cache.Get(cacheKey);
         }
 
         public void Put(string cacheKey, LottieComposition composition)

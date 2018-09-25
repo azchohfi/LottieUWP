@@ -5,6 +5,7 @@ using LottieUWP.Utils;
 using Microsoft.Graphics.Canvas;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -92,7 +93,7 @@ namespace LottieUWP
 
         /// <summary>
         /// Auto-closes the stream.
-        /// <see cref="FromJsonInputStreamSync(Stream, bool"/>
+        /// <see cref="FromJsonInputStreamSync(Stream, string, bool"/>
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="cancellationToken"></param>
@@ -303,6 +304,14 @@ namespace LottieUWP
         /// </summary>
         private static async Task<LottieResult<LottieComposition>> CacheAsync(string cacheKey, Func<LottieResult<LottieComposition>> callable, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var cachedComposition = LottieCompositionCache.Instance.Get(cacheKey);
+
+            if (cachedComposition != null)
+            {
+                Debug.WriteLine("call\treturning from cache", "Gabe");
+                return new LottieResult<LottieComposition>(cachedComposition);
+            }
+
             if (string.IsNullOrEmpty(cacheKey))
             {
                 return await Task.Run(callable, cancellationToken);
@@ -318,6 +327,10 @@ namespace LottieUWP
             {
                 _taskCache[cacheKey] = task;
                 await task.AsAsyncOperation().AsTask(cancellationToken);
+                if (cacheKey != null)
+                {
+                    LottieCompositionCache.Instance.Put(cacheKey, task.Result.Value);
+                }
                 _taskCache.Remove(cacheKey);
             }
             catch
