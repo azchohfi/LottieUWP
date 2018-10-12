@@ -16,7 +16,7 @@ namespace LottieUWP
             IContour Copy();
             float[] Points { get; }
             PathIterator.ContourType Type { get; }
-            void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed);
+            void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed);
             void Offset(float dx, float dy);
         }
 
@@ -70,7 +70,7 @@ namespace LottieUWP
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Arc;
 
-            public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
+            public void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed)
             {
                 canvasPathBuilder.AddArc(_endPoint, _a, _b, (float)MathExt.ToRadians(_sweepAngle), CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
 
@@ -95,6 +95,58 @@ namespace LottieUWP
                 var y = 2 * _b * u / (u2 + 1);
 
                 return new Vector2((float)(_rect.Left + _a + x), (float)(_rect.Top + _b + y));
+            }
+        }
+
+        class OpContour : IContour
+        {
+            private readonly Path _path1;
+            private readonly Path _path2;
+            private readonly CanvasGeometryCombine _op;
+
+            public OpContour(Path path1, Path path2, CanvasGeometryCombine op)
+            {
+                _path1 = path1;
+                _path2 = path2;
+                _op = op;
+            }
+
+            public void Transform(Matrix3X3 matrix)
+            {
+                _path1.Transform(matrix);
+                _path2.Transform(matrix);
+            }
+
+            public IContour Copy()
+            {
+                var copyPath1 = new Path();
+                copyPath1.Set(_path1);
+                var copyPath2 = new Path();
+                copyPath2.Set(_path2);
+                return new OpContour(copyPath1, copyPath2, _op);
+            }
+
+            public float[] Points => new float[] { };
+
+            public PathIterator.ContourType Type => PathIterator.ContourType.Op;
+
+            public void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed)
+            {
+                geometry?.Dispose();
+                using (var path1Geometry = _path1.GetGeometry(device))
+                {
+                    using (var path2Geometry = _path2.GetGeometry(device))
+                    {
+                        geometry = path1Geometry.CombineWith(path2Geometry, Matrix3x2.Identity, _op);
+                    }
+                }
+                closed = true;
+            }
+
+            public void Offset(float dx, float dy)
+            {
+                _path1.Offset(dx, dy);
+                _path2.Offset(dx, dy);
             }
         }
 
@@ -173,7 +225,7 @@ namespace LottieUWP
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Bezier;
 
-            public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
+            public void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed)
             {
                 canvasPathBuilder.AddCubicBezier(_control1, _control2, _vertex);
 
@@ -220,7 +272,7 @@ namespace LottieUWP
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Line;
 
-            public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
+            public void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed)
             {
                 canvasPathBuilder.AddLine(_points[0], _points[1]);
 
@@ -253,7 +305,7 @@ namespace LottieUWP
                 return new MoveToContour(_points[0], _points[1]);
             }
 
-            public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
+            public void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed)
             {
                 if (!closed)
                 {
@@ -294,7 +346,7 @@ namespace LottieUWP
                 return new CloseContour();
             }
 
-            public void AddPathSegment(CanvasPathBuilder canvasPathBuilder, ref bool closed)
+            public void AddPathSegment(ref CanvasGeometry geometry, CanvasPathBuilder canvasPathBuilder, CanvasDevice device, ref bool closed)
             {
                 if (!closed)
                 {
@@ -342,24 +394,35 @@ namespace LottieUWP
             var fill = FillType == PathFillType.Winding
                 ? CanvasFilledRegionDetermination.Winding
                 : CanvasFilledRegionDetermination.Alternate;
-            //    FillRule = path.FillType == PathFillType.EvenOdd ? FillRule.EvenOdd : FillRule.Nonzero,
 
-            using (var canvasPathBuilder = new CanvasPathBuilder(device))
+            CanvasGeometry finalGeometry = null;
+
+            var canvasPathBuilder = new CanvasPathBuilder(device);
+            canvasPathBuilder.SetFilledRegionDetermination(fill);
+
+            var closed = true;
+
+            for (var i = 0; i < Contours.Count; i++)
             {
-                canvasPathBuilder.SetFilledRegionDetermination(fill);
-
-                var closed = true;
-
-                for (var i = 0; i < Contours.Count; i++)
+                Contours[i].AddPathSegment(ref finalGeometry, canvasPathBuilder, device, ref closed);
+                if (finalGeometry != null)
                 {
-                    Contours[i].AddPathSegment(canvasPathBuilder, ref closed);
+                    canvasPathBuilder.Dispose();
+                    canvasPathBuilder = new CanvasPathBuilder(device);
+                    canvasPathBuilder.SetFilledRegionDetermination(fill);
                 }
-
-                if (!closed)
-                    canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
-
-                return CanvasGeometry.CreatePath(canvasPathBuilder);
             }
+
+            if (!closed)
+                canvasPathBuilder.EndFigure(CanvasFigureLoop.Open);
+
+            if (finalGeometry == null)
+            {
+                finalGeometry = CanvasGeometry.CreatePath(canvasPathBuilder);
+            }
+            canvasPathBuilder.Dispose();
+
+            return finalGeometry;
         }
 
         public void ComputeBounds(out Rect rect)
@@ -435,7 +498,7 @@ namespace LottieUWP
         */
         public void Op(Path path1, Path path2, CanvasGeometryCombine op)
         {
-            // TODO
+            Contours.Add(new OpContour(path1, path2, op));
         }
 
         public void ArcTo(float x, float y, Rect rect, float startAngle, float sweepAngle)
@@ -588,7 +651,7 @@ namespace LottieUWP
             points[2] = points[0];
             points[1] = 0;
             points[0] = 0;
-            
+
             var tToPoint = new List<KeyValuePair<float, Vector2>>
             {
                 new KeyValuePair<float, Vector2>(0, bezierFunction(0, points)),

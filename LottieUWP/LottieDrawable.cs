@@ -124,19 +124,19 @@ namespace LottieUWP
             return _compositionLayer != null && _compositionLayer.HasMatte();
         }
 
-        public bool EnableMergePathsForKitKatAndAbove()
+        public bool EnableMergePaths()
         {
             return _enableMergePaths;
         }
 
         /// <summary>
-        /// Enable this to get merge path support for devices running KitKat (19) and above.
+        /// Enable this to get merge path support.
         /// 
         /// Merge paths currently don't work if the the operand shape is entirely contained within the
         /// first shape. If you need to cut out one shape from another shape, use an even-odd fill type
         /// instead of using merge paths.
         /// </summary>
-        public void EnableMergePathsForKitKatAndAbove(bool enable)
+        public void EnableMergePaths(bool enable)
         {
             if (_enableMergePaths == enable)
             {
@@ -149,7 +149,7 @@ namespace LottieUWP
             }
         }
 
-        public bool IsMergePathsEnabledForKitKatAndAbove()
+        public bool IsMergePathsEnabled()
         {
             return _enableMergePaths;
         }

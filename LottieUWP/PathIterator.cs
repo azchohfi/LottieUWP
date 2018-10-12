@@ -8,7 +8,8 @@
             MoveTo,
             Line,
             Close,
-            Bezier
+            Bezier,
+            Op
         }
 
         public abstract bool Next();

@@ -74,9 +74,7 @@ namespace LottieUWP.Parser
                     break;
                 case "mm":
                     model = MergePathsParser.Parse(reader);
-                    composition.AddWarning("Animation contains merge paths. Merge paths are only " +
-                        "supported on KitKat+ and must be manually enabled by calling " +
-                        "enableMergePathsForKitKatAndAbove().");
+                    composition.AddWarning("Animation contains merge paths. Merge paths must be manually enabled by calling EnableMergePaths().");
                     break;
                 case "rp":
                     model = RepeaterParser.Parse(reader, composition);

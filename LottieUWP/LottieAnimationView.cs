@@ -250,7 +250,7 @@ namespace LottieUWP
             }
             _lottieDrawable.RepeatCount = RepeatCount;
 
-            EnableMergePathsForKitKatAndAbove(false);
+            EnableMergePaths(false);
 
             SimpleColorFilter filter = new SimpleColorFilter(ColorFilter);
             KeyPath keyPath = new KeyPath("**");
@@ -379,24 +379,24 @@ namespace LottieUWP
         }
 
         /// <summary>
-        /// Enable this to get merge path support for devices running KitKat (19) and above.
+        /// Enable this to get merge path support.
         /// 
         /// Merge paths currently don't work if the the operand shape is entirely contained within the
         /// first shape. If you need to cut out one shape from another shape, use an even-odd fill type
         /// instead of using merge paths.
         /// </summary>
-        public void EnableMergePathsForKitKatAndAbove(bool enable)
+        public void EnableMergePaths(bool enable)
         {
-            _lottieDrawable.EnableMergePathsForKitKatAndAbove(enable);
+            _lottieDrawable.EnableMergePaths(enable);
         }
 
         /// <summary>
-        /// Returns whether merge paths are enabled for KitKat and above.
+        /// Returns whether merge paths are enabled.
         /// </summary>
         /// <returns></returns>
-        public bool IsMergePathsEnabledForKitKatAndAbove()
+        public bool IsMergePathsEnabled()
         {
-            return _lottieDrawable.IsMergePathsEnabledForKitKatAndAbove();
+            return _lottieDrawable.IsMergePathsEnabled();
         }
 
         public void UseExperimentalHardwareAcceleration(bool use = true)

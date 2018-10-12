@@ -38,6 +38,8 @@ namespace LottieUWP.Sample
             {
                 Files.Add(file.Path.Substring(basePathLength, file.Path.Length - basePathLength));
             }
+
+            btnMergePaths.IsChecked = LottieAnimationView.IsMergePathsEnabled();
         }
 
         private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -171,6 +173,11 @@ namespace LottieUWP.Sample
                 var file = (await e.DataView.GetStorageItemsAsync()).FirstOrDefault() as StorageFile;
                 await LoadFile(file);
             }
+        }
+
+        private void MergePathsToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            LottieAnimationView.EnableMergePaths(btnMergePaths.IsChecked ?? false);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace LottieUWP.Model.Content
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
-            if (!drawable.EnableMergePathsForKitKatAndAbove())
+            if (!drawable.EnableMergePaths())
             {
                 Debug.WriteLine("Animation contains merge paths but they are disabled.", LottieLog.Tag);
                 return null;

@@ -24,9 +24,15 @@
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="Margin" Value="0,0,0,2"/>
                 </Style>
+				<Style TargetType="ToggleButton">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Margin" Value="0,0,0,2"/>
+                </Style>
             </StackPanel.Resources>
             <Button Content="Debug Off" Click="DebugButton_OnClick"/>
             <Button Content="Background White" Click="BackgroundColorButton_OnClick" AutomationProperties.AutomationId="ChangeBackgroundButton"/>
+            <ToggleButton x:Name="btnMergePaths" Click="MergePathsToggleButton_Click" Content="MergePaths" />
             <Button Content="Open File" Click="OpenFileButton_OnClick"/>
             <Button Content="Open Url" Click="OpenUrlButton_OnClick"/>
             <Button Content="Resume/Pause" Click="ResumePauseButton_OnClick" Margin="0,0,1,0"/>

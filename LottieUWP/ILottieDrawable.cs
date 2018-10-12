@@ -10,6 +10,6 @@ namespace LottieUWP
         TextDelegate TextDelegate { get; }
         CanvasBitmap GetImageAsset(string id);
         LottieComposition Composition { get; }
-        bool EnableMergePathsForKitKatAndAbove();
+        bool EnableMergePaths();
     }
 }
