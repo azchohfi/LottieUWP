@@ -224,6 +224,10 @@ namespace LottieUWP.Utils
 
         public void SetMinAndMaxFrames(float minFrame, float maxFrame)
         {
+            if (minFrame > maxFrame)
+            {
+                throw new ArgumentOutOfRangeException(nameof(minFrame), $"{nameof(minFrame)} ({minFrame}) must be <= {nameof(maxFrame)} ({maxFrame})");
+            }
             float compositionMinFrame = _composition == null ? -float.MaxValue : _composition.StartFrame;
             float compositionMaxFrame = _composition == null ? float.MaxValue : _composition.EndFrame;
             _minFrame = MiscUtils.Clamp(minFrame, compositionMinFrame, compositionMaxFrame);

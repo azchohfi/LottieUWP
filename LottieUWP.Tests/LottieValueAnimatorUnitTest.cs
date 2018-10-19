@@ -184,6 +184,28 @@ namespace LottieUWP.Tests
         }
 
         [Fact]
+        public void TestSetFrameIntegrity()
+        {
+            _animator.SetMinAndMaxFrames(200, 800);
+
+            // setFrame < minFrame should clamp to minFrame
+            _animator.Frame = 100;
+            Assert.Equal(200, _animator.Frame);
+
+            _animator.Frame = 900;
+            Assert.Equal(800, _animator.Frame);
+        }
+
+        [Fact]
+        public void TestMinAndMaxFrameIntegrity()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                _animator.SetMinAndMaxFrames(800, 200);
+            });
+        }
+
+        [Fact]
         public void TestDefaultAnimator()
         {
             int state = 0;
