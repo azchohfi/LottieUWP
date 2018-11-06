@@ -190,10 +190,10 @@ namespace LottieUWP.Tests
 
             // setFrame < minFrame should clamp to minFrame
             _animator.Frame = 100;
-            Assert.Equal(200, _animator.Frame);
+            Assert.Equal(200f, _animator.Frame);
 
             _animator.Frame = 900;
-            Assert.Equal(800, _animator.Frame);
+            Assert.Equal(800f, _animator.Frame);
         }
 
         [Fact]
