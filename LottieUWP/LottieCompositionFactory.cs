@@ -308,7 +308,6 @@ namespace LottieUWP
 
             if (cachedComposition != null)
             {
-                Debug.WriteLine("call\treturning from cache", "Gabe");
                 return new LottieResult<LottieComposition>(cachedComposition);
             }
 
