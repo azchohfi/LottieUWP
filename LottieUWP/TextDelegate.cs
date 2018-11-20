@@ -11,8 +11,7 @@ namespace LottieUWP
     public class TextDelegate
     {
         private readonly Dictionary<string, string> _stringMap = new Dictionary<string, string>();
-        private readonly LottieAnimationView _animationView;
-        private readonly ILottieDrawable _drawable;
+        private readonly ILottieInvalidatable _invalidatable;
         private bool _cacheText = true;
 
         /// <summary>
@@ -20,20 +19,12 @@ namespace LottieUWP
         /// </summary>
         internal TextDelegate()
         {
-            _animationView = null;
-            _drawable = null;
+            _invalidatable = null;
         }
 
-        public TextDelegate(LottieAnimationView animationView)
+        public TextDelegate(ILottieInvalidatable invalidatable)
         {
-            _animationView = animationView;
-            _drawable = null;
-        }
-
-        public TextDelegate(ILottieDrawable drawable)
-        {
-            _drawable = drawable;
-            _animationView = null;
+            _invalidatable = invalidatable;
         }
 
         /// <summary>
@@ -97,8 +88,7 @@ namespace LottieUWP
 
         private void Invalidate()
         {
-            _animationView?.InvalidateArrange(); // Equivalent?
-            _drawable?.InvalidateSelf();
+            _invalidatable?.InvalidateSelf();
         }
     }
 }

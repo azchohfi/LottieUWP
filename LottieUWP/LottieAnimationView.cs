@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
 using LottieUWP.Model;
 using LottieUWP.Value;
+using LottieUWP.Utils;
 
 namespace LottieUWP
 {
@@ -36,7 +37,7 @@ namespace LottieUWP
     /// <seealso cref="LottieAnimationView.Progress"/>
     /// </para>
     /// </summary>
-    public class LottieAnimationView : UserControl, IDisposable
+    public class LottieAnimationView : UserControl, IDisposable, ILottieInvalidatable
     {
         private new static readonly string Tag = typeof(LottieAnimationView).Name;
 
@@ -738,13 +739,13 @@ namespace LottieUWP
         private static void LoopPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             if (dependencyObject is LottieAnimationView lottieAnimationView && (bool)e.NewValue)
-                lottieAnimationView._lottieDrawable.RepeatCount = LottieDrawable.Infinite;
+                lottieAnimationView._lottieDrawable.RepeatCount = LottieValueAnimator.Infinite;
         }
 
         /// <summary>
         /// Defines what this animation should do when it reaches the end. This 
         /// setting is applied only when the repeat count is either greater than 
-        /// 0 or <see cref="LottieUWP.RepeatMode.Infinite"/>. Defaults to <see cref="LottieUWP.RepeatMode.Restart"/>.
+        /// 0 or <see cref="LottieValueAnimator.Infinite"/>. Defaults to <see cref="LottieUWP.RepeatMode.Restart"/>.
         /// Return either one of <see cref="LottieUWP.RepeatMode.Reverse"/> or <see cref="LottieUWP.RepeatMode.Restart"/>
         /// </summary>
         public RepeatMode RepeatMode
@@ -766,12 +767,12 @@ namespace LottieUWP
         /// <summary>
         /// Sets how many times the animation should be repeated. If the repeat 
         /// count is 0, the animation is never repeated. If the repeat count is 
-        /// greater than 0 or <see cref="LottieUWP.RepeatMode.Infinite"/>, the repeat mode will be taken 
+        /// greater than 0 or <see cref="LottieValueAnimator.Infinite"/>, the repeat mode will be taken 
         /// into account. The repeat count is 0 by default. 
         /// 
         /// Count the number of times the animation should be repeated
         /// 
-        /// Return the number of times the animation should repeat, or <see cref="LottieUWP.RepeatMode.Infinite"/>
+        /// Return the number of times the animation should repeat, or <see cref="LottieValueAnimator.Infinite"/>
         /// </summary>
         public int RepeatCount
         {
@@ -781,7 +782,7 @@ namespace LottieUWP
 
         // Using a DependencyProperty as the backing store for RepeatCount.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RepeatCountProperty =
-            DependencyProperty.Register("RepeatCount", typeof(int), typeof(LottieAnimationView), new PropertyMetadata(LottieDrawable.Infinite, RepeatCountPropertyChangedCallback));
+            DependencyProperty.Register("RepeatCount", typeof(int), typeof(LottieAnimationView), new PropertyMetadata(LottieValueAnimator.Infinite, RepeatCountPropertyChangedCallback));
 
         private static void RepeatCountPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
@@ -908,6 +909,11 @@ namespace LottieUWP
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new FrameworkElementAutomationPeer(this);
+        }
+
+        public void InvalidateSelf()
+        {
+            InvalidateArrange();
         }
 
         //private class SavedState : BaseSavedState

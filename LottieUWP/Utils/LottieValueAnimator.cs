@@ -21,6 +21,12 @@ namespace LottieUWP.Utils
         protected bool _running;
 
         /// <summary>
+        /// This value used used with the <see cref="RepeatCount"/> property to repeat
+        /// the animation indefinitely.
+        /// </summary>
+        public const int Infinite = -1;
+
+        /// <summary>
         /// Returns a float representing the current value of the animation from 0 to 1
         /// regardless of the animation speed, direction, or min and max frames.
         /// </summary>
@@ -109,7 +115,7 @@ namespace LottieUWP.Utils
             OnAnimationUpdate();
             if (ended)
             {
-                if (RepeatCount != LottieDrawable.Infinite && _repeatCount >= RepeatCount)
+                if (RepeatCount != Infinite && _repeatCount >= RepeatCount)
                 {
                     _frame = MaxFrame;
                     RemoveFrameCallback();

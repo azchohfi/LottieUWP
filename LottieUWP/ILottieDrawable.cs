@@ -2,9 +2,8 @@
 
 namespace LottieUWP
 {
-    public interface ILottieDrawable
+    public interface ILottieDrawable : ILottieInvalidatable
     {
-        void InvalidateSelf();
         bool UseTextGlyphs();
         Typeface GetTypeface(string fontFamily, string style);
         TextDelegate TextDelegate { get; }

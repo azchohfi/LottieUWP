@@ -337,7 +337,7 @@ namespace LottieUWP
 
         class CloseContour : IContour
         {
-            public float[] Points => new float[0];
+            public float[] Points { get; } = new float[0];
 
             public PathIterator.ContourType Type => PathIterator.ContourType.Close;
 

@@ -40,7 +40,6 @@ namespace LottieUWP
         private IImageAssetDelegate _imageAssetDelegate;
         private FontAssetManager _fontAssetManager;
         private FontAssetDelegate _fontAssetDelegate;
-        private TextDelegate _textDelegate;
         private bool _enableMergePaths;
         private CompositionLayer _compositionLayer;
         private byte _alpha = 255;
@@ -48,12 +47,6 @@ namespace LottieUWP
         private BitmapCanvas _bitmapCanvas;
         private CanvasAnimatedControl _canvasControl;
         private bool _forceSoftwareRenderer;
-
-        /// <summary>
-        /// This value used used with the <see cref="RepeatCount"/> property to repeat
-        /// the animation indefinitely.
-        /// </summary>
-        public const int Infinite = -1;
 
         public LottieDrawable()
         {
@@ -624,14 +617,14 @@ namespace LottieUWP
         [Obsolete("Loop property is Obsolete, and will be removed on a future version. Use RepeatCount instead.")]
         public bool Looping
         {
-            get => _animator.RepeatCount == Infinite;
-            set => _animator.RepeatCount = value ? Infinite : 0;
+            get => _animator.RepeatCount == LottieValueAnimator.Infinite;
+            set => _animator.RepeatCount = value ? LottieValueAnimator.Infinite : 0;
         }
 
         /// <summary>
         /// Defines what this animation should do when it reaches the end. This
         /// setting is applied only when the repeat count is either greater than
-        /// 0 or <see cref="LottieUWP.RepeatMode.Infinite"/>. Defaults to <see cref="LottieUWP.RepeatMode.Restart"/>.
+        /// 0 or <see cref="LottieValueAnimator.Infinite"/>. Defaults to <see cref="LottieUWP.RepeatMode.Restart"/>.
         /// Return either one of <see cref="LottieUWP.RepeatMode.Reverse"/> or <see cref="LottieUWP.RepeatMode.Restart"/>
         /// </summary>
         /// <param name="value"><seealso cref="RepeatMode"/></param>
@@ -644,12 +637,12 @@ namespace LottieUWP
         /// <summary>
         /// Sets how many times the animation should be repeated. If the repeat 
         /// count is 0, the animation is never repeated. If the repeat count is 
-        /// greater than 0 or <see cref="LottieUWP.RepeatMode.Infinite"/>, the repeat mode will be taken 
+        /// greater than 0 or <see cref="LottieValueAnimator.Infinite"/>, the repeat mode will be taken 
         /// into account. The repeat count is 0 by default.
         /// 
         /// Count the number of times the animation should be repeated
         /// 
-        /// Return the number of times the animation should repeat, or <see cref="LottieUWP.RepeatMode.Infinite"/>
+        /// Return the number of times the animation should repeat, or <see cref="LottieValueAnimator.Infinite"/>
         /// </summary>
         public int RepeatCount
         {
@@ -680,15 +673,11 @@ namespace LottieUWP
             }
         }
 
-        public TextDelegate TextDelegate
-        {
-            set => _textDelegate = value;
-            get => _textDelegate;
-        }
+        public TextDelegate TextDelegate { set; get; }
 
         public bool UseTextGlyphs()
         {
-            return _textDelegate == null && _composition.Characters.Count > 0;
+            return TextDelegate == null && _composition.Characters.Count > 0;
         }
 
         /// <summary>
