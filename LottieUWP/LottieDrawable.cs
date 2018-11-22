@@ -117,7 +117,6 @@ namespace LottieUWP
                 var renderTarget = new CanvasRenderTarget(resourceCreator, (float) width, (float) height, 96f);
                 using (var session = renderTarget.CreateDrawingSession())
                 {
-
                     if (_bitmapCanvas == null || Math.Abs(_bitmapCanvas.Width - width) > 0.01 ||
                         Math.Abs(_bitmapCanvas.Height - height) > 0.01)
                     {
