@@ -114,8 +114,8 @@ namespace LottieUWP
             {
                 var width = _composition.Bounds.Width * scaleX;
                 var height = _composition.Bounds.Height * scaleY;
-                var commandList = new CanvasRenderTarget(resourceCreator, (float) width, (float) height, 96f);
-                using (var session = commandList.CreateDrawingSession())
+                var renderTarget = new CanvasRenderTarget(resourceCreator, (float) width, (float) height, 96f);
+                using (var session = renderTarget.CreateDrawingSession())
                 {
 
                     if (_bitmapCanvas == null || Math.Abs(_bitmapCanvas.Width - width) > 0.01 ||
@@ -142,7 +142,7 @@ namespace LottieUWP
                     }
                 }
 
-                return commandList;
+                return renderTarget;
             }
         }
 
