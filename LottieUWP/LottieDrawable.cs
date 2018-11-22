@@ -102,6 +102,51 @@ namespace LottieUWP
         }
 
         /// <summary>
+        /// Get the image of the current time frame.
+        /// </summary>
+        /// <param name="resourceCreator">Resource creator</param>
+        /// <param name="scaleX">Value to scale by on the X-axis.</param>
+        /// <param name="scaleY">Value to scale by on the Y-axis.</param>
+        /// <returns>A canvas bitmap</returns>
+        public CanvasBitmap GetCurrentFrame(ICanvasResourceCreator resourceCreator, float scaleX, float scaleY)
+        {
+            lock (this)
+            {
+                var width = _composition.Bounds.Width * scaleX;
+                var height = _composition.Bounds.Height * scaleY;
+                var commandList = new CanvasRenderTarget(resourceCreator, (float) width, (float) height, 96f);
+                using (var session = commandList.CreateDrawingSession())
+                {
+
+                    if (_bitmapCanvas == null || Math.Abs(_bitmapCanvas.Width - width) > 0.01 ||
+                        Math.Abs(_bitmapCanvas.Height - height) > 0.01)
+                    {
+                        _bitmapCanvas?.Dispose();
+                        _bitmapCanvas = new BitmapCanvas(width, height);
+                    }
+
+                    using (_bitmapCanvas.CreateSession(resourceCreator.Device, (float) width,
+                        (float) height, session))
+                    {
+                        _bitmapCanvas.Clear(Colors.Transparent);
+                        LottieLog.BeginSection("Drawable.Draw");
+                        if (_compositionLayer == null)
+                        {
+                            return null;
+                        }
+
+                        _matrix.Reset();
+                        _matrix = MatrixExt.PreScale(_matrix, scaleX, scaleY);
+                        _compositionLayer.Draw(_bitmapCanvas, _matrix, _alpha);
+                        LottieLog.EndSection("Drawable.Draw");
+                    }
+                }
+
+                return commandList;
+            }
+        }
+
+        /// <summary>
         /// Returns whether or not any layers in this composition has masks.
         /// </summary>
         public bool HasMasks()
