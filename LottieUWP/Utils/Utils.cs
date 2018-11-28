@@ -9,9 +9,6 @@ namespace LottieUWP.Utils
     public static class Utils
     {
         public const int SecondInNanos = 1000000000;
-        private static Path _tempPath = new Path();
-        private static Path _tempPath2 = new Path();
-        private static Vector2[] _points = new Vector2[2];
         private static readonly float Sqrt2 = (float)Math.Sqrt(2);
         private static float _dpScale = -1;
         private static float _dpi = -1;
@@ -59,14 +56,15 @@ namespace LottieUWP.Utils
 
         internal static float GetScale(Matrix3X3 matrix)
         {
-            _points[0].X = 0;
-            _points[0].Y = 0;
-            _points[1].X = Sqrt2;
-            _points[1].Y = Sqrt2;
+            var points = new Vector2[2];
+            points[0].X = 0;
+            points[0].Y = 0;
+            points[1].X = Sqrt2;
+            points[1].Y = Sqrt2;
             // Use sqrt(2) so that the hypotenuse is of length 1.
-            matrix.MapPoints(ref _points);
-            var dx = _points[1].X - _points[0].X;
-            var dy = _points[1].Y - _points[0].Y;
+            matrix.MapPoints(ref points);
+            var dx = points[1].X - points[0].X;
+            var dy = points[1].Y - points[0].Y;
 
             // TODO: figure out why the result needs to be divided by 2.
             return (float)MathExt.Hypot(dx, dy) / 2f;
@@ -84,6 +82,7 @@ namespace LottieUWP.Utils
         internal static void ApplyTrimPathIfNeeded(Path path, float startValue, float endValue, float offsetValue)
         {
             LottieLog.BeginSection("applyTrimPathIfNeeded");
+            Path tempPath = null;
             using (var pathMeasure = new PathMeasure(path))
             {
                 var length = pathMeasure.Length;
@@ -135,23 +134,25 @@ namespace LottieUWP.Utils
                     newStart -= length;
                 }
 
-                _tempPath.Reset();
-                pathMeasure.GetSegment(newStart, newEnd, ref _tempPath, true);
+                tempPath = new Path();
+                pathMeasure.GetSegment(newStart, newEnd, ref tempPath, true);
 
                 if (newEnd > length)
                 {
-                    _tempPath2.Reset();
-                    pathMeasure.GetSegment(0, newEnd % length, ref _tempPath2, true);
-                    _tempPath.AddPath(_tempPath2);
+                    var tempPath2 = new Path();
+                    tempPath2.Reset();
+                    pathMeasure.GetSegment(0, newEnd % length, ref tempPath2, true);
+                    tempPath.AddPath(tempPath2);
                 }
                 else if (newStart < 0)
                 {
-                    _tempPath2.Reset();
-                    pathMeasure.GetSegment(length + newStart, length, ref _tempPath2, true);
-                    _tempPath.AddPath(_tempPath2);
+                    var tempPath2 = new Path();
+                    tempPath2.Reset();
+                    pathMeasure.GetSegment(length + newStart, length, ref tempPath2, true);
+                    tempPath.AddPath(tempPath2);
                 }
             }
-            path.Set(_tempPath);
+            path.Set(tempPath);
             LottieLog.EndSection("applyTrimPathIfNeeded");
         }
 
