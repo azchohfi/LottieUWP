@@ -439,8 +439,8 @@ namespace LottieUWP
         public async Task SetAnimationAsync(string assetName)
         {
             _animationName = assetName;
-            _compositionTaskCTS = new CancellationTokenSource();
-            await SetCompositionTaskAsync(LottieCompositionFactory.FromAsset(_lottieDrawable?.Device, assetName, _compositionTaskCTS.Token));
+            var compositionTaskCTS = new CancellationTokenSource();
+            await SetCompositionTaskAsync(LottieCompositionFactory.FromAsset(_lottieDrawable?.Device, assetName, compositionTaskCTS.Token), compositionTaskCTS);
         }
 
         /// <summary>
@@ -464,8 +464,8 @@ namespace LottieUWP
         /// </summary>
         public async Task SetAnimationAsync(JsonReader reader, string cacheKey)
         {
-            _compositionTaskCTS = new CancellationTokenSource();
-            await SetCompositionTaskAsync(LottieCompositionFactory.FromJsonReader(reader, cacheKey, _compositionTaskCTS.Token));
+            var compositionTaskCTS = new CancellationTokenSource();
+            await SetCompositionTaskAsync(LottieCompositionFactory.FromJsonReader(reader, cacheKey, compositionTaskCTS.Token), compositionTaskCTS);
         }
 
         /// <summary>
@@ -479,23 +479,24 @@ namespace LottieUWP
         /// <returns></returns>
         public async Task SetAnimationFromUrlAsync(string url)
         {
-            _compositionTaskCTS = new CancellationTokenSource();
-            await SetCompositionTaskAsync(LottieCompositionFactory.FromUrlAsync(Device, url, _compositionTaskCTS.Token));
+            var compositionTaskCTS = new CancellationTokenSource();
+            await SetCompositionTaskAsync(LottieCompositionFactory.FromUrlAsync(Device, url, compositionTaskCTS.Token), compositionTaskCTS);
         }
 
-        private async Task SetCompositionTaskAsync(Task<LottieResult<LottieComposition>> compositionTask)
+        private async Task SetCompositionTaskAsync(Task<LottieResult<LottieComposition>> compositionTask, CancellationTokenSource cancellationTokenSource)
         {
             ClearComposition();
             CancelLoaderTask();
+            _compositionTaskCTS = cancellationTokenSource;
 
             try
             {
                 var compositionResult = await compositionTask;
+                _compositionTaskCTS = null;
                 if (compositionResult.Value != null)
                 {
                     Composition = compositionResult.Value;
                 }
-                _compositionTaskCTS = null;
             }
             catch (TaskCanceledException e)
             {
