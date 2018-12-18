@@ -7,25 +7,24 @@ namespace LottieUWP.Model.Content
 {
     public class RectangleShape : IContentModel
     {
-        private readonly IAnimatableValue<Vector2?, Vector2?> _position;
-        private readonly AnimatablePointValue _size;
-        private readonly AnimatableFloatValue _cornerRadius;
-
-        public RectangleShape(string name, IAnimatableValue<Vector2?, Vector2?> position, AnimatablePointValue size, AnimatableFloatValue cornerRadius)
+        public RectangleShape(string name, IAnimatableValue<Vector2?, Vector2?> position, AnimatablePointValue size, AnimatableFloatValue cornerRadius, bool hidden)
         {
             Name = name;
-            _position = position;
-            _size = size;
-            _cornerRadius = cornerRadius;
+            Position = position;
+            Size = size;
+            CornerRadius = cornerRadius;
+            IsHidden = hidden;
         }
 
         internal string Name { get; }
 
-        internal AnimatableFloatValue CornerRadius => _cornerRadius;
+        internal AnimatableFloatValue CornerRadius { get; }
 
-        internal AnimatablePointValue Size => _size;
+        internal AnimatablePointValue Size { get; }
 
-        internal IAnimatableValue<Vector2?, Vector2?> Position => _position;
+        internal IAnimatableValue<Vector2?, Vector2?> Position { get; }
+
+        internal bool IsHidden { get; }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
@@ -34,7 +33,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "RectangleShape{position=" + _position + ", size=" + _size + '}';
+            return "RectangleShape{position=" + Position + ", size=" + Size + '}';
         }
     }
 }

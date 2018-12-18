@@ -8,6 +8,7 @@ namespace LottieUWP.Parser
         {
             string name = null;
             MergePaths.MergePathsMode mode = MergePaths.MergePathsMode.Add;
+            bool hidden = false;
 
             while (reader.HasNext())
             {
@@ -19,13 +20,16 @@ namespace LottieUWP.Parser
                     case "mm":
                         mode = (MergePaths.MergePathsMode)reader.NextInt();
                         break;
+                    case "hd":
+                        hidden = reader.NextBoolean();
+                        break;
                     default:
                         reader.SkipValue();
                         break;
                 }
             }
 
-            return new MergePaths(name, mode);
+            return new MergePaths(name, mode, hidden);
         }
     }
 }

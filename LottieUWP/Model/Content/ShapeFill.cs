@@ -7,25 +7,26 @@ namespace LottieUWP.Model.Content
     public class ShapeFill : IContentModel
     {
         private readonly bool _fillEnabled;
-        private readonly AnimatableColorValue _color;
-        private readonly AnimatableIntegerValue _opacity;
 
-        public ShapeFill(string name, bool fillEnabled, PathFillType fillType, AnimatableColorValue color, AnimatableIntegerValue opacity)
+        public ShapeFill(string name, bool fillEnabled, PathFillType fillType, AnimatableColorValue color, AnimatableIntegerValue opacity, bool hidden)
         {
             Name = name;
             _fillEnabled = fillEnabled;
             FillType = fillType;
-            _color = color;
-            _opacity = opacity;
+            Color = color;
+            Opacity = opacity;
+            IsHidden = hidden;
         }
 
         internal string Name { get; }
 
-        internal AnimatableColorValue Color => _color;
+        internal AnimatableColorValue Color { get; }
 
-        internal AnimatableIntegerValue Opacity => _opacity;
+        internal AnimatableIntegerValue Opacity { get; }
 
         internal PathFillType FillType { get; }
+
+        internal bool IsHidden { get; }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {

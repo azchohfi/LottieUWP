@@ -10,6 +10,7 @@ namespace LottieUWP.Parser
             string name = null;
             int ind = 0;
             AnimatableShapeValue shape = null;
+            bool hidden = false;
 
             while (reader.HasNext())
             {
@@ -24,13 +25,16 @@ namespace LottieUWP.Parser
                     case "ks":
                         shape = AnimatableValueParser.ParseShapeData(reader, composition);
                         break;
+                    case "hd":
+                        hidden = reader.NextBoolean();
+                        break;
                     default:
                         reader.SkipValue();
                         break;
                 }
             }
 
-            return new ShapePath(name, ind, shape);
+            return new ShapePath(name, ind, shape, hidden);
         }
     }
 }

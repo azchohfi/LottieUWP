@@ -11,6 +11,7 @@ namespace LottieUWP.Parser
             AnimatableFloatValue copies = null;
             AnimatableFloatValue offset = null;
             AnimatableTransform transform = null;
+            bool hidden = false;
 
             while (reader.HasNext())
             {
@@ -28,13 +29,16 @@ namespace LottieUWP.Parser
                     case "tr":
                         transform = AnimatableTransformParser.Parse(reader, composition);
                         break;
+                    case "hd":
+                        hidden = reader.NextBoolean();
+                        break;
                     default:
                         reader.SkipValue();
                         break;
                 }
             }
 
-            return new Repeater(name, copies, offset, transform);
+            return new Repeater(name, copies, offset, transform, hidden);
         }
     }
 }

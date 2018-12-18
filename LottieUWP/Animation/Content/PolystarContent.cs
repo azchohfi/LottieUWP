@@ -24,6 +24,7 @@ namespace LottieUWP.Animation.Content
 
         private readonly ILottieDrawable _lottieDrawable;
         private readonly PolystarShape.Type _type;
+        private readonly bool _hidden;
         private readonly IBaseKeyframeAnimation<float?, float?> _pointsAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _positionAnimation;
         private readonly IBaseKeyframeAnimation<float?, float?> _rotationAnimation;
@@ -41,6 +42,7 @@ namespace LottieUWP.Animation.Content
 
             Name = polystarShape.Name;
             _type = polystarShape.GetType();
+            _hidden = polystarShape.IsHidden;
             _pointsAnimation = polystarShape.Points.CreateAnimation();
             _positionAnimation = polystarShape.Position.CreateAnimation();
             _rotationAnimation = polystarShape.Rotation.CreateAnimation();
@@ -113,6 +115,12 @@ namespace LottieUWP.Animation.Content
                 }
 
                 _path.Reset();
+
+                if (_hidden)
+                {
+                    _isPathValid = true;
+                    return _path;
+                }
 
                 switch (_type)
                 {

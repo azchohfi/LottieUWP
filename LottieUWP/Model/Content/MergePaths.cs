@@ -15,17 +15,18 @@ namespace LottieUWP.Model.Content
             ExcludeIntersections = 5
         }
 
-        private readonly MergePathsMode _mode;
-
-        public MergePaths(string name, MergePathsMode mode)
+        public MergePaths(string name, MergePathsMode mode, bool hidden)
         {
             Name = name;
-            _mode = mode;
+            Mode = mode;
+            IsHidden = hidden;
         }
 
         public string Name { get; }
 
-        internal MergePathsMode Mode => _mode;
+        internal MergePathsMode Mode { get; }
+
+        internal bool IsHidden { get; }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
@@ -39,7 +40,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "MergePaths{" + "mode=" + _mode + '}';
+            return "MergePaths{" + "mode=" + Mode + '}';
         }
     }
 }

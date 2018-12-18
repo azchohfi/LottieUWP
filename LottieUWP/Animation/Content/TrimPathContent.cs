@@ -9,25 +9,23 @@ namespace LottieUWP.Animation.Content
     internal class TrimPathContent : IContent
     {
         public event EventHandler ValueChanged;
-        private readonly IBaseKeyframeAnimation<float?, float?> _startAnimation;
-        private readonly IBaseKeyframeAnimation<float?, float?> _endAnimation;
-        private readonly IBaseKeyframeAnimation<float?, float?> _offsetAnimation;
 
         internal TrimPathContent(BaseLayer layer, ShapeTrimPath trimPath)
         {
             Name = trimPath.Name;
+            IsHidden = trimPath.IsHidden;
             Type = trimPath.GetType();
-            _startAnimation = trimPath.Start.CreateAnimation();
-            _endAnimation = trimPath.End.CreateAnimation();
-            _offsetAnimation = trimPath.Offset.CreateAnimation();
+            Start = trimPath.Start.CreateAnimation();
+            End = trimPath.End.CreateAnimation();
+            Offset = trimPath.Offset.CreateAnimation();
 
-            layer.AddAnimation(_startAnimation);
-            layer.AddAnimation(_endAnimation);
-            layer.AddAnimation(_offsetAnimation);
+            layer.AddAnimation(Start);
+            layer.AddAnimation(End);
+            layer.AddAnimation(Offset);
 
-            _startAnimation.ValueChanged += OnValueChanged;
-            _endAnimation.ValueChanged += OnValueChanged;
-            _offsetAnimation.ValueChanged += OnValueChanged;
+            Start.ValueChanged += OnValueChanged;
+            End.ValueChanged += OnValueChanged;
+            Offset.ValueChanged += OnValueChanged;
         }
 
         private void OnValueChanged(object sender, EventArgs eventArgs)
@@ -44,10 +42,12 @@ namespace LottieUWP.Animation.Content
 
         internal ShapeTrimPath.Type Type { get; }
 
-        public IBaseKeyframeAnimation<float?, float?> Start => _startAnimation;
+        public IBaseKeyframeAnimation<float?, float?> Start { get; }
 
-        public IBaseKeyframeAnimation<float?, float?> End => _endAnimation;
+        public IBaseKeyframeAnimation<float?, float?> End { get; }
 
-        public IBaseKeyframeAnimation<float?, float?> Offset => _offsetAnimation;
+        public IBaseKeyframeAnimation<float?, float?> Offset { get; }
+
+        public bool IsHidden { get; }
     }
 }

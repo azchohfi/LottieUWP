@@ -13,17 +13,15 @@ namespace LottieUWP.Model.Content
         }
 
         private readonly Type _type;
-        private readonly AnimatableFloatValue _start;
-        private readonly AnimatableFloatValue _end;
-        private readonly AnimatableFloatValue _offset;
 
-        public ShapeTrimPath(string name, Type type, AnimatableFloatValue start, AnimatableFloatValue end, AnimatableFloatValue offset)
+        public ShapeTrimPath(string name, Type type, AnimatableFloatValue start, AnimatableFloatValue end, AnimatableFloatValue offset, bool hidden)
         {
             Name = name;
             _type = type;
-            _start = start;
-            _end = end;
-            _offset = offset;
+            Start = start;
+            End = end;
+            Offset = offset;
+            IsHidden = hidden;
         }
 
         internal string Name { get; }
@@ -33,11 +31,13 @@ namespace LottieUWP.Model.Content
             return _type;
         }
 
-        internal AnimatableFloatValue End => _end;
+        internal AnimatableFloatValue End { get; }
 
-        internal AnimatableFloatValue Start => _start;
+        internal AnimatableFloatValue Start { get; }
 
-        internal AnimatableFloatValue Offset => _offset;
+        internal AnimatableFloatValue Offset { get; }
+
+        internal bool IsHidden { get; }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
@@ -46,7 +46,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "Trim Path: {start: " + _start + ", end: " + _end + ", offset: " + _offset + "}";
+            return "Trim Path: {start: " + Start + ", end: " + End + ", offset: " + Offset + "}";
         }
     }
 }

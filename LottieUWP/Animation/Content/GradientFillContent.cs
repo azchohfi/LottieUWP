@@ -19,6 +19,7 @@ namespace LottieUWP.Animation.Content
         private const int CacheStepsMs = 32;
 
         private readonly BaseLayer _layer;
+        private readonly bool _hidden;
         private readonly Dictionary<long, LinearGradient> _linearGradientCache = new Dictionary<long, LinearGradient>();
         private readonly Dictionary<long, RadialGradient> _radialGradientCache = new Dictionary<long, RadialGradient>();
         private readonly Matrix3X3 _shaderMatrix = Matrix3X3.CreateIdentity();
@@ -39,6 +40,7 @@ namespace LottieUWP.Animation.Content
         {
             _layer = layer;
             Name = fill.Name;
+            _hidden = fill.IsHidden;
             _lottieDrawable = lottieDrawable;
             _type = fill.GradientType;
             _path.FillType = fill.FillType;
@@ -79,6 +81,10 @@ namespace LottieUWP.Animation.Content
 
         public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
+            if (_hidden)
+            {
+                return;
+            }
             LottieLog.BeginSection("GradientFillContent.Draw");
             _path.Reset();
             for (var i = 0; i < _paths.Count; i++)

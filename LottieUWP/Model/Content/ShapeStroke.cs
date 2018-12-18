@@ -50,7 +50,7 @@ namespace LottieUWP.Model.Content
             }
         }
 
-        public ShapeStroke(string name, AnimatableFloatValue offset, List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color, AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType, LineJoinType joinType, float miterLimit)
+        public ShapeStroke(string name, AnimatableFloatValue offset, List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color, AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType, LineJoinType joinType, float miterLimit, bool hidden)
         {
             Name = name;
             DashOffset = offset;
@@ -61,6 +61,7 @@ namespace LottieUWP.Model.Content
             CapType = capType;
             JoinType = joinType;
             MiterLimit = miterLimit;
+            IsHidden = hidden;
         }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
@@ -85,5 +86,7 @@ namespace LottieUWP.Model.Content
         internal LineJoinType JoinType { get; }
 
         internal float MiterLimit { get; }
+
+        internal bool IsHidden { get; }
     }
 }

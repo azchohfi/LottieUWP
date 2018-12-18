@@ -15,6 +15,7 @@ namespace LottieUWP.Animation.Content
         /// </summary>
         private const int CacheStepsMs = 32;
 
+        private readonly bool _hidden;
         private readonly Dictionary<long, LinearGradient> _linearGradientCache = new Dictionary<long, LinearGradient>();
         private readonly Dictionary<long, RadialGradient> _radialGradientCache = new Dictionary<long, RadialGradient>();
         private Rect _boundsRect;
@@ -30,6 +31,7 @@ namespace LottieUWP.Animation.Content
         {
             Name = stroke.Name;
             _type = stroke.GradientType;
+            _hidden = stroke.IsHidden;
             _cacheSteps = (int)(lottieDrawable.Composition.Duration / CacheStepsMs);
 
             _colorAnimation = stroke.GradientColor.CreateAnimation();
@@ -47,6 +49,10 @@ namespace LottieUWP.Animation.Content
 
         public override void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
+            if (_hidden)
+            {
+                return;
+            }
             GetBounds(out _boundsRect, parentMatrix);
             if (_type == GradientType.Linear)
             {
