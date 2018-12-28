@@ -392,6 +392,7 @@
     <Content Include="Assets\heart.json" />
     <Content Include="Assets\Fail.json" />
     <Content Include="Assets\hired.json" />
+    <Content Include="Assets\Tests\hd.json" />
     <None Include="LottieUWP.Sample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

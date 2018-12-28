@@ -75,6 +75,11 @@ namespace LottieUWP.Animation.Content
 
                 _path.Reset();
 
+                if (_circleShape.IsHidden)
+                {
+                    _isPathValid = true;
+                    return _path;
+                }
 
                 var size = _sizeAnimation.Value;
                 var halfWidth = size.Value.X / 2f;

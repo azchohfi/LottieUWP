@@ -17,6 +17,7 @@ namespace LottieUWP.Animation.Content
 
         private readonly ILottieDrawable _lottieDrawable;
         private readonly BaseLayer _layer;
+        private readonly bool _hidden;
         private readonly IBaseKeyframeAnimation<float?, float?> _copies;
         private readonly IBaseKeyframeAnimation<float?, float?> _offset;
         private readonly TransformKeyframeAnimation _transform;
@@ -27,6 +28,7 @@ namespace LottieUWP.Animation.Content
             _lottieDrawable = lottieDrawable;
             _layer = layer;
             Name = repeater.Name;
+            _hidden = repeater.IsHidden;
             _copies = repeater.Copies.CreateAnimation();
             layer.AddAnimation(_copies);
             _copies.ValueChanged += OnValueChanged;
@@ -75,7 +77,7 @@ namespace LottieUWP.Animation.Content
                 contentsIter.RemoveAt(index);
             }
             contents.Reverse();
-            _contentGroup = new ContentGroup(_lottieDrawable, _layer, "Repeater", contents, null);
+            _contentGroup = new ContentGroup(_lottieDrawable, _layer, "Repeater", _hidden, contents, null);
         }
 
         public string Name { get; }

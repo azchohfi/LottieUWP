@@ -14,6 +14,7 @@ namespace LottieUWP.Parser
             AnimatablePointValue startPoint = null;
             AnimatablePointValue endPoint = null;
             PathFillType fillType = PathFillType.EvenOdd;
+            bool hidden = false;
 
             while (reader.HasNext())
             {
@@ -57,6 +58,9 @@ namespace LottieUWP.Parser
                     case "r":
                         fillType = reader.NextInt() == 1 ? PathFillType.Winding : PathFillType.EvenOdd;
                         break;
+                    case "hd":
+                        hidden = reader.NextBoolean();
+                        break;
                     default:
                         reader.SkipValue();
                         break;
@@ -64,7 +68,7 @@ namespace LottieUWP.Parser
             }
 
             return new GradientFill(
-            name, gradientType, fillType, color, opacity, startPoint, endPoint, null, null);
+            name, gradientType, fillType, color, opacity, startPoint, endPoint, null, null, hidden);
         }
     }
 }

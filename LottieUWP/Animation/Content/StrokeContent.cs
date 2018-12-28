@@ -10,14 +10,16 @@ namespace LottieUWP.Animation.Content
     internal class StrokeContent : BaseStrokeContent
     {
         private readonly BaseLayer _layer;
+        private readonly bool _hidden;
         private readonly IBaseKeyframeAnimation<Color?, Color?> _colorAnimation;
         private IBaseKeyframeAnimation<ColorFilter, ColorFilter> _colorFilterAnimation;
 
-        internal StrokeContent(ILottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) 
+        internal StrokeContent(ILottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke)
             : base(lottieDrawable, layer, ShapeStroke.LineCapTypeToPaintCap(stroke.CapType), ShapeStroke.LineJoinTypeToPaintLineJoin(stroke.JoinType), stroke.MiterLimit, stroke.Opacity, stroke.Width, stroke.LineDashPattern, stroke.DashOffset)
         {
             _layer = layer;
             Name = stroke.Name;
+            _hidden = stroke.IsHidden;
             _colorAnimation = stroke.Color.CreateAnimation();
             _colorAnimation.ValueChanged += OnValueChanged;
             layer.AddAnimation(_colorAnimation);
@@ -25,6 +27,10 @@ namespace LottieUWP.Animation.Content
 
         public override void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
+            if (_hidden)
+            {
+                return;
+            }
             Paint.Color = _colorAnimation.Value ?? Colors.White;
             if (_colorFilterAnimation != null)
             {

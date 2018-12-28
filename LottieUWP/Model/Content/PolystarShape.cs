@@ -15,7 +15,7 @@ namespace LottieUWP.Model.Content
 
         private readonly Type _type;
 
-        public PolystarShape(string name, Type type, AnimatableFloatValue points, IAnimatableValue<Vector2?, Vector2?> position, AnimatableFloatValue rotation, AnimatableFloatValue innerRadius, AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness, AnimatableFloatValue outerRoundedness)
+        public PolystarShape(string name, Type type, AnimatableFloatValue points, IAnimatableValue<Vector2?, Vector2?> position, AnimatableFloatValue rotation, AnimatableFloatValue innerRadius, AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness, AnimatableFloatValue outerRoundedness, bool hidden)
         {
             Name = name;
             _type = type;
@@ -26,6 +26,7 @@ namespace LottieUWP.Model.Content
             OuterRadius = outerRadius;
             InnerRoundedness = innerRoundedness;
             OuterRoundedness = outerRoundedness;
+            IsHidden = hidden;
         }
 
         internal string Name { get; }
@@ -48,6 +49,8 @@ namespace LottieUWP.Model.Content
         internal AnimatableFloatValue InnerRoundedness { get; }
 
         internal AnimatableFloatValue OuterRoundedness { get; }
+
+        internal bool IsHidden { get; }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {

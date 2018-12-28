@@ -6,18 +6,18 @@ namespace LottieUWP.Model.Content
 {
     public class ShapeGroup : IContentModel
     {
-        private readonly string _name;
-        private readonly List<IContentModel> _items;
-
-        public ShapeGroup(string name, List<IContentModel> items)
+        public ShapeGroup(string name, List<IContentModel> items, bool hidden)
         {
-            _name = name;
-            _items = items;
+            Name = name;
+            Items = items;
+            IsHidden = hidden;
         }
 
-        public string Name => _name;
+        public string Name { get; }
 
-        public List<IContentModel> Items => _items;
+        public List<IContentModel> Items { get; }
+
+        public bool IsHidden { get; }
 
         public IContent ToContent(ILottieDrawable drawable, BaseLayer layer)
         {
@@ -26,7 +26,7 @@ namespace LottieUWP.Model.Content
 
         public override string ToString()
         {
-            return "ShapeGroup{" + "name='" + _name + "\' Shapes: " + "[" + string.Join(",", _items) + "]" + "}";
+            return "ShapeGroup{" + "name='" + Name + "\' Shapes: " + "[" + string.Join(",", Items) + "]" + "}";
         }
     }
 }

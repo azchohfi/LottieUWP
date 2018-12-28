@@ -9,6 +9,7 @@ namespace LottieUWP.Parser
         {
             string name = null;
             List<IContentModel> items = new List<IContentModel>();
+            bool hidden = false;
 
             while (reader.HasNext())
             {
@@ -16,6 +17,9 @@ namespace LottieUWP.Parser
                 {
                     case "nm":
                         name = reader.NextString();
+                        break;
+                    case "hd":
+                        hidden = reader.NextBoolean();
                         break;
                     case "it":
                         reader.BeginArray();
@@ -35,7 +39,7 @@ namespace LottieUWP.Parser
                 }
             }
 
-            return new ShapeGroup(name, items);
+            return new ShapeGroup(name, items, hidden);
         }
     }
 }

@@ -158,7 +158,7 @@ namespace LottieUWP.Model.Layer
         public void Draw(BitmapCanvas canvas, Matrix3X3 parentMatrix, byte parentAlpha)
         {
             LottieLog.BeginSection(_drawTraceName);
-            if (!_visible)
+            if (!_visible || LayerModel.IsHidden)
             {
                 LottieLog.EndSection(_drawTraceName);
                 return;

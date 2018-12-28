@@ -55,6 +55,11 @@ namespace LottieUWP.Animation.Content
             {
                 _path.Reset();
 
+                if (_mergePaths.IsHidden)
+                {
+                    return _path;
+                }
+
                 switch (_mergePaths.Mode)
                 {
                     case MergePaths.MergePathsMode.Merge:

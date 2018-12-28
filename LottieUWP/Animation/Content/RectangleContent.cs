@@ -16,6 +16,7 @@ namespace LottieUWP.Animation.Content
         private readonly Path _path = new Path();
         private Rect _rect;
 
+        private readonly bool _hidden;
         private readonly ILottieDrawable _lottieDrawable;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _positionAnimation;
         private readonly IBaseKeyframeAnimation<Vector2?, Vector2?> _sizeAnimation;
@@ -27,6 +28,7 @@ namespace LottieUWP.Animation.Content
         internal RectangleContent(ILottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape)
         {
             Name = rectShape.Name;
+            _hidden = rectShape.IsHidden;
             _lottieDrawable = lottieDrawable;
             _positionAnimation = rectShape.Position.CreateAnimation();
             _sizeAnimation = rectShape.Size.CreateAnimation();
@@ -76,6 +78,12 @@ namespace LottieUWP.Animation.Content
                 }
 
                 _path.Reset();
+
+                if (_hidden)
+                {
+                    _isPathValid = true;
+                    return _path;
+                }
 
                 var size = _sizeAnimation.Value;
                 var halfWidth = size.Value.X / 2f;
