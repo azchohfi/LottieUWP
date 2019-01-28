@@ -13,12 +13,14 @@ namespace LottieUWP
         private readonly PathIterator.ContourType[] _types;
         private readonly float[][] _coordinates;
         private readonly float[] _segmentsLength;
+        private Rect[] _boundBox;
+        internal Rect BoundBox = Rect.InitRectforBoundBox();
 
         public CachedPathIteratorFactory(PathIterator iterator)
         {
             var typesArray = new List<PathIterator.ContourType>();
             var pointsArray = new List<float[]>();
-            var points = new float[6];
+            var points = new float[7];
             while (!iterator.Done)
             {
                 var type = iterator.CurrentSegment(points);
@@ -33,10 +35,12 @@ namespace LottieUWP
 
             _types = new PathIterator.ContourType[typesArray.Count];
             _coordinates = new float[_types.Length][];
+            _boundBox = new Rect[_types.Length];
             for (var i = 0; i < typesArray.Count; i++)
             {
                 _types[i] = typesArray[i];
                 _coordinates[i] = pointsArray[i];
+                _boundBox[i] = Rect.InitRectforBoundBox();
             }
 
             // Do measurement
@@ -53,13 +57,15 @@ namespace LottieUWP
                         _segmentsLength[i] = (float)Path.BezierContour.BezLength(lastX, lastY, 
                             _coordinates[i][0], _coordinates[i][1],
                             _coordinates[i][2], _coordinates[i][3],
-                            lastX = _coordinates[i][4], lastY = _coordinates[i][5]);
+                            lastX = _coordinates[i][4], lastY = _coordinates[i][5], ref _boundBox[i]);
+                        BoundBox.Union(_boundBox[i]);
                         break;
                     case PathIterator.ContourType.Arc:
                         _segmentsLength[i] = (float)Path.BezierContour.BezLength(lastX, lastY,
                             lastX + 2 * (_coordinates[i][0] - lastX) / 3, lastY + 2 * (_coordinates[i][1] - lastY) / 3,
                             _coordinates[i][2] + 2 * (_coordinates[i][0] - _coordinates[i][2]) / 3, _coordinates[i][3] + 2 * (_coordinates[i][1] - _coordinates[i][3]) / 3,
-                            lastX = _coordinates[i][2], lastY = _coordinates[i][3]);
+                            lastX = _coordinates[i][2], lastY = _coordinates[i][3], ref _boundBox[i]);
+                        BoundBox.Union(_boundBox[i]);
                         break;
                     case PathIterator.ContourType.Close:
                         _segmentsLength[i] = Vector2.Distance(new Vector2(lastX, lastY), 
@@ -70,16 +76,22 @@ namespace LottieUWP
                         _types[i] = PathIterator.ContourType.Line;
                         _coordinates[i][0] = _coordinates[0][0];
                         _coordinates[i][1] = _coordinates[0][1];
+                        _boundBox[i].Union(new Rect(lastX, lastY, 0, 0));
+                        BoundBox.Union(_boundBox[i]);
                         break;
                     case PathIterator.ContourType.MoveTo:
                         _segmentsLength[i] = 0;
                         lastX = _coordinates[i][0];
                         lastY = _coordinates[i][1];
+                        _boundBox[i].Union(new Rect(lastX, lastY, 0, 0));
+                        BoundBox.Union(_boundBox[i]);
                         break;
                     case PathIterator.ContourType.Line:
                         _segmentsLength[i] = Vector2.Distance(new Vector2(lastX, lastY), new Vector2(_coordinates[i][0], _coordinates[i][1]));
                         lastX = _coordinates[i][0];
                         lastY = _coordinates[i][1];
+                        _boundBox[i].Union(new Rect(lastX, lastY, Math.Abs(lastX- _coordinates[i][0]), Math.Abs(lastY - _coordinates[i][1])));
+                        BoundBox.Union(_boundBox[i]);
                         break;
                 }
             }

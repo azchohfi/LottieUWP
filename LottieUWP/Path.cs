@@ -175,27 +175,44 @@ namespace LottieUWP
                 return new BezierContour(_control1, _control2, _vertex);
             }
 
-            internal static double BezLength(float c0X, float c0Y, float c1X, float c1Y, float c2X, float c2Y, float c3X, float c3Y)
+            internal static double BezLength(float c0X, float c0Y, float c1X, float c1Y, float c2X, float c2Y, float c3X, float c3Y, ref Rect rect)
             {
-                const double steps = 1000d; // TODO: improve
-
                 var length = 0d;
-                float prevPtX = 0;
-                float prevPtY = 0;
-
-                for (var i = 0d; i < steps; i++)
+                float epsilon = 0.01f;
+                float[] points = { c0X, c0Y, c1X, c1Y, c2X, c2Y, c3X, c3Y };
+                var tToPoint = new List<KeyValuePair<float, Vector2>>
                 {
-                    var pt = GetPointAtT(c0X, c0Y, c1X, c1Y, c2X, c2Y, c3X, c3Y, i / steps);
+                    new KeyValuePair<float, Vector2>(0, CubicBezierCalculation(0, points)),
+                    new KeyValuePair<float, Vector2>(1, CubicBezierCalculation(1, points))
+                };
 
-                    if (i > 0)
+                bool doubleCheckDivision = true;
+                for (int i = 0; i < tToPoint.Count - 1; i++)
+                {
+                    bool needsSubdivision;
+                    do
                     {
-                        var x = pt.X - prevPtX;
-                        var y = pt.Y - prevPtY;
-                        length = length + Math.Sqrt(x * x + y * y);
-                    }
+                        needsSubdivision = SubdividePoints(points, CubicBezierCalculation, tToPoint[i].Key, tToPoint[i].Value, tToPoint[i + 1].Key,
+                            tToPoint[i + 1].Value, out var midT, out var midPoint, epsilon);
+                        if (!needsSubdivision && doubleCheckDivision)
+                        {
+                            needsSubdivision = SubdividePoints(points, CubicBezierCalculation, tToPoint[i].Key, tToPoint[i].Value, midT,
+                                midPoint, out _, out _, epsilon);
+                            if (needsSubdivision)
+                            {
+                                // Found an inflection point. No need to double-check.
+                                doubleCheckDivision = false;
+                            }
+                        }
 
-                    prevPtX = pt.X;
-                    prevPtY = pt.Y;
+                        if (needsSubdivision)
+                        {
+                            tToPoint.Insert(i + 1, new KeyValuePair<float, Vector2>(midT, midPoint));
+                        }
+                    } while (needsSubdivision);
+
+                    rect.Union(new Rect(tToPoint[i].Value.X, tToPoint[i].Value.Y, 0, 0));
+					length += (tToPoint[i].Value - tToPoint[i + 1].Value).Length();
                 }
                 return length;
             }
