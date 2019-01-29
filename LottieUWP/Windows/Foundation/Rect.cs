@@ -39,7 +39,7 @@ namespace LottieUWP
 
     public struct Rect
     {
-        static private Rect CreateEmptyRect()
+        static public Rect CreateEmptyRect()
         {
             Rect rect = new Rect();
             // We can't set these via the property setters because negatives widths
