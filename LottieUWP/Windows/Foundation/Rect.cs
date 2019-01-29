@@ -80,7 +80,7 @@ namespace LottieUWP
             return !(rect1 == rect2);
         }
 
-        internal Rect(Point point1,
+        public Rect(Point point1,
                     Point point2)
         {
             _x = Math.Min(point1._x, point2._x);
