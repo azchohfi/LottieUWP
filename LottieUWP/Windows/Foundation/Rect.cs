@@ -78,7 +78,6 @@ namespace LottieUWP
             return !(rect1 == rect2);
         }
 
-
         internal Rect(Point point1,
                     Point point2)
         {
@@ -157,7 +156,6 @@ namespace LottieUWP
             {
                 double left = Math.Min(Left, rect.Left);
                 double top = Math.Min(Top, rect.Top);
-
 
                 // We need this check so that the math does not result in NaN
                 if ((rect.Width == Double.PositiveInfinity) || (Width == Double.PositiveInfinity))
