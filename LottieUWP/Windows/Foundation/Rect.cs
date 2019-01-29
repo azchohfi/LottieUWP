@@ -2,7 +2,7 @@
 
 namespace LottieUWP
 {
-    internal struct Point
+    public struct Point
     {
         public Point(double x, double y)
         {
@@ -21,6 +21,7 @@ namespace LottieUWP
                 _x = value;
             }
         }
+		
         public double Y
         {
             get
@@ -36,7 +37,7 @@ namespace LottieUWP
         internal double _y;
     }
 
-    internal struct Rect
+    public struct Rect
     {
         static private Rect CreateEmptyRect()
         {
@@ -50,7 +51,7 @@ namespace LottieUWP
             return rect;
         }
 
-        static internal Rect InitRectforBoundBox()
+        static public Rect InitRectforBoundBox()
         {
             Rect rect = new Rect();
             rect._x = int.MaxValue;
@@ -73,6 +74,7 @@ namespace LottieUWP
                    rect1.Width == rect2.Width &&
                    rect1.Height == rect2.Height;
         }
+		
         public static bool operator !=(Rect rect1, Rect rect2)
         {
             return !(rect1 == rect2);
