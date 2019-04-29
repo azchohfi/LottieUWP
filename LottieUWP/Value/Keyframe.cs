@@ -6,7 +6,8 @@ namespace LottieUWP.Value
     {
         private readonly LottieComposition _composition;
         public T StartValue { get; }
-        public T EndValue { get; }
+        private T _endValue;
+        public T EndValue => _endValue == null ? StartValue : _endValue;
         public IInterpolator Interpolator { get; }
         public float? StartFrame { get; }
         public float? EndFrame { get; internal set; }
@@ -23,7 +24,7 @@ namespace LottieUWP.Value
         {
             _composition = composition;
             StartValue = startValue;
-            EndValue = endValue;
+            _endValue = endValue;
             Interpolator = interpolator;
             StartFrame = startFrame;
             EndFrame = endFrame;
@@ -37,7 +38,7 @@ namespace LottieUWP.Value
         {
             _composition = null;
             StartValue = value;
-            EndValue = value;
+            _endValue = value;
             Interpolator = null;
             StartFrame = float.MinValue;
             EndFrame = float.MaxValue;
